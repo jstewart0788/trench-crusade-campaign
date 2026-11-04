@@ -20,6 +20,10 @@ import {
 // They are typed and checked here so the engine never reads untyped JSON.
 
 const Gate = z.array(z.string()).optional();
+const RuleText = z.object({ name: z.string(), text: z.string(), sharedRule: z.boolean().optional() }).passthrough();
+
+export const RosterAbility = RuleText.extend({ onlyWith: Gate, onlyWithout: Gate, conditionNote: z.string().optional() });
+export type RosterAbility = z.infer<typeof RosterAbility>;
 
 export const Upgrade = z
   .object({
@@ -33,6 +37,7 @@ export const Upgrade = z
     onlyWith: Gate,
     onlyWithout: Gate,
     conditionNote: z.string().optional(),
+    rules: z.array(RuleText).optional(),
   })
   .passthrough();
 export type Upgrade = z.infer<typeof Upgrade>;
@@ -60,6 +65,7 @@ export const RosterAccess = EquipmentAccess.extend({
 export type RosterAccess = z.infer<typeof RosterAccess>;
 
 export const RosterUnit = Unit.extend({
+  abilities: z.array(RosterAbility),
   equipmentAccess: z.array(RosterAccess),
   upgrades: z.array(Upgrade).optional(),
   onlyWith: Gate,

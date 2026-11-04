@@ -1,0 +1,424 @@
+{
+  "version": "tc-warband-export-v1",
+  "code": "NA-TEST-01",
+  "generatedAt": "2026-11-04T12:00:00.000Z",
+  "warband": {
+    "id": "w1",
+    "name": "Test warband",
+    "gameNumber": 1,
+    "faction": {
+      "id": "new-antioch",
+      "name": "New Antioch"
+    },
+    "variant": null,
+    "patron": null,
+    "totals": {
+      "ducats": 318,
+      "glory": 0
+    },
+    "valid": true,
+    "errorCount": 0
+  },
+  "members": [
+    {
+      "id": "m1",
+      "displayName": "Lieutenant",
+      "unit": {
+        "id": "new-antioch/lieutenant",
+        "name": "Lieutenant",
+        "kind": "model",
+        "elite": true,
+        "keywords": [
+          "Elite",
+          "Leader",
+          "New Antioch",
+          "Tough"
+        ]
+      },
+      "stats": {
+        "movement": {
+          "inches": 6,
+          "type": "Infantry",
+          "raw": "6\"/Infantry"
+        },
+        "ranged": "+2",
+        "melee": "+2",
+        "armour": -1,
+        "armourBreakdown": [
+          {
+            "itemId": "standard-armour",
+            "name": "Standard Armour",
+            "delta": -1
+          }
+        ],
+        "base": "32mm"
+      },
+      "abilities": [
+        {
+          "name": "Hold Your Fire!",
+          "text": "ACTION: The Lieutenant orders their warband to stop shooting, forcing the enemy to move first. To represent this, a Lieutenant can take a Hold Your Fire! ACTION. If they do so, pick 1 enemy model that is in the Lieutenant’s Line of Sight and that the opponent is allowed to Activate. The Lieutenant’s Activation then ends, and the opponent must Activate the model you picked."
+        },
+        {
+          "name": "Tough",
+          "text": "The first time a model with this Keyword suffers an Out of Action result on the Injury Table, it is treated as a Down result instead."
+        },
+        {
+          "name": "Leader",
+          "text": "Add +1 DICE to Morale Checks if your Warband has at least 1 model with this Keyword on the battlefield that is not Down or Out of Action."
+        }
+      ],
+      "equipment": [
+        {
+          "id": "sword-axe",
+          "name": "Sword/Axe",
+          "category": "melee",
+          "hands": 1,
+          "range": "Melee",
+          "keywords": [
+            "CRITICAL"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 4,
+            "glory": 0
+          }
+        },
+        {
+          "id": "pistol",
+          "name": "Pistol",
+          "category": "ranged",
+          "hands": 1,
+          "range": "12\"/Melee",
+          "keywords": [
+            "PISTOL"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 6,
+            "glory": 0
+          }
+        },
+        {
+          "id": "standard-armour",
+          "name": "Standard Armour",
+          "category": "armour",
+          "hands": null,
+          "range": null,
+          "keywords": [
+            "-1 INJURY MODIFIER"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 15,
+            "glory": 0
+          }
+        }
+      ],
+      "upgrades": [],
+      "skills": [],
+      "injuries": [],
+      "notes": null
+    },
+    {
+      "id": "m2",
+      "displayName": "Yeoman",
+      "unit": {
+        "id": "new-antioch/yeoman",
+        "name": "Yeoman",
+        "kind": "model",
+        "elite": false,
+        "keywords": [
+          "New Antioch",
+          "Troop"
+        ]
+      },
+      "stats": {
+        "movement": {
+          "inches": 6,
+          "type": "Infantry",
+          "raw": "6\"/Infantry"
+        },
+        "ranged": "+0",
+        "melee": "+0",
+        "armour": 0,
+        "armourBreakdown": [],
+        "base": "25mm"
+      },
+      "abilities": [],
+      "equipment": [
+        {
+          "id": "bolt-action-rifle",
+          "name": "Bolt-Action Rifle",
+          "category": "ranged",
+          "hands": 2,
+          "range": "24\"",
+          "keywords": [],
+          "rules": "",
+          "cost": {
+            "ducats": 5,
+            "glory": 0
+          }
+        },
+        {
+          "id": "bayonet",
+          "name": "Bayonet",
+          "category": "melee",
+          "hands": 2,
+          "range": "Melee",
+          "keywords": [
+            "CUMBERSOME"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 2,
+            "glory": 0
+          }
+        }
+      ],
+      "upgrades": [],
+      "skills": [],
+      "injuries": [],
+      "notes": null
+    },
+    {
+      "id": "m3",
+      "displayName": "Yeoman",
+      "unit": {
+        "id": "new-antioch/yeoman",
+        "name": "Yeoman",
+        "kind": "model",
+        "elite": false,
+        "keywords": [
+          "New Antioch",
+          "Troop"
+        ]
+      },
+      "stats": {
+        "movement": {
+          "inches": 6,
+          "type": "Infantry",
+          "raw": "6\"/Infantry"
+        },
+        "ranged": "+0",
+        "melee": "+0",
+        "armour": 0,
+        "armourBreakdown": [],
+        "base": "25mm"
+      },
+      "abilities": [],
+      "equipment": [
+        {
+          "id": "bolt-action-rifle",
+          "name": "Bolt-Action Rifle",
+          "category": "ranged",
+          "hands": 2,
+          "range": "24\"",
+          "keywords": [],
+          "rules": "",
+          "cost": {
+            "ducats": 5,
+            "glory": 0
+          }
+        },
+        {
+          "id": "bayonet",
+          "name": "Bayonet",
+          "category": "melee",
+          "hands": 2,
+          "range": "Melee",
+          "keywords": [
+            "CUMBERSOME"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 2,
+            "glory": 0
+          }
+        }
+      ],
+      "upgrades": [],
+      "skills": [],
+      "injuries": [],
+      "notes": null
+    },
+    {
+      "id": "m4",
+      "displayName": "Yeoman",
+      "unit": {
+        "id": "new-antioch/yeoman",
+        "name": "Yeoman",
+        "kind": "model",
+        "elite": false,
+        "keywords": [
+          "New Antioch",
+          "Troop"
+        ]
+      },
+      "stats": {
+        "movement": {
+          "inches": 6,
+          "type": "Infantry",
+          "raw": "6\"/Infantry"
+        },
+        "ranged": "+0",
+        "melee": "+0",
+        "armour": 0,
+        "armourBreakdown": [],
+        "base": "25mm"
+      },
+      "abilities": [],
+      "equipment": [
+        {
+          "id": "bolt-action-rifle",
+          "name": "Bolt-Action Rifle",
+          "category": "ranged",
+          "hands": 2,
+          "range": "24\"",
+          "keywords": [],
+          "rules": "",
+          "cost": {
+            "ducats": 5,
+            "glory": 0
+          }
+        },
+        {
+          "id": "bayonet",
+          "name": "Bayonet",
+          "category": "melee",
+          "hands": 2,
+          "range": "Melee",
+          "keywords": [
+            "CUMBERSOME"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 2,
+            "glory": 0
+          }
+        }
+      ],
+      "upgrades": [],
+      "skills": [],
+      "injuries": [],
+      "notes": null
+    },
+    {
+      "id": "m5",
+      "displayName": "Yeoman",
+      "unit": {
+        "id": "new-antioch/yeoman",
+        "name": "Yeoman",
+        "kind": "model",
+        "elite": false,
+        "keywords": [
+          "New Antioch",
+          "Troop"
+        ]
+      },
+      "stats": {
+        "movement": {
+          "inches": 6,
+          "type": "Infantry",
+          "raw": "6\"/Infantry"
+        },
+        "ranged": "+0",
+        "melee": "+0",
+        "armour": 0,
+        "armourBreakdown": [],
+        "base": "25mm"
+      },
+      "abilities": [],
+      "equipment": [
+        {
+          "id": "bolt-action-rifle",
+          "name": "Bolt-Action Rifle",
+          "category": "ranged",
+          "hands": 2,
+          "range": "24\"",
+          "keywords": [],
+          "rules": "",
+          "cost": {
+            "ducats": 5,
+            "glory": 0
+          }
+        },
+        {
+          "id": "bayonet",
+          "name": "Bayonet",
+          "category": "melee",
+          "hands": 2,
+          "range": "Melee",
+          "keywords": [
+            "CUMBERSOME"
+          ],
+          "rules": "",
+          "cost": {
+            "ducats": 2,
+            "glory": 0
+          }
+        }
+      ],
+      "upgrades": [],
+      "skills": [],
+      "injuries": [],
+      "notes": null
+    },
+    {
+      "id": "m6",
+      "displayName": "Shocktrooper",
+      "unit": {
+        "id": "new-antioch/shocktrooper",
+        "name": "Shocktrooper",
+        "kind": "model",
+        "elite": false,
+        "keywords": [
+          "New Antioch",
+          "Troop"
+        ]
+      },
+      "stats": {
+        "movement": {
+          "inches": 6,
+          "type": "Infantry",
+          "raw": "6\"/Infantry"
+        },
+        "ranged": "+0",
+        "melee": "+1",
+        "armour": 0,
+        "armourBreakdown": [],
+        "base": "25mm"
+      },
+      "abilities": [
+        {
+          "name": "Shock Charge",
+          "text": "When you roll the Charge Bonus for a Shock Trooper, roll 1 extra D6 and use the single highest die to determine the bonus."
+        },
+        {
+          "name": "Assault Drill",
+          "text": "You can ignore the Effect of the HEAVY Keyword for 1 Melee Weapon that a Shock Trooper has. A Shock Trooper still cannot have more than 1 Weapon (of any type) with the HEAVY Keyword."
+        }
+      ],
+      "equipment": [
+        {
+          "id": "submachine-gun",
+          "name": "Submachine Gun",
+          "category": "ranged",
+          "hands": 2,
+          "range": "16\"",
+          "keywords": [
+            "ASSAULT"
+          ],
+          "rules": "**Quick Bursts: A model armed with a Submachine Gun can take two Shoot ACTIONS during the same Activation, as long as the Submachine Gun is used to make both attacks. The Shoot ACTIONS can be taken one after the other, or other ACTIONS can be taken between the Shoot ACTIONS.**",
+          "cost": {
+            "ducats": 30,
+            "glory": 0
+          }
+        }
+      ],
+      "upgrades": [],
+      "skills": [],
+      "injuries": [],
+      "notes": null
+    }
+  ]
+}
