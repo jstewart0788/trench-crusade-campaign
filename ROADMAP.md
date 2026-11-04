@@ -179,9 +179,18 @@ code the campaign platform later wraps. Nothing is built twice.
 
 ## Backlog — Phase 0 and Phase 1 as tickets
 
-Numbering is provisional. One ticket = one PR.
+Numbering is provisional. One ticket = one commit on `main`.
 
-**Phase 0**
+**Phase 0 — done 2026-11-04** except the in-TTS half of TC-008. Status per ticket:
+TC-001 ✅ · TC-002 ✅ · TC-003 ✅ (174 PDF overrides in `data/rules/pdf-overrides.json`, applied by
+the converter on every regeneration; 14 unresolved variant-conditional prices need a `variantCosts`
+schema slot) · TC-004 ✅ · TC-005 ✅ (Don't Breathe geometry low-confidence) · TC-006 ✅ (archetype
+pages have no diagrams; layout rules come from text) · TC-007 ✅ · TC-008 ◐ (172 assets have rest
+heights from the seated reference mods; **64 TC:Map-only assets need measuring with TTS open**; zero
+asset overlap at identical scale between TC:Map and the reference mods, so no global offset exists)
+· TC-009 ✅ (67 tests, mutation-checked).
+
+**Phase 0 (original tickets)**
 - TC-001 Repo scaffold: pnpm workspace, `apps/web`, `packages/rules`, `packages/tts`,
   `data/`, CI lint+test.
 - TC-002 Pull NewRecruit TC dataset; write converter → `data/rules/{factions,units,
