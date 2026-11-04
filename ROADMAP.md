@@ -238,7 +238,9 @@ asset overlap at identical scale between TC:Map and the reference mods, so no gl
   ambiance).
 - TC-015 Model library: assemble faction bags from ForceOrg + Gannel + Scripted Table;
   map rules-JSON unit IDs → model GUIDs.
-- TC-016 In-mod code entry + `WebRequest` fetch + spawn with bound descriptions.
+- TC-016 In-mod code entry + `WebRequest` fetch + spawn with bound descriptions. The model from
+  `data/tts/models.json` is only a default: players bind their own models to roster entries
+  (Jonathan, 2026-11-04), so missing mappings are not a defect.
 - TC-017 TC tokens (Blood, Blessing, Down, Activated) and activation/morale helpers.
 - TC-018 Playtest: one full one-off in the mod; log every friction point as tickets.
 
