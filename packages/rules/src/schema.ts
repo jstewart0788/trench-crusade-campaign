@@ -181,7 +181,7 @@ export const Scenario = z
       text: z.string(),
       zones: z.array(z.object({ player: z.string(), label: z.string(), polygon: z.array(Point) }).passthrough()),
     }).passthrough(),
-    objectives: z.array(z.object({ id: z.string(), position: Point }).passthrough()),
+    objectives: z.array(z.object({ id: z.string(), position: Point.nullable() }).passthrough()),
     specialRules: z.array(NamedText),
     gameLength: z.object({ minTurns: z.number().int().nullable(), maxTurns: z.number().int().nullable() }).passthrough(),
     victory: z.object({ text: z.string() }).passthrough(),

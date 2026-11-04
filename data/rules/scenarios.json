@@ -1,0 +1,582 @@
+{
+  "$schema": "tc-rules-scenarios-v1",
+  "source": { "file": "Trench-Crusade-Digital-Rulebook.pdf", "edition": "1.0.2", "pages": "144-197" },
+  "battlefield": {
+    "widthIn": 36,
+    "depthIn": 36,
+    "page": 58,
+    "note": "p58 and p146 fix no single size: most games fit a dining table, some scenarios require 36\" or 48\" square. p9 recommends 3'x3' or 4'x4' with 24\" between the forces; p22 says any table at least 30\" wide works. 36x36 is used here as the default coordinate space; V Armoured Train and X Don't Breathe require 48x48 and are expressed in 48x48 coordinates (see each scenario's battlefield field). Deployment zones on the maps are edge strips whose inner edge is fixed by the labelled gap (24\" or 28\"); their outer edge is the table edge, so on a different table size the strip depth changes, not the gap."
+  },
+  "general": {
+    "scenarioSelection": { "page": 144, "text": "Campaign game: the scenario is determined by the campaign rules (Selecting a Campaign Scenario). One-off game: players agree a scenario; if they cannot, roll-off and the winner picks. Each player brings a Force drawn from their Warband; in a campaign the Force must conform to the Warband's Threshold Value and Field Strength (p145). Recommended one-off sizes: 700 ducats (counts as campaign game 1) or 800 ducats + 6 glory." },
+    "deploymentRules": { "page": 146, "text": "Set up the battlefield using the archetype named by the scenario; map terrain is illustrative unless stated. Markers go at the white crosses; a 'Midpoint' marker is centred on the battlefield centre; markers are up to 40mm across and do not block movement or LoS unless they are terrain pieces; if terrain covers a marker spot, place the marker anywhere on that piece. Terrain may not block any model from leaving its Deployment Zone or reaching a marker location (if discovered mid-game, blocked models cross it as Open terrain; it still blocks LoS). All models in the Force must be deployed unless stated otherwise, wholly within their own Deployment Zone, on the battlefield or in non-Impassable terrain. Infiltrators (INFILTRATOR keyword or similar rule) deploy after all other models from both sides and/or outside the Deployment Zone only if the scenario allows; 'must deploy normally' means no model may deploy outside its Deployment Zone. Deployment-order rules still apply among infiltrators (p147 example). Special rules follow deployment; Pre-Game Activities resolve immediately before/after the stated point, roll-off for order on ties (p147). Secret information must be written legibly and shown when revealed." },
+    "gameLength": { "page": 148, "text": "The game starts after both sides have deployed. Each scenario states how long it lasts, generally a number of Turns; some roll at the end of a Turn to see if the game continues." },
+    "victoryConditions": { "page": 148, "text": "Most scenarios use Victory Points; equal VPs is a draw. Each scenario lists when and how VPs are scored. If VPs are scored at the end of each Turn, when the game ends first score the final Turn's end-of-Turn VPs, then end-of-game VPs." },
+    "gloriousDeeds": {
+      "page": 149,
+      "text": "Each scenario has a unique set of Glorious Deeds that award VPs (amount listed in the scenario's Victory Points). A deed is completed the first time its condition is met; unless stated otherwise each deed can be completed once per game, by whichever player completes it first (roll-off on simultaneous completion). One model may complete several deeds at once. A model achieves a condition if anything it does causes an outcome that completely satisfies it (e.g. a Fall caused by its attack counts for 'causes ... Out of Action' but not for 'takes Out of Action with a Ranged Attack').",
+      "common": [
+        { "name": "Cast Them Down", "condition": "A friendly model causes an enemy model to Fall from a height of at least 3\".", "glory": 1 },
+        { "name": "Hold Your Ground", "condition": "Warband is the first to pass a Morale Check this game. Warband-level deed: 1 VP; in a campaign may award 1 XP to one ELITE LEADER model, plus Glory Points and Promotion Pool D6 as normal.", "glory": 1 },
+        { "name": "Lord of War", "condition": "A friendly model takes two enemy models Out of Action with Melee Attacks in a single Turn.", "glory": 1 },
+        { "name": "Resist and Bite", "condition": "A friendly model that began its Activation Down takes an enemy model Out of Action in the same Activation.", "glory": 1 },
+        { "name": "Sniper", "condition": "A friendly model takes an enemy ELITE model Out of Action with a Ranged Weapon Attack that has the Long Range and Cover modifiers.", "glory": 1 },
+        { "name": "Death From Above", "condition": "A friendly model takes an enemy model Out of Action with a Melee Attack with the Diving Charge modifier.", "glory": 1 },
+        { "name": "Victory or Death", "condition": "Warband wins the game. Campaign games only, determined after the result; no VPs, but may award 1 XP to one ELITE LEADER model, plus Glory Points and Promotion Pool D6 as normal.", "glory": 1 }
+      ]
+    },
+    "gloryPoints": { "page": 150, "text": "Campaign games only. A deed can be completed once per game but again in later games. Each Glorious Deed carried out: +1 glory point (spend on mercenaries, Battlekit, Glory Items costed in glory); each ELITE model that completed one or more deeds gains 1 Experience Point (none if the deed was completed by the Warband/player rather than a model); add 1 D6 to the Promotion Pool per deed." }
+  },
+  "scenarios": [
+    {
+      "id": "claim-no-mans-land",
+      "number": 1,
+      "name": "Claim No Man's Land",
+      "page": 151,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land"],
+      "archetypeNote": "Roll-off; winner sets up terrain. No Man's Land archetype.",
+      "forces": null,
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone, opponent takes the other. Alternate deploying one model at a time starting with the player with more models in their Warband (roll-off on tie). Models wholly within own Deployment Zone. When one player runs out, the other deploys all remaining models.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "Edge strip; inner edge fixed by the 24\" gap, outer edge is the table edge." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "Edge strip; inner edge fixed by the 24\" gap, outer edge is the table edge." }
+        ],
+        "infiltrators": "Infiltrators must deploy normally (no special deployment rules)."
+      },
+      "objectives": [
+        { "id": "obj-1", "label": "Objective (NW)", "position": [12,30], "placementRule": "6\" from the west Deployment Zone edge and 6\" from the north table edge; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-2", "label": "Objective (NE)", "position": [24,30], "placementRule": "6\" from the east Deployment Zone edge and 6\" from the north table edge; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-3", "label": "Objective (Midpoint)", "position": [18,18], "placementRule": "Centre of the battlefield; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-4", "label": "Objective (SW)", "position": [12,6], "placementRule": "6\" from the west Deployment Zone edge and 6\" from the south table edge; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-5", "label": "Objective (SE)", "position": [24,6], "placementRule": "6\" from the east Deployment Zone edge and 6\" from the south table edge; covered by a terrain piece (Ruined Building if available)." }
+      ],
+      "terrainRequirements": "p152: the first five terrain pieces set up must cover the five Objective Marker locations; use Ruined Building pieces if available. Objective Markers are placed after all terrain, anywhere on the covering piece; the whole piece is the Objective and cannot be destroyed or removed.",
+      "specialRules": [
+        { "name": "Controlling Objectives", "text": "A player controls an Objective terrain piece if they have more friendly models on, in, or within 1\" of it than the enemy. If one player has any models on the piece and the opponent has none, that player controls it even if the opponent has more models within 1\"." }
+      ],
+      "gameLength": { "minTurns": 4, "maxTurns": 4, "endCondition": "Lasts four Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees (e.g. failed Morale Check). Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of each Turn: 2 VP per Objective controlled. End of game: 1 VP per Glorious Deed completed."
+      },
+      "gloriousDeeds": [
+        { "name": "Bloodletting", "condition": "An attack by a friendly model results in the sixth BLOOD MARKER being placed beside an enemy model.", "glory": 1 },
+        { "name": "Cast Them Down", "condition": "A friendly model causes an enemy model to Fall from a height of at least 3\".", "glory": 1 },
+        { "name": "Hold Your Ground", "condition": "Warband is the first to pass a Morale Check this game (warband-level; 1 VP; campaign XP may go to one ELITE LEADER).", "glory": 1 },
+        { "name": "Lord of War", "condition": "A friendly model takes two enemy models Out of Action with Melee Attacks in a single Turn.", "glory": 1 },
+        { "name": "Resist and Bite", "condition": "A friendly model that began its Activation Down takes an enemy model Out of Action in the same Activation.", "glory": 1 },
+        { "name": "Sniper", "condition": "A friendly model takes an enemy ELITE model Out of Action with a Ranged Weapon Attack with the Long Range and Cover modifiers.", "glory": 1 },
+        { "name": "Suicidal Bravery", "condition": "A friendly model successfully charges two models with the same charge move.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "high",
+      "notes": "Map labels: 24\" between Deployment Zones; objectives 6\" in from the DZ edge and 6\" from the table edge; centre objective at Midpoint. Symmetric; sides are chosen by roll-off, not fixed to A/B."
+    },
+    {
+      "id": "hunt-for-heroes",
+      "number": 2,
+      "name": "Hunt for Heroes",
+      "page": 154,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land"],
+      "archetypeNote": "Roll-off; winner sets up terrain. No Man's Land archetype.",
+      "forces": "Both players must include as many ELITE models from their Warband as possible.",
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models in their Warband (roll-off on tie). Models wholly within own Deployment Zone; when one player runs out the other deploys the rest.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[4,0],[4,36],[0,36]], "note": "Map gap between zones is 28\" (10+8+10), so on a 36\" table each strip is 4\" deep." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[32,0],[36,0],[36,36],[32,36]], "note": "Map gap between zones is 28\", so on a 36\" table each strip is 4\" deep." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use their special deployment rules, but if using special rules they cannot deploy within 8\" of an Objective."
+      },
+      "objectives": [
+        { "id": "obj-1", "label": "Objective (north)", "position": [18,28], "placementRule": "10\" north of the Midpoint on the centre line; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-2", "label": "Objective (west)", "position": [11,18], "placementRule": "7\" west of the Midpoint; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-3", "label": "Objective (east)", "position": [25,18], "placementRule": "7\" east of the Midpoint; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "obj-4", "label": "Objective (south)", "position": [18,8], "placementRule": "10\" south of the Midpoint on the centre line; covered by a terrain piece (Ruined Building if available)." },
+        { "id": "dw-m-west", "label": "Defence Works: Machine Gun Emplacement (M, west)", "position": [11,23], "placementRule": "5\" north of the west Objective; covered by a terrain piece (Ruined Building if available) set up after the Objective pieces." },
+        { "id": "dw-g-west", "label": "Defence Works: Gun Battery (G, west)", "position": [11,13], "placementRule": "5\" south of the west Objective; covered by a terrain piece (Ruined Building if available) set up after the Objective pieces." },
+        { "id": "dw-m-east", "label": "Defence Works: Machine Gun Emplacement (M, east)", "position": [25,23], "placementRule": "5\" north of the east Objective; covered by a terrain piece (Ruined Building if available) set up after the Objective pieces." },
+        { "id": "dw-g-east", "label": "Defence Works: Gun Battery (G, east)", "position": [25,13], "placementRule": "5\" south of the east Objective; covered by a terrain piece (Ruined Building if available) set up after the Objective pieces." }
+      ],
+      "terrainRequirements": "p154-155: the first four terrain pieces cover the four Objective Marker locations (white crosses); the next four pieces cover the four Defence Works Marker locations (G/M). Use Ruined Buildings if available. All markers are set up after terrain, anywhere on the covering piece; the whole piece is the Objective. The map shades two 10\"-wide 'Defense Works placements Area' bands (x 4-14 and x 22-32) flanking the central 8\" band.",
+      "specialRules": [
+        { "name": "Controlling Objectives", "text": "A player controls an Objective terrain piece if they have more friendly models on, in, or within 1\" of it than the enemy." },
+        { "name": "Gun Battery Marker", "text": "Treated as a Sultanate Grand Cannon stationary gun battery usable by any model (rules in Defenders of the Iron Wall, Warbands of Trench Crusade)." },
+        { "name": "Machine Gun Emplacement Marker", "text": "A model within 1\" of the marker is treated as having a Machine Gun (standard Battlekit list). Cannot be used if an enemy model is within 1\" of the marker. Each emplacement can be used once per Turn." },
+        { "name": "Marks & Assets", "text": "After deployment each player secretly writes down up to three enemy ELITE models as Marks and one friendly ELITE model as an Asset. Taking out Marks and keeping the Asset alive scores VPs at the end of the game." },
+        { "name": "Unforeseen Events", "text": "At the start of each Turn after the first, one player rolls a D6: on 5-6 an event occurs (roll D3; no further events that Turn). 1 Rising Fog: this Turn and next, all Ranged Weapon Ranges halved (short range is half the reduced Range). 2 Rain, Mud, and Guts: this Turn and next, -2 DICE to Melee Attack rolls. 3 Deep Craters: roll-off; alternate placing 6 Crater Markers, not within a Deployment Zone or within 2\" of a terrain piece or model. Open terrain within 2\" of a Crater Marker centre is a sheer-sided pit D3+3\" deep (roll per marker); models can Jump Down or Fall in and must Climb out. Markers may be a terrain piece up to 4\" across." }
+      ],
+      "gameLength": { "minTurns": 5, "maxTurns": 5, "endCondition": "Lasts five Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of each Turn: 1 VP per Objective within 1\" of one or more friendly models, plus 1 VP per Objective controlled. End of game: 1 VP per Glorious Deed; 2 VP per enemy Mark taken Out of Action; 3 VP if the friendly Asset was not taken Out of Action."
+      },
+      "gloriousDeeds": [
+        { "name": "Sharpshooter", "condition": "A friendly model in cover takes an enemy ELITE model Out of Action with a Ranged Attack with the Long Range modifier.", "glory": 1 },
+        { "name": "Dangerous Fall", "condition": "A friendly model causes an enemy model to Fall into a crater (Unforeseen Events).", "glory": 1 },
+        { "name": "Death From Above", "condition": "A friendly model takes an enemy model Out of Action with a Melee Attack with the Diving Charge modifier.", "glory": 1 },
+        { "name": "High Risk, High Reward", "condition": "An Asset takes an enemy Mark Out of Action; the player must reveal both the Asset and the Mark to claim it.", "glory": 1 },
+        { "name": "Kill their Leaders", "condition": "All enemy Marks taken Out of Action; player must reveal their Marks. Credited to the model that took the last Mark Out of Action.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "high",
+      "notes": "Map labels: 10\" / 8\" / 10\" bands across the 28\" gap; Objectives 10\" N/S and 7\" E/W of the Midpoint; M markers 5\" north and G markers 5\" south of the E/W Objectives. Defence Works placement areas are the two outer 10\" bands. A map generator should treat crater markers (event 3) as runtime terrain."
+    },
+    {
+      "id": "relic-hunt",
+      "number": 3,
+      "name": "Relic Hunt",
+      "page": 158,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land"],
+      "archetypeNote": "Roll-off; winner sets up terrain. No Man's Land archetype.",
+      "forces": null,
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Each player may deploy a maximum of six models; models on 40mm+ bases count as 2. Undeployed models are reinforcements. Models wholly within own Deployment Zone; when one player runs out the other deploys up to their limit.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "24\" gap; 6\" strip on a 36\" table." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "24\" gap; 6\" strip on a 36\" table." }
+        ],
+        "infiltrators": "Infiltrators must deploy normally (no special deployment rules)."
+      },
+      "objectives": [
+        { "id": "reliquary-1", "label": "Reliquary 1", "position": [12,30], "placementRule": "6\" from the west DZ edge, 6\" from the north edge. Removed at the end of Turn 1." },
+        { "id": "reliquary-2", "label": "Reliquary 2", "position": [24,6], "placementRule": "6\" from the east DZ edge, 6\" from the south edge. Removed at the end of Turn 1." },
+        { "id": "reliquary-3", "label": "Reliquary 3", "position": [24,30], "placementRule": "6\" from the east DZ edge, 6\" from the north edge. Removed at the end of Turn 2." },
+        { "id": "reliquary-4", "label": "Reliquary 4", "position": [12,6], "placementRule": "6\" from the west DZ edge, 6\" from the south edge. Removed at the end of Turn 2." },
+        { "id": "reliquary-5", "label": "Reliquary 5", "position": [18,24], "placementRule": "6\" north of the Midpoint. Stays all game." },
+        { "id": "reliquary-6", "label": "Reliquary 6", "position": [18,12], "placementRule": "6\" south of the Midpoint. Stays all game." }
+      ],
+      "terrainRequirements": "None beyond the archetype; Reliquary Markers are set up at the map locations after terrain (general marker rule p146 applies if terrain covers a spot).",
+      "specialRules": [
+        { "name": "Reliquary Markers", "text": "Six Reliquaries at the map locations. End of Turn 1: remove Reliquaries 1 and 2. End of Turn 2: remove Reliquaries 3 and 4." },
+        { "name": "Claim Reliquary ACTION", "text": "A model within 1\" of a Reliquary may take the action: Success Roll; on Success or Critical Success the Reliquary is claimed by that side for the rest of the Turn (even if the model is later Down or Out of Action) and cannot be claimed again that Turn; it can be claimed again by either side in later Turns." },
+        { "name": "Reinforcements", "text": "Start of each Turn: roll-off; winner rolls D3 = number of reinforcement models each player may deploy. Alternate, starting with the roll-off winner. Reinforcements deploy touching the battlefield edge, wholly within own Deployment Zone, more than 8\" from the closest enemy model. If one player runs out, the other may deploy remaining reinforcements up to the Turn limit. Reinforcements must be deployed if available." },
+        { "name": "To the Death!", "text": "No Morale Checks; neither player may choose to flee." }
+      ],
+      "gameLength": { "minTurns": 4, "maxTurns": 4, "endCondition": "Lasts four Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield after reinforcements have been deployed. Otherwise most VPs at the end of the game wins.",
+        "scoring": "Turns 1-3: 1 VP per Reliquary claimed by a friendly model, max 4 VP per Turn (extra claims only deny the enemy). Turn 4: 2 VP per Reliquary claimed. End of game: 1 VP per Glorious Deed."
+      },
+      "gloriousDeeds": [
+        { "name": "Blood Sacrifice", "condition": "A friendly model causes three enemy models to be taken Out of Action during the game.", "glory": 1 },
+        { "name": "Cast Them Down", "condition": "A friendly model causes an enemy model to Fall from a height of at least 3\".", "glory": 1 },
+        { "name": "Protect the Relic", "condition": "A friendly model causes an enemy model within 1\" of a Reliquary Marker to be taken Out of Action.", "glory": 1 },
+        { "name": "Relic Hunter", "condition": "A friendly model claims two different Reliquaries during the game.", "glory": 1 },
+        { "name": "Resist and Bite", "condition": "A friendly model that began its Activation Down takes an enemy model Out of Action in the same Activation.", "glory": 1 },
+        { "name": "Sniper", "condition": "A friendly model takes an enemy ELITE model Out of Action with a Ranged Weapon Attack with the Long Range and Cover modifiers.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "high",
+      "notes": "Map labels: 24\" gap; 6\" from DZ edge to Reliquary 1; 6\" from south edge to Reliquary 4; 6\" from Midpoint to Reliquaries 5 and 6. Reliquaries are plain markers, not terrain. Removal schedule matters for a campaign engine: 1&2 after Turn 1, 3&4 after Turn 2."
+    },
+    {
+      "id": "trench-warfare",
+      "number": 4,
+      "name": "Trench Warfare",
+      "page": 161,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land"],
+      "archetypeNote": "Roll-off; winner sets up terrain. No Man's Land archetype. No terrain may be set up in either Deployment Zone (the defender's trench lines go there).",
+      "forces": "Asymmetric. Campaign: the player with the most models in their Warband (ignoring Threshold/Field Strength) is the attacker; tie (and one-off games) roll-off, winner decides roles. The defender must halve the ducats they can spend on their Warband for this scenario.",
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone (zones are role-labelled on the map: attacker west, defender east). Before any models, the defender sets up Trench Lines and Mine Markers. Then alternate deploying one model at a time starting with the attacker. Models wholly within own Deployment Zone; when one player runs out the other deploys the rest.",
+        "zones": [
+          { "player": "attacker", "label": "Attacker Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "24\" gap; 6\" strip on a 36\" table. No terrain in this zone." },
+          { "player": "defender", "label": "Defender Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "24\" gap; 6\" strip on a 36\" table. No terrain other than the defender's trench sections." },
+          { "player": "defender", "label": "Mine Placement Area", "polygon": [[18,0],[30,0],[30,36],[18,36]], "note": "12\"-wide band adjacent to the defender zone; not a deployment zone - where the 12 Mine Markers go." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use special deployment rules; attacking models using special deployment rules must deploy within 12\" of the attacker's Deployment Zone."
+      },
+      "objectives": [
+        { "id": "trench-north", "label": "8\" Trench Section (north)", "position": [30.5,31], "placementRule": "Defender places a trench section at least 8\" long here, running north-south along the inner edge of the defender zone (approx y 27-35)." },
+        { "id": "trench-mid", "label": "8\" Trench Section (middle)", "position": [30.5,18], "placementRule": "Defender places a trench section at least 8\" long here, running north-south along the inner edge of the defender zone (approx y 14-22)." },
+        { "id": "trench-south", "label": "8\" Trench Section (south)", "position": [30.5,5], "placementRule": "Defender places a trench section at least 8\" long here, running north-south along the inner edge of the defender zone (approx y 1-9)." }
+      ],
+      "terrainRequirements": "p162 Defending Trench Lines: the defender sets up three trench sections at least 8\" long at the map locations (inside the defender zone along its inner edge, at the north, middle and south); additional trench sections of any size may be added. No other terrain in either Deployment Zone.",
+      "specialRules": [
+        { "name": "Mine Markers", "text": "After trenches, the defender sets up 12 Mine Markers within the Mine Placement Area, then secretly records which 4 are duds. The others are live, have the MINED keyword and Slaughter Mines." },
+        { "name": "Slaughter Mines", "text": "When a model moves within 3\" of a Mine Marker, pause its move; the defender reveals dud or live. Live: detonates as if the model had contacted a MINED marker; marker removed; the model continues its move unless Down or Out of Action. FLYING models only trigger a mine if they finish a move in contact with it." }
+      ],
+      "gameLength": { "minTurns": 4, "maxTurns": 5, "endCondition": "At the end of Turn 4 the attacker rolls a D6: 1-2 the game ends immediately; 3+ it ends at the end of Turn 5." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of each Turn: defender scores 1 VP per trench section (>=8\" long) containing one or more defending models, 2 VP if no attacking models are in it; attacker scores 2 VP per trench section (>=8\") containing one or more attacking models, 3 VP if no defending models are in it. End of game: 1 VP per Glorious Deed."
+      },
+      "gloriousDeeds": [
+        { "name": "Good Hunting", "condition": "A friendly model takes an enemy model Out of Action with a Ranged Attack with the Long Range modifier.", "glory": 1 },
+        { "name": "Headshot", "condition": "A friendly model that retreated earlier in its Activation takes one of the enemy models it retreated from Out of Action.", "glory": 1 },
+        { "name": "Hold your Ground", "condition": "Warband is the first to pass a Morale Check this game (warband-level; 1 VP; campaign XP may go to one ELITE LEADER).", "glory": 1 },
+        { "name": "Into the Trenches!", "condition": "A friendly model successfully charges an enemy model in a trench section and takes it Out of Action with a Melee Attack.", "glory": 1 },
+        { "name": "Survive to Tell the Tale", "condition": "A friendly model has two Injury Rolls caused by mine explosions and is not taken Out of Action by either.", "glory": 1 },
+        { "name": "Victory or Death", "condition": "Warband wins the game (campaign only; no VP; XP may go to one ELITE LEADER; Glory Points and Promotion D6 as normal).", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games), including Hold your Ground and Victory or Death.", "glory": 1 } ],
+      "geometryConfidence": "medium",
+      "notes": "Map labels: 24\" gap, 12\" Mine Placement Area abutting the defender zone. Trench section positions are read from the diagram (three evenly spaced boxes along the inner edge of the defender zone); exact y extents are inferred. Mines are defender-placed runtime markers, 12 total, 4 duds."
+    },
+    {
+      "id": "armoured-train",
+      "number": 5,
+      "name": "Armoured Train",
+      "page": 164,
+      "battlefield": { "widthIn": 48, "depthIn": 48 },
+      "archetypes": ["no-mans-land"],
+      "archetypeNote": "Roll-off; winner sets up terrain. No Man's Land archetype; requires a 48\" by 48\" battlefield. Train wagons and embankments are set up first.",
+      "forces": "Campaign games: both players have a Field Strength of 15 models.",
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Models wholly within own Deployment Zone; when one player runs out the other deploys the rest.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,48],[0,48]], "note": "6\" strip (labelled 6\" on the map)." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[42,0],[48,0],[48,48],[42,48]], "note": "6\" strip (labelled 6\" on the map)." }
+        ],
+        "infiltrators": "Infiltrators must deploy normally (no special deployment rules)."
+      },
+      "objectives": [
+        { "id": "wagon-north", "label": "Train Wagon (north, on embankment)", "position": [24,40], "placementRule": "8\" long x 4\" wide, centred on the rail line x=24, on the north embankment (approx y 36-44). Ladders both sides; locked door at the centre of each side." },
+        { "id": "wagon-centre", "label": "Train Wagon (centre, on bridge)", "position": [24,24], "placementRule": "8\" x 4\", centred on the Midpoint, on the bridge joining the embankments (y 20-28). Carries the Gun Battery Marker on its roof." },
+        { "id": "wagon-south", "label": "Train Wagon (south, on embankment)", "position": [24,8], "placementRule": "8\" long x 4\" wide, centred on x=24, on the south embankment (approx y 4-12)." },
+        { "id": "gun-battery", "label": "Gun Battery Marker (G)", "position": [24,24], "placementRule": "On top of the central wagon." }
+      ],
+      "terrainRequirements": "p164-165: set up the wagons first. Two raised embankments 12\" wide (x 18-30) running 20\" in from the north and south table edges (text says 12\" by 19\"; map arrows say 20\"), sides roughly 5\" high and Difficult terrain. A bridge joins the embankments across the middle (y 20-28); models can move under the bridge from the sides and onto it from each end. Wagons 8\" x 4\" with flat Open-terrain roofs, ladders (Climb without Risky roll) and centre doors on both sides. Wagons cannot be destroyed or removed.",
+      "specialRules": [
+        { "name": "Gun Battery Marker", "text": "Treated as a Sultanate Grand Cannon stationary gun battery usable by any model (Defenders of the Iron Wall rules)." },
+        { "name": "Unlock Wagon ACTION", "text": "A model within 1\" of a locked door: Success Roll; on Success/Critical the door opens revealing D3 Supply Crates (place a Supply Crate Marker beside the wagon with the count). Unlocking the other door gives access to remaining crates but generates no more." },
+        { "name": "Open Crate ACTION", "text": "A model within 1\" of an unlocked door with crates remaining, or within 1\" of a dropped crate, chooses without a roll: (1) Carry Crate - only Move/Retreat actions while carrying; at end of Activation may drop it (within 1\", not touching models), hand to a friendly model within 1\", or Destroy/Draw; drops it if Down, Out of Action or targeted by a Melee Attack; if it finishes an Activation in contact with any battlefield edge it escapes with the crate (model and crate removed; model still counts for Morale). (2) Destroy Crate - Success Roll; on success the crate is removed. (3) Draw Supplies - Success Roll; on success place a BLESSING MARKER by the model and remove the crate." }
+      ],
+      "gameLength": { "minTurns": 5, "maxTurns": 5, "endCondition": "Lasts five Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of game: 1 VP per Glorious Deed; 1 VP per crate a friendly model drew supplies from; 2 VP per crate a friendly model destroyed; 3 VP per crate a friendly model escaped with."
+      },
+      "gloriousDeeds": [
+        { "name": "King of the Hill", "condition": "A friendly model ends 3 consecutive Turns on top of an embankment or the bridge and within 3\" of a wagon.", "glory": 1 },
+        { "name": "Meat-Grinder", "condition": "A friendly model takes 3 enemy models Out of Action during the game with Ranged Attacks from the Gun Battery.", "glory": 1 },
+        { "name": "No Stone Left Unturned", "condition": "A friendly model unlocks two different wagons.", "glory": 1 },
+        { "name": "Over the Enemy Line", "condition": "A friendly model escapes with a crate while wholly within the enemy Deployment Zone.", "glory": 1 },
+        { "name": "Supply Run", "condition": "Two friendly models escape with a crate; credited to the model that escaped with the second crate.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "medium",
+      "notes": "48x48 coordinates. Map labels: DZ 6\"; embankment 12\" wide, 20\" from each N/S edge; wagons 8\" x 4\"; the 12\" arrows also mark the bridge/embankment width. Rulebook text gives the embankment as 12\" by 19\" (one inch shorter than the map arrow); this file uses 20\" from the map. Exact wagon y-positions on the embankments are read from the diagram, not labelled. Supply crates are runtime markers created by Unlock Wagon."
+    },
+    {
+      "id": "dragon-hunt",
+      "number": 6,
+      "name": "Dragon Hunt",
+      "page": 168,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land", "trench-lines"],
+      "archetypeNote": "Roll-off; winner sets up the Dragon, the terrain and the Peasants, and chooses No Man's Land or Trench Lines archetype.",
+      "forces": "Players additionally need a Dragon model (base 120-300mm) and 6 Peasant models (neutral, 25mm). Stat blocks on p171-173.",
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Models wholly within own Deployment Zone; when one player runs out the other deploys the rest. The Dragon is set up before terrain covering the Midpoint; the 6 Peasants are set up after terrain, each more than 8\" from the Dragon and more than 6\" from any other Peasant or either Deployment Zone.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[4,0],[4,36],[0,36]], "note": "28\" gap; 4\" strip on a 36\" table." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[32,0],[36,0],[36,36],[32,36]], "note": "28\" gap; 4\" strip on a 36\" table." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use special deployment rules, but not within 8\" of the Dragon or 1\" of a Peasant."
+      },
+      "objectives": [
+        { "id": "dragon", "label": "The Dragon (neutral)", "position": [18,18], "placementRule": "Set up before terrain so that it covers the Midpoint." },
+        { "id": "peasants", "label": "6 Peasants (neutral)", "position": null, "placementRule": "Set up after terrain by the roll-off winner: more than 8\" from the Dragon and more than 6\" from any other Peasant or either Deployment Zone." }
+      ],
+      "terrainRequirements": "Dragon placed before terrain at the Midpoint; terrain per chosen archetype; Peasants placed after terrain.",
+      "specialRules": [
+        { "name": "Neutral Models", "text": "The Dragon and Peasants are enemy models to both sides. After each friendly Activation the active player rolls a D6: 1-4 Activate a Peasant of their choice; 5-6 Activate the Dragon or a Peasant. A model cannot be Activated twice in a Turn; once all neutrals have Activated stop rolling. A player with no own models left must still roll; once the Dragon has Activated just pick remaining Peasants; if the Dragon is still un-Activated when both sides are done, roll-off and the winner Activates it." },
+        { "name": "The Dragon's Prey", "text": "On Activation choose prey by priority: (1) a model that attacked the Dragon this Turn or last Turn and is not on its back - closest if several, player chooses ties; (2) otherwise the closest Peasant; (3) if no Peasants remain and it was not attacked, no prey - it heads for the nearest battlefield edge and leaves if it reaches it. Takes 1 Move and 1 Shoot or Fight: moves then attacks if not within 1\" of prey at start; attacks then moves if within 1\" (new prey if the attack takes it Out of Action)." },
+        { "name": "Attacking with the Dragon", "text": "Targets its prey if possible, else the nearest attackable model (player chooses ties). Within 1\": Melee with Teeth and Claws. Not within 1\" but within 10\": Ranged Fire Breath. Beyond 10\": no attack." },
+        { "name": "Moving the Dragon", "text": "Move towards its prey to finish in contact, or as close as possible; with no prey, move as close as possible to the nearest battlefield edge and leave on reaching it (game ends in a draw). Siege Weapon lets it cross terrain and Crush lets it move over models." },
+        { "name": "Dragon profile", "text": "Movement 10\"/Infantry; Ranged +3 DICE; Melee +3 DICE; Armour -3; base 120-300mm; keyword FEAR; no Battlekit. Abilities: Fire Breath (Ranged Attack, Range 10\", +2 DICE, BLAST 3\", FIRE, IGNORE ARMOUR, SCATTER); Deadly Teeth and Claws (Melee, +1 DICE, +1 INJURY DICE, IGNORE ARMOUR); Tail Swipe (after a Melee Attack, Melee Attack with +1 INJURY MODIFIER against each model within 1\" not on its back); Living Battlefield (Dragon and base are Dangerous terrain; models may finish a move on top; all Success Rolls on top are Risky; attacks from on top get +1 DICE and +1 INJURY DICE; Dragon cannot attack models on it; riders move with it and take a Success Roll after its move or when taken Down - Failure means they Fall, Injury Roll if 3\"+); Siege Weapon (moves over terrain pieces up to 4\"x4\" as Open, removing them; models on them Fall); Crush (moves over models: Injury Roll with +1 INJURY MODIFIER and IGNORE ARMOUR; models it would end on are displaced, or removed and count as Out of Action if they cannot be); Resistant (remove 1 BLOOD MARKER on Activation; -1 INJURY DICE against FIRE, GAS or SHRAPNEL attacks); Undying (first three Out of Action results become Down, then replaced by Defiant); Defiant (Out of Action becomes Down until the sixth BLOOD MARKER is placed, then results apply normally)." },
+        { "name": "The Peasants", "text": "An Activated Peasant may only Move or Retreat, finishing as close as possible to the nearest battlefield edge; never enters Dangerous terrain, Climbs, Jumps or Jumps Down; -3 DICE on any Success Roll; leaves the battlefield on reaching an edge. Profile: Movement 5\"/Infantry; no Ranged/Melee; Armour 0; 25mm; Feeble (+2 DICE and +2 INJURY DICE to attacks targeting it)." }
+      ],
+      "gameLength": { "minTurns": 4, "maxTurns": 5, "endCondition": "At the end of Turn 4 'the attacker' rolls a D6: 1-2 the game ends immediately; 3+ it ends at the end of Turn 5. (Text says 'attacker' although this scenario has no attacker role; treat as the roll-off winner or agree who rolls.)" },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Immediate draw if the Dragon leaves the battlefield. Otherwise most VPs at the end of the game wins.",
+        "scoring": "Running tally: 2 VP when a friendly model's attack takes a Peasant Out of Action; 3 VP when a friendly model's attack takes the Dragon Down (including Undying/Defiant conversions); 6 VP when a friendly model's attack takes the Dragon Out of Action (not when converted to Down). End of game: 1 VP per Glorious Deed."
+      },
+      "gloriousDeeds": [
+        { "name": "Dragon Slayer", "condition": "A friendly model on top of the Dragon takes it Out of Action with a Melee Attack (not a converted Down result). Awards 2 glory instead of 1.", "glory": 2 },
+        { "name": "Fire with Fire", "condition": "An attack by a friendly model with the FIRE, GAS and/or SHRAPNEL keyword causes 2 BLOOD MARKERS to be placed next to the Dragon.", "glory": 1 },
+        { "name": "Genocidal", "condition": "A model takes 3 Peasants Out of Action.", "glory": 1 },
+        { "name": "Opportunist", "condition": "A model is within 3\" of a Peasant when the Peasant is trampled by the Dragon.", "glory": 1 },
+        { "name": "Off My Back", "condition": "A friendly model takes a model that is on top of the Dragon Down and it then Falls off the Dragon.", "glory": 1 }
+      ],
+      "gloryPoints": [
+        { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 },
+        { "condition": "Dragon Slayer.", "glory": 2 }
+      ],
+      "geometryConfidence": "high",
+      "notes": "Map labels only the 28\" gap and the Midpoint; no fixed markers other than the Dragon. Peasant placement is constraint-based (>8\" from Dragon, >6\" from other Peasants and both DZs) - a generator must solve it. The 'attacker rolls' game-length wording is copied from the attacker/defender scenarios; the scenario itself is symmetric."
+    },
+    {
+      "id": "supply-raid",
+      "number": 7,
+      "name": "Supply Raid",
+      "page": 175,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land", "decimated-ruins"],
+      "archetypeNote": "Roll-off; winner sets up terrain and chooses No Man's Land or Decimated Ruins archetype.",
+      "forces": "Asymmetric. The player with the most models in their Warband (ignoring Threshold/Field Strength) is the attacker, the other the defender; tie: roll-off, winner decides roles.",
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone (zones are not role-fixed). Before any models, players set up 6 Supply Cache Markers. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Defender may deploy at most 6 models; attacker at most 6+D3. Undeployed models are reinforcements. Models wholly within own Deployment Zone; when one player runs out the other deploys up to their limit.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "24\" gap; 6\" strip on a 36\" table. Either role may hold it." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "24\" gap; 6\" strip on a 36\" table. Either role may hold it." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use their special deployment rules."
+      },
+      "objectives": [
+        { "id": "supply-caches", "label": "6 Supply Cache Markers", "position": null, "placementRule": "Placed alternately by the players starting with the defender, after terrain and before deployment: more than 6\" from any battlefield edge, more than 6\" from any other Marker, more than 1\" from Impassable terrain; at most one in the defender's Deployment Zone; none within 12\" of the attacker's Deployment Zone." }
+      ],
+      "terrainRequirements": "None beyond the chosen archetype.",
+      "specialRules": [
+        { "name": "Destroying Supply Caches", "text": "A Supply Cache Marker can be targeted by a Ranged Attack with the HEAVY keyword or by any Melee Attack; on a Success or Critical Success it is destroyed and removed." },
+        { "name": "Reinforcements", "text": "Start of each Turn: roll-off; winner rolls D3 = reinforcement models each player may deploy. Alternate starting with the winner. Reinforcements deploy touching the battlefield edge, wholly within own Deployment Zone, more than 8\" from the closest enemy model. Must be deployed if available." }
+      ],
+      "gameLength": { "minTurns": 4, "maxTurns": 4, "endCondition": "Lasts four Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield after reinforcements are deployed, or if the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of game: attacker 1 VP per Supply Cache destroyed; defender 2 VP per Supply Cache not destroyed; each player 1 VP per enemy model taken Out of Action and 1 VP per Glorious Deed."
+      },
+      "gloriousDeeds": [
+        { "name": "Daring Raid", "condition": "Attacker only: a friendly model destroys a Supply Cache Marker.", "glory": 1 },
+        { "name": "Hold your Ground", "condition": "Warband is the first to pass a Morale Check this game (warband-level; 1 VP; campaign XP may go to one ELITE LEADER).", "glory": 1 },
+        { "name": "Rampage", "condition": "Attacker only: a friendly model destroys a second Supply Cache Marker.", "glory": 1 },
+        { "name": "Save the Supplies!", "condition": "Defender only: four or more Supply Cache Markers remain undestroyed at the end of the game.", "glory": 1 },
+        { "name": "Stop Them!", "condition": "Defender only: a friendly model takes an enemy Out of Action while the enemy is fully or partially within its own Deployment Zone.", "glory": 1 },
+        { "name": "Victory or Death", "condition": "Warband wins the game (campaign only; no VP; XP may go to one ELITE LEADER; Glory Points and Promotion D6 as normal).", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "high",
+      "notes": "Map shows only the 24\" gap; caches are player-placed under constraints (>6\" from edges and each other, >1\" from Impassable, max 1 in the defender DZ, none within 12\" of the attacker DZ). Deployment zone ownership is by roll-off, not by role."
+    },
+    {
+      "id": "from-below",
+      "number": 8,
+      "name": "From Below",
+      "page": 178,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["any"],
+      "archetypeNote": "Roll-off; winner sets up terrain and may use any battlefield archetype.",
+      "forces": null,
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Each player deploys only half the models in their Force (rounding up); the rest are not used. Models wholly within own Deployment Zone; when one player runs out the other deploys the rest of their half.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[4,0],[4,36],[0,36]], "note": "28\" gap; 4\" strip on a 36\" table." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[32,0],[36,0],[36,36],[32,36]], "note": "28\" gap; 4\" strip on a 36\" table." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use special deployment rules, but not within 6\" of a Marker."
+      },
+      "objectives": [
+        { "id": "ichor-pit-north", "label": "Ichor Pit (north)", "position": [18,27], "placementRule": "9\" north of the Midpoint on the centre line; placed before terrain; no terrain within 1\"." },
+        { "id": "ichor-pit-centre", "label": "Ichor Pit (Midpoint)", "position": [18,18], "placementRule": "At the Midpoint; placed before terrain; no terrain within 1\"." },
+        { "id": "ichor-pit-south", "label": "Ichor Pit (south)", "position": [18,9], "placementRule": "9\" south of the Midpoint on the centre line; placed before terrain; no terrain within 1\"." },
+        { "id": "shells-nw", "label": "Artillery Shells (NW)", "position": [10,25], "placementRule": "6\" in from the west DZ edge, 7\" north of the mid-line (shell pairs are 14\" apart); placed after terrain." },
+        { "id": "shells-ne", "label": "Artillery Shells (NE)", "position": [26,25], "placementRule": "6\" in from the east DZ edge, 7\" north of the mid-line; placed after terrain." },
+        { "id": "shells-sw", "label": "Artillery Shells (SW)", "position": [10,11], "placementRule": "6\" in from the west DZ edge, 7\" south of the mid-line; placed after terrain." },
+        { "id": "shells-se", "label": "Artillery Shells (SE)", "position": [26,11], "placementRule": "6\" in from the east DZ edge, 7\" south of the mid-line; placed after terrain." }
+      ],
+      "terrainRequirements": "Ichor Pit Markers (3, in circles on the map) are placed before any terrain; terrain pieces cannot be set up within 1\" of one. Artillery Shells Markers (4) are placed after terrain.",
+      "specialRules": [
+        { "name": "Ichor Pit Markers", "text": "Open ground and terrain within 2\" of an Ichor Pit centre is Difficult and Dangerous terrain (in addition to other rules). Each pit holds enough Ichor for 6 vials (track with a D6); an empty pit is no longer Dangerous." },
+        { "name": "Ichor Vials", "text": "Every model has 3 empty Ichor Vials. Track empty/filled vials per model; a model taken Out of Action leaves a Vials Marker with its vials. Actions (no Success Roll): Fill Vial - in contact with a pit centre, fill 1 empty vial; Trade Vials - in contact with a friendly model, swap any vials; Steal Vials - in contact with a Vials Marker or a Down enemy, take any vials; Extract Vials - in contact with the long battlefield edge inside a Deployment Zone, extract any filled vials (replace with empties)." },
+        { "name": "Artillery Shells Markers", "text": "Can be targeted by an attack; explodes on a Success or Critical Success, or if caught in a BLAST radius. On explosion first check whether the Beast awakens; if not, all models within 3\" are hit as by a Heretic Legions Infernal Bomb, the marker becomes an Ichor Pit Marker, and Hell Ticks are set up." },
+        { "name": "The Beast", "text": "First explosion: tremor - roll a D6 per model not Down, on a 6 it is taken Down. Second explosion: D6, 4-6 the Beast awakens. Third: D6, 3-6 awakens. Fourth: awakens. If the Beast awakens all models on the battlefield are taken Out of Action and the game ends in a draw." },
+        { "name": "Call of the Beast", "text": "After each explosion that does not wake the Beast, roll-off; the winner sets up D3 Hell Ticks within 8\" of the centre of the new Ichor Pit Marker and more than 1\" from other models. Hell Ticks are neutral models (enemies to both sides)." },
+        { "name": "Hell Tick Activation", "text": "After each friendly Activation roll a D6; on 1-4 Activate a Hell Tick not yet Activated this Turn. Stop rolling once all have Activated; players with no own models left still roll; leftovers are rolled off for and must be Activated by the winner. Activation: choose prey (model with most BLOOD MARKERS within 20\", closest on ties; else closest model; ignore other Hell Ticks), then 1 Move + 1 Dash or Fight: if not within 1\" of prey, move then Fight if within 1\" else Dash; if starting within 1\", attack first then move. Attacks target prey if possible, else nearest attackable model. Profile: Movement 10\"/Infantry; Melee +1 DICE; Armour 0; 25mm. Mandibles (Melee Attack without a weapon, +1 INJURY DICE; when it causes BLOOD MARKERS remove up to 1 from the Hell Tick). Poisoned (a target that receives BLOOD MARKERS from a Hell Tick becomes poisoned once: place 1 BLOOD MARKER on it whenever it is Activated; a BLESSING MARKER spent then cures it)." }
+      ],
+      "gameLength": { "minTurns": 4, "maxTurns": 5, "endCondition": "Ends immediately if the Beast awakens. Otherwise at the end of Turn 4 'the attacker' rolls a D6: 1-2 the game ends; 3+ it ends at the end of Turn 5 unless the Beast awakens first. (No attacker role in this scenario; agree who rolls.)" },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Immediate draw if the Beast awakens. Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of game: 1 VP per Ichor Vial extracted; 1 VP per Glorious Deed."
+      },
+      "gloriousDeeds": [
+        { "name": "Bloodlust", "condition": "A poisoned friendly model uses a Bloodbath Roll to take a poisoned enemy model Out of Action.", "glory": 1 },
+        { "name": "For Science", "condition": "A friendly model extracts 3 Ichor Vials.", "glory": 1 },
+        { "name": "Ichor Frenzy", "condition": "A friendly model extracts an Ichor Vial while wholly within the enemy Deployment Zone.", "glory": 1 },
+        { "name": "Risk Taker", "condition": "A friendly model causes an explosion that takes 2 or more enemy models Out of Action.", "glory": 1 },
+        { "name": "Sadistic Wretch", "condition": "A friendly model causes an enemy model to be taken Out of Action by making it move into an Ichor Pit.", "glory": 1 },
+        { "name": "Vial Thief", "condition": "A friendly model steals an Ichor Vial from an enemy model and then extracts it.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "medium",
+      "notes": "Map labels: 28\" gap; pits 9\" N and S of the Midpoint; shells 6\" in from each DZ edge and 14\" apart vertically. The map's 12\" arrows from each DZ edge to the pit column do not add up to the 28\" gap (12+12=24); the rule text calls the pits 'central', so the centre line x=18 is used. Shell markers become Ichor Pits (and spawn Hell Ticks) at runtime. Extract Vials requires contact with the long table edge inside a DZ - on a square table treat either DZ outer edge as qualifying."
+    },
+    {
+      "id": "fields-of-glory",
+      "number": 9,
+      "name": "Fields of Glory",
+      "page": 185,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["trench-lines"],
+      "archetypeNote": "Roll-off; winner sets up terrain. Trench Lines archetype.",
+      "forces": null,
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Models wholly within own Deployment Zone; when one player runs out the other deploys the rest.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "24\" gap; 6\" strip on a 36\" table." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "24\" gap; 6\" strip on a 36\" table." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use their special deployment rules."
+      },
+      "objectives": [],
+      "terrainRequirements": "None beyond the Trench Lines archetype; the Trench Raider deed needs trench sections at least 6\" long wholly within 8\" of a Deployment Zone to be achievable.",
+      "specialRules": [],
+      "gameLength": { "minTurns": 4, "maxTurns": 4, "endCondition": "Lasts four Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "End of game only: 1 VP per Glorious Deed; +1 extra VP each for Elite Hunter, Personal Revenge and Risk It All; +2 extra VP for Trench Raider."
+      },
+      "gloriousDeeds": [
+        { "name": "Death From Above", "condition": "A friendly model takes an enemy model Out of Action with a Melee Attack with the Diving Charge modifier.", "glory": 1 },
+        { "name": "Elite Hunter", "condition": "A friendly model takes two enemy ELITE models Out of Action. (Worth 2 VP total.)", "glory": 1 },
+        { "name": "No Escape", "condition": "A friendly model successfully charges an enemy model it had no Line of Sight to at the start of its Activation.", "glory": 1 },
+        { "name": "Personal Revenge", "condition": "A friendly model uses a Bloodbath Roll to take Out of Action an enemy model that took a friendly model Out of Action earlier in the game. (Worth 2 VP total.)", "glory": 1 },
+        { "name": "Reaper", "condition": "A friendly model takes three enemy models Out of Action.", "glory": 1 },
+        { "name": "Risk It All", "condition": "A friendly model takes two Risky Success Rolls in the same Activation and both are a Success or Critical Success. (Worth 2 VP total.)", "glory": 1 },
+        { "name": "The Real Killer", "condition": "A friendly model takes an enemy model that is on Dangerous or Difficult terrain Out of Action.", "glory": 1 },
+        { "name": "Trench Raider", "condition": "Warband captures a trench section at least 6\" long wholly within 8\" of the enemy Deployment Zone: 1+ friendly models in the trench and no enemy models within 1\" of it. (Worth 3 VP total.)", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "high",
+      "notes": "Pure deed-scoring scenario; no markers. Map shows the 24\" gap only. The illustrative map draws two trench lines running N-S near each DZ, consistent with the archetype."
+    },
+    {
+      "id": "dont-breathe",
+      "number": 10,
+      "name": "Don't Breathe",
+      "page": 187,
+      "battlefield": { "widthIn": 48, "depthIn": 48 },
+      "archetypes": ["no-mans-land"],
+      "archetypeNote": "Roll-off; winner sets up terrain. No Man's Land archetype; requires a 48\" by 48\" battlefield. No terrain in either Deployment Zone (other than the defender's trenches and bunkers).",
+      "forces": "Asymmetric. The player with the most models in their Warband (ignoring Threshold/Field Strength) is the attacker; tie: roll-off, winner decides roles.",
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone (map labels attacker west 10\", defender east 18\"). Before any models, the defender sets up Trench Lines, Bunkers and Gas Mine Markers. Alternate deploying one model at a time starting with the attacker. Defender may deploy at most 6 models; attacker at most 6+D3; the rest are reinforcements. Models wholly within own Deployment Zone; when one player runs out the other deploys up to their limit.",
+        "zones": [
+          { "player": "attacker", "label": "Attacker Deployment Zone (west, 10\")", "polygon": [[0,0],[10,0],[10,48],[0,48]], "note": "Labelled 10 on the map. No terrain." },
+          { "player": "defender", "label": "Defender Deployment Area (east, 18\")", "polygon": [[30,0],[48,0],[48,48],[30,48]], "note": "Labelled 18\" on the map. Contains the six trench sections and four bunkers; up to 4 gas mines may also go here." },
+          { "player": "defender", "label": "Gas Mine Placement Area (centre, 20\")", "polygon": [[10,0],[30,0],[30,48],[10,48]], "note": "Labelled 20 on the map ('12 Mine Placement Area'); at least 8 of the 12 Gas Mine Markers go here. Not a deployment zone." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use special deployment rules; attacking models using special deployment rules cannot deploy within 8\" of a Bunker Marker."
+      },
+      "objectives": [
+        { "id": "bunker-nw", "label": "Bunker (north, inner)", "position": [34,32], "placementRule": "Covered by an Intact Building terrain piece if available; whole piece is the Bunker." },
+        { "id": "bunker-ne", "label": "Bunker (north, outer)", "position": [43,32], "placementRule": "Covered by an Intact Building terrain piece if available; whole piece is the Bunker." },
+        { "id": "bunker-sw", "label": "Bunker (south, inner)", "position": [34,15], "placementRule": "Covered by an Intact Building terrain piece if available; whole piece is the Bunker." },
+        { "id": "bunker-se", "label": "Bunker (south, outer)", "position": [43,15], "placementRule": "Covered by an Intact Building terrain piece if available; whole piece is the Bunker." },
+        { "id": "trench-n-inner", "label": "Trench Section (north row, inner column)", "position": [34,40], "placementRule": "Defender trench at least 8\" long, drawn running N-S (approx y 36-44)." },
+        { "id": "trench-n-outer", "label": "Trench Section (north row, outer column)", "position": [43,40], "placementRule": "Defender trench at least 8\" long, drawn running N-S (approx y 36-44)." },
+        { "id": "trench-mid-inner", "label": "Trench Section (middle row, inner column)", "position": [34,23], "placementRule": "Defender trench at least 8\" long, drawn running N-S (approx y 19-27)." },
+        { "id": "trench-mid-outer", "label": "Trench Section (middle row, outer column)", "position": [43,23], "placementRule": "Defender trench at least 8\" long, drawn running N-S (approx y 19-27)." },
+        { "id": "trench-s-inner", "label": "Trench Section (south row, inner column)", "position": [34,6], "placementRule": "Defender trench at least 8\" long, drawn running N-S (approx y 2-10)." },
+        { "id": "trench-s-outer", "label": "Trench Section (south row, outer column)", "position": [43,6], "placementRule": "Defender trench at least 8\" long, drawn running N-S (approx y 2-10)." }
+      ],
+      "terrainRequirements": "p188: the defender sets up six trench sections at least 8\" long at the map locations (two columns of three inside the defender area); extra trench sections allowed but must be wholly within the defender zone and more than 3\" from the centre of any Bunker Marker location. Then the defender sets up four terrain pieces over the Bunker Marker locations, using Intact Buildings if available (any terrain if they run out); the whole covering piece is the Bunker. No other terrain in either Deployment Zone.",
+      "specialRules": [
+        { "name": "Gas Mine Markers", "text": "After trenches, the defender sets up 12 Gas Mine Markers: at least 8 wholly within the Gas Mine Placement Area, up to 4 wholly within the defender's Deployment Zone; secretly records which 4 are duds. Live mines have the MINED keyword and Choking Mines." },
+        { "name": "Choking Mines", "text": "When a model moves within 3\" of a Gas Mine Marker, pause; defender reveals dud or live. Live: detonates as if the model had contacted a MINED marker; the marker is replaced with a Gas Cloud Marker; the model continues unless Down or Out of Action. FLYING models only trigger a mine if they finish a move in contact with it." },
+        { "name": "Gas Cloud Markers", "text": "Place 1 BLOOD MARKER on each model within 6\" of the cloud centre when it is set up, and on a model within 6\" of a cloud centre when it is Activated." },
+        { "name": "Detonating Gas Cloud Markers", "text": "A Gas Cloud Marker can be targeted by a BLAST or FIRE weapon; explodes on Success/Critical Success, or if caught in a BLAST radius. Explosion: Injury Roll for every model within 3\" as if hit by a weapon with +2 INJURY DICE and FIRE; survivors are blown D3\" directly away from the centre (stopping at models, Impassable terrain or terrain needing a Climb). The marker is then removed." },
+        { "name": "Reinforcements", "text": "Start of each Turn: roll-off; winner rolls D3 = reinforcement models each player may deploy; alternate starting with the winner; deploy touching the battlefield edge, wholly within own Deployment Zone, more than 8\" from the closest enemy; must deploy if available." },
+        { "name": "Destroying Bunkers", "text": "Attacking ELITE models have Demo Charges. Place Demo Charge ACTION: in contact with a Bunker, place the charge (model loses it). Detonate Demo Charge ACTION: at any later time (can wait Turns); Injury Roll with IGNORE ARMOUR for every model within 3\" of the Bunker; the Bunker Marker is removed and the piece is no longer a Bunker. If the placing model is taken Out of Action the charge cannot be detonated." }
+      ],
+      "gameLength": { "minTurns": 5, "maxTurns": 6, "endCondition": "At the end of Turn 5 the attacker rolls a D6: 1-2 the game ends immediately; 3+ it ends at the end of Turn 6." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "Running tally. End of each Turn: defender 1 VP per trench section (>=8\") with one or more defending models in it, 2 VP if no attackers are in it; attacker 2 VP per trench section (>=8\") with one or more attacking models in it, 3 VP if no defenders are in it, plus 2 VP per Bunker destroyed by a Demo Charge that Turn. End of game: 1 VP per Glorious Deed and 4 VP per Bunker controlled (more friendly than enemy models within 1\")."
+      },
+      "gloriousDeeds": [
+        { "name": "Burning Sight", "condition": "A friendly model causes a Gas Cloud Marker more than 14\" away from it to explode, and the explosion takes one or more enemy models Out of Action.", "glory": 1 },
+        { "name": "Combustive", "condition": "A friendly model causes a Gas Cloud Marker to explode and the explosion takes two or more enemy models Out of Action.", "glory": 1 },
+        { "name": "Deep Breaths", "condition": "A friendly model causes an enemy model to be taken Out of Action by making it move within 6\" of a Gas Cloud Marker centre.", "glory": 1 },
+        { "name": "Iron Lungs", "condition": "Warband controls a Bunker within 6\" of a Gas Cloud Marker centre at the end of two consecutive Turns.", "glory": 1 },
+        { "name": "Poisonous Rage", "condition": "A friendly model within 6\" of a Gas Cloud centre makes a Melee Attack that takes an enemy model Out of Action.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "low",
+      "notes": "48x48 coordinates. Only the three bands are labelled (10 / 20 / 18\"); bunker and trench positions inside the defender area are read off the diagram (two columns at roughly x 34 and x 43; bunkers at roughly y 32 and y 15; trench sections centred roughly at y 40, 23 and 6, running N-S). Treat those as approximate. The text's 3\" clearance between extra trenches and bunker centres and the 8\" infiltrator exclusion are the hard constraints. The gas mine band is labelled '12 Mine Placement Area' on the map (12 = number of mines, 20 = width)."
+    },
+    {
+      "id": "the-high-ground",
+      "number": 11,
+      "name": "The High Ground",
+      "page": 192,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["no-mans-land", "decimated-ruins"],
+      "archetypeNote": "Roll-off; winner sets up terrain and chooses No Man's Land or Decimated Ruins archetype. Requires a battlefield at least 36\" by 36\".",
+      "forces": null,
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Models wholly within own Deployment Zone; when one player runs out the other deploys the rest.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "24\" gap; 6\" strip on a 36\" table." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "24\" gap; 6\" strip on a 36\" table." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use special deployment rules, but not within 3\" of an Objective."
+      },
+      "objectives": [
+        { "id": "obj-centre", "label": "Objective (Midpoint, tallest)", "position": [18,18], "placementRule": "Covered by the tallest terrain piece available (at least 6\" tall)." },
+        { "id": "obj-nw", "label": "Objective (NW)", "position": [10,26], "placementRule": "8\" west and 8\" north of the Midpoint; covered by a terrain piece at least 6\" tall, at least 3\" from the other objective pieces." },
+        { "id": "obj-ne", "label": "Objective (NE)", "position": [26,26], "placementRule": "8\" east and 8\" north of the Midpoint; covered by a terrain piece at least 6\" tall, at least 3\" from the other objective pieces." },
+        { "id": "obj-sw", "label": "Objective (SW)", "position": [10,10], "placementRule": "8\" west and 8\" south of the Midpoint; covered by a terrain piece at least 6\" tall, at least 3\" from the other objective pieces." },
+        { "id": "obj-se", "label": "Objective (SE)", "position": [26,10], "placementRule": "8\" east and 8\" south of the Midpoint; covered by a terrain piece at least 6\" tall, at least 3\" from the other objective pieces." }
+      ],
+      "terrainRequirements": "p193: the first five terrain pieces cover the five Objective Marker locations, at least 3\" from each other, each at least 6\" tall; the piece on the central Objective must be the tallest available. Markers are placed after all terrain, anywhere on the covering piece; the whole piece is the Objective and cannot be destroyed or removed.",
+      "specialRules": [
+        { "name": "Controlling Objectives", "text": "A player controls an Objective terrain piece if they have more friendly models on, in, or within 1\" of it than the enemy; a player with any models on the piece controls it if the opponent has none on it, regardless of models within 1\"." },
+        { "name": "Top Priority Objective", "text": "After deployment each player secretly writes down which one of the five Objectives is their top priority; controlling it (or the opponent's) scores extra VPs at the end of the game." }
+      ],
+      "gameLength": { "minTurns": 5, "maxTurns": 5, "endCondition": "Lasts five Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield or the opposing Warband flees. Otherwise most VPs at the end of the game wins.",
+        "scoring": "1 VP each time a friendly model takes an enemy Out of Action with a Melee Attack with the Diving Charge modifier. End of each Turn: 2 VP per Objective controlled. End of game: 1 VP per Glorious Deed; 3 VP if controlling the opponent's Top Priority Objective; 3 VP if controlling own Top Priority Objective."
+      },
+      "gloriousDeeds": [
+        { "name": "Back to the Mud", "condition": "A friendly model causes an enemy model on an Objective to Fall and the Fall takes it Out of Action.", "glory": 1 },
+        { "name": "Death From Above", "condition": "A friendly model takes an enemy model Out of Action with a Melee Attack with the Diving Charge modifier.", "glory": 1 },
+        { "name": "Down with You", "condition": "A friendly model on an Objective uses a Ranged Attack to take Out of Action an enemy model on a different, higher Objective.", "glory": 1 },
+        { "name": "Victory or Death", "condition": "Warband wins the game (campaign only; no VP; XP may go to one ELITE LEADER; Glory Points and Promotion D6 as normal).", "glory": 1 },
+        { "name": "King of the Hill", "condition": "A model has been on all five Objectives.", "glory": 1 }
+      ],
+      "gloryPoints": [ { "condition": "Each Glorious Deed completed (campaign games).", "glory": 1 } ],
+      "geometryConfidence": "high",
+      "notes": "Map labels: 24\" gap; outer objectives 8\" E/W of the centre line and 8\" N/S of the Midpoint. Objective pieces must be >=6\" tall and >=3\" apart; the central piece is the tallest - a map generator needs terrain heights."
+    },
+    {
+      "id": "great-war",
+      "number": 12,
+      "name": "Great War",
+      "page": 195,
+      "battlefield": { "widthIn": 36, "depthIn": 36 },
+      "archetypes": ["any"],
+      "archetypeNote": "Roll-off; winner sets up terrain and may use any battlefield archetype.",
+      "forces": null,
+      "deployment": {
+        "text": "Roll-off; winner chooses their Deployment Zone. Alternate deploying one model at a time starting with the player with more models (roll-off on tie). Models wholly within own Deployment Zone; when one player runs out the other deploys the rest.",
+        "zones": [
+          { "player": "A", "label": "Deployment Zone (west strip)", "polygon": [[0,0],[6,0],[6,36],[0,36]], "note": "24\" gap; 6\" strip on a 36\" table." },
+          { "player": "B", "label": "Deployment Zone (east strip)", "polygon": [[30,0],[36,0],[36,36],[30,36]], "note": "24\" gap; 6\" strip on a 36\" table." }
+        ],
+        "infiltrators": "Infiltrators may deploy normally or use their special deployment rules."
+      },
+      "objectives": [],
+      "terrainRequirements": "None beyond the chosen archetype.",
+      "specialRules": [
+        { "name": "To the Death!", "text": "No Morale Checks; neither player may choose to flee." }
+      ],
+      "gameLength": { "minTurns": 5, "maxTurns": 5, "endCondition": "Lasts five Turns." },
+      "victory": {
+        "text": "Immediate win if no enemy models remain on the battlefield. Otherwise most VPs at the end of the game wins.",
+        "scoring": "VPs per enemy model taken Out of Action = its total Cost (including Battlekit, Glory Items and upgrades) divided by 10 if costed in ducats, or by 3 if costed in glory, rounding up; items in both currencies are worked out separately and summed (e.g. 100 ducats + 6 glory = 10 + 2 = 12 VP)."
+      },
+      "gloriousDeeds": [],
+      "gloryPoints": [],
+      "geometryConfidence": "high",
+      "notes": "No markers, no Glorious Deeds ('just victory or death'). Map shows the 24\" gap only. A campaign engine needs per-model total cost in both currencies to score this scenario."
+    }
+  ]
+}
