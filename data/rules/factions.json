@@ -1,0 +1,1111 @@
+{
+  "$schema": "tc-rules-factions-v1",
+  "factions": [
+    {
+      "bsId": "0b26-15c1-cebd-0077",
+      "campaignLinks": [
+        "Advancement",
+        "Angelic Instrument",
+        "Armour of the Fly",
+        "Battlefield Title",
+        "Beelzebub's Embrace",
+        "Blasphemous Banner",
+        "Cup of Filth",
+        "Curative Fluids",
+        "Exploration Upgrades",
+        "Knighthood",
+        "Lock of Samson's Hair",
+        "Locust Spitter",
+        "Saints Reliquary"
+      ],
+      "configuration": [
+        {
+          "bsId": "a889-723f-f818-0867",
+          "choices": [
+            {
+              "bsId": "fdaf-1b5e-0348-3ad9",
+              "name": "Led by a Plague Knight",
+              "rules": []
+            },
+            {
+              "bsId": "bd82-c719-4abf-c104",
+              "name": "Led by a Lord of Tumours",
+              "rules": []
+            },
+            {
+              "bsId": "d0f7-e39a-0e33-413d",
+              "name": "Led by a Matagot Hag",
+              "rules": []
+            }
+          ],
+          "name": "Noble Hierarchy"
+        }
+      ],
+      "id": "black-grail",
+      "keywords": [
+        "Black Grail"
+      ],
+      "name": "Black Grail",
+      "rules": [
+        {
+          "name": "Special Rule: Morale",
+          "text": "Enemy Warbands roll Morale Tests with -1 DICE when fighting a Black Grail Warband. The Court Warbands and other Black Grail Warbands ignore this penalty."
+        }
+      ],
+      "unitIds": [
+        "black-grail/amalgam",
+        "black-grail/corpse-guard",
+        "black-grail/cradle-thrall",
+        "black-grail/grail-thrall",
+        "black-grail/gregori-gula",
+        "black-grail/heralds-of-beelzebub",
+        "black-grail/hound-of-the-black-grail",
+        "black-grail/lord-of-tumours",
+        "black-grail/matagot-hag",
+        "black-grail/plague-knight",
+        "black-grail/scripture-guardian",
+        "black-grail/sin-eater",
+        "black-grail/takwin-homunculus",
+        "black-grail/trench-dog"
+      ],
+      "variants": [
+        {
+          "bsId": "0f19-7c79-420e-13bf",
+          "id": "black-grail/dirge-of-the-great-hegemon",
+          "name": "Dirge of the Great Hegemon",
+          "rules": [
+            {
+              "name": "The Executor",
+              "text": "A Dirge of the Great Hegemon Warband must include 1 Executor. The Executor uses the Plague Knight Warband Entry, except that it has a Ranged Characteristic of +1 DICE and the LEADER and TOUGH Keywords, and has a cost of 80Ducats. The Warband can still include 0-2 Plague Knights."
+            },
+            {
+              "name": "Hegemon's Will",
+              "text": "Using the remnants of the lingering power of a fallen Hegemon, a Plague Knight of the Warband can directly command a nearby Bereaved. An Executor or Plague Knight in a Dirge of the Great Hegemon Warband can take a Command Bereaved ACTION. If it does so, you can remove any number of INFECTION MARKERS from enemy models. For each INFECTION MARKER you remove, you can then carry out one of the following Commands with a Bereaved (Grail Thrall or Fly Thrall) that is within 18\" of the model taking the Command Bereaved ACTION. A Bereaved cannot be given more than 1 Command each Turn, but carrying out a Command does not stop it from also being Activated in the same Turn (before or after the Command was issued).\n* Charge Command: The Bereaved carries out a charge move.\n* Fight Command: The Bereaved carries out a Melee Attack.\n* Move Command: The Bereaved carries out a normal move (it cannot Retreat).\n* Shoot Command: The Bereaved carries out a Ranged Attack."
+            },
+            {
+              "name": "The Fallen",
+              "text": "A Dirge of the Great Hegemon Warband cannot include a Lord of Tumours or an Amalgam."
+            },
+            {
+              "name": "The Lost",
+              "text": "A Dirge of the Great Hegemon Warband Warband can only include 0-2 Hounds of the Cult of the Black Grail and can only include 0-2 Heralds of Beelzebub."
+            },
+            {
+              "name": "The Bereaved",
+              "text": "The Grail Thralls or Fly Thralls in a Dirge of the Great Hegemon Warband are called the Bereaved. They have a Ranged Characteristic of +0 DICE and a cost of 30 ducats, and can have Ranged Weapons, Grenades, a Musical Instrument or a Troop Flag from the Cult of the Black Grail Armoury."
+            },
+            {
+              "name": "Dishonoured",
+              "text": "Models in a Dirge of the Great Hegemon Warband cannot have Beelzebub’s Axe or a Black Grail Shield."
+            },
+            {
+              "name": "Hegemon's Last Blessing",
+              "text": "Putrid Shotguns in this Warband have a Limit of 3, and Viscera Cannon have a Limit of 3 and do not have the ELITE only stipulation."
+            }
+          ],
+          "text": "The Executor: A Dirge of the Great Hegemon Warband must include 1 Executor. The Executor uses the Plague Knight Warband Entry, except that it has a Ranged Characteristic of +1 DICE and the LEADER and TOUGH Keywords, and has a cost of 80Ducats. The Warband can still include 0-2 Plague Knights.\nHegemon's Will: Using the remnants of the lingering power of a fallen Hegemon, a Plague Knight of the Warband can directly command a nearby Bereaved. An Executor or Plague Knight in a Dirge of the Great Hegemon Warband can take a Command Bereaved ACTION. If it does so, you can remove any number of INFECTION MARKERS from enemy models. For each INFECTION MARKER you remove, you can then carry out one of the following Commands with a Bereaved (Grail Thrall or Fly Thrall) that is within 18\" of the model taking the Command Bereaved ACTION. A Bereaved cannot be given more than 1 Command each Turn, but carrying out a Command does not stop it from also being Activated in the same Turn (before or after the Command was issued).\n* Charge Command: The Bereaved carries out a charge move.\n* Fight Command: The Bereaved carries out a Melee Attack.\n* Move Command: The Bereaved carries out a normal move (it cannot Retreat).\n* Shoot Command: The Bereaved carries out a Ranged Attack.\nThe Fallen: A Dirge of the Great Hegemon Warband cannot include a Lord of Tumours or an Amalgam.\nThe Lost: A Dirge of the Great Hegemon Warband Warband can only include 0-2 Hounds of the Cult of the Black Grail and can only include 0-2 Heralds of Beelzebub.\nThe Bereaved: The Grail Thralls or Fly Thralls in a Dirge of the Great Hegemon Warband are called the Bereaved. They have a Ranged Characteristic of +0 DICE and a cost of 30 ducats, and can have Ranged Weapons, Grenades, a Musical Instrument or a Troop Flag from the Cult of the Black Grail Armoury.\nDishonoured: Models in a Dirge of the Great Hegemon Warband cannot have Beelzebub’s Axe or a Black Grail Shield.\nHegemon's Last Blessing: Putrid Shotguns in this Warband have a Limit of 3, and Viscera Cannon have a Limit of 3 and do not have the ELITE only stipulation."
+        },
+        {
+          "bsId": "4ae9-6e62-b943-faeb",
+          "id": "black-grail/the-great-hunger",
+          "name": "The Great Hunger",
+          "rules": [
+            {
+              "name": "Eternal Appetence",
+              "text": "The Great Hunger is an eternally evolving agony, where those infected fluctuate between festering famine and expulsive consumption. INFECTION MARKERS on models in a Great Hunger Warband represents their monstrous and dynamic appetite, making them more volatile on the battlefield. At the start of each Turn, you must choose one of the following effects of the Hunger for your Warband. Each effect lasts until the end of the Turn.\n• Agonised Churning: When you Activate a friendly model that is within 8” of a friendly Matagot Hag and has at least 2 INFECTION MARKERS, before carrying out any ACTIONS, you can remove 2 INFECTION MARKERS from the model and place them next to any enemy model within 1” of them that does not have the ARTIFICIAL or DEMONIC Keywords.\n• Ruinous Masticating: At the start of this Turn, place 1 INFECTION MARKER next to each other friendly model within 8” of a friendly Matagot Hag (excluding the Matagot Hag herself). Until the end of the Turn, your opponent cannot spend a friendly model’s INFECTION MARKERS to add -DICE to rolls for Melee Attacks they make if that friendly model has 2 or more INFECTION MARKERS.\n• Spasmodic Wretching: At the start of this Turn, place 1 INFECTION MARKER next to each other friendly model within 8” of a friendly Matagot Hag (excluding the Matagot Hag herself). Add -1 DICE to Success Rolls for Ranged Attacks that target friendly models with 2 or more INFECTON MARKERS until the end of the Turn.\n• Vile Craving: When you Activate a friendly model that is within 8” of a friendly Matagot Hag and has at least 2 INFECTION MARKERS, before carrying out any ACTIONS, you can remove 2 INFECTION MARKERS from the model and move them up to half of their Movement Characteristic (to a maximum of 4”) directly towards the nearest enemy model."
+            },
+            {
+              "name": "Butcher Knights",
+              "text": "A Great Hunger Warband can have 0-2 Plague Knights, which must be mounted on either 32mm or 40mm bases. These Plague Knights have the Ravenous Infection Ability (see the Ravenous Warband Entry) at no additional cost in ducats, and can only be given one Plague Knight Ranks instead of the ones listed in the Cult of the Black Grail Special Rules."
+            },
+            {
+              "name": "Dessicated Husks",
+              "text": "Great Hunger Warband can include 0-2 Desiccated Husks. Desiccated Husks use the Corpse Guard Warband Entry, but their Melee Attacks gain the CRITICAL Keyword, and they replace the Bodyguard Ability with the More Worm Than Man Ability"
+            },
+            {
+              "name": "Cradle of Filth",
+              "text": "Great Hunger Warband can include 0-3 Cradle Thralls. Cradle Thralls use the Ravenous Warband Entry, but do not count towards a Great Hunger Warband’s Maximum Field Strength, have the INFILTRATOR Keyword and cost 2 glory to recruit (they do not cost any ducats)."
+            },
+            {
+              "name": "Excruciating Hunger",
+              "text": "Models in a Great Hunger Warband cannot have Beelzebub’s Axe, Black Grail Shields, Bolt-Action Rifles, Blunderbusses, Compound Eyes Helmets, Corruption Belchers, Gas Grenades, Infested Rifles, Machine Guns, Musical Instruments, Muskets, Pistols, Troop Flags or Viscera Cannons."
+            },
+            {
+              "name": "The Great Maw",
+              "text": "The Great Hunger moves as if a force of unholy nature, and when its carnage and consumption reaches a fever pitch, it attracts the loping cannibals known as Great Maws. If the total cost of all of the other models in the Warband (including their Battlekit, etc) adds up to 1000 ducats or higher, a Great Hunger Warband may recruit 0-1 Great Maws. A Great Maw uses the Lord of Tumours Warband Entry, but does not have the LEADER Keyword."
+            },
+            {
+              "name": "Spawn of Gluttony",
+              "text": "A Great Hunger Warband must include 1 Matagot Hag. It cannot include a Lord of Tumours, Corpse Guards, Grail Thralls, Heralds of Beelzebub or an Amalgam."
+            }
+          ],
+          "text": "Eternal Appetence: The Great Hunger is an eternally evolving agony, where those infected fluctuate between festering famine and expulsive consumption. INFECTION MARKERS on models in a Great Hunger Warband represents their monstrous and dynamic appetite, making them more volatile on the battlefield. At the start of each Turn, you must choose one of the following effects of the Hunger for your Warband. Each effect lasts until the end of the Turn.\n• Agonised Churning: When you Activate a friendly model that is within 8” of a friendly Matagot Hag and has at least 2 INFECTION MARKERS, before carrying out any ACTIONS, you can remove 2 INFECTION MARKERS from the model and place them next to any enemy model within 1” of them that does not have the ARTIFICIAL or DEMONIC Keywords.\n• Ruinous Masticating: At the start of this Turn, place 1 INFECTION MARKER next to each other friendly model within 8” of a friendly Matagot Hag (excluding the Matagot Hag herself). Until the end of the Turn, your opponent cannot spend a friendly model’s INFECTION MARKERS to add -DICE to rolls for Melee Attacks they make if that friendly model has 2 or more INFECTION MARKERS.\n• Spasmodic Wretching: At the start of this Turn, place 1 INFECTION MARKER next to each other friendly model within 8” of a friendly Matagot Hag (excluding the Matagot Hag herself). Add -1 DICE to Success Rolls for Ranged Attacks that target friendly models with 2 or more INFECTON MARKERS until the end of the Turn.\n• Vile Craving: When you Activate a friendly model that is within 8” of a friendly Matagot Hag and has at least 2 INFECTION MARKERS, before carrying out any ACTIONS, you can remove 2 INFECTION MARKERS from the model and move them up to half of their Movement Characteristic (to a maximum of 4”) directly towards the nearest enemy model.\nButcher Knights: A Great Hunger Warband can have 0-2 Plague Knights, which must be mounted on either 32mm or 40mm bases. These Plague Knights have the Ravenous Infection Ability (see the Ravenous Warband Entry) at no additional cost in ducats, and can only be given one Plague Knight Ranks instead of the ones listed in the Cult of the Black Grail Special Rules.\nDessicated Husks: Great Hunger Warband can include 0-2 Desiccated Husks. Desiccated Husks use the Corpse Guard Warband Entry, but their Melee Attacks gain the CRITICAL Keyword, and they replace the Bodyguard Ability with the More Worm Than Man Ability\nCradle of Filth: Great Hunger Warband can include 0-3 Cradle Thralls. Cradle Thralls use the Ravenous Warband Entry, but do not count towards a Great Hunger Warband’s Maximum Field Strength, have the INFILTRATOR Keyword and cost 2 glory to recruit (they do not cost any ducats).\nExcruciating Hunger: Models in a Great Hunger Warband cannot have Beelzebub’s Axe, Black Grail Shields, Bolt-Action Rifles, Blunderbusses, Compound Eyes Helmets, Corruption Belchers, Gas Grenades, Infested Rifles, Machine Guns, Musical Instruments, Muskets, Pistols, Troop Flags or Viscera Cannons.\nThe Great Maw: The Great Hunger moves as if a force of unholy nature, and when its carnage and consumption reaches a fever pitch, it attracts the loping cannibals known as Great Maws. If the total cost of all of the other models in the Warband (including their Battlekit, etc) adds up to 1000 ducats or higher, a Great Hunger Warband may recruit 0-1 Great Maws. A Great Maw uses the Lord of Tumours Warband Entry, but does not have the LEADER Keyword.\nSpawn of Gluttony: A Great Hunger Warband must include 1 Matagot Hag. It cannot include a Lord of Tumours, Corpse Guards, Grail Thralls, Heralds of Beelzebub or an Amalgam."
+        }
+      ]
+    },
+    {
+      "bsId": "44b9-e92b-2dc0-6820",
+      "campaignLinks": [
+        "Advancement",
+        "Angelic Instrument",
+        "Battlefield Title",
+        "Bestial Skin Cloak",
+        "Blasphemous Banner",
+        "Cruel Helmet",
+        "Curative Fluids",
+        "Exploration Upgrades",
+        "Injuries",
+        "Knighthood",
+        "Koraktor, the Great Tome of Hell",
+        "Lock of Samson's Hair",
+        "Lordship of this World",
+        "Piece of Silver",
+        "Rocket-Propelled Grenade",
+        "Saints Reliquary",
+        "Skills"
+      ],
+      "configuration": [
+        {
+          "bsId": "9ad1-3c0b-ae4e-a40b",
+          "choices": [
+            {
+              "bsId": "2fbd-2ebe-b0e5-8708",
+              "name": "Wrath",
+              "rules": []
+            },
+            {
+              "bsId": "3a57-9286-5c7e-de27",
+              "name": "Envy",
+              "rules": []
+            },
+            {
+              "bsId": "3fc4-33b0-264c-8510",
+              "name": "Lust",
+              "rules": []
+            },
+            {
+              "bsId": "715d-d6a9-0948-8e79",
+              "name": "Pride",
+              "rules": []
+            },
+            {
+              "bsId": "be23-ed3c-e3a7-5140",
+              "name": "Sloth",
+              "rules": []
+            },
+            {
+              "bsId": "f1b5-ce92-42bc-2469",
+              "name": "Gluttony",
+              "rules": []
+            },
+            {
+              "bsId": "3a0b-d655-c557-84c1",
+              "name": "Greed",
+              "rules": []
+            },
+            {
+              "bsId": "1fda-e6a9-7628-9c49",
+              "group": "Third Party",
+              "name": "Fang of the Seething Black",
+              "rules": [
+                {
+                  "name": "Eternal Eclipse",
+                  "text": "A Fang of the Seething Black warband must choose to dedicate themselves to The Void, and no other Sin."
+                },
+                {
+                  "name": "Hated by Creation",
+                  "text": "Followers of the Seething Black seek to destroy all of creation, and are in turn reviled by everything. As a result, they cannot take Praetors, Hunters of the Left Hand Path, Yoke Fiends or Wretched. They instead can take Faceless, Stalkers and Cultists.\nThe Fang of the Seething Black cannot purchase Mercenaries and don’t have access to the normal Glory Shop in a Campaign, and instead have their own unique Shop."
+                },
+                {
+                  "name": "Void Magic",
+                  "text": "When casting Goetic Spells, the Fang of the Seething Black add BLOOD MARKERS to models that are both Friendly and without the DEMONIC keyword, and must do so only with models within the Goetic Range of the caster, including the caster themselves if applicable.\n* Void Cultists have a Goetic Range of 1”\n° Void Cultists have a Goetic Range of 1”\n° Faceless and Hell Knights have a Goetic Range of 8”\n° Sorcerers have a Goetic Range of 12”\nSpecial effects such as a Cultist’s Unstable may trigger as a result of paying a spell’s costs. These resolve before the spell does."
+                }
+              ]
+            }
+          ],
+          "name": "Seven Deadly Sins"
+        }
+      ],
+      "id": "court-of-the-seven-headed-serpent",
+      "keywords": [
+        "The Court"
+      ],
+      "name": "Court of the Seven-Headed Serpent",
+      "rosterErrors": [
+        "Minimum 1 Leader (Sorcerer or Faceless) when atLeast 1 Fang of the Seething Black (roster); lessThan 1 Faceless (roster); lessThan 1 Sorcerer (roster)"
+      ],
+      "rules": [],
+      "unitIds": [
+        "court-of-the-seven-headed-serpent/desecrated-saint",
+        "court-of-the-seven-headed-serpent/faceless",
+        "court-of-the-seven-headed-serpent/goetic-warlock",
+        "court-of-the-seven-headed-serpent/hell-knight",
+        "court-of-the-seven-headed-serpent/homunculus",
+        "court-of-the-seven-headed-serpent/hunter-of-the-left-hand-path",
+        "court-of-the-seven-headed-serpent/pit-locust",
+        "court-of-the-seven-headed-serpent/praetor",
+        "court-of-the-seven-headed-serpent/scripture-guardian",
+        "court-of-the-seven-headed-serpent/sin-eater",
+        "court-of-the-seven-headed-serpent/sorcerer",
+        "court-of-the-seven-headed-serpent/stalker",
+        "court-of-the-seven-headed-serpent/trench-dog",
+        "court-of-the-seven-headed-serpent/wretched",
+        "court-of-the-seven-headed-serpent/yoke-fiend"
+      ],
+      "variants": []
+    },
+    {
+      "bsId": "6941-ec54-3001-8288",
+      "campaignLinks": [
+        "Advancement",
+        "Angelic Instrument",
+        "Armour of Cobar",
+        "Battlefield Title",
+        "Blasphemous Banner",
+        "Curative Fluids",
+        "Demonic Aura Grenade",
+        "Executioner's Axe",
+        "Exploration Upgrades",
+        "Knighthood",
+        "Lock of Samson's Hair",
+        "Rocket-Propelled Grenade",
+        "Saints Reliquary",
+        "Sniper Scope",
+        "The Mark of Cain",
+        "Tormentor Chain"
+      ],
+      "id": "heretic-legion",
+      "keywords": [
+        "Heretic"
+      ],
+      "name": "Heretic Legion",
+      "rules": [],
+      "unitIds": [
+        "heretic-legion/anointed-heavy-infantry",
+        "heretic-legion/artillery-witch",
+        "heretic-legion/chorister",
+        "heretic-legion/death-commando",
+        "heretic-legion/goetic-warlock",
+        "heretic-legion/heretic-priest",
+        "heretic-legion/heretic-trooper",
+        "heretic-legion/homunculus",
+        "heretic-legion/scripture-guardian",
+        "heretic-legion/sin-eater",
+        "heretic-legion/technomancer",
+        "heretic-legion/trench-dog",
+        "heretic-legion/war-wolf-assault-beast",
+        "heretic-legion/witch-coven-matriarch",
+        "heretic-legion/wretched"
+      ],
+      "variants": [
+        {
+          "bsId": "4d05-603e-4b5a-aed4",
+          "id": "heretic-legion/heretic-naval-raiders",
+          "name": "Heretic Naval Raiders",
+          "rules": [
+            {
+              "name": "Close Assault Weapons",
+              "text": "Submachine Guns cost 25 ducats for a Heretic Naval Raiders Warband."
+            },
+            {
+              "name": "Unseen Advance",
+              "text": "Up to three models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
+            },
+            {
+              "name": "Light Troops",
+              "text": "A Heretic Naval Raiders Warband cannot have more than two Anointed models or more than 1 Artillery Witch (even if the Warband has a value of 1,000 ducats or more)."
+            },
+            {
+              "name": "Let Sleeping Dogs Lie",
+              "text": "This Warband cannot include a War Wolf."
+            },
+            {
+              "name": "Fast as Lightning",
+              "text": "Add +1 DICE to the Risky Success Roll for models from a Heretic Naval Raiders Warband that are taking a Dash ACTION."
+            },
+            {
+              "name": "Infiltrator",
+              "sharedRule": true,
+              "text": "When a model with this Keyword is deployed for the first time in a game, it can be set up anywhere on the battlefield as long as it is out of the Line of Sight of all enemies and is at least 8\" away from the closest enemy. INFILTRATORS are deployed after models that do not have this Keyword. Any INFILTRATORS that cannot be deployed in this way are instead deployed normally in their deployment zone."
+            }
+          ],
+          "text": "Close Assault Weapons: Submachine Guns cost 25 ducats for a Heretic Naval Raiders Warband.\nUnseen Advance: Up to three models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each.\nLight Troops: A Heretic Naval Raiders Warband cannot have more than two Anointed models or more than 1 Artillery Witch (even if the Warband has a value of 1,000 ducats or more).\nLet Sleeping Dogs Lie: This Warband cannot include a War Wolf.\nFast as Lightning: Add +1 DICE to the Risky Success Roll for models from a Heretic Naval Raiders Warband that are taking a Dash ACTION.\nInfiltrator: When a model with this Keyword is deployed for the first time in a game, it can be set up anywhere on the battlefield as long as it is out of the Line of Sight of all enemies and is at least 8\" away from the closest enemy. INFILTRATORS are deployed after models that do not have this Keyword. Any INFILTRATORS that cannot be deployed in this way are instead deployed normally in their deployment zone."
+        },
+        {
+          "bsId": "c323-0c33-e628-56f0",
+          "id": "heretic-legion/knights-of-avarice",
+          "name": "Knights of Avarice",
+          "optionGroups": [
+            "Corrupt Merchants"
+          ],
+          "rules": [
+            {
+              "name": "Mammon's Chosen",
+              "text": "A Knights of Avarice Warband cannot include a model if the cost of the model and its Battlekit is less than 80 ducats, unless the model is a Wretched."
+            },
+            {
+              "name": "Goetic Warlock",
+              "text": "Goetic Warlocks are creations of Mammon. A Knights of\nAvarice Warband can include up to 2 Goetic Warlocks as Mercenaries (▶ see Goetic Warlock). In addition, the first Goetic Warlock to be recruited in a Knights of Avarice Warband costs 110 ducats instead of its normal cost in glory."
+            },
+            {
+              "name": "Infernal Rivalry",
+              "text": "Mammon is a rival of Beleth, who is the Patron of Death Commandos. A Knights of Avarice Warband cannot include Death Commandos."
+            },
+            {
+              "name": "Corrupt Merchants",
+              "text": "When you create your starting Warband, you can purchase 1 piece of Battlekit from the New Antioch Armoury, and 1 piece of Battlekit from the Iron Sultanate Armoury. Any stipulations that apply to it must still be followed (so there is little point in taking the Assassin’s Dagger, for example, as it can only be used by Assassins). You can repurchase the Battlekit later during the campaign if it is lost for any reason."
+            },
+            {
+              "name": "Gas Bombs",
+              "text": "Artillery Witches in a Knights of Avarice Warband replace their Infernal Bombs with Gas Bombs."
+            },
+            {
+              "name": "Preserve the Loot",
+              "text": "Models in a Knights of Avarice Warband cannot have\nBattlekit that has, or would give another piece of Battlekit, the FIRE and/or SHRAPNEL Keywords. Grenade Launchers can be taken, but replace the SHRAPNEL Keyword with the -1 INJURY DICE, GAS, and IGNORE ARMOUR Keywords."
+            },
+            {
+              "name": "Price of Greed",
+              "text": "A Heretic Priest in a Knights of Avarice Warband has the following Price of Greed ACTION instead of the Puppet Master ACTION.\n* Price of Greed ACTION: Worldly wealth becomes the target of this curse, gradually crushing its victim under its weight. A Knights of Avarice Heretic Priest can take a Price of Greed ACTION. If they do so, take a Risky Success Roll for the model. If the roll is a Failure, the Knights of Avarice Heretic Priest’s Activation ends immediately. If the roll is a Success or Critical Success, make an Injury Roll for an enemy model that is within 12\" of the model taking the Price of Greed ACTION and in its line of sight. Add +1 INJURY DICE to the roll if the Success Roll was a Critical Success, and add +1 DICE to the roll for each -1 INJURY MODIFIER that applies to the target (the -1 INJURY MODIFIER still applies). For example, if the target had Standard Armour with a -1 INJURY MODIFIER, you would add +1 INJURY DICE and a -1 INJURY MODIFIER to the roll."
+            },
+            {
+              "name": "Worship Mammon",
+              "text": "The Patron of a Knights of Avarice Warband is always Mammon."
+            }
+          ],
+          "text": "Mammon's Chosen: A Knights of Avarice Warband cannot include a model if the cost of the model and its Battlekit is less than 80 ducats, unless the model is a Wretched.\nGoetic Warlock: Goetic Warlocks are creations of Mammon. A Knights of\nAvarice Warband can include up to 2 Goetic Warlocks as Mercenaries (▶ see Goetic Warlock). In addition, the first Goetic Warlock to be recruited in a Knights of Avarice Warband costs 110 ducats instead of its normal cost in glory.\nInfernal Rivalry: Mammon is a rival of Beleth, who is the Patron of Death Commandos. A Knights of Avarice Warband cannot include Death Commandos.\nCorrupt Merchants: When you create your starting Warband, you can purchase 1 piece of Battlekit from the New Antioch Armoury, and 1 piece of Battlekit from the Iron Sultanate Armoury. Any stipulations that apply to it must still be followed (so there is little point in taking the Assassin’s Dagger, for example, as it can only be used by Assassins). You can repurchase the Battlekit later during the campaign if it is lost for any reason.\nGas Bombs: Artillery Witches in a Knights of Avarice Warband replace their Infernal Bombs with Gas Bombs.\nPreserve the Loot: Models in a Knights of Avarice Warband cannot have\nBattlekit that has, or would give another piece of Battlekit, the FIRE and/or SHRAPNEL Keywords. Grenade Launchers can be taken, but replace the SHRAPNEL Keyword with the -1 INJURY DICE, GAS, and IGNORE ARMOUR Keywords.\nPrice of Greed: A Heretic Priest in a Knights of Avarice Warband has the following Price of Greed ACTION instead of the Puppet Master ACTION.\n* Price of Greed ACTION: Worldly wealth becomes the target of this curse, gradually crushing its victim under its weight. A Knights of Avarice Heretic Priest can take a Price of Greed ACTION. If they do so, take a Risky Success Roll for the model. If the roll is a Failure, the Knights of Avarice Heretic Priest’s Activation ends immediately. If the roll is a Success or Critical Success, make an Injury Roll for an enemy model that is within 12\" of the model taking the Price of Greed ACTION and in its line of sight. Add +1 INJURY DICE to the roll if the Success Roll was a Critical Success, and add +1 DICE to the roll for each -1 INJURY MODIFIER that applies to the target (the -1 INJURY MODIFIER still applies). For example, if the target had Standard Armour with a -1 INJURY MODIFIER, you would add +1 INJURY DICE and a -1 INJURY MODIFIER to the roll.\nWorship Mammon: The Patron of a Knights of Avarice Warband is always Mammon."
+        },
+        {
+          "bsId": "eee9-35a4-9eda-70e9",
+          "id": "heretic-legion/trench-ghosts",
+          "name": "Trench Ghosts",
+          "optionGroups": [
+            "Battlefield Looters"
+          ],
+          "rules": [
+            {
+              "name": "Semi-corporeal",
+              "text": "Add -1 INJURY DICE for Injury Rolls caused by Ranged Attacks that hit a model from a Trench Ghost Warband."
+            },
+            {
+              "name": "Barbed Wire Banshee",
+              "text": "A Trench Ghost Warband can include a Barbed Wire Banshee instead of a Chorister. The Barbed Wire Banshee has the same Profile and Cost as a Chorister, but instead of the Unholy Hymns Ability add +1 INJURY DICE to rolls for enemy models that are within 8\" of a Barbed Wire Banshee."
+            },
+            {
+              "name": "Enemies of All",
+              "text": "A Trench Ghost Warband cannot include Mercenaries."
+            },
+            {
+              "name": "Lost Souls",
+              "text": "A Trench Ghost Warband cannot include models with the ARTIFICIAL Keyword, and models in a Trench Ghost Warband cannot have Hellbound Soul Contracts or Infernal Brands. The Warband can include Anointed Heavy Infantry, but they do not have their Infernal Brand and still cost 95 ducats."
+            },
+            {
+              "name": "Slow and Creeping",
+              "text": "Treat a Trench Ghost model as having a Movement\nCharacteristic of 3”/Infantry when it takes a Dash ACTION. In addition, add -1 DICE to the Success Roll for an attack made by a Trench Ghost model on an enemy model that is making a Retreat."
+            },
+            {
+              "name": "Undead Horror",
+              "text": "Models in this Warband have the FEAR, NEGATE DIFFICULT TERRAIN, and NEGATE GAS Keywords."
+            },
+            {
+              "name": "Fear",
+              "sharedRule": true,
+              "text": "Add -1 DICE to a Melee Attack that targets a model with this\nKeyword. Models that cause FEAR are immune to FEAR themselves."
+            },
+            {
+              "name": "Negate [Keyword]",
+              "sharedRule": true,
+              "text": "A model with the NEGATE Keyword is not affected by the specified Keyword’s Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword."
+            }
+          ],
+          "text": "Semi-corporeal: Add -1 INJURY DICE for Injury Rolls caused by Ranged Attacks that hit a model from a Trench Ghost Warband.\nBarbed Wire Banshee: A Trench Ghost Warband can include a Barbed Wire Banshee instead of a Chorister. The Barbed Wire Banshee has the same Profile and Cost as a Chorister, but instead of the Unholy Hymns Ability add +1 INJURY DICE to rolls for enemy models that are within 8\" of a Barbed Wire Banshee.\nEnemies of All: A Trench Ghost Warband cannot include Mercenaries.\nLost Souls: A Trench Ghost Warband cannot include models with the ARTIFICIAL Keyword, and models in a Trench Ghost Warband cannot have Hellbound Soul Contracts or Infernal Brands. The Warband can include Anointed Heavy Infantry, but they do not have their Infernal Brand and still cost 95 ducats.\nSlow and Creeping: Treat a Trench Ghost model as having a Movement\nCharacteristic of 3”/Infantry when it takes a Dash ACTION. In addition, add -1 DICE to the Success Roll for an attack made by a Trench Ghost model on an enemy model that is making a Retreat.\nUndead Horror: Models in this Warband have the FEAR, NEGATE DIFFICULT TERRAIN, and NEGATE GAS Keywords.\nFear: Add -1 DICE to a Melee Attack that targets a model with this\nKeyword. Models that cause FEAR are immune to FEAR themselves.\nNegate [Keyword]: A model with the NEGATE Keyword is not affected by the specified Keyword’s Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword."
+        }
+      ]
+    },
+    {
+      "bsId": "72ab-daa4-80ee-e9a5",
+      "campaignLinks": [
+        "Advancement",
+        "Angelic Instrument",
+        "Blasphemous Banner",
+        "Curative Fluids",
+        "Damascus Armour",
+        "Exploration Upgrades",
+        "Field Hospital",
+        "Kilij",
+        "Knighthood",
+        "Lock of Samson's Hair",
+        "Masterwork Jezzail",
+        "Rocket-Propelled Grenade",
+        "Saints Reliquary",
+        "Sniper Scope",
+        "Sultanate Grand Cannon"
+      ],
+      "id": "iron-sultanate",
+      "keywords": [
+        "Sultanate"
+      ],
+      "name": "Iron Sultanate",
+      "rules": [],
+      "unitIds": [
+        "iron-sultanate/archeologist",
+        "iron-sultanate/azeb",
+        "iron-sultanate/bedu-sharpshooter",
+        "iron-sultanate/brazen-bull",
+        "iron-sultanate/disciple-of-st-roch",
+        "iron-sultanate/jabirean-alchemist",
+        "iron-sultanate/janissary",
+        "iron-sultanate/lion-of-jabir",
+        "iron-sultanate/mamluk-faris",
+        "iron-sultanate/mamluk-faris-fireteam",
+        "iron-sultanate/pairika",
+        "iron-sultanate/scripture-guardian",
+        "iron-sultanate/shirdal",
+        "iron-sultanate/sultanate-assassin",
+        "iron-sultanate/sultanate-sapper",
+        "iron-sultanate/takwin-homunculus",
+        "iron-sultanate/tegmen",
+        "iron-sultanate/trench-dog",
+        "iron-sultanate/yuzbasi-captain",
+        "iron-sultanate/zamburak-weapon-platform"
+      ],
+      "variants": [
+        {
+          "bsId": "6032-5543-8548-b9ac",
+          "id": "iron-sultanate/defenders-of-the-iron-wall",
+          "name": "Defenders of the Iron Wall",
+          "rules": [
+            {
+              "name": "Far from the Sublime Gate",
+              "text": "A Defenders of the Iron Wall Warband cannot include any Lions of Jabir, Yüzbaşı or Assassins, and models in the Warband cannot have a Cloak of Alamut or Wind Amulet."
+            },
+            {
+              "name": "Marksmanship of the Iron Wall",
+              "text": "All the members of the Warband practise marksmanship from the dizzying heights of the Iron Wall against targets on the ground below. Add +2 DICE instead of +1 DICE to the Success Roll for a Ranged Attack made by models in a Defenders of the Iron Wall Warband when they have the Elevated Position modifier."
+            },
+            {
+              "name": "Silahdar",
+              "text": "The commanders of the Iron Wall’s units come from the personal bodyguards of the Sultan known as Silahdar. A Defenders of the Iron Wall Warband must include 1 Silahdar. The Silahdar uses the Yüzbaşı Warband Entry, except that it replaces the Mubarizun ability with the STRONG Keyword, and they can have an Alaybozan from the Iron Sultanate Armoury (▶ see the Iron Sultanate Battlekit ), and an Anqā Guard and Explosive Charges from the Defenders of the Iron Wall Armoury (▶ see Defenders of the Iron Wall Warband Armoury), at the indicated cost in ducats for each piece of Battlekit that is taken."
+            },
+            {
+              "name": "Sapper Corps",
+              "text": "The standard divisions assigned to the Iron Wall have doublestrength Sapper detachments. A Defenders of the Iron Wall Warband can have 0-4 Sultanate Sappers."
+            },
+            {
+              "name": "Janissary Officers",
+              "text": "A Defenders of the Iron Wall Warband can have 0-2 Janissaries, which have the ELITE Keyword at no additional cost in ducats."
+            },
+            {
+              "name": "Sipahi",
+              "text": "Sipahi Automaton Cavalry often serves as infantry in the Iron Wall’s units to reinforce areas under severe pressure. A Defenders of the Iron Wall Warband can include up to 1 Sipahi Automaton Cavalry Mercenary at a cost of 110 ducats. They use the Mercenary Entry for a Mamluk Faris but you cannot change their Battlekit in any way. Note that this does not stop you from recruiting a Mamluk Faris as a Mercenary as well."
+            },
+            {
+              "name": "Grand Cannons",
+              "text": "A Defenders of the Iron Wall Warband can include 0-2 Sultanate Grand Cannons at a cost of 60 ducats each (▶ see Defenders of the Iron Wall Warband Armoury). When a Grand Cannon is added to a Defender of the Iron Wall Warband it must either be given to a Brazen Bull that is already part of the Warband, or added to the Armoury on the Warband’s roster sheet as a Grand Cannon gun battery. No more than 1 Grand Cannon can be given to a Brazen Bull model, and a Warband cannot have more than 2 Grand Cannons in total. The rules for using the Grand Cannon during a game can be found in the Defenders of the Iron Wall Warband Battlekit section."
+            },
+            {
+              "name": "Siege Jezzail Teams",
+              "text": "The Defenders of the Iron Wall are trained to use Siege Jezzails in pairs. Add +1 DICE to the Success Roll for a Ranged Attack made with a Siege Jezzail if there is a friendly model within 1\" of the model making the attack."
+            }
+          ],
+          "text": "Far from the Sublime Gate: A Defenders of the Iron Wall Warband cannot include any Lions of Jabir, Yüzbaşı or Assassins, and models in the Warband cannot have a Cloak of Alamut or Wind Amulet.\nMarksmanship of the Iron Wall: All the members of the Warband practise marksmanship from the dizzying heights of the Iron Wall against targets on the ground below. Add +2 DICE instead of +1 DICE to the Success Roll for a Ranged Attack made by models in a Defenders of the Iron Wall Warband when they have the Elevated Position modifier.\nSilahdar: The commanders of the Iron Wall’s units come from the personal bodyguards of the Sultan known as Silahdar. A Defenders of the Iron Wall Warband must include 1 Silahdar. The Silahdar uses the Yüzbaşı Warband Entry, except that it replaces the Mubarizun ability with the STRONG Keyword, and they can have an Alaybozan from the Iron Sultanate Armoury (▶ see the Iron Sultanate Battlekit ), and an Anqā Guard and Explosive Charges from the Defenders of the Iron Wall Armoury (▶ see Defenders of the Iron Wall Warband Armoury), at the indicated cost in ducats for each piece of Battlekit that is taken.\nSapper Corps: The standard divisions assigned to the Iron Wall have doublestrength Sapper detachments. A Defenders of the Iron Wall Warband can have 0-4 Sultanate Sappers.\nJanissary Officers: A Defenders of the Iron Wall Warband can have 0-2 Janissaries, which have the ELITE Keyword at no additional cost in ducats.\nSipahi: Sipahi Automaton Cavalry often serves as infantry in the Iron Wall’s units to reinforce areas under severe pressure. A Defenders of the Iron Wall Warband can include up to 1 Sipahi Automaton Cavalry Mercenary at a cost of 110 ducats. They use the Mercenary Entry for a Mamluk Faris but you cannot change their Battlekit in any way. Note that this does not stop you from recruiting a Mamluk Faris as a Mercenary as well.\nGrand Cannons: A Defenders of the Iron Wall Warband can include 0-2 Sultanate Grand Cannons at a cost of 60 ducats each (▶ see Defenders of the Iron Wall Warband Armoury). When a Grand Cannon is added to a Defender of the Iron Wall Warband it must either be given to a Brazen Bull that is already part of the Warband, or added to the Armoury on the Warband’s roster sheet as a Grand Cannon gun battery. No more than 1 Grand Cannon can be given to a Brazen Bull model, and a Warband cannot have more than 2 Grand Cannons in total. The rules for using the Grand Cannon during a game can be found in the Defenders of the Iron Wall Warband Battlekit section.\nSiege Jezzail Teams: The Defenders of the Iron Wall are trained to use Siege Jezzails in pairs. Add +1 DICE to the Success Roll for a Ranged Attack made with a Siege Jezzail if there is a friendly model within 1\" of the model making the attack."
+        },
+        {
+          "bsId": "cd91-f171-98d6-423e",
+          "id": "iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins",
+          "name": "Fida’i of Alamut – The Cabal of Assassins",
+          "rules": [
+            {
+              "name": "Alamut Alone",
+              "text": "A Fida’i of Alamut Warband cannot include a Yüzbaşı, a Jabirean Alchemist, any Janissaries, Lions of Jabir or Brazen Bulls."
+            },
+            {
+              "name": "Assassin Acolyte",
+              "text": "Up to three Azeb models in a Fida’i of Alamut Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
+            },
+            {
+              "name": "Art of Assassination",
+              "text": "Each Sultanate Assassin and Master Assassin in a Fida’i of Alamut Warband can have one of the following abilities at the additional cost in ducats indicated below. You cannot give the same ability to more than one model (i.e. every Assassin that has an ability must have a different one).\n* Hallucinogen Disguise (20 ducats): If this Assassin is deployed using the INFILTRATOR Keyword, it must be deployed at least 8\" away from any enemy models but you may ignore any and all other restrictions that apply to deploying an INFILTRATOR. For example, the model can be deployed in the Line of Sight of an enemy model, enemy Guard Dogs do not affect how it is deployed, and so on.\n* Mirage of Time (15 ducats): Add -1 DICE to the Success Roll for attacks that target this Assassin.\n* Secret Paths (10 ducats): At the start of the game, before deployment, you can say that this Assassin is using Secret Paths. If you do so, the Assassin is not deployed at the start of the game, and cannot be Activated in the first Turn of the game. Starting from the second Turn, you can Activate the Assassin using the Secret Paths. To do so, deploy the Assassin in contact with any edge of the battlefield and more than 8\" away from all enemy models. You can then carry on with the rest of its Activation normally.\n* Thunderbolt of Alamut (20 ducats): Add 2\" to this Assassin’s Movement Characteristic, and add +1 DICE to the Risky Success Roll when this Assassin takes a Dash ACTION."
+            },
+            {
+              "name": "Dervishes",
+              "text": "A Fida’i of Alamut Warband can include 0-4 Dervishes. The Dervishes use the Janissaries Warband Entry, but cannot wear Reinforced Armour and replace the STRONG Keyword with the IGNORE OFF-HAND WEAPON Keyword and the Whirling Dervish ability:\n* Whirling Dervish: The ritual dance of these Dervishes is hypnotic to witness, and it is as graceful as it is deadly. Add -1 DICE to the Success Rolls for Ranged Attacks that target a Dervish."
+            },
+            {
+              "name": "Flock of Assassins",
+              "text": "A Fida’i of Alamut Warband can include 0-2 Sultanate Assassins and 1 Master Assassin."
+            },
+            {
+              "name": "Master Assassin",
+              "text": "A Fida’i of Alamut Warband must include 1 Master Assassin. The Master Assassin uses the Sultanate Assassin Warband Entry, except that it has the LEADER and TOUGH Keywords and has a cost of 95 Ducats."
+            },
+            {
+              "name": "Killing Squad",
+              "text": "A Fida’i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
+            }
+          ],
+          "text": "Alamut Alone: A Fida’i of Alamut Warband cannot include a Yüzbaşı, a Jabirean Alchemist, any Janissaries, Lions of Jabir or Brazen Bulls.\nAssassin Acolyte: Up to three Azeb models in a Fida’i of Alamut Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each.\nArt of Assassination: Each Sultanate Assassin and Master Assassin in a Fida’i of Alamut Warband can have one of the following abilities at the additional cost in ducats indicated below. You cannot give the same ability to more than one model (i.e. every Assassin that has an ability must have a different one).\n* Hallucinogen Disguise (20 ducats): If this Assassin is deployed using the INFILTRATOR Keyword, it must be deployed at least 8\" away from any enemy models but you may ignore any and all other restrictions that apply to deploying an INFILTRATOR. For example, the model can be deployed in the Line of Sight of an enemy model, enemy Guard Dogs do not affect how it is deployed, and so on.\n* Mirage of Time (15 ducats): Add -1 DICE to the Success Roll for attacks that target this Assassin.\n* Secret Paths (10 ducats): At the start of the game, before deployment, you can say that this Assassin is using Secret Paths. If you do so, the Assassin is not deployed at the start of the game, and cannot be Activated in the first Turn of the game. Starting from the second Turn, you can Activate the Assassin using the Secret Paths. To do so, deploy the Assassin in contact with any edge of the battlefield and more than 8\" away from all enemy models. You can then carry on with the rest of its Activation normally.\n* Thunderbolt of Alamut (20 ducats): Add 2\" to this Assassin’s Movement Characteristic, and add +1 DICE to the Risky Success Roll when this Assassin takes a Dash ACTION.\nDervishes: A Fida’i of Alamut Warband can include 0-4 Dervishes. The Dervishes use the Janissaries Warband Entry, but cannot wear Reinforced Armour and replace the STRONG Keyword with the IGNORE OFF-HAND WEAPON Keyword and the Whirling Dervish ability:\n* Whirling Dervish: The ritual dance of these Dervishes is hypnotic to witness, and it is as graceful as it is deadly. Add -1 DICE to the Success Rolls for Ranged Attacks that target a Dervish.\nFlock of Assassins: A Fida’i of Alamut Warband can include 0-2 Sultanate Assassins and 1 Master Assassin.\nMaster Assassin: A Fida’i of Alamut Warband must include 1 Master Assassin. The Master Assassin uses the Sultanate Assassin Warband Entry, except that it has the LEADER and TOUGH Keywords and has a cost of 95 Ducats.\nKilling Squad: A Fida’i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
+        },
+        {
+          "bsId": "c2b1-d49e-937b-2f87",
+          "id": "iron-sultanate/the-house-of-wisdom",
+          "name": "The House of Wisdom",
+          "optionGroups": [
+            "Weapon Collections"
+          ],
+          "rules": [
+            {
+              "name": "Noble Guardians",
+              "text": "A House of Wisdom can include 0-2 Fāris. The Fāris use the Janissary Warband Entry, but have the ELITE Keyword at no additional cost in ducats."
+            },
+            {
+              "name": "Kavass",
+              "text": "Kavasses are sworn guardians of the House of Wisdom. You can change the Melee Characteristic of up to 3 Azebs in a House of Wisdom Warband from -1 DICE to +0 DICE at a cost of +5 ducats each. However, you cannot give these Azebs the SKIRMISHER Keyword."
+            },
+            {
+              "name": "Alchemists",
+              "text": "A House of Wisdom Warband must include 1-2 Jabirean Alchemists. In addition, Alchemist Armour in a House of Wisdom Warband has a Limit of 2"
+            },
+            {
+              "name": "Private Venture",
+              "text": "A House of Wisdom Warband cannot include a Yüzbaşı, Janissaries, or Sultanate Assassins."
+            },
+            {
+              "name": "Pride of Jabir",
+              "text": "A House of Wisdom Warband can include 0-3 Lions of Jabir."
+            },
+            {
+              "name": "Secret of the House of Wisdom",
+              "text": "Each Jabirean Alchemist in a House of Wisdom Warband can have one of following abilities at the cost indicated below. You cannot give the same ability to more than one model (i.e. every Jabirean Alchemist that has an ability must have a different one).\n* Medicine (15 ducats): This Alchemist is a student of Ibn Sina’s School of Medicine. This Alchemist cannot have a Medi-kit. Instead, when you Activate this Alchemist it can take a School of Medicine ACTION as part of the Activation. If it does so, take a Success Roll for the Alchemist and add +1 DICE to the roll. If the roll is a Failure, nothing happens. If it is a Success or a Critical Success, you can do one of the following things:\n* Remove 2 BLOOD MARKERS or 1 INFECTION MARKER from the Alchemist or a friendly model within 1\" of the Alchemist. * Stand up a friendly model that is Down and which is within 1\" of the Alchemist.\n* Cartography & Geometry (20 ducats): The Alchemist has studied long and hard the sciences of cartography and Geometry. At the start of the game, before deployment, you can pick up to 2 models in the Warband that are mounted on a base of 32mm or less, giving them the INFILTRATOR Keyword for that game.\n* Secrets of Takwin (20 ducats): The Alchemist has bound their Takwin creature to themselves with unbreakable bonds. If this Alchemist is hit by an attack while within 1\" of their Takwin Homunculus, you can apply the hit to the Homunculus and make the Injury Roll for it instead of the Alchemist.\n* Chemistry & Alchemy (25 ducats): At the start of the first Turn of the game, before any models have been Activated, you can set up an Elemental Obstacle terrain piece that is up to 2\" wide and 6\" long. It must be set up more than 1\" away from any other terrain pieces and more than 6\" from any models. After setting it up, you must say if it has the FIRE, GAS, or SHRAPNEL Keyword. The Elemental Obstacle is Difficult and Dangerous terrain. Any Injury Rolls caused by the Dangerous terrain rule have the Keywords you chose when you set the terrain up.\n* Philosophy, Poetry and Theology (20 ducats): The Alchemist is well-versed in the hidden truths of the Universe and of the Divine and has a calm and clearmind. Add +1 DICE to Morale Check Success Rolls for this Alchemist’s Warband, as long as the Alchemist is not Down or Out of Action. In addition, if this Alchemist’s Warband becomes Shaken, ignore the requirement that all Success Rolls become Risky Success Rolls (however you still need to see if the Warband flees in the following Turn’s Morale Phase). The Alchemist has the NEGATE FEAR Keyword."
+            },
+            {
+              "name": "Tawkin Homunculus",
+              "text": "A House of Wisdom Warband can include one Takwin Homunculus for each Jabirean Alchemist in the Warband. Each Takwin Homunculus must be associated with a Jabirean Alchemist when it is added to the Warband. An Alchemist can only have a single Takwin Homunculus associated with it and vice versa. If a Takwin Homunculus associated Alchemist is killed during the campaign, it cannot be deployed during a game, its Battlekit cannot be changed, and no Alchemical Formulas can be applied to it. If you add a new Jabirean Alchemist to your Warband and it has any unassociated Takwin Homunculi, you must associate one of them with the new Alchemist."
+            }
+          ],
+          "text": "Noble Guardians: A House of Wisdom can include 0-2 Fāris. The Fāris use the Janissary Warband Entry, but have the ELITE Keyword at no additional cost in ducats.\nKavass: Kavasses are sworn guardians of the House of Wisdom. You can change the Melee Characteristic of up to 3 Azebs in a House of Wisdom Warband from -1 DICE to +0 DICE at a cost of +5 ducats each. However, you cannot give these Azebs the SKIRMISHER Keyword.\nAlchemists: A House of Wisdom Warband must include 1-2 Jabirean Alchemists. In addition, Alchemist Armour in a House of Wisdom Warband has a Limit of 2\nPrivate Venture: A House of Wisdom Warband cannot include a Yüzbaşı, Janissaries, or Sultanate Assassins.\nPride of Jabir: A House of Wisdom Warband can include 0-3 Lions of Jabir.\nSecret of the House of Wisdom: Each Jabirean Alchemist in a House of Wisdom Warband can have one of following abilities at the cost indicated below. You cannot give the same ability to more than one model (i.e. every Jabirean Alchemist that has an ability must have a different one).\n* Medicine (15 ducats): This Alchemist is a student of Ibn Sina’s School of Medicine. This Alchemist cannot have a Medi-kit. Instead, when you Activate this Alchemist it can take a School of Medicine ACTION as part of the Activation. If it does so, take a Success Roll for the Alchemist and add +1 DICE to the roll. If the roll is a Failure, nothing happens. If it is a Success or a Critical Success, you can do one of the following things:\n* Remove 2 BLOOD MARKERS or 1 INFECTION MARKER from the Alchemist or a friendly model within 1\" of the Alchemist. * Stand up a friendly model that is Down and which is within 1\" of the Alchemist.\n* Cartography & Geometry (20 ducats): The Alchemist has studied long and hard the sciences of cartography and Geometry. At the start of the game, before deployment, you can pick up to 2 models in the Warband that are mounted on a base of 32mm or less, giving them the INFILTRATOR Keyword for that game.\n* Secrets of Takwin (20 ducats): The Alchemist has bound their Takwin creature to themselves with unbreakable bonds. If this Alchemist is hit by an attack while within 1\" of their Takwin Homunculus, you can apply the hit to the Homunculus and make the Injury Roll for it instead of the Alchemist.\n* Chemistry & Alchemy (25 ducats): At the start of the first Turn of the game, before any models have been Activated, you can set up an Elemental Obstacle terrain piece that is up to 2\" wide and 6\" long. It must be set up more than 1\" away from any other terrain pieces and more than 6\" from any models. After setting it up, you must say if it has the FIRE, GAS, or SHRAPNEL Keyword. The Elemental Obstacle is Difficult and Dangerous terrain. Any Injury Rolls caused by the Dangerous terrain rule have the Keywords you chose when you set the terrain up.\n* Philosophy, Poetry and Theology (20 ducats): The Alchemist is well-versed in the hidden truths of the Universe and of the Divine and has a calm and clearmind. Add +1 DICE to Morale Check Success Rolls for this Alchemist’s Warband, as long as the Alchemist is not Down or Out of Action. In addition, if this Alchemist’s Warband becomes Shaken, ignore the requirement that all Success Rolls become Risky Success Rolls (however you still need to see if the Warband flees in the following Turn’s Morale Phase). The Alchemist has the NEGATE FEAR Keyword.\nTawkin Homunculus: A House of Wisdom Warband can include one Takwin Homunculus for each Jabirean Alchemist in the Warband. Each Takwin Homunculus must be associated with a Jabirean Alchemist when it is added to the Warband. An Alchemist can only have a single Takwin Homunculus associated with it and vice versa. If a Takwin Homunculus associated Alchemist is killed during the campaign, it cannot be deployed during a game, its Battlekit cannot be changed, and no Alchemical Formulas can be applied to it. If you add a new Jabirean Alchemist to your Warband and it has any unassociated Takwin Homunculi, you must associate one of them with the new Alchemist."
+        }
+      ]
+    },
+    {
+      "bsId": "707d-5bdf-586e-f704",
+      "campaignLinks": [
+        "Advancement",
+        "Angelic Instrument",
+        "Battlefield Title",
+        "Blasphemous Banner",
+        "Book of Battle Prayers",
+        "Curative Fluids",
+        "Ducal Winged Armour",
+        "Exploration Upgrades",
+        "Field Hospital",
+        "Great Banner of New Antioch",
+        "Knighthood",
+        "Lock of Samson's Hair",
+        "Resurrection Engine",
+        "Rocket-Propelled Grenade",
+        "Saints Reliquary",
+        "Salvage Golem",
+        "Smoke Screen",
+        "Sniper Scope"
+      ],
+      "id": "new-antioch",
+      "keywords": [
+        "New Antioch"
+      ],
+      "name": "New Antioch",
+      "rules": [],
+      "unitIds": [
+        "new-antioch/combat-engineer",
+        "new-antioch/combat-medic",
+        "new-antioch/communicant-anti-tank-hunter",
+        "new-antioch/crimson-communicant",
+        "new-antioch/disciple-of-st-roch",
+        "new-antioch/fireteam",
+        "new-antioch/homunculus",
+        "new-antioch/lieutenant",
+        "new-antioch/mamluk-faris-fireteam",
+        "new-antioch/mechanized-heavy-infantry",
+        "new-antioch/observer",
+        "new-antioch/scripture-guardian",
+        "new-antioch/shocktrooper",
+        "new-antioch/sniper-priest",
+        "new-antioch/trench-cleric",
+        "new-antioch/trench-dog",
+        "new-antioch/trench-dogs-of-the-red-brigade",
+        "new-antioch/witchburner",
+        "new-antioch/yeoman"
+      ],
+      "variants": [
+        {
+          "bsId": "6aa4-b38b-5146-4106",
+          "id": "new-antioch/eire-rangers",
+          "name": "Eire Rangers",
+          "rules": [
+            {
+              "name": "Berserker",
+              "text": "The Lieutenant or one of the Fianna in an Éire Rangers Warband can be upgraded to a Berserker for +15 Ducats. A Berserker cannot have Armour (they can have Shields). In addition, a Berserker has the NEGATE FEAR Keyword, and BLOOD MARKERS are never placed on them under any circumstances"
+            },
+            {
+              "name": "Followers of St. Patrick",
+              "text": "The Patron of an Éire Rangers Warband is always a Learned Saint."
+            },
+            {
+              "name": "Carnyx",
+              "text": "One Musical Instrument in an Éire Rangers Warband can have the FEAR Keyword at no additional cost in Ducats."
+            },
+            {
+              "name": "Hit-and-run Tactics",
+              "text": "Add -1 DICE to the roll for a Melee Attack that targets a model from an Éire Rangers Warband that is making a Retreat."
+            },
+            {
+              "name": "Loose Formation",
+              "text": "The Lieutenant in an Éire Rangers Warband replaces their Hold Your Fire! ability with the SKIRMISHER Keyword at no change to their cost in ducats."
+            },
+            {
+              "name": "Strong in Faith",
+              "text": "Éire is a bastion of the Church, with many famed warrior-priests who travel to war. An Éire Rangers Warband can include 0-2 Trench Clerics. In addition, Trench Clerics in an Éire Rangers Warband replace the Onward Christian Soldiers ability with the following two abilities:\n* Arise and be Healed! ACTION: An Éire Rangers Trench Cleric can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, pick the Trench Cleric or one friendly model within 3\" of the Trench Cleric. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model.\n* Away Serpents! ACTION: An Éire Rangers Trench Cleric can take an Away Serpents! ACTION. If they do so, pick 1 enemy model within 12\" of the Trench Cleric and say that the Trench Cleric orders them to crawl on their belly like a snake. Then take a Risky Success Roll for the Trench Cleric. Add -1 DICE to the roll if the enemy model is mounted on a base that is 40mm or greater. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, the enemy model is taken Down."
+            },
+            {
+              "name": "Light Infantry",
+              "text": "The following restrictions apply to an Éire Rangers Warband:\nIt can only include 1 Mechanized Heavy Infantry model but can have up to 4 Combat Engineers and the Limit on Satchel Charges is changed to 4.\n* It cannot include more than 3 models that have a Great Sword/Axe. In addition, Mechanized Heavy Infantry models cannot have a Great Sword/Axe.\n* With the exception of Great Axes, only the Mechanized Heavy Infantry model can have Ranged Weapons and Melee Weapons with the HEAVY Keyword. Combat Engineers can have Satchel Charges.\n* Only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour."
+            },
+            {
+              "name": "Fianna",
+              "text": "The Fianna are famed warrior-hunters. Shock Troopers in an Éire Rangers Warband can have the INFILTRATOR and SKIRMISHER Keywords for +10 ducats per model."
+            },
+            {
+              "name": "Anointed Ammunition",
+              "text": "Models in an Eire Ranger Warband can have Armour-Piercing Bullets (▶ see Battlekit in the Trench Crusade Digital Rulebook) at a cost of 5 Ducats each. The Armour-Piercing Bullets have the Limit: 2 stipulation."
+            }
+          ],
+          "text": "Berserker: The Lieutenant or one of the Fianna in an Éire Rangers Warband can be upgraded to a Berserker for +15 Ducats. A Berserker cannot have Armour (they can have Shields). In addition, a Berserker has the NEGATE FEAR Keyword, and BLOOD MARKERS are never placed on them under any circumstances\nFollowers of St. Patrick: The Patron of an Éire Rangers Warband is always a Learned Saint.\nCarnyx: One Musical Instrument in an Éire Rangers Warband can have the FEAR Keyword at no additional cost in Ducats.\nHit-and-run Tactics: Add -1 DICE to the roll for a Melee Attack that targets a model from an Éire Rangers Warband that is making a Retreat.\nLoose Formation: The Lieutenant in an Éire Rangers Warband replaces their Hold Your Fire! ability with the SKIRMISHER Keyword at no change to their cost in ducats.\nStrong in Faith: Éire is a bastion of the Church, with many famed warrior-priests who travel to war. An Éire Rangers Warband can include 0-2 Trench Clerics. In addition, Trench Clerics in an Éire Rangers Warband replace the Onward Christian Soldiers ability with the following two abilities:\n* Arise and be Healed! ACTION: An Éire Rangers Trench Cleric can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, pick the Trench Cleric or one friendly model within 3\" of the Trench Cleric. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model.\n* Away Serpents! ACTION: An Éire Rangers Trench Cleric can take an Away Serpents! ACTION. If they do so, pick 1 enemy model within 12\" of the Trench Cleric and say that the Trench Cleric orders them to crawl on their belly like a snake. Then take a Risky Success Roll for the Trench Cleric. Add -1 DICE to the roll if the enemy model is mounted on a base that is 40mm or greater. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, the enemy model is taken Down.\nLight Infantry: The following restrictions apply to an Éire Rangers Warband:\nIt can only include 1 Mechanized Heavy Infantry model but can have up to 4 Combat Engineers and the Limit on Satchel Charges is changed to 4.\n* It cannot include more than 3 models that have a Great Sword/Axe. In addition, Mechanized Heavy Infantry models cannot have a Great Sword/Axe.\n* With the exception of Great Axes, only the Mechanized Heavy Infantry model can have Ranged Weapons and Melee Weapons with the HEAVY Keyword. Combat Engineers can have Satchel Charges.\n* Only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour.\nFianna: The Fianna are famed warrior-hunters. Shock Troopers in an Éire Rangers Warband can have the INFILTRATOR and SKIRMISHER Keywords for +10 ducats per model.\nAnointed Ammunition: Models in an Eire Ranger Warband can have Armour-Piercing Bullets (▶ see Battlekit in the Trench Crusade Digital Rulebook) at a cost of 5 Ducats each. The Armour-Piercing Bullets have the Limit: 2 stipulation."
+        },
+        {
+          "bsId": "9b8f-4361-5f23-2e20",
+          "id": "new-antioch/expeditionary-forces-of-abyssinia",
+          "name": "Expeditionary Forces of Abyssinia",
+          "rules": [
+            {
+              "name": "Chewa",
+              "text": "The Chewa are a traditional warrior-elite. Shock Troopers and models with the ELITE Keyword in an Expeditionary Forces of Abyssinia Warband can have the Chewa ability for +5 Ducats each.\n* Chewa Ability: Add +1 DICE to the Success Roll for a Melee Attack made by a model with the Chewa ability for each other friendly model within 1\" of the target, up to a maximum of +2 DICE."
+            },
+            {
+              "name": "Holy Warriors",
+              "text": "An Expeditionary Forces of Abyssinia Warband can include 0-1 Trench Cleric and 0-2 Holy Warriors. Use the Trench Clerics Warband Entry for Holy Warriors. In addition to the normal rules for a Trench Cleric, a Holy Warrior has the following abilities:\n* Blessed Psalm ACTION: A Holy Warrior can take a Blessed Psalm ACTION. If they do so, you can remove 1 BLESSED MARKER from the Holy Warrior and place it beside a friendly model. A Success Roll is not required to carry out this Action.\n* Arise and be Healed! ACTION: A Holy Warrior can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Holy Warrior’s Activation ends. If the roll is a Success or Critical Success, pick the Holy Warrior or 1 friendly model within 3\" of the Holy Warrior. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model."
+            },
+            {
+              "name": "Faith of Ethiopia",
+              "text": "The sect of the Sniper Priests does not operate in the Solomonic Dynasty. An Expeditionary Forces of Abyssinia Warband cannot include Sniper Priests."
+            },
+            {
+              "name": "Short-Range Marksmanship",
+              "text": "Add +1 DICE to the Success Rolls for Ranged Attacks made at Short Range by the Lieutenant and any Yeomen in an Expeditionary Forces of Abyssinia Warband, unless the attacking Weapon is a Grenade or has the HEAVY Keyword."
+            },
+            {
+              "name": "Weapons of Mobile Warfare",
+              "text": "An Expeditionary Forces of Abyssinia Warband can have a maximum of 3 Ranged Weapons with the HEAVY Keyword, not counting Satchel Charges."
+            },
+            {
+              "name": "Vanguard Forces",
+              "text": "An Expeditionary Forces of Abyssinia Warband cannot include Trench Moles. Instead, up to 4 Yeomen in an Expeditionary Forces of Abyssinia Warband can have the Flanking ability for +5 Ducats each.\n* Flanking Ability: When a model with this ability is deployed for the first time in a game, it can be deployed normally in its own deployment zone or in contact with any edge of the battlefield and at least 8\" away from any enemy models. Models with this ability are deployed before models with the INFILTRATOR Keyword, but after all other models. If a scenario has a special rule that says that models with the INFILTRATOR Keyword must deploy normally, then models with this ability must also deploy normally."
+            },
+            {
+              "name": "Abyssinian Healers",
+              "text": "An Expeditionary Forces of Abyssinia Warband can include 0-2 Combat Medics and Misericordia have the (Limit: 2) stipulation instead of (Limit: 1)."
+            },
+            {
+              "name": "Chieftain Panoply",
+              "text": "Mechanized Heavy Infantry in an Expeditionary Forces of Abyssinia Warband cannot have Machine Armour."
+            }
+          ],
+          "text": "Chewa: The Chewa are a traditional warrior-elite. Shock Troopers and models with the ELITE Keyword in an Expeditionary Forces of Abyssinia Warband can have the Chewa ability for +5 Ducats each.\n* Chewa Ability: Add +1 DICE to the Success Roll for a Melee Attack made by a model with the Chewa ability for each other friendly model within 1\" of the target, up to a maximum of +2 DICE.\nHoly Warriors: An Expeditionary Forces of Abyssinia Warband can include 0-1 Trench Cleric and 0-2 Holy Warriors. Use the Trench Clerics Warband Entry for Holy Warriors. In addition to the normal rules for a Trench Cleric, a Holy Warrior has the following abilities:\n* Blessed Psalm ACTION: A Holy Warrior can take a Blessed Psalm ACTION. If they do so, you can remove 1 BLESSED MARKER from the Holy Warrior and place it beside a friendly model. A Success Roll is not required to carry out this Action.\n* Arise and be Healed! ACTION: A Holy Warrior can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Holy Warrior’s Activation ends. If the roll is a Success or Critical Success, pick the Holy Warrior or 1 friendly model within 3\" of the Holy Warrior. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model.\nFaith of Ethiopia: The sect of the Sniper Priests does not operate in the Solomonic Dynasty. An Expeditionary Forces of Abyssinia Warband cannot include Sniper Priests.\nShort-Range Marksmanship: Add +1 DICE to the Success Rolls for Ranged Attacks made at Short Range by the Lieutenant and any Yeomen in an Expeditionary Forces of Abyssinia Warband, unless the attacking Weapon is a Grenade or has the HEAVY Keyword.\nWeapons of Mobile Warfare: An Expeditionary Forces of Abyssinia Warband can have a maximum of 3 Ranged Weapons with the HEAVY Keyword, not counting Satchel Charges.\nVanguard Forces: An Expeditionary Forces of Abyssinia Warband cannot include Trench Moles. Instead, up to 4 Yeomen in an Expeditionary Forces of Abyssinia Warband can have the Flanking ability for +5 Ducats each.\n* Flanking Ability: When a model with this ability is deployed for the first time in a game, it can be deployed normally in its own deployment zone or in contact with any edge of the battlefield and at least 8\" away from any enemy models. Models with this ability are deployed before models with the INFILTRATOR Keyword, but after all other models. If a scenario has a special rule that says that models with the INFILTRATOR Keyword must deploy normally, then models with this ability must also deploy normally.\nAbyssinian Healers: An Expeditionary Forces of Abyssinia Warband can include 0-2 Combat Medics and Misericordia have the (Limit: 2) stipulation instead of (Limit: 1).\nChieftain Panoply: Mechanized Heavy Infantry in an Expeditionary Forces of Abyssinia Warband cannot have Machine Armour."
+        },
+        {
+          "bsId": "c92f-74bc-9acb-69b4",
+          "id": "new-antioch/kingdom-of-alba-assault-detachment",
+          "name": "Kingdom of Alba Assault Detachment",
+          "optionGroups": [
+            "Cold Steel Discounts"
+          ],
+          "rules": [
+            {
+              "name": "Highland Strength",
+              "text": "The Lieutenant and any Shock Troopers in a Kingdom of Alba Assault Detachment Warband have the STRONG Keyword at no additional cost in Ducats."
+            },
+            {
+              "name": "Rampant Charge",
+              "text": "Models in a Kingdom of Alba Assault Detachment Warband have the IGNORE DEFENDED OBSTACLE Keyword."
+            },
+            {
+              "name": "Melee-Focused",
+              "text": "Mechanized Heavy Infantry in a Kingdom of Alba Assault Detachment Warband have a Melee Characteristic of +1 DICE and a Ranged Characteristic of +0 DICE."
+            },
+            {
+              "name": "Brave",
+              "text": "Add +1 DICE to the Success Rolls for a Morale Check for a Kingdom of Alba Assault Detachment Warband."
+            },
+            {
+              "name": "Lightly Armoured",
+              "text": "Only the Lieutenant and Mechanized Heavy Infantry models in a Kingdom of Alba Assault Detachment Warband can have Reinforced Armour or Machine Armour."
+            },
+            {
+              "name": "Strained Supply",
+              "text": "Automatic Shotguns, Grenade Launchers, Machine Guns, Sniper Rifles, and Submachine Guns in a Kingdom of Alba have a Limit of 1."
+            },
+            {
+              "name": "Celtic Machine Armour",
+              "text": "Models in a Kingdom of Alba Assault Detachment Warband with Machine Armour have a Charge Bonus of D6\" (it is not reduced to D3\" by Machine Armour)."
+            },
+            {
+              "name": "Claymore Smiths",
+              "text": "Greatswords cost 7 ducats instead of 12 for models from a Kingdom of Alba Assault Detachment Warband."
+            },
+            {
+              "name": "Bagpipes",
+              "text": "One Musical Instrument in a Kingdom of Alba Assault Detachment Warband can be upgraded to a set of Bagpipes at no additional cost in Ducats. Friendly models within 8\" of a model that has a set of Bagpipes have the NEGATE FEAR Keyword."
+            },
+            {
+              "name": "Dum-Dum Ammunition",
+              "text": "Models in a Kingdom of Alba Assault Detachment Warband can have Dum-Dum Bullets (▶ see Battlekit in the Trench Crusade Digital Rulebook) at a cost of 5 ducats each. The Dum-Dum Bullets have the Limit: 3 stipulation."
+            }
+          ],
+          "text": "Highland Strength: The Lieutenant and any Shock Troopers in a Kingdom of Alba Assault Detachment Warband have the STRONG Keyword at no additional cost in Ducats.\nRampant Charge: Models in a Kingdom of Alba Assault Detachment Warband have the IGNORE DEFENDED OBSTACLE Keyword.\nMelee-Focused: Mechanized Heavy Infantry in a Kingdom of Alba Assault Detachment Warband have a Melee Characteristic of +1 DICE and a Ranged Characteristic of +0 DICE.\nBrave: Add +1 DICE to the Success Rolls for a Morale Check for a Kingdom of Alba Assault Detachment Warband.\nLightly Armoured: Only the Lieutenant and Mechanized Heavy Infantry models in a Kingdom of Alba Assault Detachment Warband can have Reinforced Armour or Machine Armour.\nStrained Supply: Automatic Shotguns, Grenade Launchers, Machine Guns, Sniper Rifles, and Submachine Guns in a Kingdom of Alba have a Limit of 1.\nCeltic Machine Armour: Models in a Kingdom of Alba Assault Detachment Warband with Machine Armour have a Charge Bonus of D6\" (it is not reduced to D3\" by Machine Armour).\nClaymore Smiths: Greatswords cost 7 ducats instead of 12 for models from a Kingdom of Alba Assault Detachment Warband.\nBagpipes: One Musical Instrument in a Kingdom of Alba Assault Detachment Warband can be upgraded to a set of Bagpipes at no additional cost in Ducats. Friendly models within 8\" of a model that has a set of Bagpipes have the NEGATE FEAR Keyword.\nDum-Dum Ammunition: Models in a Kingdom of Alba Assault Detachment Warband can have Dum-Dum Bullets (▶ see Battlekit in the Trench Crusade Digital Rulebook) at a cost of 5 ducats each. The Dum-Dum Bullets have the Limit: 3 stipulation."
+        },
+        {
+          "bsId": "7dda-8f8f-2120-65de",
+          "id": "new-antioch/papal-states-intervention-force",
+          "name": "Papal States Intervention Force",
+          "rules": [
+            {
+              "name": "Lector",
+              "text": "A Papal States Intervention Force Warband must include 1 Trench Cleric, but does not have to include a Lieutenant. A Trench Cleric in a Papal States Intervention Force Warband has the LEADER Keyword and the following additional ability::\n* Arise and be Healed! ACTION: A Papal States Intervention Force Trench Cleric can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, pick the Trench Cleric or 1 friendly model within 3\" of the Trench Cleric. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model."
+            },
+            {
+              "name": "Swiss Guard",
+              "text": "The Lieutenant and up to 4 models in a Papal States Intervention Force Warband can have the NEGATE FEAR Keyword at no additional cost in ducats."
+            },
+            {
+              "name": "Far from Home",
+              "text": "A Papal States Intervention Force Warband cannot include Trench Moles."
+            },
+            {
+              "name": "Supreme Blessing",
+              "text": "When you recruit a Papal States Intervention Force Warband, you must give the Supreme Pontiff ’s Crucifix to one model in the Warband. The Supreme Pontiff ’s Crucifix taken when the Warband is created is free and does not cost any glory (if it is lost then the replacement must be paid for normally)."
+            },
+            {
+              "name": "Specialist Force",
+              "text": "You have 500 Ducats and 11 Glory to recruit a Papal State Force Warband for a campaign. A Papal States Intervention Force gains 4 Glory each time it calls for Reinforcements. In a campaign, its Threshold Value is reduced by 200 Ducats. When recruiting models for a one-off game, after agreeing upon the size of the game, reduce the amount of Ducats a Papal States Intervention Force Warband has to spend by 200 Ducats and increase the amount of Glory they have to spend by 11 Glory."
+            }
+          ],
+          "text": "Lector: A Papal States Intervention Force Warband must include 1 Trench Cleric, but does not have to include a Lieutenant. A Trench Cleric in a Papal States Intervention Force Warband has the LEADER Keyword and the following additional ability::\n* Arise and be Healed! ACTION: A Papal States Intervention Force Trench Cleric can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, pick the Trench Cleric or 1 friendly model within 3\" of the Trench Cleric. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model.\nSwiss Guard: The Lieutenant and up to 4 models in a Papal States Intervention Force Warband can have the NEGATE FEAR Keyword at no additional cost in ducats.\nFar from Home: A Papal States Intervention Force Warband cannot include Trench Moles.\nSupreme Blessing: When you recruit a Papal States Intervention Force Warband, you must give the Supreme Pontiff ’s Crucifix to one model in the Warband. The Supreme Pontiff ’s Crucifix taken when the Warband is created is free and does not cost any glory (if it is lost then the replacement must be paid for normally).\nSpecialist Force: You have 500 Ducats and 11 Glory to recruit a Papal State Force Warband for a campaign. A Papal States Intervention Force gains 4 Glory each time it calls for Reinforcements. In a campaign, its Threshold Value is reduced by 200 Ducats. When recruiting models for a one-off game, after agreeing upon the size of the game, reduce the amount of Ducats a Papal States Intervention Force Warband has to spend by 200 Ducats and increase the amount of Glory they have to spend by 11 Glory."
+        },
+        {
+          "bsId": "440a-e3aa-60d7-7d9c",
+          "id": "new-antioch/stosstruppen-of-the-free-state-of-prussia",
+          "name": "Stoßtruppen of the Free State of Prussia",
+          "rules": [
+            {
+              "name": "Lightly-Armoured",
+              "text": "Only the Lieutenant and Mechanized Heavy Infantry model in a Stosstruppen of the Free State of Prussia Warband can have Reinforced Armour or Machine Armour."
+            },
+            {
+              "name": "Expert Fireteams",
+              "text": "A Stosstruppen of the Free State of Prussia Warband can include up to 3 Fireteams instead of only 2."
+            },
+            {
+              "name": "Light Melee",
+              "text": "hock Troopers in a Stosstruppen of the Free State of Prussia Warband do not have the Assault Drill ability. They still cost 45 ducats."
+            },
+            {
+              "name": "Specialised Equipment",
+              "text": "Submachine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 4, and Automatic Shotguns and Automatic Pistols do not have the ELITE only stipulation. However, Machine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 1, and models cannot have Grenade Launchers or Martyrdom Pills."
+            },
+            {
+              "name": "Masters of the Grenade",
+              "text": "Add 4\" to the Range of all Grenades used by models from a Stosstruppen of the Free State of Prussia Warband."
+            },
+            {
+              "name": "Rapid Assault",
+              "text": "The Lieutenant and Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the Rapid Assault ability at a cost of +5 Ducats each.\n* Rapid Assault Ability: Add +1 DICE to the Risky Success Roll when a model with the Rapid Assault ability takes a Dash ACTION."
+            },
+            {
+              "name": "Forward Positions",
+              "text": "Up to 2 Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the INFILTRATOR Keyword at a cost of +10 Ducats each."
+            },
+            {
+              "name": "Troop Selections",
+              "text": "A Stosstruppen of the Free State of Prussia Warband must include 2-8 Shock Troopers and cannot include Trench Moles. In addition, it cannot have more than 1 Sniper Priest or 1 Mechanized Heavy Infantry model."
+            },
+            {
+              "name": "Feldkaplane",
+              "text": "Trench Clerics in a Stosstruppen of the Free State of Prussia Warband can have 1 dose of Holy Smoke."
+            }
+          ],
+          "text": "Lightly-Armoured: Only the Lieutenant and Mechanized Heavy Infantry model in a Stosstruppen of the Free State of Prussia Warband can have Reinforced Armour or Machine Armour.\nExpert Fireteams: A Stosstruppen of the Free State of Prussia Warband can include up to 3 Fireteams instead of only 2.\nLight Melee: hock Troopers in a Stosstruppen of the Free State of Prussia Warband do not have the Assault Drill ability. They still cost 45 ducats.\nSpecialised Equipment: Submachine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 4, and Automatic Shotguns and Automatic Pistols do not have the ELITE only stipulation. However, Machine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 1, and models cannot have Grenade Launchers or Martyrdom Pills.\nMasters of the Grenade: Add 4\" to the Range of all Grenades used by models from a Stosstruppen of the Free State of Prussia Warband.\nRapid Assault: The Lieutenant and Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the Rapid Assault ability at a cost of +5 Ducats each.\n* Rapid Assault Ability: Add +1 DICE to the Risky Success Roll when a model with the Rapid Assault ability takes a Dash ACTION.\nForward Positions: Up to 2 Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the INFILTRATOR Keyword at a cost of +10 Ducats each.\nTroop Selections: A Stosstruppen of the Free State of Prussia Warband must include 2-8 Shock Troopers and cannot include Trench Moles. In addition, it cannot have more than 1 Sniper Priest or 1 Mechanized Heavy Infantry model.\nFeldkaplane: Trench Clerics in a Stosstruppen of the Free State of Prussia Warband can have 1 dose of Holy Smoke."
+        },
+        {
+          "bsId": "ea95-2310-99f0-6e97",
+          "id": "new-antioch/the-red-brigade",
+          "name": "The Red Brigade",
+          "rules": [
+            {
+              "name": "Wear and Tear",
+              "text": "The Red Brigade Warband starts every game with 1 BLOOD MARKER for each 200 full ducats of the total Warband cost. Your opponent can distribute these between your troops, but not can only give 1 BLOOD MARKER per model as long as there are troops with no BLOOD MARKERs left. Max BLOOD MARKERs per model is 2."
+            },
+            {
+              "name": "No Retreat",
+              "text": "No member of this Warband can ever leave melee combat voluntarily, except Mercy Dogs and those who they drag along them (see below)."
+            },
+            {
+              "name": "Trench Dogs",
+              "text": "The Red Brigade may buy several different types of Trench Dogs as detailed below."
+            },
+            {
+              "name": "Glory Hounds",
+              "text": "Soldiers of New Antioch love heroic stories and improbable tall tales. Any dog that is part of the Red Brigade earns 2 Glory Points instead of 1 when they perform any Glorious Deed."
+            },
+            {
+              "name": "Remember the Fallen",
+              "text": "After the battle, instead of taking the Exploration option of Reinforcement Option, the Red Brigade may recover all the weapons, armour and equipment of all the warriors of their own Warband who died in the battle. This does not include Allies & Mercenaries since they are not Blood Pledges."
+            },
+            {
+              "name": "Live off the Land",
+              "text": "Most of the time the Red Brigade operates deep within hostile territory. When playing campaigns, the Red Brigade cannot call for Reinforcements if it did so after their last game. Instead they must choose the Exploration or Rememeber the Fallen option."
+            },
+            {
+              "name": "Guns Blazing",
+              "text": "It is the tradition of the Brigade officers to pratice the two-pistol fighting style of St. Ernest. Lieutenant of the Warband can buy Gunslinger Skill (see Campaign rules) for the cost of +5 ducats."
+            },
+            {
+              "name": "Displeasure of the Church",
+              "text": "Only few members of the clergy are willing to serve in the unit due the disregard of their lives they show. Your warband can have a maximum of two such characters, so you can have either 1 Trench Cleric and 1 Sniper Priest, or 2 Sniper Priests but no Trench Cleric."
+            }
+          ],
+          "text": "Wear and Tear: The Red Brigade Warband starts every game with 1 BLOOD MARKER for each 200 full ducats of the total Warband cost. Your opponent can distribute these between your troops, but not can only give 1 BLOOD MARKER per model as long as there are troops with no BLOOD MARKERs left. Max BLOOD MARKERs per model is 2.\nNo Retreat: No member of this Warband can ever leave melee combat voluntarily, except Mercy Dogs and those who they drag along them (see below).\nTrench Dogs: The Red Brigade may buy several different types of Trench Dogs as detailed below.\nGlory Hounds: Soldiers of New Antioch love heroic stories and improbable tall tales. Any dog that is part of the Red Brigade earns 2 Glory Points instead of 1 when they perform any Glorious Deed.\nRemember the Fallen: After the battle, instead of taking the Exploration option of Reinforcement Option, the Red Brigade may recover all the weapons, armour and equipment of all the warriors of their own Warband who died in the battle. This does not include Allies & Mercenaries since they are not Blood Pledges.\nLive off the Land: Most of the time the Red Brigade operates deep within hostile territory. When playing campaigns, the Red Brigade cannot call for Reinforcements if it did so after their last game. Instead they must choose the Exploration or Rememeber the Fallen option.\nGuns Blazing: It is the tradition of the Brigade officers to pratice the two-pistol fighting style of St. Ernest. Lieutenant of the Warband can buy Gunslinger Skill (see Campaign rules) for the cost of +5 ducats.\nDispleasure of the Church: Only few members of the clergy are willing to serve in the unit due the disregard of their lives they show. Your warband can have a maximum of two such characters, so you can have either 1 Trench Cleric and 1 Sniper Priest, or 2 Sniper Priests but no Trench Cleric."
+        }
+      ]
+    },
+    {
+      "bsId": "d54d-055d-bbc0-a20f",
+      "campaignLinks": [
+        "Advancement",
+        "Angelic Instrument",
+        "Blasphemous Banner",
+        "Curative Fluids",
+        "Donkey's Jawbone",
+        "Exploration Upgrades",
+        "Holy Grenade",
+        "Horn of Joshua",
+        "Lock of Samson's Hair",
+        "Rocket-Propelled Grenade",
+        "Saints Reliquary",
+        "Sniper Scope"
+      ],
+      "id": "trench-pilgrims",
+      "keywords": [
+        "Pilgrim"
+      ],
+      "name": "Trench Pilgrims",
+      "rules": [],
+      "unitIds": [
+        "trench-pilgrims/anchorite-shrine",
+        "trench-pilgrims/castigator",
+        "trench-pilgrims/chieftain",
+        "trench-pilgrims/communicant",
+        "trench-pilgrims/communicant-anti-tank-hunter",
+        "trench-pilgrims/disciple-of-st-roch",
+        "trench-pilgrims/ecclesiastic-prisoner",
+        "trench-pilgrims/homunculus",
+        "trench-pilgrims/huscarl",
+        "trench-pilgrims/mendelist-ammo-monk",
+        "trench-pilgrims/observer",
+        "trench-pilgrims/scripture-guardian",
+        "trench-pilgrims/sister-of-saint-cosmas",
+        "trench-pilgrims/stigmatic-nun",
+        "trench-pilgrims/trench-dog",
+        "trench-pilgrims/trench-pilgrim",
+        "trench-pilgrims/war-prophet",
+        "trench-pilgrims/witchburner"
+      ],
+      "variants": [
+        {
+          "bsId": "8b6b-5bd4-c742-bb12",
+          "id": "trench-pilgrims/cavalcade-of-the-tenth-plague",
+          "name": "Cavalcade of the Tenth Plague",
+          "rules": [
+            {
+              "name": "Day of His Wrath",
+              "text": "The War Prophet of this Warband replaces their Laying on Hands ACTION with the following Day of his Wrath ACTION.\n* Day of His Wrath ACTION: A Cavalcade of the Tenth Plague War Prophet can take a Day of his Wrath ACTION. If they do so, take a Risky Success Roll for the model. If the roll is a Failure the War Prophet’s Activation ends immediately. If the roll is a Success, make an Injury Roll with the IGNORE ARMOUR Keyword for 1 enemy model within 3\" of the War Prophet. If the roll is a Critical Success, make an Injury Roll with +1 INJURY DICE and the IGNORE ARMOUR Keyword for 1 enemy model within 3\" of the War Prophet."
+            },
+            {
+              "name": "Stolen Communicants",
+              "text": "Communicants cost 3 glory to recruit for a Cavalcade of the Tenth Plague Warband (they do not cost any ducats)."
+            },
+            {
+              "name": "Heaven Awaits",
+              "text": "The Cavalcade rejects the doctrine of the Meta-Christ. Trench Pilgrims in a Cavalcade of the Tenth Plague Warband cannot be resurrected as Martyr-Penitents."
+            },
+            {
+              "name": "The Unclean",
+              "text": "The Cavalcade detests using the unclean Ecclesiastic Prisoners. A Cavalcade of the Tenth Plague Warband can only have 0-2 Ecclesiastic Prisoners"
+            },
+            {
+              "name": "Favour of the Lord",
+              "text": "At the start of each Turn, you can place 1 BLESSING MARKER next to a model from this Warband."
+            },
+            {
+              "name": "Blood of the Lamb",
+              "text": "Castigators in a Cavalcade of the Tenth Plague Warband have the TOUGH Keyword at no additional cost in ducats."
+            },
+            {
+              "name": "Only the Righteous",
+              "text": "Any model with the PILGRIM Keyword in a Cavalcade of the Tenth Plague Warband (including an Anchorite Shrine) can have a Sacrifical Lamb at a cost of 5 ducats each, except for Ecclesiastic Prisoners."
+            }
+          ],
+          "text": "Day of His Wrath: The War Prophet of this Warband replaces their Laying on Hands ACTION with the following Day of his Wrath ACTION.\n* Day of His Wrath ACTION: A Cavalcade of the Tenth Plague War Prophet can take a Day of his Wrath ACTION. If they do so, take a Risky Success Roll for the model. If the roll is a Failure the War Prophet’s Activation ends immediately. If the roll is a Success, make an Injury Roll with the IGNORE ARMOUR Keyword for 1 enemy model within 3\" of the War Prophet. If the roll is a Critical Success, make an Injury Roll with +1 INJURY DICE and the IGNORE ARMOUR Keyword for 1 enemy model within 3\" of the War Prophet.\nStolen Communicants: Communicants cost 3 glory to recruit for a Cavalcade of the Tenth Plague Warband (they do not cost any ducats).\nHeaven Awaits: The Cavalcade rejects the doctrine of the Meta-Christ. Trench Pilgrims in a Cavalcade of the Tenth Plague Warband cannot be resurrected as Martyr-Penitents.\nThe Unclean: The Cavalcade detests using the unclean Ecclesiastic Prisoners. A Cavalcade of the Tenth Plague Warband can only have 0-2 Ecclesiastic Prisoners\nFavour of the Lord: At the start of each Turn, you can place 1 BLESSING MARKER next to a model from this Warband.\nBlood of the Lamb: Castigators in a Cavalcade of the Tenth Plague Warband have the TOUGH Keyword at no additional cost in ducats.\nOnly the Righteous: Any model with the PILGRIM Keyword in a Cavalcade of the Tenth Plague Warband (including an Anchorite Shrine) can have a Sacrifical Lamb at a cost of 5 ducats each, except for Ecclesiastic Prisoners."
+        },
+        {
+          "bsId": "0d88-774c-22af-e2fc",
+          "id": "trench-pilgrims/procession-of-the-sacred-affliction",
+          "name": "Procession of the Sacred Affliction",
+          "rules": [
+            {
+              "name": "Face Thy Fears",
+              "text": "Models in a Procession of the Sacred Affliction Warband cannot have Iron Capirotes. Ecclesiastic Prisoners in a Procession of the Sacred Affliction Warband do not have Iron Capirotes, but their cost remains the same."
+            },
+            {
+              "name": "Hammer and the Anvil",
+              "text": "Anti-Tank Hammers taken for a Procession of the Sacred Affliction Warband do not have the (ELITE only) restriction."
+            },
+            {
+              "name": "Reliquary Armoury",
+              "text": "Holy Icon Shields cost 20 ducats for a Procession of the Sacred Affliction Warband and do not have the (ELITE only) restriction."
+            },
+            {
+              "name": "Punishing Millstones",
+              "text": "Add +1 INJURY DICE for Melee Attacks made by models from a Procession of the Sacred Affliction if the target is Down. This special rule does not apply to attacks made by Ecclesiastic Prisoners."
+            },
+            {
+              "name": "Melee-Focused",
+              "text": "Models in a Procession of the Sacred Affliction Warband cannot have any Machine Guns, and Punt Guns have the (Limit: 1) stipulation."
+            },
+            {
+              "name": "Zealot Strength",
+              "text": "Up to three Trench Pilgrims and/or Martyr-Penitents in a Procession of the Sacred Affliction Warband can have Zealot Strength instead of only one."
+            },
+            {
+              "name": "Wrath of God",
+              "text": "Up to 1 Castigator, or Trench Pilgrim, or Martyr Penitent can have the Wrath of God special rule at a cost of 15 ducats. BLOOD MARKERS are never placed next to a model with the Wrath of God special rule, and it has the NEGATE FEAR Keyword. It cannot be Broken on the Wheel by an Anchorite Shrine. A model with the Wrath of God special rule cannot have Ranged Weapons or Armour (it can have a Shield). In addition, change the base size of the model to 32mm."
+            }
+          ],
+          "text": "Face Thy Fears: Models in a Procession of the Sacred Affliction Warband cannot have Iron Capirotes. Ecclesiastic Prisoners in a Procession of the Sacred Affliction Warband do not have Iron Capirotes, but their cost remains the same.\nHammer and the Anvil: Anti-Tank Hammers taken for a Procession of the Sacred Affliction Warband do not have the (ELITE only) restriction.\nReliquary Armoury: Holy Icon Shields cost 20 ducats for a Procession of the Sacred Affliction Warband and do not have the (ELITE only) restriction.\nPunishing Millstones: Add +1 INJURY DICE for Melee Attacks made by models from a Procession of the Sacred Affliction if the target is Down. This special rule does not apply to attacks made by Ecclesiastic Prisoners.\nMelee-Focused: Models in a Procession of the Sacred Affliction Warband cannot have any Machine Guns, and Punt Guns have the (Limit: 1) stipulation.\nZealot Strength: Up to three Trench Pilgrims and/or Martyr-Penitents in a Procession of the Sacred Affliction Warband can have Zealot Strength instead of only one.\nWrath of God: Up to 1 Castigator, or Trench Pilgrim, or Martyr Penitent can have the Wrath of God special rule at a cost of 15 ducats. BLOOD MARKERS are never placed next to a model with the Wrath of God special rule, and it has the NEGATE FEAR Keyword. It cannot be Broken on the Wheel by an Anchorite Shrine. A model with the Wrath of God special rule cannot have Ranged Weapons or Armour (it can have a Shield). In addition, change the base size of the model to 32mm."
+        },
+        {
+          "bsId": "52bc-6b21-136a-608d",
+          "id": "trench-pilgrims/war-pilgrimage-of-saint-methodius",
+          "name": "War Pilgrimage of Saint Methodius",
+          "rules": [
+            {
+              "name": "Chaste Order",
+              "text": "While they revere the holy stigmata of the Nuns of the order, the fathers of the monastery shun the ecstatic revelry of many Trench Pilgrims and insist on modest dress. All Stigmatic Nuns in a War Pilgrimage of Saint Methodius Warband must have Standard Armour, and cannot be used in a battle if they are not wearing Standard Armour. Additionally, the Warband cannot include more than 3 Stigmatic Nuns."
+            },
+            {
+              "name": "Anchorite Cloister",
+              "text": "A War Pilgrimage of Saint Methodius Warband may include up to two Anchorite Shrines."
+            },
+            {
+              "name": "Communicant Heresy",
+              "text": "The Pilgrims of Saint Methodius oppose the creation of Communicants. Ammo Monks, Communicants and Communicant Anti-Tank Hunters cannot be included in a War Pilgrimage of Saint Methodius Warband."
+            },
+            {
+              "name": "Anchorite Armoury",
+              "text": "Anchorite Shrines in a War Pilgrimage of Saint Methodius Warband have a Ranged Characteristic of +0 DICE instead of -, and can have Anchorite Ranged Weapons and Anchorite Battlekit from the War Pilgrimage of Saint Methodius Armoury."
+            },
+            {
+              "name": "Followers of St. Methodius",
+              "text": "The Patron of a War Pilgrimage of Saint Methodius Warband is always a Learned Saint."
+            },
+            {
+              "name": "Treasure in Heaven",
+              "text": "Trench Pilgrims in a War Pilgrimage of Saint Methodius Warband cannot be resurrected as Martyr Penitents."
+            },
+            {
+              "name": "Mortal Sin",
+              "text": "Ecclesiastic Prisoners in a War Pilgrimage of Saint Methodius Warband cannot have a Martyrdom Device, and models in a War Pilgrimage of Saint Methodius Warband cannot be Broken on the Wheel of an Anchorite Shrine."
+            }
+          ],
+          "text": "Chaste Order: While they revere the holy stigmata of the Nuns of the order, the fathers of the monastery shun the ecstatic revelry of many Trench Pilgrims and insist on modest dress. All Stigmatic Nuns in a War Pilgrimage of Saint Methodius Warband must have Standard Armour, and cannot be used in a battle if they are not wearing Standard Armour. Additionally, the Warband cannot include more than 3 Stigmatic Nuns.\nAnchorite Cloister: A War Pilgrimage of Saint Methodius Warband may include up to two Anchorite Shrines.\nCommunicant Heresy: The Pilgrims of Saint Methodius oppose the creation of Communicants. Ammo Monks, Communicants and Communicant Anti-Tank Hunters cannot be included in a War Pilgrimage of Saint Methodius Warband.\nAnchorite Armoury: Anchorite Shrines in a War Pilgrimage of Saint Methodius Warband have a Ranged Characteristic of +0 DICE instead of -, and can have Anchorite Ranged Weapons and Anchorite Battlekit from the War Pilgrimage of Saint Methodius Armoury.\nFollowers of St. Methodius: The Patron of a War Pilgrimage of Saint Methodius Warband is always a Learned Saint.\nTreasure in Heaven: Trench Pilgrims in a War Pilgrimage of Saint Methodius Warband cannot be resurrected as Martyr Penitents.\nMortal Sin: Ecclesiastic Prisoners in a War Pilgrimage of Saint Methodius Warband cannot have a Martyrdom Device, and models in a War Pilgrimage of Saint Methodius Warband cannot be Broken on the Wheel of an Anchorite Shrine."
+        }
+      ]
+    }
+  ],
+  "source": {
+    "catalogues": {
+      "Battlekits": {
+        "bsId": "f044-03b4-6607-1152",
+        "file": "Equipment.cat",
+        "revision": "1"
+      },
+      "Black Grail": {
+        "bsId": "0b26-15c1-cebd-0077",
+        "file": "Black Grail.cat",
+        "revision": "13"
+      },
+      "Campaign Rules": {
+        "bsId": "ba52-3616-d7f9-8d0c",
+        "file": "Campaign Rules.cat",
+        "revision": "5"
+      },
+      "Court of the Seven-Headed Serpent": {
+        "bsId": "44b9-e92b-2dc0-6820",
+        "file": "Court of the Seven-Headed Serpent.cat",
+        "revision": "10"
+      },
+      "Heretic Legion": {
+        "bsId": "6941-ec54-3001-8288",
+        "file": "Heretic Legion.cat",
+        "revision": "24"
+      },
+      "Iron Sultanate": {
+        "bsId": "72ab-daa4-80ee-e9a5",
+        "file": "Iron Sultanate.cat",
+        "revision": "14"
+      },
+      "Melee Weapons": {
+        "bsId": "7595-974a-7451-6c2e",
+        "file": "Melee Weapons.cat",
+        "revision": "1"
+      },
+      "Mercenaries": {
+        "bsId": "f569-e9dd-327a-5735",
+        "file": "Mercenaries.cat",
+        "revision": "8"
+      },
+      "New Antioch": {
+        "bsId": "707d-5bdf-586e-f704",
+        "file": "New Antioch.cat",
+        "revision": "13"
+      },
+      "Ranged Weapons": {
+        "bsId": "8ef4-3a38-8adb-53ba",
+        "file": "Ranged Weapons.cat",
+        "revision": "1"
+      },
+      "Trench Pilgrims": {
+        "bsId": "d54d-055d-bbc0-a20f",
+        "file": "Trench Pilgrims.cat",
+        "revision": "7"
+      }
+    },
+    "commit": "45d187c6fde12d6c073f620098f182681350d6c8",
+    "edition": "BattleScribe gameSystem 'Trench Crusade' revision 17",
+    "file": "Trench Crusade.gst",
+    "gameSystem": {
+      "bsId": "sys-4f3d-c5c9-7df1-ad01",
+      "file": "Trench Crusade.gst",
+      "revision": "17"
+    },
+    "generator": "scripts/convert_newrecruit.py",
+    "repo": "https://github.com/Fawkstrot11/TrenchCrusade"
+  }
+}

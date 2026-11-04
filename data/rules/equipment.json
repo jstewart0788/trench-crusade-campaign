@@ -1,0 +1,5102 @@
+{
+  "$schema": "tc-rules-equipment-v1",
+  "items": [
+    {
+      "bsId": "61aa-fb82-8fe6-99db",
+      "category": "ranged",
+      "cost": {
+        "ducats": 0,
+        "glory": 3
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "abus-gun",
+      "keywords": [
+        "ARMOUR PIERCING",
+        "HEAVY",
+        "+2 INJURY DICE"
+      ],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Abus Gun",
+      "range": "30\"",
+      "rules": "",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "6dbb-ba95-c903-3c8c",
+      "category": "ranged",
+      "cost": {
+        "ducats": 9,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "alaybozan",
+      "keywords": [
+        "SHRAPNEL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Alaybozan",
+      "page": 109,
+      "range": "12\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "68e2-bde3-19a9-2980",
+      "category": "armour",
+      "cost": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "alchemist-armour",
+      "keywords": [
+        "-2 INJURY MODIFIER",
+        "NEGATE FIRE",
+        "NEGATE GAS"
+      ],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -2,
+          "stat": "armour"
+        }
+      ],
+      "name": "Alchemist Armour",
+      "range": null,
+      "rules": "Protection From Harm: Add- 1 INJURY DICE to Injury Rolls for attacks made by Weapons with the FIRE or GAS Keywords that target a model that has Alchemist Armour, even if the attacking weapon has the IGNORE ARMOUR Keyword.",
+      "source": "Trench Crusade",
+      "type": "Armour"
+    },
+    {
+      "bsId": "c296-2021-0947-c6c7",
+      "category": "ammunition",
+      "cost": {
+        "ducats": 3,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "ammo/alchemical-ammunition",
+      "keywords": [
+        "AMMUNITION (+1 DICE)"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Alchemical Ammunition",
+      "range": null,
+      "rules": "Alchemical Ammunition can only be used with an Alaybozan, Halberd-Gun, Jezzail or Siege Jezzail (even though the Alaybozan has the SHRAPNEL Keyword). In a campaign, you cannot reallocate Alchemical Ammunition to another model.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "9f51-3782-6026-46a6",
+      "category": "ammunition",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "ammo/armour-piercing-bullets",
+      "keywords": [
+        "AMMUNITION (ARMOUR-PIERCING)",
+        "CONSUMABLE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Armour Piercing Bullets",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "8b0b-b48b-c82a-f71e",
+      "category": "ammunition",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "ammo/dum-dum-bullets",
+      "keywords": [
+        "AMMUNITION (CRITICAL)",
+        "CONSUMABLE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Dum-Dum Bullets",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "c837-cb9f-bfbb-fabc",
+      "category": "ammunition",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "ammo/incendiary-ammunition",
+      "keywords": [
+        "AMMUNITION (FIRE)",
+        "CONSUMABLE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Incendiary Ammunition",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "cc0d-7daf-d822-83ee",
+      "category": "ammunition",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "hands": null,
+      "id": "ammo/tracer-bullets",
+      "keywords": [
+        "AMMUNITION (+1 DICE)",
+        "CONSUMABLE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Tracer Bullets",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "c650-4b48-ccfb-899a",
+      "category": "melee",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "anaza-spear",
+      "keywords": [
+        "CUMBERSOME",
+        "BLOCK",
+        "IGNORE ARMOUR"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Anaza Spear",
+      "range": "Melee",
+      "rules": "This weapon adds an additional +1 INJURY DICE against a model that is Downed.",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "0bbf-0f8a-df4f-2f45",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "anfarro",
+      "keywords": [
+        "NEGATE FEAR"
+      ],
+      "limits": "max 6 per warband",
+      "modifiers": [
+        {
+          "delta": 1,
+          "stat": "melee"
+        }
+      ],
+      "name": "Anfarro",
+      "range": null,
+      "rules": "Token of Honour: Add +1 DICE to the Melee Characteristic of a model with an Anfarro.",
+      "source": "New Antioch",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "20ec-9e12-6cdf-abe2",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "anqa-guard",
+      "keywords": [
+        "DEPLOYABLE",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Anqā Guard",
+      "range": null,
+      "rules": "An Anqā Guard is represented by a model of a shield that is about 1\" high and which is mounted on a 40mm base.\n* Pre-battle Deployment: At the start of each game, after Deployment, you can say that a model that has an Anqā Guard is going to deploy it. If you do so, deploy the Anqā Guard anywhere wholly within your deployment zone.\n* Combat Deployment ACTION: A model that has an Anqā Guard can take a Combat Deployment ACTION. If it does so, take a Risky Success Roll for the model and add +2 DICE to the roll. If the roll is a Failure, nothing happens and the model’s Activation ends. If the roll is a Success or Critical Success, you can deploy the Anqā Guard within 1\" of the model.\n* Mobile Cover: Once deployed, the Anqā Guard is treated as a piece of Impassable terrain and can serve as Cover or a Defended Obstacle. The model that had the Anqā Guard is not considered to be carrying it for the rest of the game.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "19f3-086f-a5ad-f662",
+      "category": "ranged",
+      "cost": {
+        "ducats": 40,
+        "glory": 3
+      },
+      "hands": 2,
+      "id": "anti-material-rifle",
+      "keywords": [
+        "+1 INJURY DICE",
+        "CRITICAL",
+        "HEAVY",
+        "IGNORE ARMOUR"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Anti-Material Rifle",
+      "range": "36\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "0f6a-12ab-facd-4972",
+      "category": "melee",
+      "cost": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "anti-tank-hammer",
+      "keywords": [
+        "+1 INJURY DICE",
+        "CRITICAL",
+        "IGNORE ARMOUR",
+        "RISKY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Anti-Tank Hammer",
+      "range": "Melee",
+      "rules": "**Dangerous**: Place 1 BLOOD MARKER next to the model using this Weapon if it makes a Melee Attack and the Success Roll is a Success or a Critical Success.",
+      "source": "Melee Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "c6c7-bb5b-f638-5506",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "apex-form",
+      "keywords": [],
+      "limits": "max 1 per self",
+      "modifiers": [
+        {
+          "delta": 1,
+          "stat": "movement"
+        }
+      ],
+      "name": "Apex Form",
+      "range": null,
+      "rules": "This equipment is treated as an upgrade that cannot be removed once purchased, and is still lost if this model dies, ignoring Willing Sacrifice.\nThis model gains 1” to its movement characteristic and the SKIRMISHER keyword.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "39a3-6b2f-e1cf-8775",
+      "category": "ranged",
+      "cost": {
+        "ducats": 8,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 2,
+      "id": "arquebus",
+      "keywords": [
+        "CUMBERSOME"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Arquebus",
+      "page": 116,
+      "range": "18\"",
+      "rules": "Batter: A model that has an Arquebus can use it as a 2-Handed Melee Weapon.",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "bb9f-a973-1114-dc21",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "artificial-rebirth",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Artificial Rebirth",
+      "range": null,
+      "rules": "This model gains the keyword ARTIFICIAL. It is not affected by FEAR. Additionally,\nattacks with the Keyword GAS suffer a -1 DICE penalty to injure the model and they do not suffer additional BLOOD MARKERS from the Keyword GAS.\nModels with this upgrade cannot equip Infernal Brand Marks or Gas Masks, since they’re not strictly alive. They can also never remove (or be forced to remove or lose) this upgrade, they have a new, better form now.\nThe corpses of those who have undergone Artificial Rebirth refund 1 glory when Scavenged, the Corps know well how to use the precious metal and flesh invested into their own.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "4549-32db-4b08-2bdf",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "assassin-s-dagger",
+      "keywords": [
+        "+1 INJURY MODIFIER",
+        "CRITICAL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Assassin's Dagger",
+      "range": "Melee",
+      "rules": "Slashing Attack: If an Assassin’s Blade causes at least one BLOOD MARKER to be placed next to the target model, the Assassin can use a Dash ACTION to Retreat in the same Activation. In addition, if the Assassin Retreats (by Dashing or using the normal Retreat ACTION) during the same Activation, enemy models within 1” cannot make a Melee Attack against it before it is moved as they would normally be able to do.",
+      "source": "Trench Crusade",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "844d-8df1-2006-2cf7",
+      "bsName": "Autocannon (Bursts)",
+      "category": "ranged",
+      "cost": {
+        "ducats": 55,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "autocannon",
+      "keywords": [
+        "+1 INJURY DICE",
+        "AUTOMATIC 3",
+        "HEAVY"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Autocannon",
+      "range": "48\"",
+      "rules": "",
+      "source": "Trench Pilgrims",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "f294-f3b2-5577-bc17",
+      "category": "ranged",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "automatic-pistol",
+      "keywords": [
+        "ASSAULT",
+        "AUTOMATIC 2",
+        "PISTOL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Automatic Pistol",
+      "range": "12\"/Melee",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "46cb-36ae-c7ea-cdd0",
+      "category": "ranged",
+      "cost": {
+        "ducats": 40,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "automatic-rifle",
+      "keywords": [
+        "ASSAULT",
+        "AUTOMATIC 2"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Automatic Rifle",
+      "range": "24\"",
+      "rules": "**Focused Fire**: When this weapon is used to make 2 Ranged Attacks, the same enemy model must be the target of both attacks",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "f8bd-481c-8364-3eb3",
+      "category": "ranged",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "automatic-shotgun",
+      "keywords": [
+        "+1 DICE",
+        "ASSAULT",
+        "SHOTGUN"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Automatic Shotgun",
+      "range": "12\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "becf-a3fd-2983-1510",
+      "category": "equipment",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "banner-of-desert-wind",
+      "keywords": [
+        "HELD",
+        "LEADER"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Banner of Desert Wind",
+      "range": null,
+      "rules": "Models that start an Activation within 24” of an enemy model that has the Banner of the Desert Wind have 1 subtracted from their Movement Characteristic until the end of the Activation. This rule does not apply if the model with the Banner of Desert Wind is Down.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "4377-b71d-92f5-3c05",
+      "category": "equipment",
+      "cost": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "banner-of-the-eagle",
+      "keywords": [
+        "LEADER",
+        "HELD"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Banner of the Eagle",
+      "range": null,
+      "rules": "Acts as a Troop Flag, Friendly models within 6\" of the wearer gain the keyword NEGATE FEAR.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "2a56-df62-c8c1-9bc0",
+      "category": "melee",
+      "cost": {
+        "ducats": 2,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "bayonet",
+      "keywords": [
+        "CUMBERSOME"
+      ],
+      "limits": "max 1 per self",
+      "modifiers": [],
+      "name": "Bayonet",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "f524-976a-c9e5-af0d",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "beauty-in-suffering",
+      "keywords": [],
+      "limits": "max 3 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Beauty in Suffering",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order to cast this spell. If you do so, make an ACTION roll. If the roll is a Failure, nothing happens. If the roll is a Success or a Critical Success, every model (friend or foe, including the spellcaster) within 6” of the spellcaster gains 1 Blessing Marker for every 2 Blood Markers on themselves, rounding down.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1)"
+    },
+    {
+      "bsId": "6c2c-bd2c-d794-fb34",
+      "category": "melee",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "beelzebub-s-axe",
+      "keywords": [
+        "+2 INJURY DICE",
+        "HEAVY",
+        "INFECTION MARKERS"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Beelzebub's Axe",
+      "page": 76,
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "e1cb-6d32-6315-eb1b",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "binoculars",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Binoculars",
+      "range": null,
+      "rules": "**Survey the Land**: Enemy models cannot use the INFILTRATOR Keyword to deploy within 16” of a model with this Keyword unless they are in their own side’s deployment zone.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "bfc1-5172-0c42-138f",
+      "category": "shield",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "black-grail-shield",
+      "keywords": [
+        "-1 INJURY MODIFIER"
+      ],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Black Grail Shield",
+      "page": 77,
+      "range": null,
+      "rules": "Power of the Cult of the Black Grail: When a model with a Black Grail Shield is chosen as the target for a Ranged Attack, it can draw on the Power of the Cult of the Black Grail before the Success Roll is made for the attack. If it does so, take a Success Roll for the model with the Black Grail Shield. If the roll is a Failure, nothing happens and the attack is carried out as normal. If the roll is a Success, add -2 DICE to the roll for the Ranged Attack. If the roll is a Critical Success, the attack is automatically a Failure (do not make a Success Roll for the attack).",
+      "source": "Trench Crusade",
+      "type": "Shield"
+    },
+    {
+      "bsId": "38c0-d3a4-a30a-d43b",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "black-heart",
+      "keywords": [],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Black Heart",
+      "range": null,
+      "rules": "You can cast this spell before taking a Success Roll or a Risky Success Roll for the spellcaster. If you do so, add +1 DICE to the roll",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1)"
+    },
+    {
+      "bsId": "e476-2dae-7eb7-f469",
+      "category": "ranged",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "black-spot-rifle",
+      "keywords": [
+        "+1 DICE",
+        "-1 INJURY DICE",
+        "ASSAULT",
+        "INFECTION MARKERS"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Black Spot Rifle",
+      "range": "24\"",
+      "rules": "If an Injury Roll for a Ranged Attack made with a Black Spot Rifle does not take an enemy model Out of Action, a Ravenous or Hound of the Black Grail within 12” of the attacking model can immediately carry out a Charge move. This Charge move does not stop that model from also being Activated in the same Turn (before or after this Charge move was made).",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "6efb-9e82-7136-f983",
+      "category": "melee",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "black-grail",
+        "heretic-legion"
+      ],
+      "hands": 1,
+      "id": "blasphemous-staff",
+      "keywords": [
+        "FIRE",
+        "CRITICAL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Blasphemous Staff",
+      "page": 115,
+      "range": "Melee",
+      "rules": "Evil Power: Add +1 DICE to Success Rolls or Risky Success Rolls for a model with a Blasphemous Staff, apart from the Success Rolls for a Ranged or Melee Attack, or the Risky Success Roll to take a Dash ACTION.",
+      "source": "Trench Crusade",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "2fb0-a298-d74c-a76a",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "blessed-icon",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Blessed Icon",
+      "range": null,
+      "rules": "**Talisman**: Once during a game, when a Risky Success Roll for a model with a Blessed Icon is a Failure, you can say that the model will use its Talisman. If you do, the model’s Activation does not end.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "3da5-afdc-ed33-d56a",
+      "category": "equipment",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "blood-eagle-banner",
+      "keywords": [
+        "HELD"
+      ],
+      "limits": "max 1 per model; max 1 per warband",
+      "modifiers": [],
+      "name": "Blood Eagle Banner",
+      "range": null,
+      "rules": "Before the start of the battle, you may choose to either Punish the Villutrúarmaður or Offer unto the Gods.",
+      "source": "Trench Pilgrims",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "fe85-959c-0d7a-ca0b",
+      "category": "ranged",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "blunderbuss",
+      "keywords": [
+        "SHRAPNEL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Blunderbuss",
+      "range": "10\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "4c87-312e-7aa1-4de0",
+      "category": "ranged",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "bolt-action-rifle",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Bolt-Action Rifle",
+      "range": "24\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "b9c5-9ea8-b9e0-00ac",
+      "category": "ranged",
+      "cost": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "bow-of-alamut",
+      "keywords": [
+        "ASSAULT",
+        "CRITICAL",
+        "IGNORE ARMOUR"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Bow of Alamut",
+      "range": "40\"",
+      "rules": "Temporal Slipstream: If a Ranged Attack made with this Weapon causes any BLOOD MARKERS to be placed on the target model, you can immediately redeploy the attacking model within 1\" of the target model, regardless of the distance or any intervening obstacles. Note that if the attack takes the target Out of Action, no BLOOD MARKERS are placed and this ability cannot be used.",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "ed7f-e91c-7eca-840a",
+      "category": "equipment",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "broken-crown",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Broken Crown",
+      "range": null,
+      "rules": "Each time the model with the Broken Crown is Activated, before carrying out any ACTIONS with the model, place 1 INFECTION MARKER next to each enemy model within 1\" of the model with the Broken Crown.",
+      "source": "Black Grail",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "42bc-f444-0c78-b0f6",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "burning-inferno",
+      "keywords": [
+        "BLAST",
+        "FIRE",
+        "SCATTER"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Burning Inferno",
+      "range": "36\"",
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, the spellcaster can make a Ranged Attack with a Range of 36\". The attack has the BLAST, FIRE and SCATTER Keywords, and a blast radius in inches equal to the number of BLOOD MARKERS that were paid to cast the spell. In addition, the attack has the IGNORE ARMOUR Keyword for Injury Rolls made for a model that was either the target of the spell and hit by it, or if the Burning Inferno scattered and the target point ended up on the model’s base.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1-3)"
+    },
+    {
+      "bsId": "1063-b1d1-807f-91ec",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "butcher-bayonet",
+      "keywords": [
+        "+1 INJURY DICE",
+        "CUMBERSOME"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Butcher Bayonet",
+      "page": 114,
+      "range": "Melee",
+      "rules": "Twisted Addition: A model must have a Ranged Weapon with a Bayonet Lug for it to have a Butcher Bayonet.\nHack and Hew: Friendly models within 3” of a model with a\nButcher Bayonet achieve a Critical Success on an 11+ for\ntheir Melee Attacks.",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "3090-d5f2-2bf7-0f4c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "byzantinium-hearth",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Byzantinium Hearth",
+      "range": null,
+      "rules": "This model treats any DOWN INJURY result as a MINOR INJURY instead, unless it is as a result of the TOUGH keyword converting an OUT OF ACTION to a DOWN result.\nIf a Byzantinium Heart is ever removed or lost from the model that has it equipped for any reason, the model instantly dies.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "e962-b9a5-17a9-4c29",
+      "bsName": "Call of Flesh",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "call-of-the-flesh",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Call of the Flesh",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, the spellcaster’s Activation immediately ends and the first ACTION taken by the next model your opponent Activates must be a Move, Charge or Retreat. If the enemy model is Down, it will stand up before taking the ACTION; if it cannot stand up for any reason, the spell has no effect on it. In addition, when your opponent moves the model, it must end the move as close to the spellcaster as possible. If the model must move through Dangerous terrain, or Climb, Jump, or Jump Down, to get as close to the spellcaster as possible, then it must do so. After taking the Move, Charge or Retreat ACTION the model can carry out other ACTIONS normally, with the exception that it cannot choose the spellcaster as the target for a Ranged or Melee attack for the rest of the Turn.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2)"
+    },
+    {
+      "bsId": "cd00-6765-b503-60b5",
+      "category": "melee",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": 1,
+      "id": "catherine-wheel",
+      "keywords": [
+        "+1 DICE",
+        "DEADLY",
+        "RISKY",
+        "HEAVY"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Catherine Wheel",
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Pilgrims",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "ff14-6bda-4958-a507",
+      "category": "grenade",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "chain-kura",
+      "keywords": [
+        "ASSAULT",
+        "CONSUMABLE",
+        "IGNORE RANGE",
+        "IGNORE COVER"
+      ],
+      "limits": "max 4 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Chain Kura",
+      "range": "8\"",
+      "rules": "Weight of His Word: Minor Injuries caused by the Chain Kura are treated as Down results instead.\nOnce a Ranged Attack has been made with this weapon, It cannot be used again.",
+      "source": "Iron Sultanate",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "34d0-ca9d-a23f-0d9b",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "charm-of-acedia",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Charm of Acedia",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, if the next ACTION the spellcaster takes as part of this Activation requires one or more Success Rolls or Risky Success Rolls for any part of it, the first roll is automatically a Success (do not roll any dice)",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1)"
+    },
+    {
+      "bsId": "fc84-ca32-2672-c684",
+      "category": "equipment",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion",
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "cloak-of-alamut",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Cloak of Alamut",
+      "range": null,
+      "rules": "Blend In: The Ranged Attack Modifier for a target being in Cover is -2 DICE instead of -1 DICE if the target has a Cloak of Alamut.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "fb8a-8c3b-e04b-68ab",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "coagulation",
+      "keywords": [],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Coagulation",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order to cast this spell. If you do so, pick an enemy model within 18” of the spellcaster. The targeted model’s Movement is reduced by 2” until the end of its next activation.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 3)"
+    },
+    {
+      "bsId": "cd7e-904f-67b2-2d24",
+      "category": "melee",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 2,
+      "id": "coin-hammer",
+      "keywords": [
+        "+1 INJURY DICE",
+        "HEAVY"
+      ],
+      "limits": "max 2 per warband; max increment 1 per warband when atLeast 1 Entitled to Coin Hammers (roster); max increment 1 per warband when repeat per Leveraged on Coin Hammers (roster)",
+      "modifiers": [],
+      "name": "Coin Hammer",
+      "range": "Melee",
+      "rules": "Rune of Mammon: If the Injury Roll for an attack made by a Coin Hammer results in 1 or more BLOOD MARKERS being placed next to the target, place 1 BLESSING MARKER next to the model using the Coin Hammer.",
+      "source": "Heretic Legion",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "dd63-2453-14d7-7e00",
+      "bsIds": [
+        "dd63-2453-14d7-7e00",
+        "f9d1-44f2-f4d7-442f"
+      ],
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "combat-helmet",
+      "keywords": [
+        "NEGATE SHRAPNEL"
+      ],
+      "limits": "max 1 per model",
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Combat Helmet",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "801f-50a4-1ea2-7b92",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "corruption-belcher",
+      "keywords": [
+        "FLAMETHROWER",
+        "GAS",
+        "IGNORE ARMOUR"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Corruption Belcher",
+      "page": 113,
+      "range": "8\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "01b0-1455-dbd3-8e80",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "coveted-position",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Coveted Position",
+      "range": "12\"",
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, pick a model (friend or foe) that is within 12\" of the spellcaster, in it's Line of Sight, and is more than 1\" away from any other models. You can then swap the position of the two models. You must place each model so that the centre of their base is at the location that was previously occupied by the centre of the base of the model they are swapping positions with. If this is impossible for any reason (e.g. because Impassable terrain or another model gets in the way), the two models remain in their original locations.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2)"
+    },
+    {
+      "bsId": "8e13-f6ad-46a4-9853",
+      "category": "melee",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "crook",
+      "keywords": [
+        "SHRAPNEL",
+        "CUMBERSOME"
+      ],
+      "limits": "max 2 per warband",
+      "modifiers": [],
+      "name": "Crook",
+      "range": "Melee",
+      "rules": "If a model wielding a Crook is within 1” of any model (friend or foe) that is Downed, it may make its Melee Attack a Risky Action. If the roll is a Failure, the model’s Activation immediately ends. If the roll is a Success or a Critical Success, it captures the model. The captured model cannot Stand nor move for any reason. It is instead moved with the wielder whenever they move for any reason, without triggering free attacks should the captured model is moved away from 1” of an enemy model. The model remains captured until the model wielder is Downed, taken Out of Action or chooses to release them, which can be done freely at any point during the wielder’s activation.\nWhile a model is captured, the model wielding the Crook may only make Melee Attacks against the captured model.",
+      "source": "Mercenaries",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "9e48-632e-20ab-14ad",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "crown-of-hellfire",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Crown of Hellfire",
+      "page": 91,
+      "range": null,
+      "rules": "Searing Flames: When a model with a Crown of Hellfire ends an Activation, place 1 BLOOD MARKER next to each enemy model within 1” of the model with a Crown of Hellfire, except for enemy models that have the NEGATE FIRE Keyword.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "a442-f722-3112-8153",
+      "category": "equipment",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "daemonium-meridianum",
+      "keywords": [],
+      "limits": "max 1 per model; max 1 per warband",
+      "modifiers": [],
+      "name": "Daemonium Meridianum",
+      "range": null,
+      "rules": "Enemy models treat Open or Dangerous terrain within 6” of a model with this Goetic Ability as Difficult terrain.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Ability"
+    },
+    {
+      "bsId": "0084-2122-f8c1-537a",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": 2,
+      "id": "dane-axe",
+      "keywords": [
+        "ARMOUR PIERCING 2",
+        "HEAVY",
+        "CRITICAL",
+        "+1 INJURY DICE"
+      ],
+      "limits": "max 3 per warband",
+      "modifiers": [],
+      "name": "Dane Axe",
+      "range": "Melee",
+      "rules": "",
+      "source": "New Antioch",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "d99d-2dbd-c2ca-9d4c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "dark-innervation",
+      "keywords": [],
+      "limits": "max 3 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Dark Innervation",
+      "range": null,
+      "rules": "You can cast this spell once per Turn after the spellcaster or a friendly model with at least 2 BLOOD MARKER on it hits with an attack without the BLAST keyword. If you do so, the chosen model gains either +1 INJURY DICE or +2 INJURY DICE, one less than the amount of Blood Markers used to pay this spell’s costs.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2-3)"
+    },
+    {
+      "bsId": "f5c3-6c1d-c0b8-98ae",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "devouring-jaws",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Devouring Jaws",
+      "range": null,
+      "rules": "Devour ACTION: If a model takes a Devour ACTION, it can make a Melee Attack against an enemy model within 1”. A Devour Melee Attack does not use a Melee Weapon and has the CRITICAL Keyword. In addition, if the Devour Melee Attack does not take the targeted model Out of Action, place 1 BLOOD MARKER next to the model taking the Devour ACTION.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "05f3-2ee4-36c0-8c25",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "factionIds": [
+        "black-grail",
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "dog-food",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Dog Food",
+      "range": null,
+      "rules": "This unit can be deployed with a Trench Dog, found in the Mercenaries section.",
+      "source": "Mercenaries",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "1f47-9c34-ef9b-914b",
+      "bsName": "Concerted Attack",
+      "category": "equipment",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "factionIds": [
+        "black-grail",
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "dog-s-friend",
+      "keywords": [],
+      "limits": "max 1 per model; max 0 per warband; max increment 1 per warband when repeat per Man's Best Friend (roster)",
+      "modifiers": [],
+      "name": "Dog's Friend",
+      "range": null,
+      "rules": "If a model from a Fireteam hits a target that has already been hit by an attack made by the other member of their Fireteam, then you can spend 3 BLOOD MARKERS to convert the Injury Roll for the second attack to a Bloodbath Roll, even if the target is not Down.",
+      "source": "Mercenaries",
+      "type": "Ability"
+    },
+    {
+      "bsId": "9a58-b86e-4759-a49b",
+      "category": "equipment",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "dust-to-dust",
+      "keywords": [],
+      "limits": "max 1 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Dust to Dust",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order to cast this spell. If you do so, take a Risky Action for the model and add +1 DICE to the roll. If the roll is a Failure, the spellcaster’s Activation ends immediately. If the roll is a Success or a Critical Success, you can choose a friendly model within 12” of the spellcaster, and inflict an Out of Action injury on it. It accepts this fate with open arms, and inflicts 3 Blood Markers on every model within 3” of itself as it dies in a painfully beautiful implosion, fracturing reality itself. If the dying model had at least 3 Blood Markers on it before it died, the caster of this spell gains a Blessing Marker.\nThe spellcaster’s Activation then ends immediately.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 3)"
+    },
+    {
+      "bsId": "e4a9-be6a-c7fe-9d16",
+      "bsName": "Elixir of Al-Khidr",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "elixer-of-al-khidr",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Elixer of Al-Khidr",
+      "range": null,
+      "rules": "Fountain of Life: When deploying a model with an Elixir of Al-Khidr for the first time in a game, you can say that the model will consume the Elixir of Al-Khidr. If you do so, the model has the TOUGH Keyword for the rest of the game. An Elixir of AlKhidr cannot be used by models with the ARTIFICIAL Keyword.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "732a-29eb-ad77-d384",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "enhanced-agility",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Enhanced Agility",
+      "range": null,
+      "rules": "This model ignores the effects of both difficult and dangerous terrain.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "98da-209c-28a1-890c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 6
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "entropital-dermis",
+      "keywords": [],
+      "limits": "max 1 per self",
+      "modifiers": [],
+      "name": "Entropital Dermis",
+      "range": null,
+      "rules": "An Entropital Dermis confers a -1 INJURY DICE to Injury Rolls made against this Model. Enemy Models cannot retreat from a model wearing the Entropital Dermis, and are considered to be engaged in melee with the wearer from 3” away instead of 1”. The wearer and any Model it is engaged with must still be within 1” of each other to perform a Melee attack (Including an Attack of Opportunity).",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "26ad-abf9-50ff-8311",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "essence-extractor",
+      "keywords": [],
+      "limits": "max 2 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Essence Extractor",
+      "range": null,
+      "rules": "Once per turn, if this model inflicts at least one blood marker with a melee action, it removes one BLOOD MARKER from itself (if it had one).",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "79d0-a521-12d1-5158",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "event-horizon",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Event Horizon",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order to cast this spell. If you do so, the spellcaster can make a Ranged Attack with a Range of 24”. The attack has the BLAST and SCATTER Keywords, and a blast radius in inches equal to the number of BLOOD MARKERS that were paid to cast the spell plus 1. In addition, if the attack lands directly on top of a model, the model is immediately downed before rolling for its injury. All other models (friend or foe) caught in the blast are pulled up to 3” towards the epicenter of the blast after resolving their Injury Rolls.\nA Sorcerer cannot purchase both Event horizon and Burning Inferno.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1-3)"
+    },
+    {
+      "bsId": "b535-89b0-70c0-a86f",
+      "category": "equipment",
+      "cost": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "explosive-charges",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Explosive Charges",
+      "range": null,
+      "rules": "* Hidden Explosives: At the start of the game, after Deployment, you can say that a model that has Explosive Charges is going to plant them on the battlefield. If you do so, secretly write down their location on a piece of paper. The Explosive Charges must be planted on a terrain piece that measures up to 8\" by 8\", is not fully or partially within the enemy deployment zone or within 1\" of a model, and which is not a scenario objective that is worth any Victory Points.\n* Detonating the Explosives: When you Activate a friendly model, before you carry out any ACTIONS you can say that the model is going to detonate any hidden explosives you set up at the start of the game. If you do so, show your opponent the piece of paper saying where the explosives are hidden, and then make an Injury Roll with the SHRAPNEL Keyword for each model (friend or foe) that is in on or in contact with the terrain piece. The terrain piece is then removed from the game. Models that were on top of the terrain piece Fall directly down to the battlefield, and an additional Injury Roll may have to be made for them if they Fall 3\" or more.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "8a96-4a3d-9183-b2bb",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "exquisite-pain",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Exquisite Pain",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, pick a model that is in the spellcaster’s Line of Sight (friend or foe). Place the BLOOD MARKERS paid to cast the spell next to the model that you picked.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (1-2)"
+    },
+    {
+      "bsId": "b8e5-5657-f3fc-fd59",
+      "bsIds": [
+        "76e2-0e5b-972a-0f69",
+        "b8e5-5657-f3fc-fd59"
+      ],
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "hands": null,
+      "id": "field-shrine",
+      "keywords": [
+        "DEPLOYABLE"
+      ],
+      "limits": "max 1 per model",
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Field Shrine",
+      "range": null,
+      "rules": "A Field Shrine is represented by a terrain piece that is at least ½” high and which is mounted on a 40mm base. It is Impassable terrain.\n- **Site of Worship**: After you deploy a model that has Field Shrine, you can also deploy their Field Shrine anywhere wholly within their deployment zone. In the Morale Phase, each friendly Field Shrine on the battlefield adds 3 to the number of models you have in your Warband that are not Down or Out of Action, up to a maximum bonus of 9 extra models. Once deployed, the model that had the Field Shrine is not considered to be carrying it for the rest of the game.\n- **Tear It Down!**: Models can attack a Field Shrine as if it were an enemy model. If it is hit by an attack or is in the blast radius of an attack made with a Weapon that has the BLAST Keyword, it is removed from the battlefield and is removed from the Warband Roster (no Injury Roll is required).",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "106d-9327-56be-188e",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "final-frenzy",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Final Frenzy",
+      "range": null,
+      "rules": "You can cast this spell once per turn after a friendly model (including the spellcaster) that is eligible to pay this spell’s cost is hit by an attack, before the injury roll is made. If you do so, the chosen model pays this spell’s cost and ignores all Minor Injury and Downed Injury results, and cannot gain Blood Markers in any way, including paying the cost of any other Goetic Spells, until the end of its next activation.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2)"
+    },
+    {
+      "bsId": "481e-f5d8-f8e7-1ba1",
+      "bsIds": [
+        "481e-f5d8-f8e7-1ba1",
+        "bf62-7e77-d895-711f"
+      ],
+      "category": "shield",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail",
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "fire-shield",
+      "keywords": [
+        "-1 INJURY MODIFIER",
+        "NEGATE FIRE"
+      ],
+      "limits": "max 1 per model; max 2 per warband",
+      "mergedProfilesDiffer": true,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Fire Shield",
+      "range": null,
+      "rules": "Fire Shield: Add -1 INJURY DICE to Injury Rolls for attacks with the FIRE Keyword that targets a model that has a Fire Shield, even if the attacking weapon has the IGNORE ARMOUR Keyword.",
+      "source": "Black Grail",
+      "type": "Shield"
+    },
+    {
+      "bsId": "ee65-c18f-650e-cce9",
+      "category": "melee",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "flail-scourge",
+      "keywords": [
+        "+1 DICE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Flail/Scourge",
+      "range": "Melee",
+      "rules": "**Unwieldy**: The +1 DICE Keyword does not apply when this Weapon is used as an Off- Hand Weapon.",
+      "source": "Melee Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "ac5c-14a9-8462-8ddd",
+      "category": "ranged",
+      "cost": {
+        "ducats": 60,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "flame-cannon",
+      "keywords": [
+        "FIRE",
+        "HEAVY",
+        "IGNORE ARMOUR"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Flame Cannon",
+      "range": "12\"",
+      "rules": "Greek Fire: When a Flame Cannon is used to make a Ranged Attack, do not make a Success Roll for the attack. Instead, measure a straight line 1mm wide and up to 12\" long from the attacking model to a point on the ground or a model’s base. The line stops if it reaches a terrain piece that is taller than the model making the Attack. Make an Injury Roll for every model (friend or foe) that is touched by the line, apart from the attacking model itself.",
+      "source": "Trench Crusade",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "985f-e0c3-b0e9-5f89",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "flamethrower",
+      "keywords": [
+        "-1 INJURY DICE",
+        "FIRE",
+        "FLAMETHROWER",
+        "IGNORE ARMOUR"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Flamethrower",
+      "range": "8\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "83de-02a7-ba19-3570",
+      "category": "armour",
+      "cost": {
+        "ducats": 0,
+        "glory": 4
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "foetid-palanquin",
+      "keywords": [
+        "-1 INJURY MODIFIER"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Foetid Palanquin",
+      "range": null,
+      "rules": "Bile Clot ACTION: Once per Turn, a Matagot Hag with a Foetid Palanquin can take a Bile Clot ACTION immediately before an Injury Roll is made for it. If it does so, you can remove any number of INFECTION MARKERS from any models (friend or foe) within 18” of the Matagot Hag. Add a -1 INJURY MODIFIER to the roll for every 2 INFECTION MARKERS that were removed in this way (this cannot exceed the standard maximum of -3 INJURY MODIFIER added to an Injury Roll).",
+      "source": "Black Grail",
+      "type": "Armour"
+    },
+    {
+      "bsId": "7f07-3b1b-85e7-6802",
+      "category": "grenade",
+      "cost": {
+        "ducats": 7,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "frag-grenades",
+      "keywords": [
+        "ASSAULT",
+        "BLAST 2”",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE",
+        "SHRAPNEL"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Frag Grenades",
+      "range": "8\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "ad6c-4635-f9a7-8115",
+      "category": "ranged",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "fumigator",
+      "keywords": [
+        "-1 INJURY DICE",
+        "IGNORE ARMOUR",
+        "GAS",
+        "FLAMETHROWER"
+      ],
+      "limits": "max 2 per warband",
+      "modifiers": [],
+      "name": "Fumigator",
+      "range": "8\"",
+      "rules": "",
+      "source": "Mercenaries",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "bf35-3729-df69-7562",
+      "category": "ranged",
+      "cost": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "gas-censer",
+      "keywords": [
+        "GAS",
+        "IGNORE ARMOUR",
+        "RELOAD"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Gas Censer",
+      "range": "6''",
+      "rules": "Cloud of Gas: When you take a Shoot ACTION with this model, instead of making a Ranged Attack, you can unleash a cloud of gas. If you do so, do not make a Success Roll. Instead, all other models within 6” of the model using the Gas Censer are hit, and an Injury Roll must be made for each one. Note that the attack hits all models, friend or foe, apart from the model making the attack, regardless of Line of Sight.",
+      "source": "Trench Pilgrims",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "01ce-2f99-f398-1a50",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "gas-filters",
+      "keywords": [
+        "NEGATE GAS"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Gas Filters",
+      "range": null,
+      "rules": "",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    },
+    {
+      "bsId": "fb1b-45a3-5dd0-bba1",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 2,
+      "id": "gas-grenade-launcher",
+      "keywords": [
+        "-1 INJURY DICE",
+        "BLAST 3\"",
+        "GAS",
+        "HEAVY",
+        "IGNORE ARMOUR",
+        "IGNORE COVER"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Gas Grenade Launcher",
+      "page": 27,
+      "range": "36\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "ed69-d081-68a5-999e",
+      "category": "grenade",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "gas-grenades",
+      "keywords": [
+        "-1 INJURY DICE",
+        "ASSAULT",
+        "BLAST 3”",
+        "GAS",
+        "IGNORE ARMOUR",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Gas Grenades",
+      "range": "8\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "8927-946d-c993-14ee",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "gas-mask",
+      "keywords": [
+        "NEGATE GAS"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Gas Mask",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "3564-4f8d-d1e0-246c",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "geirr",
+      "keywords": [
+        "CUMBERSOME",
+        "BLOCK"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Geirr",
+      "range": "Melee",
+      "rules": "When this model is charged, it may make a Melee Attack ACTION. If the roll is a Failure, nothing happens. If the roll is a Success or a Critical Success, the enemy model charging it gains 1 BLOOD MARKER.",
+      "source": "Trench Pilgrims",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "c9ba-7a03-eaae-1c00",
+      "category": "equipment",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "golden-calf-altar",
+      "keywords": [
+        "DEPLOYABLE",
+        "HEAVY"
+      ],
+      "limits": "max 1 per model; max 3 per warband",
+      "modifiers": [],
+      "name": "Golden Calf Altar",
+      "range": null,
+      "rules": "A Golden Calf Altar, if deployed, is represented by a terrain piece that is about ½”\nhigh and which is mounted on a 25mm base. It is Impassable terrain.\n* Illusions: Enemy models treat Open ground and all terrain within 3” of a model with a Golden Calf Altar or a Golden Calf Altar terrain piece as being Difficult terrain (if it is not already), even if they have the FLYING Keyword.\n* Place Altar ACTION:A model with a Golden Calf Altar can take a Place Altar ACTION. If they do so, deploy the Golden Calf Altar anywhere within 1”of the model. Once deployed, the model that had the Golden Calf Altar is not considered to be carrying it for the rest of the game. In addition, the Golden Calf Altar is lost at the end of the game and removed from your Warband Roster.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "e7b5-4ba3-2813-a11f",
+      "category": "melee",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "golden-khanjar",
+      "keywords": [
+        "+1 INJURY MODIFIER",
+        "CLEAVE 2"
+      ],
+      "limits": "max 2 per warband",
+      "modifiers": [],
+      "name": "Golden Khanjar",
+      "range": "Melee",
+      "rules": "",
+      "source": "Iron Sultanate",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "a9cd-89ba-ea71-c282",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "grand-anchorite",
+      "keywords": [],
+      "limits": "max 1 per warband; max increment 1 per warband when repeat per Knowledge of the Grand Anchorite (roster); max 1 per model",
+      "modifiers": [],
+      "name": "Grand Anchorite",
+      "range": null,
+      "rules": "Impossible to Stop: Enemy models are not allowed to make a Melee Attack when a Grand Anchorite Shrine that is within 1\" of them retreats. In addition, a Grand Anchorite Shrine can take a Move or Charge ACTION if it starts within 1\" of any enemy models.",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    },
+    {
+      "bsId": "3dd1-198c-9222-d273",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "grasping-maw",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Grasping Maw",
+      "range": "12\"",
+      "rules": "Grasp ACTION: If a model takes a Grasp ACTION, take a Risky Success Roll for the model. If the roll is a Failure, the model’s Activation ends immediately. If the roll is a Success or Critical Success, pick 1 enemy model that is within 12” of the model taking the Grasp ACTION and in their Line of Sight. You can move the model 3”. The move must be in a straight line directly towards the model taking the Grasp ACTION, and can be used to make the model Jump Down, move within 1” of an enemy or retreat, but you cannot make Melee attacks with models within 1” of it before it retreats. The model stops if the model moves into contact with another model, Difficult, Dangerous or Impassable Terrain, or a terrain piece it cannot cross without having to Climb or Jump Across.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "df88-b7a2-1a01-1b56",
+      "category": "melee",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "great-hammer-maul",
+      "keywords": [
+        "+1 INJURY MODIFIER",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Great Hammer/Maul",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "43b5-20ac-4f52-3ce5",
+      "bsIds": [
+        "2257-4155-dd7d-8641",
+        "43b5-20ac-4f52-3ce5"
+      ],
+      "category": "melee",
+      "cost": {
+        "ducats": 12,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "great-sword-axe",
+      "keywords": [
+        "+1 INJURY DICE",
+        "CRITICAL",
+        "HEAVY"
+      ],
+      "limits": null,
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Great Sword/Axe",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "b15e-e3c1-f53b-dedc",
+      "category": "grenade",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "greek-fire",
+      "keywords": [
+        "HEAVY",
+        "BLAST 3\"",
+        "FIRE",
+        "CONSUMABLE",
+        "SCATTER"
+      ],
+      "limits": "max 3 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Greek Fire",
+      "range": "6\"",
+      "rules": "Rolls Injuries with 3d6 on a direct hit, or with +1 DICE for every other model caught in the blast.\nFor the purpose of Battle Demolition on Combat Engineers, this item counts as a Satchel Charge.",
+      "source": "New Antioch",
+      "type": "GRENADE"
+    },
+    {
+      "bsId": "5589-fa94-48a5-1d7f",
+      "bsName": "Carried Grenades",
+      "category": "grenade",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "grenade-carrier",
+      "keywords": [
+        "ASSAULT",
+        "BLAST 2\"",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE",
+        "SHRAPNEL"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Grenade Carrier",
+      "range": "8\"",
+      "rules": "",
+      "source": "New Antioch",
+      "type": "GRENADE"
+    },
+    {
+      "bsId": "65c0-a52a-03c8-575a",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "grenade-launcher",
+      "keywords": [
+        "BLAST 3\"",
+        "HEAVY",
+        "IGNORE COVER",
+        "SHRAPNEL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Grenade Launcher",
+      "range": "36\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "c403-4b36-5fd6-5c95",
+      "category": "melee",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "halberd-gun",
+      "keywords": [
+        "ASSAULT",
+        "BLOCK",
+        "CUMBERSOME"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Halberd-Gun",
+      "range": "Melee/24\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "07cd-fdf6-9ff2-7873",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "hallowed-anchorite",
+      "keywords": [],
+      "limits": "max 1 per warband; max increment 1 per warband when repeat per Knowledge of the Hallowed Anchorite (roster); max 1 per model",
+      "modifiers": [],
+      "name": "Hallowed Anchorite",
+      "range": null,
+      "rules": "Manifold Blessings: A Hallowed Anchorite Shrine can be promoted to ELITE status in the Promotions & Experience Step of the Campaign Phase.",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    },
+    {
+      "bsId": "29cd-71a7-a9f8-a828",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 1,
+      "id": "headtaker",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Headtaker",
+      "page": 116,
+      "range": "Melee",
+      "rules": "Ambush Weapon: Add a +2 INJURY MODIFIER to rolls made for this weapon if the target has not yet been Activated this Turn.",
+      "source": "Trench Crusade",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "adc0-8995-657b-8d4b",
+      "category": "shield",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "heavy-ballistic-shield",
+      "keywords": [
+        "COVER",
+        "HELD"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Heavy Ballistic Shield",
+      "range": null,
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "Shield"
+    },
+    {
+      "bsId": "8ccf-c0b6-efff-4c4f",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "heavy-bore-ammunition",
+      "keywords": [],
+      "limits": "max 3 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Heavy Bore Ammunition",
+      "range": null,
+      "rules": "When a model is hit by a weapon using Heavy Bore Ammunition, it moves 3” away from the attacker in a straight line, stopping if it hits anything it cannot pass through, such as other models, impassable terrain or walls. (N.B, this does not provoke a Free Attack if the model is pushed out of melee engagement.)\nCan only be used with Alaybozan and Siege Jezzails.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "b754-bcf6-152f-69e7",
+      "category": "ranged",
+      "cost": {
+        "ducats": 55,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "heavy-flamethrower",
+      "keywords": [
+        "-1 INJURY DICE",
+        "AUTOMATIC 2",
+        "FIRE",
+        "FLAMETHROWER",
+        "HEAVY",
+        "IGNORE ARMOUR"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Heavy Flamethrower",
+      "range": "10\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "087b-32d3-0503-70bb",
+      "category": "ranged",
+      "cost": {
+        "ducats": 45,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "heavy-fumigator",
+      "keywords": [
+        "AUTOMATIC 2",
+        "HEAVY",
+        "IGNORE ARMOUR",
+        "GAS",
+        "FLAMETHROWER"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Heavy Fumigator",
+      "range": "10\"",
+      "rules": "",
+      "source": "Mercenaries",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "d16f-f704-d17a-ebc6",
+      "category": "ranged",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "heavy-shotgun",
+      "keywords": [
+        "+1 DICE",
+        "+1 INJURY DICE",
+        "HEAVY",
+        "SHOTGUN"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Heavy Shotgun",
+      "range": "12\"",
+      "rules": "**Tungsten-orichalcum Alloy Shot**: Add +1 INJURY DICE to rolls for Ranged Attacks made by this Weapon at Short Range.",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "7490-f22e-68ff-79d3",
+      "category": "melee",
+      "cost": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "factionIds": [
+        "black-grail",
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion"
+      ],
+      "hands": 2,
+      "id": "hellblade",
+      "keywords": [
+        "+1 INJURY DICE",
+        "FIRE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Hellblade",
+      "page": 115,
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "a2d4-cd33-46c4-3b81",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "hellbound-soul-contract",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Hellbound Soul Contract",
+      "range": null,
+      "rules": "**Fiery Exodus**: If a model with a Hellbound Soul Contract is taken Out of Action, before removing it from the battlefield add 1 BLOOD MARKER to each enemy model that is within 1” of it. Models that have the NEGATE FIRE Keyword are not affected by this special rule.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "b990-d914-9dce-66af",
+      "bsName": "Infernal Bite",
+      "category": "melee",
+      "cost": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "factionIds": [
+        "black-grail",
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "hellhound",
+      "keywords": [
+        "FIRE"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Hellhound",
+      "range": "Melee",
+      "rules": "",
+      "source": "Mercenaries",
+      "type": "Special"
+    },
+    {
+      "bsId": "5714-931f-09eb-f186",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "henbrane",
+      "keywords": [],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Henbrane",
+      "range": null,
+      "rules": "As long as this model does not have any BLOOD MARKER on it, it is immune to the Minor Injury result, and thus does not take a BLOOD MARKER when suffering one. However, it will still take the additional blood from a weapon with a keyword such as SHRAPNEL. At the end of the battle, the model is then immediately taken Out of Action, and must roll to see if they survive as per the normal rules for Non-Elites being taken Out of Action.",
+      "source": "Trench Pilgrims",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "abcb-b151-f83d-636d",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 8
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "herald-of-the-void",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Herald of the Void",
+      "range": null,
+      "rules": "This equipment is treated as an upgrade that cannot be removed once purchased. When this upgrade is purchased you may choose to remove a scar from this Model. Additionally any time you roll 3 or more 6’s on exploration (after exploration skills like Set Dice or Rerolls have been accounted for), you may choose to pay 1 Glory to remove 1 scar from this Model.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "1298-0ecd-ca20-0e16",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "holy-diesel-engine",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Holy Diesel Engine",
+      "range": null,
+      "rules": "Advanced Design: When you take a Dash ACTION with this Anchorite Shrine, you can choose to add +2 DICE to the Risky Success Roll. If you do so, you must place 1 BLOOD MARKER next to the model",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    },
+    {
+      "bsId": "0b4c-42b8-cf94-e25f",
+      "category": "armour",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "holy-icon-armour",
+      "keywords": [
+        "-1 INJURY MODIFIER",
+        "IMPERVIOUS"
+      ],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Holy Icon Armour",
+      "page": 117,
+      "range": null,
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "Armour"
+    },
+    {
+      "bsId": "c0ec-55b6-b5ef-09c3",
+      "category": "shield",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "iron-sultanate",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "holy-icon-shield",
+      "keywords": [
+        "-1 INJURY MODIFIER",
+        "IMPERVIOUS"
+      ],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Holy Icon Shield",
+      "page": 117,
+      "range": null,
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "Shield"
+    },
+    {
+      "bsId": "bf17-de3b-1272-3d4c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "hands": null,
+      "id": "holy-relic",
+      "keywords": [
+        "BLESSED 1"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Holy Relic",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "a9d2-fb36-792e-d69e",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "holy-smoke",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Holy Smoke",
+      "range": null,
+      "rules": "Holy Smoke: When you deploy a model that has Holy Smoke, you can say that they will consume it. If you do so, until the end of the game, the model has the NEGATE FEAR Keyword and -1 INJURY DICE is added to Injury Rolls for attacks that hit it.",
+      "source": "New Antioch",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "b4d4-3da2-7157-f15b",
+      "category": "equipment",
+      "cost": {
+        "ducats": 3,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "holy-water-of-lalibela",
+      "keywords": [],
+      "limits": "max 1 per model; max 5 per warband",
+      "modifiers": [],
+      "name": "Holy Water of Lalibela",
+      "range": null,
+      "rules": "Healing Waters: Add +1 DICE when a model with the Holy Water of Lalibela takes a Success Roll for an ACTION that can remove BLOOD MARKERS and/or INFECTION MARKERS from another model or itself.",
+      "source": "New Antioch",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "8adc-0183-0ef9-12a4",
+      "category": "grenade",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "incendiary-grenades",
+      "keywords": [
+        "ASSAULT",
+        "FIRE",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Incendiary Grenades",
+      "range": "8\"",
+      "rules": "**Liquid Fire**: If the Success Roll for a Ranged Attack made with an Incendiary Grenade is a Critical Success then the Injury Roll for the attack has the IGNORE ARMOUR Keyword",
+      "source": "Ranged Weapons",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "670f-9bed-3b5c-2b36",
+      "bsName": "Infected Teeth & Claws",
+      "category": "melee",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "infected",
+      "keywords": [
+        "INFECTION MARKERS"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Infected",
+      "range": "Melee",
+      "rules": "",
+      "source": "Black Grail",
+      "type": "Special"
+    },
+    {
+      "bsId": "0198-2836-2591-f0ad",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "infernal-brand",
+      "keywords": [
+        "NEGATE FIRE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Infernal Brand",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "088f-02cb-55b8-4bda",
+      "category": "ranged",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "infested-rifle",
+      "keywords": [
+        "ARMOUR-PIERCING"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Infested Rifle",
+      "page": 76,
+      "range": "18\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "4813-2d95-702d-d646",
+      "category": "equipment",
+      "cost": {
+        "ducats": 7,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "iron-capirote",
+      "keywords": [
+        "NEGATE FEAR",
+        "NEGATE SHRAPNEL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Iron Capirote",
+      "page": 118,
+      "range": null,
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "1e63-fd87-a6a7-eb5e",
+      "bsName": "Reaping Claws",
+      "category": "melee",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "iron-clawed-hands",
+      "keywords": [
+        "CLEAVE 2",
+        "CRITICAL"
+      ],
+      "limits": "min 1 per model; max 1 per model",
+      "modifiers": [],
+      "name": "Iron-Clawed Hands",
+      "range": "Melee",
+      "rules": "A Goetic Warlock can make a Melee Attack with the CLEAVE 2 and CRITICAL Keywords even though it does not have a Melee Weapon. In addition, the Off-Hand Weapon modifier applies to the second attack.",
+      "source": "Mercenaries",
+      "type": "Special"
+    },
+    {
+      "bsId": "b246-355b-f3ba-f72e",
+      "category": "shield",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "iron-wall-kalkan",
+      "keywords": [
+        "COVER"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Iron Wall Kalkan",
+      "range": null,
+      "rules": "Othismos: When a Brazen Bull that has an Iron Wall Kalkan takes a Move ACTION (not a Dash or Charge) and is in contact with 1 enemy model that is mounted on a base of 40mm or less, then the Brazen Bull can use the Iron Wall Kalkan to push the enemy model when it moves. The Brazen Bull must move in a straight line, directly towards the enemy model. The enemy model is pushed in front of the Brazen Bull as the Brazen Bull moves along. The move can also be used to push a model off a terrain piece, so that it Falls (▶ see Comprehensive Rules in the Trench Crusade Digital Rulebook). If the move pushes the enemy model into contact with another model, both the enemy model and the Brazen Bull must stop moving. If it pushes the enemy into contact with a terrain piece that is more than ½\" high, the enemy model and the Brazen Bull must stop moving and an Injury Roll is made for the enemy model.",
+      "source": "Iron Sultanate",
+      "type": "SHIELD"
+    },
+    {
+      "bsId": "6d28-673b-5fe7-849e",
+      "category": "ranged",
+      "cost": {
+        "ducats": 7,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "jezzail",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Jezzail",
+      "page": 109,
+      "range": "18\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "6caf-ec1d-e1ed-66d3",
+      "category": "melee",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "kayanin-mace",
+      "keywords": [
+        "CUMBERSOME",
+        "HEAVY",
+        "+2 INJURY MODIFIER"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Kayanin Mace",
+      "range": "Melee",
+      "rules": "If the enemy model is equipped with Armour of any kind, the weapon gains the keyword SHARPNEL and BLAST 2\". This blast does not affect the wearer of this weapon, and has no effect if the attack misses.",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "0a63-27a9-9db3-5a32",
+      "category": "melee",
+      "cost": {
+        "ducats": 8,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "khyber-knife",
+      "keywords": [
+        "ARMOUR PIERCING",
+        "CRITICAL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Khyber Knife",
+      "range": "Melee",
+      "rules": "Grevious Wounds: Injury Rolls made with this weapon cause an additional BLOOD MARKER to the target, regardless of result of the roll.",
+      "source": "Iron Sultanate",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "332e-325f-e1cb-d0ac",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "light-of-samael",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Light of Samael",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, pick an enemy model that is within 24\" of the spellcaster and in their Line of Sight, and then make an Injury Roll for the enemy model. If the enemy model is mounted on a base of 32mm or less, it is driven back D6\" in a straight line directly away from the spellcaster. The model stops if it is driven into another model, Impassable terrain or terrain it cannot cross without having to Climb.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2)"
+    },
+    {
+      "bsId": "3f2a-95a4-6029-8faa",
+      "category": "grenade",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "limpet-mine",
+      "keywords": [
+        "BLAST 3\"",
+        "HEAVY",
+        "SCATTER",
+        "CONSUMABLE"
+      ],
+      "limits": "max 3 per warband",
+      "modifiers": [],
+      "name": "Limpet Mine",
+      "range": "6\"",
+      "rules": "Limpet mines may only be used once a battle. When you roll to attack with a Limpet Mine, note the location the mine lands with a marker or token.\nAlternatively, you may attack with the Limpet Mine in melee, using your Ranged characteristic to hit. If the attack hits, the Mine is attached to the enemy model.\nIn either case, do not immediately roll for Injury. Instead, the mine detonates at the end of the turn, rolling for the injury with 3d6 (adding the dice together!) to any model under the center of the blast (i.e where the mine landed, or the model it was attached to), and rolling for an injury as normal for anyone else caught in the explosion.",
+      "source": "Iron Sultanate",
+      "type": "GRENADE"
+    },
+    {
+      "bsId": "a299-79e5-204e-1923",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 4
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 2,
+      "id": "living-instrument",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Living Instrument",
+      "range": null,
+      "rules": "The Living Instrument is a Musical Instrument that permanently occupies 2 hands, but has its range increased to 8”.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "adba-b7f8-83fd-a35c",
+      "category": "melee",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": 2,
+      "id": "lochaber-axe",
+      "keywords": [
+        "+2 INJURY DICE",
+        "BLOCK",
+        "CRITICAL",
+        "CUMBERSOME",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Lochaber Axe",
+      "range": "Melee",
+      "rules": "",
+      "source": "New Antioch",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "2558-23f8-cfa8-40f4",
+      "category": "armour",
+      "cost": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "machine-armour",
+      "keywords": [
+        "-3 INJURY MODIFIER"
+      ],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -3,
+          "stat": "armour"
+        }
+      ],
+      "name": "Machine Armour",
+      "page": 117,
+      "range": null,
+      "rules": "Change the base size of a model that has Machine Armour to 40mm unless it is already 40mm or larger. In addition, a model with Machine Armour cannot be equipped with a Trench Shield and has a Charge Bonus of D3\" instead of D6\".\n- Standfast: When a model that has Machine Armour suffers a Down result on the Injury table, it is treated as a Minor Wound result instead.",
+      "source": "Trench Crusade",
+      "type": "Armour"
+    },
+    {
+      "bsId": "45c3-9d88-09fa-ee11",
+      "bsIds": [
+        "45c3-9d88-09fa-ee11",
+        "517c-652f-100e-71d6"
+      ],
+      "category": "ranged",
+      "cost": {
+        "ducats": 50,
+        "glory": 2
+      },
+      "hands": 2,
+      "id": "machine-gun",
+      "keywords": [
+        "AUTOMATIC 3",
+        "HEAVY",
+        "RELOAD"
+      ],
+      "limits": null,
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Machine Gun",
+      "range": "36\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "f41a-17c4-1d59-abac",
+      "category": "melee",
+      "cost": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 2,
+      "id": "malebranche-sword",
+      "keywords": [
+        "HEAVY",
+        "DEADLY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Malebranche Sword",
+      "page": 116,
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "5f45-ffc2-6635-0f8c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "factionIds": [
+        "black-grail",
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "man-s-best-friend",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Man's Best Friend",
+      "range": null,
+      "rules": "This model may form a fireteam with another model in your Warband.",
+      "source": "Mercenaries",
+      "type": "Ability"
+    },
+    {
+      "bsId": "176e-55a7-5f50-3286",
+      "category": "equipment",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "marid-pelt",
+      "keywords": [],
+      "limits": "max 1 per model; max 4 per warband",
+      "modifiers": [],
+      "name": "Marid Pelt",
+      "range": null,
+      "rules": "The model gains the keyword INFLITRATOR.\nIn addition, all Attacks without the keyword BLAST against the wearer suffer a -1 DICE.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "20a6-1425-0331-7e02",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "marid-shovel",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Marid Shovel",
+      "range": null,
+      "rules": "The Marid Shovel has the Keyword HEAVY which allows a Brazen Bull to use it. Otherwise, it works exactly like a normal shovel.\nShovel: A model equipped with a Shovel that starts the game on Open terrain has the COVER Keyword until it moves away from its starting position. In addition, a model equipped with a Shovel can use it as a 2-Handed Melee Weapon instead of using any other Melee Weapons it has.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "6347-11b1-0c96-2803",
+      "category": "equipment",
+      "cost": {
+        "ducats": 20,
+        "glory": 1
+      },
+      "hands": null,
+      "id": "martyrdom-pills",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Martyrdom Pills",
+      "range": null,
+      "rules": "**Inured to Pain**: When you deploy a model that has Martyrdom Pills you can say that they will consume them. If you do so, until the end of the game the model has the NEGATE FEAR Keyword. In addition, add -1 INJURY DICE to rolls for attacks that hit the model.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "05b0-3aaa-2e29-c69f",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "medikit",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Medikit",
+      "range": null,
+      "rules": "**Treat ACTION**: A model with this Keyword can take a Treat ACTION. If it does so, take a Risky Success Roll for the model. If the roll is a Failure, the model’s Activation ends immediately. If it is a Success or a Critical Success, you can do one of the following things:\n* Remove 1 BLOOD MARKER from the model or a friendly model within 1” of the model.\n* Stand up a friendly model that is Down and within 1” of the model.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "4194-478c-0584-06db",
+      "bsName": "Unstoppable",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "melee-chassis",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Melee Chassis",
+      "range": null,
+      "rules": "When a model equipped with a Melee Chassis makes a melee attack action, it can choose to either attack with two flails or a misericordia. These attacks must be resolved immediately, and ignore the penalty for attacking with an offhand weapon if the flails are chosen (The flail still loses its +1D to hit in the offhand as normal, however, leading to a +1D and a +0 to the attacks.)\nMelee Chassis counts as two one handed melee weapons for the purposes of equipping models.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "1fac-60d6-f476-9c4d",
+      "bsIds": [
+        "1fac-60d6-f476-9c4d",
+        "d82e-4c7b-28ac-1413"
+      ],
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "misericordia",
+      "keywords": [],
+      "limits": null,
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Misericordia",
+      "range": "Melee",
+      "rules": "**Despatch**: This weapon has the IGNORE ARMOUR Keyword if the target is Down.",
+      "source": "Melee Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "b173-4099-33bd-41b5",
+      "bsName": "Carried Molotov",
+      "category": "grenade",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "molotov-carrier",
+      "keywords": [
+        "-1 INJURY DICE",
+        "ASSAULT",
+        "FIRE",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Molotov Carrier",
+      "range": "6\"",
+      "rules": "Liquid Fire: If the Success Roll for a Ranged Attack made with a Molotov Cocktail is a Critical Success then the Injury Roll for the attack has the IGNORE ARMOUR Keyword.",
+      "source": "New Antioch",
+      "type": "GRENADE"
+    },
+    {
+      "bsId": "6e1a-f31f-a4a9-58df",
+      "category": "grenade",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "molotov-cocktail",
+      "keywords": [
+        "-1 INJURY DICE",
+        "ASSAULT",
+        "FIRE",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Molotov Cocktail",
+      "range": "6\"",
+      "rules": "**Liquid Fire**: If the Success Roll for a Ranged Attack made with an Incendiary Grenade is a Critical Success then the Injury Roll for the attack has the IGNORE ARMOUR Keyword",
+      "source": "Ranged Weapons",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "6563-3cee-7f89-8d1e",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "morphean-mind",
+      "keywords": [],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Morphean Mind",
+      "range": null,
+      "rules": "The opposing player cannot spend more than 1 BLOOD MARKER to add -1 DICE when you take a Success Roll for a model with this Goetic Ability.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Ability"
+    },
+    {
+      "bsId": "46fc-c345-e21b-1df9",
+      "category": "equipment",
+      "cost": {
+        "ducats": 3,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "mountaineer-kit",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Mountaineer Kit",
+      "range": null,
+      "rules": "**Ropes and Pitons**: Add +1 DICE to Risky Success Rolls for friendly models with this special rule that are attempting to climb a sheer surface.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "556c-7009-6fc2-d658",
+      "category": "ranged",
+      "cost": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "murad-bombard",
+      "keywords": [
+        "BLAST 3\"",
+        "HEAVY",
+        "SCATTER"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "MURAD Bombard",
+      "range": "36\"",
+      "rules": "If the Success Roll for a Ranged Attack with an M.U.R.A.D Bombard that targets an enemy model is a Success or a Critical Success, or if the attack is a Failure and the target point scatters onto a model’s base, apply the effect of the DEADLY Keyword to the Injury Roll for that model. All other models caught in the M.U.R.A.D. Bombard’s blast radius, or that are in the M.U.R.A.D. Bombard’s blast radius if it did not hit the target model or scatter onto a model’s base, are taken Down (do not make an Injury Roll for them)",
+      "source": "Trench Crusade",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "d6b0-fb63-288a-420a",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "musical-instrument",
+      "keywords": [
+        "HELD"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Musical Instrument",
+      "range": null,
+      "rules": "**Fanfare**: Add +1 DICE to Risky Success Rolls for friendly models that are taking a Dash ACTION and are within 4” of one or more models with a Musical Instrument.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "d4e5-27cf-6c0d-1dad",
+      "category": "ranged",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "musket",
+      "keywords": [
+        "-1 INJURY DICE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Musket",
+      "range": "18\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "d8fe-561c-9243-f9b8",
+      "category": "ranged",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 2,
+      "id": "ophidian-rifle",
+      "keywords": [
+        "HEAVY",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Ophidian Rifle",
+      "page": 116,
+      "range": "30\"",
+      "rules": "Unnatural Inversion: Add +1 DICE to roll for attacks made with this weapon if the Cover or Long Range modifiers apply to the attack, instead of adding -1 DICE. Note that this means you add +2 DICE to the roll if both modifiers apply to the attack.",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "fe6c-3b3b-a756-9387",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 3
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "orphaned-failures",
+      "keywords": [],
+      "limits": "max 2 per warband; max 1 per self",
+      "modifiers": [],
+      "name": "Orphaned Failures",
+      "range": null,
+      "rules": "At the start of this Model’s activation, it heals one Blood Marker or Infection Marker, if it had any. Orphaned Failures can be purchased and Equipped by a Desecrated Saint, even though normally this would not be allowed.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "ddce-6e00-e451-7281",
+      "category": "grenade",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "parasite-grenades",
+      "keywords": [
+        "ASSAULT",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Parasite Grenades",
+      "page": 111,
+      "range": "8\"",
+      "rules": "Terrifying Hallucinations: If a Parasite Grenade hits a target, after resolving the Injury Roll, you can move the target model 3\". The move must be in a straight line, but can be in any direction, and can be used to make the model move within 1\" of an enemy, make a retreat move, Climb, Jump, or Jump Down. The model cannot make a Diving Charge and does not count as charging if it finishes the move within 1\" of an enemy model.",
+      "source": "Trench Crusade",
+      "type": "Grenades"
+    },
+    {
+      "bsId": "a595-aa3e-986e-edf0",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "pestilent-fang",
+      "keywords": [
+        "+1 INJURY MODIFIER",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Pestilent Fang",
+      "range": "Melee",
+      "rules": "Gnashing Blow: When a Melee Attack made with a Pestilent Fang causes 1 or more BLOOD MARKERS to be placed next to the target, place 1 INFECTION MARKER next to the target model.\nRotten Splinters: If the Success Roll for a Melee Attack made with a Pestilent Fang is a Critical Success then the Injury Roll for the Attack has the IGNORE ARMOUR Keyword.",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "48be-3a36-f9c0-a465",
+      "bsIds": [
+        "48be-3a36-f9c0-a465",
+        "ae18-4990-fc3c-78ce"
+      ],
+      "category": "ranged",
+      "cost": {
+        "ducats": 6,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "pistol",
+      "keywords": [
+        "PISTOL"
+      ],
+      "limits": null,
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Pistol",
+      "range": "12\"/Melee",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "82a8-f3ae-7726-1b79",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "piston-legs",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Piston Legs",
+      "range": null,
+      "rules": "Grind to Dust ACTION: This Anchorite Shrine can take a Grind to Dust ACTION. If it does so, it makes a Melee Attack but must target an enemy model within 1\" that is Down and is mounted on a base that is 32mm or smaller. The attack does not use a Melee Weapon.",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    },
+    {
+      "bsId": "c403-778c-1c4f-ec6e",
+      "category": "melee",
+      "cost": {
+        "ducats": 7,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 1,
+      "id": "plague-blade",
+      "keywords": [
+        "INFECTION MARKERS"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Plague Blade",
+      "page": 76,
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "80dd-5d7c-c33e-a950",
+      "bsIds": [
+        "50eb-2990-0b48-1a8d",
+        "80dd-5d7c-c33e-a950"
+      ],
+      "category": "melee",
+      "cost": {
+        "ducats": 7,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "polearm",
+      "keywords": [
+        "BLOCK",
+        "CUMBERSOME"
+      ],
+      "limits": null,
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Polearm",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "77ea-665d-7ac6-58ef",
+      "category": "ranged",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "iron-sultanate",
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "punt-gun",
+      "keywords": [
+        "+1 DICE",
+        "+1 INJURY DICE",
+        "HEAVY",
+        "SHOTGUN",
+        "SHRAPNEL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Punt Gun",
+      "page": 109,
+      "range": "18\"",
+      "rules": "Overcharge: Before making a Ranged Attack with a model armed with a Punt Gun, you can say that the model will Overcharge the weapon. To do so, the model has to either have the STRONG Keyword or be in base-to-base contact with a friendly model. An Overcharged Ranged Attack gains the BLAST 3\" and RELOAD Keywords. After an Overcharged attack has been carried out, place 1 BLOOD MARKER next to the model that made the attack, and its activation immediately ends.",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "9f3e-f682-ff22-8184",
+      "category": "equipment",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "purgation-ammunition",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Purgation Ammunition",
+      "range": null,
+      "rules": "Before the battle begins, a model with Purgation Ammunition may use this item to grant up to 2 Pistol that they have equipped with the GAS keyword until the end of the battle.",
+      "source": "Mercenaries",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "f342-1a5a-726e-8782",
+      "category": "ranged",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "putrid-shotgun",
+      "keywords": [
+        "+1 DICE",
+        "ASSAULT",
+        "INFECTION MARKERS",
+        "SHOTGUN"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Putrid Shotgun",
+      "page": 76,
+      "range": "12\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "a535-4fb6-c587-691a",
+      "bsIds": [
+        "a535-4fb6-c587-691a",
+        "f6aa-583c-a14b-0ee9"
+      ],
+      "category": "armour",
+      "cost": {
+        "ducats": 40,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "reinforced-armour",
+      "keywords": [
+        "-2 INJURY MODIFIER"
+      ],
+      "limits": "max 1 per model",
+      "mergedProfilesDiffer": true,
+      "modifiers": [
+        {
+          "delta": -2,
+          "stat": "armour"
+        }
+      ],
+      "name": "Reinforced Armour",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Armour"
+    },
+    {
+      "bsId": "ffb6-34ac-c895-4d37",
+      "category": "ranged",
+      "cost": {
+        "ducats": 12,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "relic-alaybozan",
+      "keywords": [
+        "+1 DICE",
+        "SHRAPNEL",
+        "SHOTGUN"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Relic Alaybozan",
+      "range": "12\"",
+      "rules": "Relic Alaybozans count as regular Alaybozans for the purposes of what special ammunition they can equip.",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "6e43-1990-00c2-5159",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "restraining-muzzle",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Restraining Muzzle",
+      "range": null,
+      "rules": "Restrained: Add +1 DICE to rolls made for a Ranged Attack made by a Yoke Fiend that has a Restraining Muzzle. In addition, the Hateful ability does not apply to a Yoke Fiend that has a Restraining Muzzle.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "d93a-0370-2f55-2f63",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "rocket-propelled-grenade",
+      "keywords": [
+        "+1 INJURY DICE",
+        "CONSUMABLE",
+        "IGNORE ARMOUR",
+        "RELOAD"
+      ],
+      "limits": "max 2 per warband; max 1 per model",
+      "modifiers": [],
+      "name": "Rocket-Propelled Grenade",
+      "range": "36\"",
+      "rules": "A Rocket-Propelled Grenade is a piece of Equipment that can be used once during a campaign as a Ranged Weapon. If a model that has been hit by a Rocket-Propelled Grenade is not taken Out of Action by the Injury Roll, it is blown D6\" in a straight line directly away from the attacking model. It stops if it is blown into another model, Impassable terrain or terrain it cannot cross without having to Climb.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "4863-d3e6-bda5-f230",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "sacred-geometry",
+      "keywords": [],
+      "limits": "max 1 per warband; max increment 1 per warband when repeat per Knowledge of the Sacred Geometry (roster); max 1 per model",
+      "modifiers": [
+        {
+          "delta": 1,
+          "stat": "ranged"
+        }
+      ],
+      "name": "Sacred Geometry",
+      "range": null,
+      "rules": "Divine Accuracy: Add +1 DICE to the Ranged Characteristic of this Anchorite Shrine.",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    },
+    {
+      "bsId": "1459-550f-ed53-b276",
+      "category": "melee",
+      "cost": {
+        "ducats": 23,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail",
+        "heretic-legion"
+      ],
+      "hands": 1,
+      "id": "sacrificial-blade",
+      "keywords": [
+        "+2 INJURY MODIFIER",
+        "RISKY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Sacrificial Blade",
+      "page": 115,
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "4c11-ec67-eaa0-fbdd",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "sacrificial-lamb",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Sacrificial Lamb",
+      "range": null,
+      "rules": "* Warded by Blood: When you deploy a model that has a Sacrificial Lamb, you can say that they will sacrifice it and anoint themselves with its blood. If you do so, the first BLOOD MARKER placed on the model is ignored.",
+      "source": "Trench Pilgrims",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "f58e-81b4-c972-ed32",
+      "category": "grenade",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "satchel-charge",
+      "keywords": [
+        "+1 INJURY DICE",
+        "BLAST 3”",
+        "CONSUMABLE",
+        "HEAVY",
+        "IGNORE ARMOUR",
+        "IGNORE COVER",
+        "SCATTER"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Satchel Charge",
+      "range": "6\"",
+      "rules": "**Heavy Explosive**: Once during a game, a model with a Satchel Charge can use it to make a Ranged Attack.",
+      "source": "Ranged Weapons",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "f469-b712-2233-ac79",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 1,
+      "id": "scourge-battle-whip-flail",
+      "keywords": [
+        "+1 DICE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Scourge/Battle Whip/Flail",
+      "page": 116,
+      "range": "Melee",
+      "rules": "Unwieldy: The +1 DICE Keyword does not apply when this Weapon is used as an Off-Hand Weapon.",
+      "source": "Trench Crusade",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "cb03-3d32-ca15-fd88",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "scrap-shot",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Scrap Shot",
+      "range": null,
+      "rules": "Adds the keyword ARMOR PIERCING to Jezzails, Alaybozan, Halberd-Guns or Siege Jezzails weared by the model. This equipment can be taken in place of Alchemical Ammo, and you cannot gain the benefit of both. In addition it cannot be taken on units or items that come equipped with Alchemical Ammunition, such as Masterwork Jezzails or the Mamluk Faris.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "4111-f437-2e81-899f",
+      "category": "ranged",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "semi-automatic-rifle",
+      "keywords": [
+        "ASSAULT"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Semi-Automatic Rifle",
+      "range": "24\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "651a-d454-07bf-a7fa",
+      "category": "ranged",
+      "cost": {
+        "ducats": 45,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 2,
+      "id": "serpent-assault-gun",
+      "keywords": [
+        "ASSAULT",
+        "AUTOMATIC 2",
+        "GAS",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Serpent Assault Gun",
+      "page": 89,
+      "range": "36\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "7f27-bb98-20d0-0a10",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "shaytanic-shard-ammunition",
+      "keywords": [],
+      "limits": "max 1 per model; max 3 per warband",
+      "modifiers": [],
+      "name": "Shayṭānic Shard Ammunition",
+      "range": null,
+      "rules": "If you hit with a weapon using Shayṭānic Shard Ammunition, do not make an Injury Roll as normal. Instead, the cost of a Bloodbath against the model that was just hit is reduced to 3 Blood Markers, for the rest of the turn.\nCan only be used with Jezzails, Sniper rifles, Halberd-Guns and Siege Jezzails.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "c2a5-72b6-355d-0356",
+      "category": "shield",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "shield",
+      "keywords": [
+        "-1 INJURY MODIFIER"
+      ],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Shield",
+      "page": 117,
+      "range": null,
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "Shield"
+    },
+    {
+      "bsId": "f5fe-26c3-c542-2bcb",
+      "category": "ranged",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "shield-paired-halberd-gun",
+      "keywords": [
+        "ASSAULT",
+        "BLOCK",
+        "CUMBERSOME"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Shield-Paired Halberd-Gun",
+      "range": "24\"",
+      "rules": "",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "d039-5982-7011-334e",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "shield-paired-siege-jezzail",
+      "keywords": [
+        "+1 INJURY DICE",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Shield-Paired Siege Jezzail",
+      "range": "30\"",
+      "rules": "",
+      "source": "Iron Sultanate",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "ae50-9c6f-a718-8767",
+      "category": "melee",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": 1,
+      "id": "shotel",
+      "keywords": [
+        "CRITICAL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Shotel",
+      "range": "Melee",
+      "rules": "",
+      "source": "New Antioch",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "b5a3-faec-7613-ef0f",
+      "category": "ranged",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "hands": 2,
+      "id": "shotgun",
+      "keywords": [
+        "+1 DICE",
+        "SHOTGUN"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Shotgun",
+      "range": "12\"",
+      "rules": "",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "d0a8-ad68-ad47-83f5",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "shovel",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Shovel",
+      "range": null,
+      "rules": "**Dug In**: A model equipped with a Shovel that starts the game on Open terrain has the COVER Keyword until it moves away from its starting position. In addition, a model equipped with a Shovel can use it as a 2-Handed Melee Weapon instead of using any other Melee Weapons it has.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "59d6-227d-0859-a162",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion",
+        "iron-sultanate"
+      ],
+      "hands": 2,
+      "id": "siege-jezzail",
+      "keywords": [
+        "+1 INJURY DICE",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Siege Jezzail",
+      "page": 109,
+      "range": "30\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "92fc-7eaf-8c33-3f87",
+      "category": "ranged",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "silenced-pistol",
+      "keywords": [
+        "ASSAULT",
+        "PISTOL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Silenced Pistol",
+      "range": "12\"/Melee",
+      "rules": "**Silent**: Add +1 DICE to the roll if the attacker is in contact with a terrain piece that is at least 1/2\" tall and that lies in between it and the target model.",
+      "source": "Ranged Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "2e3f-096e-2668-9f4e",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "slavemaster",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Slavemaster",
+      "range": "18\"",
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, you can carry out one of the following Commands with a Yoke Fiend that is within 18\" of the spellcaster. Carrying out a Command does not stop the Yoke Fiend from being Activated in the same Turn (before or after the Command was issued).\n- Sacrifice Command: The Yoke Fiend kills itself. It is taken Out of Action and crossed off its Warband Roster.\n- Fight Command: The Yoke Fiend carries out a Melee Attack.\n- Move Command: The Yoke Fiend carries out a Move (it cannot Charge or Retreat).\n- Shoot Command: The Yoke Fiend carries out a Ranged Attack.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1)"
+    },
+    {
+      "bsId": "808a-f077-4fec-ef82",
+      "category": "ranged",
+      "cost": {
+        "ducats": 35,
+        "glory": 2
+      },
+      "hands": 2,
+      "id": "sniper-rifle",
+      "keywords": [
+        "+1 DICE",
+        "CRITICAL",
+        "RISKY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Sniper Rifle",
+      "range": "48\"",
+      "rules": "**Bull's Eye**: If the Success Roll for a Ranged Attack made with a Sniper Rifle is a Critical Success then the Injury Roll for the attack has the IGNORE ARMOUR Keyword.",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "6b11-a83d-8aba-872a",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "sonomatic-sculpture",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Sonomatic Sculpture",
+      "range": null,
+      "rules": "Once this model has moved a minimum of 6” this turn, it has the FEAR keyword until the beginning of its next activation.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "3be9-5225-347c-c8f5",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "sparkpowder-ammunition",
+      "keywords": [],
+      "limits": "max 1 per model; max 3 per warband",
+      "modifiers": [],
+      "name": "Sparkpowder Ammunition",
+      "range": null,
+      "rules": "If a model is hit by a weapon using Sparkpowder Ammunition, all Attacks it makes are at -1D to hit until the end of its next activation. This does not stack.\nCan only be used with Jezzails, Alaybozan, Halberd-Guns, Siege Jezzails and Machineguns.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "fc21-c383-cc54-c15c",
+      "bsIds": [
+        "6fa6-650d-4136-bc70",
+        "fc21-c383-cc54-c15c"
+      ],
+      "category": "armour",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "standard-armour",
+      "keywords": [
+        "-1 INJURY MODIFIER"
+      ],
+      "limits": "max 1 per model",
+      "mergedProfilesDiffer": true,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Standard Armour",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Armour"
+    },
+    {
+      "bsId": "d703-b13e-c546-327c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "standard-of-mammon",
+      "keywords": [
+        "HELD",
+        "LEADER"
+      ],
+      "limits": "max 1 per model; max 1 per warband",
+      "modifiers": [],
+      "name": "Standard of Mammon",
+      "range": null,
+      "rules": "Kneel Before Me: An enemy model that is Down and within 1\" of a model with the Standard of Mammon cannot stand back up. In addition, the opposing player must take a Success Roll for any of their models that finish a charge within 1\" of a model with the Standard of Mammon. If the roll is a Failure, the enemy model is marked as being Down. If the roll is a Success or a Critical Success, the enemy model stays on its feet.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "0754-f896-3f97-65c7",
+      "category": "ranged",
+      "cost": {
+        "ducats": 30,
+        "glory": 2
+      },
+      "hands": 2,
+      "id": "submachine-gun",
+      "keywords": [
+        "ASSAULT"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Submachine Gun",
+      "range": "16\"",
+      "rules": "**Quick Bursts: A model armed with a Submachine Gun can take two Shoot ACTIONS during the same Activation, as long as the Submachine Gun is used to make both attacks. The Shoot ACTIONS can be taken one after the other, or other ACTIONS can be taken between the Shoot ACTIONS.**",
+      "source": "Ranged Weapons",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "bf03-e9ef-b9e7-b490",
+      "category": "ranged",
+      "cost": {
+        "ducats": 60,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "sultanate-grand-cannon",
+      "keywords": [
+        "+2 INJURY DICE",
+        "HEAVY IGNORE ARMOUR",
+        "DEPLOYABLE"
+      ],
+      "limits": "max 2 per warband",
+      "modifiers": [],
+      "name": "Sultanate Grand Cannon",
+      "range": "48\"",
+      "rules": "Unstoppable Object: If a model that has been hit by a Sultanate Grand Cannon is not taken Out of Action by the Injury Roll, it is pushed D6\" in a straight line directly away from the attacking model. The model stops if it pushed into another model, Impassable terrain or a terrain piece it cannot cross without having to Climb.",
+      "source": "Iron Sultanate",
+      "type": "1-handed"
+    },
+    {
+      "bsId": "856b-ba44-04c5-fdf5",
+      "bsName": "Blessing of the Pontiff",
+      "category": "equipment",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "supreme-blessing",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Supreme Blessing",
+      "range": null,
+      "rules": "This model can take further ACTIONS if it fails in an attempted RISKY ACTION. Note that the action fails, but you are allowed to try any other ACTIONS on your profile without losing the Activation.",
+      "source": "New Antioch",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "8ad7-a2d8-fa56-0a09",
+      "bsIds": [
+        "8ad7-a2d8-fa56-0a09",
+        "e938-b0dc-418c-0924"
+      ],
+      "category": "melee",
+      "cost": {
+        "ducats": 4,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "sword-axe",
+      "keywords": [
+        "CRITICAL"
+      ],
+      "limits": null,
+      "mergedProfilesDiffer": true,
+      "modifiers": [],
+      "name": "Sword/Axe",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "ffda-4bec-1b59-f267",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 4
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": null,
+      "id": "tabot",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Tabot",
+      "range": null,
+      "rules": "Virtuous Rewards: Place 1 BLESSING MARKER next to a model that has a Tabot each time that an ACTION carried out by a friendly model results in one or more BLOOD MARKERS and/or INFECTION MARKERS being removed from one or more friendly models.",
+      "source": "New Antioch",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "3f63-ae26-fd5d-3411",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "takwin-anqa-bird",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Takwin Anqā Bird",
+      "range": null,
+      "rules": "Cause Confusion: Success Rolls taken for Melee Attacks that target a model with a Takwin Anqā Bird become Risky Success Rolls (there is no additional effect if they are Risky Success Rolls already). In addition, before an enemy model within 1\" of a model with Takwin Anqā Bird makes a retreat, the opposing player must take a Risky Success Roll for the model. If the Roll is a Failure the enemy model cannot retreat and its Activation ends. If the Roll is a Success or a Critical Success, the enemy model can retreat normally.",
+      "source": "Iron Sultanate",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "61b5-8cd2-9946-22fd",
+      "category": "armour",
+      "cost": {
+        "ducats": 60,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "tank-palanquin",
+      "keywords": [
+        "-3 INJURY MODIFIER",
+        "STRONG"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [
+        {
+          "delta": -3,
+          "stat": "armour"
+        }
+      ],
+      "name": "Tank Palanquin",
+      "range": null,
+      "rules": "",
+      "source": "Heretic Legion",
+      "type": "Armour"
+    },
+    {
+      "bsId": "2c09-3968-682f-af03",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "new-antioch"
+      ],
+      "hands": 2,
+      "id": "tank-splitter-sword",
+      "keywords": [
+        "+1 INJURY DICE",
+        "CRITICAL",
+        "CUMBERSOME"
+      ],
+      "limits": "max 2 per warband; max increment 1 per warband when repeat per Knowledge of the Tank-Splitter Sword (roster)",
+      "modifiers": [],
+      "name": "Tank-Splitter Sword",
+      "range": "Melee",
+      "rules": "When you make an Injury Roll for an attack made with a Tank-Splitter Sword, determine if the target has an Armour Characteristic that is -1 or greater, or if it is wearing Armour or carrying a Shield. If it does, before rolling the dice for the Injury Roll, put one dice aside and turn it so that it shows a “6”. Roll the rest of the dice, then return the dice you put to one side; it counts as having rolled a 6. In addition, attacks made with a Tank-Splitter Sword are not affected by the Dragonslayer Patron Skill.",
+      "source": "New Antioch",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "0999-4c6b-539f-d1b2",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 2,
+      "id": "tartarus-claws",
+      "keywords": [
+        "CLEAVE 2",
+        "CRITICAL",
+        "CUMBERSOME"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Tartarus Claws",
+      "page": 115,
+      "range": "Melee",
+      "rules": "Harrowing Assault: If the target is taken Down or Out of Action by a Melee Attack made with Tartarus Claws, you can immediately move the model up to 3”. You can use this move to move within 1” another enemy model, and if you do so, this model can take another Fight ACTION. However, it cannot make the 3” move if the second attack takes the target Down or Out of Action.",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "4d1c-67e3-95cf-1169",
+      "category": "melee",
+      "cost": {
+        "ducats": null,
+        "glory": null
+      },
+      "factionIds": [
+        "black-grail",
+        "court-of-the-seven-headed-serpent",
+        "heretic-legion"
+      ],
+      "hands": 2,
+      "id": "tenderizer-maul",
+      "keywords": [
+        "+1 INJURY MODIFIER",
+        "HEAVY"
+      ],
+      "limits": "min 1 per model; max 1 per model",
+      "modifiers": [],
+      "name": "Tenderizer Maul",
+      "range": "Melee",
+      "rules": "Swinging Blow: When a model armed with a Tenderiser Maul takes a Fight ACTION, instead of making only 1 Melee Attack, you can make 1 Melee Attack against each enemy model with 1\" of the attacking model. Resolve each Melee Attack one at a time in the order of your choice.",
+      "source": "Mercenaries",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "0aa4-71b3-4c9c-5848",
+      "bsIds": [
+        "0aa4-71b3-4c9c-5848",
+        "2ee4-7f35-8086-2f2a"
+      ],
+      "category": "shield",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "thermal-shielding",
+      "keywords": [
+        "NEGATE FIRE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Thermal Shielding",
+      "range": null,
+      "rules": "Attacks or effects from friendly sources with the FIRE keyword suffer a -2 DICE penalty to injure the model.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "c035-9cfd-250c-73bc",
+      "category": "melee",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate"
+      ],
+      "hands": 1,
+      "id": "titan-zulfiqar",
+      "keywords": [
+        "+2 INJURY MODIFIER",
+        "CRITICAL",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Titan Zulfiqar",
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "23e2-917e-bc76-9ad9",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "too-proud-to-fall",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Too Proud to Fall",
+      "range": null,
+      "rules": "You can cast this spell immediately after the spellcaster is taken Down. If you do so, the spellcaster ignores the Down result and remains standing, but will still suffer any other effects of the Injury Roll or rule that caused them to be taken Down. For example, BLOOD MARKERS from an Injury Roll must be placed next to the model as normal, and if the TOUGH Keyword was used then it cannot be used again during the game, and so on.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2)"
+    },
+    {
+      "bsId": "36d4-9b55-fd0a-150f",
+      "category": "ranged",
+      "cost": {
+        "ducats": 0,
+        "glory": 3
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 1,
+      "id": "tormentor-chain",
+      "keywords": [
+        "ASSAULT",
+        "IGNORE COVER",
+        "IGNORE LONG RANGE",
+        "SHRAPNEL"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Tormentor Chain",
+      "range": "10\"",
+      "rules": "Dragged Forwards: If an attack made with a Tormentor Chain is a Success or Critical Success, do not make an Injury Roll for the target. Instead, place 1 BLOOD MARKER next to the target, and then place a second BLOOD MARKER on the target because the Tormentor Chain has the SHRAPNEL Keyword. After placing the BLOOD MARKERS, you can move the target model up to 12\" in a straight line, but you must move it so that it finishes the move as close as possible to the attacking model.\nDeadly Embrace: Enemy models cannot retreat if they are within 1\" of a model with a Tormentor Chain.",
+      "source": "Trench Crusade",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "6f4c-3af9-620f-9988",
+      "category": "melee",
+      "cost": {
+        "ducats": 8,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": 2,
+      "id": "torture-instrument",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Torture Instrument",
+      "page": 116,
+      "range": "Melee",
+      "rules": "Agonising Injuries: When you make an Injury Roll for an attack made with a Torture Instrument, roll 1D6 instead of 2D6, but then double the number of BLOOD MARKERS that are caused by the roll (if there are any). Any +INJURY DICE or -INJURY DICE that applied to the Injury Roll will apply normally, except that you pick the single highest or lowest dice in the roll instead of the 2 highest or lowest. Note that when you make a Bloodbath Roll for an attack made with a Torture Instrument, you only roll 2D6 instead of 3D6, but you can then double the number of BLOOD MARKERS that are caused by the roll.\nDown, Whelp: If an attack made with a Torture Instrument targets a friendly model and the Success Roll is a Success or a Critical Success, do not roll on the Injury Table. Instead, the targeted friendly model is taken Down (the Agonising Injuries special rule still applies to this Injury Result).",
+      "source": "Trench Crusade",
+      "type": "2-handed"
+    },
+    {
+      "bsId": "bd07-8e58-85a3-71f0",
+      "category": "melee",
+      "cost": {
+        "ducats": 3,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "trench-club",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Trench Club",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "daaa-b1ef-7908-82a7",
+      "category": "melee",
+      "cost": {
+        "ducats": 1,
+        "glory": 0
+      },
+      "hands": 1,
+      "id": "trench-knife",
+      "keywords": [
+        "-1 DICE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Trench Knife",
+      "range": "Melee",
+      "rules": "",
+      "source": "Melee Weapons",
+      "type": "1-Handed"
+    },
+    {
+      "bsId": "e943-b0b0-7790-fb15",
+      "category": "ranged",
+      "cost": {
+        "ducats": 40,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "trench-mortar",
+      "keywords": [
+        "+1 INJURY DICE",
+        "BLAST 3''",
+        "FIRE",
+        "HEAVY",
+        "IGNORE COVER",
+        "SCATTER"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Trench Mortar",
+      "range": "48\"",
+      "rules": "High Trajectory: When a Trench Mortar is used to make a Ranged Attack, the target model (or target point, if targeting a point on the ground) cannot be within 6\" of the attacking model. Note that if the attack Scatters it may end up landing within 6\" of the attacking model.",
+      "source": "Trench Pilgrims",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "ab45-1e00-df56-dbda",
+      "category": "shield",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "trench-shield",
+      "keywords": [
+        "-1 INJURY MODIFIER"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Trench Shield",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Shield"
+    },
+    {
+      "bsId": "934a-994b-9a83-6663",
+      "category": "shield",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "trench-shield-nordic",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "name": "Trench Shield (Nordic)",
+      "range": null,
+      "rules": "Provides the benefit of cover at all times and a model equipped with a Trench Shield (Nordic) always count as having the defended obstacle bonus when charged.\nAdditionally, a friendly model in base to base contact with a model equipped with a Trench Shield (Nordic) treats the shieldbearer as cover, following the normal rules for cover.",
+      "source": "Trench Pilgrims",
+      "type": "Shield"
+    },
+    {
+      "bsId": "98cd-8361-8cc4-81ea",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 1
+      },
+      "hands": null,
+      "id": "troop-flag",
+      "keywords": [
+        "LEADER",
+        "HELD"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Troop Flag",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "c598-d0e1-26bb-4d64",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "uncaring-gluttony",
+      "keywords": [],
+      "limits": "max 1 per model; max 1 per warband",
+      "modifiers": [],
+      "name": "Uncaring Gluttony",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, pick 1 enemy model that has not yet been Activated this Turn, and pick one piece of Equipment that the model has (note its Type must be Equipment, not Weapon or Special and so on). Equipment that has the CONSUMABLE Keyword cannot be picked as it has already been consumed, and Equipment that has the DEPLOYABLE Keyword cannot be picked if it is more than 1” away from the model. The model chews on the Equipment, rendering it unusable for the rest of the game.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 2)"
+    },
+    {
+      "bsId": "5f9b-de73-1181-b57a",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "unending-starvation",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Unending Starvation",
+      "range": null,
+      "rules": "Agonising Pangs: A model with this Battlekit adds +1” to their Movement Characteristic, and may target themselves with the Ravenous Infection Ability. In addition, if this model is more than 1” away from an enemy model, its first ACTION each Activation must be a Move, Charge or Dash ACTION, moving the maximum distance possible directly towards the nearest enemy model, and charging them if possible.\nMutation: Once this Battlekit has been equipped, it cannot be removed or lost over the course of a campaign for any reason.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "cc52-3402-19d6-ffeb",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "unholy-relic",
+      "keywords": [
+        "FEAR"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Unholy Relic",
+      "range": null,
+      "rules": "",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "11ce-c3bb-7246-14af",
+      "category": "equipment",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "hands": null,
+      "id": "unholy-trinket",
+      "keywords": [
+        "CONSUMABLE"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Unholy Trinket",
+      "range": null,
+      "rules": "**Talisman**: Once during a game, when a Risky Success Roll for a model with an Unholy Trinket is a Failure, you can say that the model will use it. If you do, the model’s Activation does not end.",
+      "source": "Battlekits",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "ca1e-ab83-ae4e-8c8d",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 11
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "unnatural-conduit",
+      "keywords": [],
+      "limits": "max 1 per self",
+      "modifiers": [],
+      "name": "Unnatural Conduit",
+      "range": null,
+      "rules": "This Model may use themselves (Even if they have the DEMONIC keyword), or any enemy Model to pay for a Goetic spell’s costs, providing that enemy still pass the other usual restrictions (Non DEMONIC, within Goetic Range, etc).",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "2ea9-6b43-8872-1f15",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "unstoppable",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Unstoppable",
+      "range": null,
+      "rules": "Your opponent cannot spend BLOOD MARKERS on this model's Dash actions.",
+      "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "f451-eff3-bd36-29ff",
+      "category": "equipment",
+      "cost": {
+        "ducats": 40,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "urn-of-bitter-ashes",
+      "keywords": [],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Urn of Bitter Ashes",
+      "range": null,
+      "rules": "Add -1 DICE to the roll for Ranged Attacks that target a model that has the Urn of Bitter Ashes or that is within 3\" of the model with the Urn of Bitter Ashes",
+      "source": "Black Grail",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "7428-8c1b-d5a5-bae5",
+      "category": "ranged",
+      "cost": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": 2,
+      "id": "viscera-cannon",
+      "keywords": [
+        "+2 DICE",
+        "HEAVY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Viscera Cannon",
+      "page": 76,
+      "range": "24\"",
+      "rules": "Self Sacrifice: If a Viscera Cannon hits a target, after resolving the Injury Roll, you can place up to 3 BLOOD MARKERS next to model that made the Attack (until it has a maximum of 6 markers). Then place 1 INFECTION MARKER next to the target for each BLOOD MARKER that you placed on the attacking model.",
+      "source": "Trench Crusade",
+      "type": "2-Handed"
+    },
+    {
+      "bsId": "5a77-6daf-1d1d-261b",
+      "category": "ranged",
+      "cost": {
+        "ducats": 40,
+        "glory": 0
+      },
+      "factionIds": [
+        "black-grail"
+      ],
+      "hands": null,
+      "id": "vomitus",
+      "keywords": [
+        "+1 INJURY MODIFIER",
+        "ASSAULT",
+        "INFECTION MARKERS"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Vomitus",
+      "range": "8\"",
+      "rules": "Torrent of Bile: When Vomitus is used to make a Ranged Attack, do not make a Success Roll for the attack. Instead, measure a straight line 1mm wide and up to 8” long from the attacking model to a point on the ground or a model’s base. The line stops if it reaches a terrain piece that is taller than the model making the Attack. Make an Injury Roll for every model (friend or foe) that is touched by the line, apart from the attacking model itself.",
+      "source": "Black Grail",
+      "type": "Special"
+    },
+    {
+      "bsId": "2d02-94a4-2493-186f",
+      "category": "grenade",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent",
+        "iron-sultanate",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "war-cross",
+      "keywords": [
+        "ASSAULT",
+        "IGNORE LONG RANGE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "War Cross",
+      "page": 76,
+      "range": "8\"",
+      "rules": "",
+      "source": "Trench Crusade",
+      "type": "Grenade"
+    },
+    {
+      "bsId": "a2ba-2877-7293-0675",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "court-of-the-seven-headed-serpent"
+      ],
+      "hands": null,
+      "id": "what-is-yours-is-mine",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "What is Yours is Mine",
+      "range": null,
+      "rules": "You must take a Cast Spell ACTION with the spellcaster in order for it to cast this spell. If you do so, you can remove 1 BLOOD MARKER or BLESSING MARKER from a model in the spellcaster’s Line of Sight (friend or foe) and place it next to the spellcaster.",
+      "source": "Court of the Seven-Headed Serpent",
+      "type": "Spell (Cost 1)"
+    },
+    {
+      "bsId": "cb4d-4771-6cd2-240b",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion",
+        "iron-sultanate"
+      ],
+      "hands": null,
+      "id": "wind-amulet",
+      "keywords": [],
+      "limits": null,
+      "modifiers": [],
+      "name": "Wind Amulet",
+      "range": null,
+      "rules": "Gusts of Wind: Once per game, when you Activate a model that has a Wind Amulet you may declare that it will use the amulet before it takes any ACTIONS. Using the Wind Amulet adds 3\" to the model’s Movement Characteristic for the rest of the Activation.",
+      "source": "Trench Crusade",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "932a-0ad5-c74c-3593",
+      "category": "equipment",
+      "cost": {
+        "ducats": 30,
+        "glory": 0
+      },
+      "factionIds": [
+        "iron-sultanate",
+        "new-antioch",
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "winged-staff",
+      "keywords": [
+        "HELD"
+      ],
+      "limits": "max 1 per warband",
+      "modifiers": [],
+      "name": "Winged Staff",
+      "range": null,
+      "rules": "The wielder of a Wingstaff confers a +1 DICE to any Risky Actions other than attacks to itself and any friendly model within 4”.",
+      "source": "Mercenaries",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "d93a-6190-7c98-1e4c",
+      "category": "equipment",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "wrathful-cherub-face",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Wrathful Cherub Face",
+      "range": null,
+      "rules": "Cower Before The Lord: An enemy model that does not have the FEAR keyword and that starts an Activation within 1\" of this Anchorite Shrine must take a Retreat ACTION as part of the Activation. It cannot take any ACTION that require a Risky Success Roll while it is within 1\" of this Anchorite Shrine.",
+      "source": "Trench Pilgrims",
+      "type": "Special"
+    }
+  ],
+  "source": {
+    "catalogues": {
+      "Battlekits": {
+        "bsId": "f044-03b4-6607-1152",
+        "file": "Equipment.cat",
+        "revision": "1"
+      },
+      "Black Grail": {
+        "bsId": "0b26-15c1-cebd-0077",
+        "file": "Black Grail.cat",
+        "revision": "13"
+      },
+      "Campaign Rules": {
+        "bsId": "ba52-3616-d7f9-8d0c",
+        "file": "Campaign Rules.cat",
+        "revision": "5"
+      },
+      "Court of the Seven-Headed Serpent": {
+        "bsId": "44b9-e92b-2dc0-6820",
+        "file": "Court of the Seven-Headed Serpent.cat",
+        "revision": "10"
+      },
+      "Heretic Legion": {
+        "bsId": "6941-ec54-3001-8288",
+        "file": "Heretic Legion.cat",
+        "revision": "24"
+      },
+      "Iron Sultanate": {
+        "bsId": "72ab-daa4-80ee-e9a5",
+        "file": "Iron Sultanate.cat",
+        "revision": "14"
+      },
+      "Melee Weapons": {
+        "bsId": "7595-974a-7451-6c2e",
+        "file": "Melee Weapons.cat",
+        "revision": "1"
+      },
+      "Mercenaries": {
+        "bsId": "f569-e9dd-327a-5735",
+        "file": "Mercenaries.cat",
+        "revision": "8"
+      },
+      "New Antioch": {
+        "bsId": "707d-5bdf-586e-f704",
+        "file": "New Antioch.cat",
+        "revision": "13"
+      },
+      "Ranged Weapons": {
+        "bsId": "8ef4-3a38-8adb-53ba",
+        "file": "Ranged Weapons.cat",
+        "revision": "1"
+      },
+      "Trench Pilgrims": {
+        "bsId": "d54d-055d-bbc0-a20f",
+        "file": "Trench Pilgrims.cat",
+        "revision": "7"
+      }
+    },
+    "commit": "45d187c6fde12d6c073f620098f182681350d6c8",
+    "edition": "BattleScribe gameSystem 'Trench Crusade' revision 17",
+    "file": "Trench Crusade.gst",
+    "gameSystem": {
+      "bsId": "sys-4f3d-c5c9-7df1-ad01",
+      "file": "Trench Crusade.gst",
+      "revision": "17"
+    },
+    "generator": "scripts/convert_newrecruit.py",
+    "repo": "https://github.com/Fawkstrot11/TrenchCrusade"
+  }
+}
