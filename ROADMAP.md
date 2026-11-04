@@ -200,9 +200,9 @@ asset overlap at identical scale between TC:Map and the reference mods, so no gl
 - TC-003c Per-unit battlekit overrides: Amalgam "up to six weapons" (p140), Mamluk Faris polearm+shield
   loadout (p179), Mendelist Ammo Monk hire for New Antioch (p180), Holy Icon Armour on Stigmatic Nun /
   Trench Pilgrim (p62), Knights of Avarice second warlock (p120), Wretched 10-ducat kit cap (p167).
-- Copyright: units/equipment/factions JSON carry ~220K chars of near-verbatim Warbands ability and rule
-  text inherited from upstream. Acceptable while private (decision 5); must be paraphrased or stripped
-  before anything goes public.
+- Rule text: units/equipment/factions JSON carry near-verbatim Warbands ability and rule text inherited
+  from upstream. Jonathan's decision 2026-11-04: the Trench Crusade rules are free and publicly
+  available, so this is not a blocker for the public repo. Not to be re-raised.
 - Engine judgement calls to settle: HELD item + 1H weapon + shield counting (Digital Rulebook p55 reads
   "either a 1-Handed Weapon or a Shield"); mercenary loadout bundles (`bundle` field) not enforced, so
   Greatsword + Pistol on a Mamluk Faris passes; Scripture Guardian's mandatory weapon purchase (p182).
