@@ -1,0 +1,235 @@
+{
+  "$schema": "tc-rules-terrain-v1",
+  "source": {
+    "file": "Trench-Crusade-Digital-Rulebook.pdf",
+    "pages": "58-67; 38-41; 23",
+    "alsoConsulted": "p9 (playing surface), p22 (battlefield size), p30 (Line of Sight), p43 (ranged modifiers), p45 (melee modifiers), p52-57 (keywords), p146-147 and p151 (scenario format, deployment zones, Claim No Man's Land map)"
+  },
+  "battlefield": {
+    "page": 58,
+    "widthIn": 36,
+    "depthIn": 36,
+    "text": "Standard board is 36in square; some scenarios require 48in square (e.g. Armoured Train and one other No Man's Land scenario state 48x48 explicitly). Minimum is a table at least 30in wide (p22) with 24in between the two forces at deployment (p9). The baseline scenario map (Claim No Man's Land, p151) shows two 6in-deep Deployment Zones on opposite edges with a 24in gap between them and a Midpoint marker at board centre, which resolves to a 36in axis. Recommended surface 3x3ft or 4x4ft. Larger scenarios may need a purpose-made 48in square board (p64 describes cutting an 8x4ft MDF/plywood sheet in half)."
+  },
+  "terrainPieces": {
+    "page": 58,
+    "text": "Terrain is represented by individual scenic models called terrain pieces; use as many as you can (p23: 'the more you have, the better' - elevation, cover and variety all help). Before play, agree with your opponent what type each piece is (Open, Difficult, Dangerous, Impassable; a piece can be both Difficult and Dangerous), where its boundary lies (base, cotton outline, or agreement), and which surfaces can be climbed or jumped from (p38). A model is 'in' a piece if more than half its base is inside the boundary (p38). Improvised household items are explicitly fine (p59). Pieces not on the standard list (unique terrain) are agreed case by case (p64). Scattered terrain (single trees, crates, signposts) is decorative only: any amount may be added and it is ignored for movement, attacks and visibility (p64). Per-archetype counts (p65-67) count any piece more than 8in across or 8in long as 2 pieces.",
+    "recommendedCount": "No global figure. Per archetype: No Man's Land at least 2 of each listed type (guideline only; anything from almost none to as many as fit); Decimated Ruins at least 6 ruined buildings plus at least 2 of each other type; Trench Lines enough trench sections to span edge to edge plus at least 2 of each other type. Pieces over 8in in either dimension count as 2."
+  },
+  "movementRules": {
+    "pages": "38-41",
+    "terrainTypes": "Four terrain types (p38): Open, Difficult, Dangerous, Impassable. A piece can be both Difficult and Dangerous. Terrain up to 1in high, trench walls up to 3in high, and ladders, ramps, ropes, stairs and other climbing aids are all treated as Open terrain (p39).",
+    "difficultTerrain": "DIFFICULT TERRAIN keyword (p54): every 1in moved across it counts as 2in. Examples: rock beds, swamps, craters, rubble, fallen trees.",
+    "dangerousTerrain": "DANGEROUS TERRAIN keyword (p54): when a model in it is Activated, or moves into it during a move, take a Risky Success Roll. Success: continue, no further rolls for more Dangerous terrain in that move. Failure: Injury Roll and the Activation ends. May carry a bracketed keyword (e.g. DANGEROUS TERRAIN (FIRE)) that applies to the Injury Roll. Examples: barbed wire, minefields, raging fires, poison gas, rivers, swampy ground. FLYING models still roll if Activated in or ending a move on it.",
+    "impassableTerrain": "IMPASSABLE TERRAIN keyword (p55): models cannot be moved onto or across it. Examples: cliffs, large monuments with nowhere to stand, magma, lava/hellfire. Only FLYING models may cross a landmark (p60) and even they cannot end a move on Impassable terrain (p55).",
+    "climbing": "Climbing sheer surfaces (p39): a model within 1in of a sheer surface (wall) may Climb up or down it. It must have enough movement left to clear the whole surface (cannot stop halfway). Take a Risky Success Roll on reaching the surface: Success moves the model directly to the top/bottom and it may continue its move; Failure ends its Activation where it is. Applies to linear terrain over 1in high, trench sides 3in or higher, ruined-building walls, and corner-ruin upper floors.",
+    "jumping": "Jumping over gaps (p40): declare a Jump as part of a move; gap may be up to half the model's Movement, and approach plus gap must not exceed the distance it can move (Movement 6in: move 3in then jump up to 3in). Risky Success Roll at the gap edge: Success crosses and continues; Failure means the model Falls (opponent picks which side) and its Activation ends. Unequal heights: jumping from the higher side applies Jumping Down rules; jumping to a higher side adds the extra height to the horizontal distance. Jumping Down (p40): free as part of a move, but a drop of 3in or more counts as Falling. A model may Jump across a trench using the gap rules (p62).",
+    "falling": "Falling (p41): move the model to the first flat surface directly below where it fell from. A Fall of 3in or more requires an Injury Roll with +1 INJURY DICE per full 3in (3-5in +1, 6-8in +2, etc.). FLYING models never take a Falling Injury Roll (p55). Diving Charge (p45): a model at least 3in above its target may Risky-roll to charge down; Success avoids the Falling roll and grants +1 DICE to the next Melee Attack, Failure takes the model Down plus a Falling Injury Roll.",
+    "cover": "COVER keyword (p38, p54): a model has Cover from another model if it is on or in contact with a terrain piece at least 0.5in high and at least as wide as its base, and that piece lies between the two models so that it partially blocks Line of Sight (p38 example: terrain fully blocking LoS means the model cannot be seen or attacked at all; partial LoS means -1 DICE). Effect: Cover gives -1 DICE to Ranged Attacks against the model (p43); Defended Obstacle gives -1 DICE to Melee Attacks when the cover piece lies between attacker and target (p45). IGNORE COVER weapons bypass the modifier (p55). Elevated position (p43): +1 DICE to a Ranged Attack if the attacker's base is at least 3in higher than the target's.",
+    "lineOfSight": "Line of Sight (p30): checked from behind the attacking model at eye level; the target is visible if any part of the model other than its base, hands, feet or carried items (weapons, banners) can be seen. Models see 360 degrees and may pivot first. Partial LoS: some but not all of the target is visible (this is what Cover produces). LoS to a point on the battlefield or terrain treats the point as 1mm x 1mm and succeeds if any part is visible. Terrain-specific: a hill high enough blocks LoS to models beyond it (p61); trenches are deep enough to shield warriors from fire (p67); scattered terrain never blocks LoS (p64)."
+  },
+  "types": [
+    {
+      "id": "open-terrain",
+      "name": "Open Terrain",
+      "page": 60,
+      "category": "standard",
+      "text": "Any area with nothing to impede a model; the most common terrain. Models move freely across it. Also includes anything up to 1in high, trench walls up to 3in, and ladders/ramps/ropes/stairs (p39), plus remaining floors and stairs in ruins (p63) and bridges/fords on rivers (p63).",
+      "traits": { "difficult": false, "dangerous": false, "cover": false, "blocksLoS": false, "climbable": false, "impassable": false, "elevated": false },
+      "footprint": null,
+      "generatorNotes": "Default ground state of every cell not covered by a placed piece. The generator never places open terrain; it is what remains between pieces (minimum 3in gaps in all archetypes guarantee corridors of it)."
+    },
+    {
+      "id": "landmark",
+      "name": "Landmark",
+      "page": 60,
+      "category": "landmark",
+      "text": "A single piece of Impassable terrain such as a statue, shrine, altar, or (per archetype lists) a wrecked tank, cannon or vehicle. Cannot be moved across except by FLYING models, which still cannot end a move on it. If a scenario includes Markers, players may agree to use a landmark in place of a Marker.",
+      "traits": { "difficult": false, "dangerous": false, "cover": true, "blocksLoS": "partial", "climbable": false, "impassable": true, "elevated": false },
+      "footprint": "Not stated; a single solid piece. Markers it may stand in for are up to 40mm across (p146). Pieces over 8in in either dimension count as 2 toward archetype minimums.",
+      "generatorNotes": "Place as isolated solid blockers, at least 3in from any other piece. A landmark at the board Midpoint or on a scenario Marker position doubles as the objective. Allowed in all three archetypes. May sit on top of a hill (p61 example)."
+    },
+    {
+      "id": "dangerous-terrain",
+      "name": "Area of Dangerous Terrain",
+      "page": 60,
+      "category": "area",
+      "text": "Bounded area with the DANGEROUS TERRAIN keyword: barbed wire, minefields, swampy ground, raging fires, gas. Entering or Activating in it forces a Risky Success Roll; failure causes an Injury Roll and ends the Activation. Boundary must be agreed (base, cotton outline, or agreement). May also be Difficult.",
+      "traits": { "difficult": "partial", "dangerous": true, "cover": "partial", "blocksLoS": false, "climbable": false, "impassable": false, "elevated": false },
+      "footprint": "Not stated. Area terrain needs a clear boundary. Pieces over 8in in either dimension count as 2 toward archetype minimums.",
+      "generatorNotes": "Flat footprint polygon; models can move through it at a cost in risk rather than distance. Allowed in all three archetypes (barbed wire everywhere; minefields in Ruins and Trench Lines; swampy ground in No Man's Land). Barbed wire low enough (<0.5in) gives no cover; a generator should flag cover only when the piece has a solid part at least 0.5in high. At least 3in from other pieces; in Trench Lines at least 1in from trenches. Natural placement is in front of trench lines and across approaches."
+    },
+    {
+      "id": "difficult-terrain",
+      "name": "Area of Difficult Terrain",
+      "page": 60,
+      "category": "area",
+      "text": "Bounded area with the DIFFICULT TERRAIN keyword: craters, rubble, fallen trees, rock beds. Every 1in moved inside it counts as 2in. Boundary must be agreed. May also be Dangerous.",
+      "traits": { "difficult": true, "dangerous": false, "cover": "partial", "blocksLoS": false, "climbable": false, "impassable": false, "elevated": false },
+      "footprint": "Not stated. Area terrain needs a clear boundary. Pieces over 8in in either dimension count as 2 toward archetype minimums.",
+      "generatorNotes": "Flat footprint polygon that halves movement. Craters and rubble are the staple of all three archetypes. A crater rim or fallen tree at least 0.5in high gives cover to models touching it; a flat rubble patch does not. Keep at least 3in from other pieces (1in from trenches in Trench Lines). Scatter freely across the middle of the board where the archetype wants broken ground."
+    },
+    {
+      "id": "impassable-terrain",
+      "name": "Area of Impassable Terrain",
+      "page": 60,
+      "category": "area",
+      "text": "Bounded area with the IMPASSABLE TERRAIN keyword: lava or hellfire, pools of magma, sheer cliff faces. Models cannot be moved onto or across it (FLYING may cross but not end on it).",
+      "traits": { "difficult": false, "dangerous": false, "cover": "partial", "blocksLoS": "partial", "climbable": false, "impassable": true, "elevated": false },
+      "footprint": "Not stated. Needs a clear boundary.",
+      "generatorNotes": "On the standard list but NOT on any of the three archetype pick-lists, so a strict generator omits it unless a scenario or house rule adds it. If used, treat as a hard obstacle polygon with a 3in clearance to other pieces, and never let it seal off a deployment zone."
+    },
+    {
+      "id": "hill",
+      "name": "Hill",
+      "page": 61,
+      "category": "area",
+      "text": "Any size or height, recommended no more than 12in across at its widest. If high enough it blocks Line of Sight to models beyond it and can give the +1 DICE elevated-position modifier (attacker 3in or more above target). Usually Open terrain for movement, but other pieces (rocky ground, barbed wire, trenches, ruins) can sit on top and take their own type.",
+      "traits": { "difficult": false, "dangerous": false, "cover": "partial", "blocksLoS": "partial", "climbable": false, "impassable": false, "elevated": true },
+      "footprint": "Up to 12in across at widest point (recommendation). Counts as 2 pieces if over 8in.",
+      "generatorNotes": "Only on the No Man's Land pick-list. Place as a raised plateau; its crest is the one place other pieces may stack (landmark, barbed wire, trench or ruin on top, p61 example shows a landmark on a hill). Keep 3in from other pieces at ground level. Offers a sniper position and LoS blocker, so a generator should avoid putting a tall hill where it fully walls off the centre."
+    },
+    {
+      "id": "linear-terrain",
+      "name": "Linear Terrain",
+      "page": 62,
+      "category": "linear",
+      "text": "Obstacles such as walls and hedges. May bend or kink; several sections join end to end into a long run. Crossed as Open terrain if up to 1in high; if over 1in high it must be Climbed as a sheer surface. A section at least 0.5in high gives Cover / Defended Obstacle to models touching it.",
+      "traits": { "difficult": false, "dangerous": false, "cover": true, "blocksLoS": "partial", "climbable": true, "impassable": false, "elevated": false },
+      "footprint": "Not stated; thin strips joined end to end.",
+      "generatorNotes": "On the standard list but not on any archetype pick-list by name (the archetypes use trenches and ruins as their linear cover). Represent as a polyline of connectable segments with a height attribute: <=1in is free to cross, >1in requires a climb. Chain segments end to end; bends allowed. Keep 3in from other pieces."
+    },
+    {
+      "id": "trench-section",
+      "name": "Trench Section",
+      "page": 62,
+      "category": "linear",
+      "text": "Trenches are divided into sections 4in to 12in long and 2in to 4in wide. A section may bend or kink; sections join end to end into a trench line, and crossroad and T-junction sections connect two lines. Trench side under 3in high is crossed as Open terrain; 3in or higher must be Climbed or Jumped Down from. A model may Jump across a trench using the gap rules. Trenches are deep enough to shield most warriors from fire (p67).",
+      "traits": { "difficult": false, "dangerous": false, "cover": true, "blocksLoS": "partial", "climbable": true, "impassable": false, "elevated": false },
+      "footprint": "4in to 12in long, 2in to 4in wide per section. A section over 8in long counts as 2 pieces.",
+      "generatorNotes": "Model as a graph of straight, bent, T and cross segments with open ends that must snap end to end. No Man's Land: trenches may only be placed wholly inside a Deployment Zone (the 6in edge strips on the baseline map), so they read as the two sides' front lines. Trench Lines: the first section enters from a board edge, every subsequent section connects to an existing one, and the finished network must run unbroken from that edge to the opposite edge so a model can traverse it without leaving the trench; other terrain then goes at least 1in from any trench. Not on the Decimated Ruins list. Hills may carry a trench on top (p61)."
+    },
+    {
+      "id": "ruined-building",
+      "name": "Ruined Building",
+      "page": 63,
+      "category": "building",
+      "text": "A single piece of any size or height, recommended no more than 12in across at its widest. Walls are Climbed as sheer surfaces; surviving stairs and floors are Open terrain; rubble piles are Difficult terrain. Ruined (not intact) buildings are recommended; intact buildings must be agreed as Impassable or played with a floor plan (p64).",
+      "traits": { "difficult": "partial", "dangerous": false, "cover": true, "blocksLoS": "partial", "climbable": true, "impassable": false, "elevated": true },
+      "footprint": "Up to 12in across at widest point (recommendation). Counts as 2 pieces if over 8in.",
+      "generatorNotes": "Multi-level block: footprint polygon with wall segments (climbable, cover, LoS-blocking), interior floor cells (open, elevated on upper storeys, +1 DICE firing down from 3in up) and optional rubble cells (difficult). Decimated Ruins: at least 6; the first ruin anywhere, each subsequent ruin or corner 3in to 9in from any other ruin or corner, i.e. a loose connected cluster that spans the board with 3-9in streets between blocks. No Man's Land: 'occasional' ruins, 2 or so, 3in from anything else. Not on the Trench Lines list. May sit on a hill."
+    },
+    {
+      "id": "corner-ruin",
+      "name": "Corner Ruin",
+      "page": 63,
+      "category": "building",
+      "text": "Two ruined walls, each up to 6in long, placed together roughly as an L or T. May include remains of upper floors that models Climb up to as sheer surfaces. Rubble piles are Difficult terrain. Easy to make and recommended as a staple piece.",
+      "traits": { "difficult": "partial", "dangerous": false, "cover": true, "blocksLoS": "partial", "climbable": true, "impassable": false, "elevated": "partial" },
+      "footprint": "Two walls each up to 6in long in an L or T; roughly a 6x6in corner.",
+      "generatorNotes": "Compact L or T wall pair; rotate so the inside angle faces one side's approach to make a defensible corner, and alternate facing between pieces so neither player gets all the cover. Allowed in all three archetypes. In Decimated Ruins it is interchangeable with a ruined building for the 3-9in spacing rule (corner ruins are not counted toward the 6-building minimum, which names ruined buildings specifically). In No Man's Land and Trench Lines keep 3in from other pieces (and 1in from trenches in Trench Lines)."
+    },
+    {
+      "id": "river",
+      "name": "River",
+      "page": 63,
+      "category": "water",
+      "text": "Must enter on one board edge and exit on another. A river is Dangerous terrain. Must include one or more crossing points (bridges, fords) that are Open terrain. Only used if the scenario requires it or both players agree.",
+      "traits": { "difficult": false, "dangerous": true, "cover": false, "blocksLoS": false, "climbable": false, "impassable": false, "elevated": false },
+      "footprint": "Not stated; a continuous band from one edge to another.",
+      "generatorNotes": "Optional feature, off by default and not on any archetype pick-list; include only as an explicit scenario option. Generate as an edge-to-edge path (different edges) with at least one Open crossing placed so neither side is cut off. Most natural across the short axis between the two deployment zones. Rivers may carry a scenario's bridge as an objective."
+    },
+    {
+      "id": "stream",
+      "name": "Stream",
+      "page": 63,
+      "category": "water",
+      "text": "Enters from a board edge and either leaves by a different edge or ends in a swamp or lake. A stream is Difficult terrain. Must include one or more crossing points (bridges, fords) that are Open terrain. Only used if the scenario requires it or both players agree.",
+      "traits": { "difficult": true, "dangerous": false, "cover": false, "blocksLoS": false, "climbable": false, "impassable": false, "elevated": false },
+      "footprint": "Not stated; a continuous band from an edge, ending at another edge or in a swamp/lake area piece.",
+      "generatorNotes": "Optional feature, off by default and not on any archetype pick-list. Generate as a path from one edge that either exits another edge or terminates in a dangerous-terrain (swamp) or impassable (lake, by agreement) area piece. Include at least one Open crossing."
+    },
+    {
+      "id": "scattered-terrain",
+      "name": "Scattered Terrain",
+      "page": 64,
+      "category": "standard",
+      "text": "Terrain too small to affect the battle: single trees, boxes, crates, signposts. Purely decorative; any amount can be added and it is ignored (or moved) for terrain set-up, movement, attacks and visibility. Pieces up to 40mm across may serve as scenario Markers (p146).",
+      "traits": { "difficult": false, "dangerous": false, "cover": false, "blocksLoS": false, "climbable": false, "impassable": false, "elevated": false },
+      "footprint": "Small; no limit on quantity.",
+      "generatorNotes": "Cosmetic layer only. A generator may sprinkle these without any spacing constraint and they must not be counted toward any minimum. Candidate for Marker positions."
+    },
+    {
+      "id": "intact-building",
+      "name": "Intact Building",
+      "page": 64,
+      "category": "building",
+      "text": "Not recommended. If used (e.g. a large bunker) it must either be treated as Impassable terrain or played with a drawn floor plan onto which models are transferred when they enter.",
+      "traits": { "difficult": false, "dangerous": false, "cover": true, "blocksLoS": true, "climbable": false, "impassable": true, "elevated": false },
+      "footprint": "Not stated.",
+      "generatorNotes": "Off by default. If a generator supports it, treat as a solid impassable block that fully blocks LoS, with the 3in spacing of its archetype."
+    }
+  ],
+  "archetypes": [
+    {
+      "id": "no-mans-land",
+      "name": "No Man's Land",
+      "page": 65,
+      "text": "The ground between the opposing trench systems: stark, swept by machine-gun and artillery fire, with only occasional ruined buildings, craters, fallen trees, wrecked tanks or cannons and pock-marked shrines for cover. Many battles here are night raids. Players roll off; the winner sets up all terrain from the list below. Guideline: at least 2 pieces of each type if possible, but any amount from almost none to as much as fits is legal. Every piece at least 3in from every other piece. Trenches only wholly inside a Deployment Zone. Some scenarios add 'no terrain in either Deployment Zone' or require a 48x48 board. Used by the majority of rulebook scenarios (I, II, III, IV, V, X-alt, XI, and the 'any archetype' ones).",
+      "composition": [
+        { "typeId": "trench-section", "count": "0-2+ (recommended 2; only inside Deployment Zones; omitted when the scenario bans terrain in Deployment Zones)", "required": false },
+        { "typeId": "ruined-building", "count": "2+ recommended", "required": false },
+        { "typeId": "corner-ruin", "count": "2+ recommended", "required": false },
+        { "typeId": "hill", "count": "2+ recommended", "required": false },
+        { "typeId": "dangerous-terrain", "count": "2+ recommended (barbed wire, swampy ground)", "required": false },
+        { "typeId": "difficult-terrain", "count": "2+ recommended (craters, rubble, fallen trees)", "required": false },
+        { "typeId": "landmark", "count": "2+ recommended (statues, shrines, altars)", "required": false }
+      ],
+      "layoutPattern": "Open ground with pieces dotted across it. Trench sections hug the two long edges inside the 6in Deployment Zones, facing each other across the 24in gap. The central band is sparse: a couple of ruins or corner ruins, a hill or two, a few craters and barbed-wire patches, and one or two landmarks (one at the Midpoint if the scenario has a central Marker). Every piece keeps a 3in clearance from every other, so there are no clusters and plenty of open fire lanes. Deployment zones themselves stay mostly clear.",
+      "diagramDescription": "No layout diagram is printed for this archetype (pp. 65-67 are text only). The only layout references are the p58 photo of a 'Trench Crusade battlefield' (a square board with rocky outcrops and ruined walls scattered individually, a tall ruined shrine/tower near centre, a trench run along one edge, lots of bare ground between pieces) and the Claim No Man's Land map on p151 (two 6in Deployment Zone strips on opposite edges, 24in apart, Midpoint marker at the centre, illustrative terrain that need not be copied).",
+      "density": "sparse"
+    },
+    {
+      "id": "decimated-ruins",
+      "name": "Decimated Ruins",
+      "page": 66,
+      "text": "A shattered town or village between or just behind the lines, fought over in brutal short-ranged engagements amongst ruined buildings, rubble piles and wrecked vehicles. Players roll off; the winner sets up. Requires at least 6 ruined buildings and at least 2 of each other listed type (pieces over 8in count double). Ruins go down first: the first ruined building or corner anywhere, each subsequent ruin or corner 3in to 9in from any other ruin or corner. Then all other terrain anywhere at least 3in from any other piece. No trenches and no hills on the list. Used as an option by scenarios X and XII (player's choice vs No Man's Land) and the 'any archetype' scenarios.",
+      "composition": [
+        { "typeId": "ruined-building", "count": "6+", "required": true },
+        { "typeId": "corner-ruin", "count": "2+", "required": true },
+        { "typeId": "dangerous-terrain", "count": "2+ (barbed wire, minefields)", "required": true },
+        { "typeId": "difficult-terrain", "count": "2+ (craters, rubble)", "required": true },
+        { "typeId": "landmark", "count": "2+ (statues, wrecked vehicles)", "required": true }
+      ],
+      "layoutPattern": "A connected urban cluster. Seed the first ruin anywhere (centre is natural), then grow outward: each new ruined building or corner ruin lands 3-9in from at least one existing ruin and no closer than 3in to any, producing a town block pattern with 3-9in streets and alleys. With 6+ buildings of up to 12in each the ruins cover most of the board. Fill the remaining gaps with rubble/crater patches, barbed wire or mines in the streets, and wrecked-vehicle landmarks, each 3in clear of everything. Result: short sight lines, lots of climbable walls and upper floors, little open ground.",
+      "diagramDescription": "No layout diagram is printed for this archetype (p66 is text only). A generator should follow the spacing rules rather than any illustration.",
+      "density": "dense"
+    },
+    {
+      "id": "trench-lines",
+      "name": "Trench Lines",
+      "page": 67,
+      "text": "The interlinked trench system behind No Man's Land, deep enough to shield warriors from fire; combat happens mostly inside the trenches, with occasional dashes across open ground to outflank. Players roll off; the winner sets up. Needs enough trench sections to run from one board edge to the opposite edge, plus at least 2 of each other listed type (pieces over 8in count double). Trenches go down first: the first section enters from a board edge, each subsequent section connects to an existing section, and the finished network must let a model enter at the first edge and exit at the opposite edge without leaving a trench. Then all other terrain anywhere at least 1in from any trench and 3in from any other piece. No ruined buildings and no hills on the list. Used by scenario IX (Fields of Glory) and the 'any archetype' scenarios.",
+      "composition": [
+        { "typeId": "trench-section", "count": "enough to span edge to edge (on 36in: 3-9 sections of 4-12in, plus branches/junctions)", "required": true },
+        { "typeId": "corner-ruin", "count": "2+", "required": true },
+        { "typeId": "dangerous-terrain", "count": "2+ (barbed wire, minefields)", "required": true },
+        { "typeId": "difficult-terrain", "count": "2+ (craters, rubble)", "required": true },
+        { "typeId": "landmark", "count": "2+ (statues, shrines, wrecked vehicles)", "required": true }
+      ],
+      "layoutPattern": "A trench network is the skeleton. Start at one board edge and chain sections (straights, bends, T and cross junctions) until the line reaches the opposite edge as a single connected path; additional connected branches and parallel lines can be added freely. The main run can go edge to edge in either axis; running it between the two deployment zones (crossing the Midpoint) makes the trench the contested spine, while running it parallel to the deployment edges makes a defended front line. Around the network, keep a 1in margin from trenches and 3in between pieces: corner ruins at junctions or trench ends as strongpoints, barbed wire and minefields on the open ground in front of the trench, craters and rubble in the gaps, landmarks (shrines, wrecked vehicles) as objectives at salients.",
+      "diagramDescription": "No layout diagram is printed for this archetype (p67 is text only). The p58 photo shows a trench run along one board edge with rocky terrain beyond it, which matches the 'front line' arrangement.",
+      "density": "medium"
+    }
+  ],
+  "keywordsRelatedToTerrain": [
+    { "name": "COVER", "page": 54, "text": "Effect. A model with this keyword has the Cover (-1 DICE to ranged attacks against it) or Defended Obstacle (-1 DICE to melee attacks against it) modifiers. Gained from a terrain piece at least 0.5in high and as wide as the model's base lying between it and the attacker (p38)." },
+    { "name": "DANGEROUS TERRAIN", "page": 54, "text": "Effect. Activating in it or moving into it forces a Risky Success Roll; Success continues (no further rolls that move), Failure causes an Injury Roll and ends the Activation. May carry a bracketed keyword, e.g. DANGEROUS TERRAIN (FIRE), applied to the Injury Roll." },
+    { "name": "DIFFICULT TERRAIN", "page": 54, "text": "Effect. Every 1in a model is moved across it counts as 2in." },
+    { "name": "IMPASSABLE TERRAIN", "page": 55, "text": "Effect. Models cannot be moved onto or across it." },
+    { "name": "DEPLOYABLE", "page": 54, "text": "Tag. Battlekit represented by a model or terrain piece that can be set up during the game." },
+    { "name": "FLYING", "page": 55, "text": "Effect. Moves are measured through the air; must end on the battlefield or a terrain piece. Still rolls for Dangerous terrain if Activated in or ending on it; cannot end a move on Impassable terrain; takes no Injury Roll when Falling. The only way to cross a landmark (p60)." },
+    { "name": "IGNORE [MODIFIER]", "page": 55, "text": "Effect. Ignore the named Success or Injury Roll modifier; e.g. IGNORE COVER removes the -1 DICE for a target in cover." },
+    { "name": "MINED", "page": 56, "text": "Effect. When a model moves into contact with a MINED Marker or terrain piece it detonates (unless the model has NEGATE MINED): SHRAPNEL Injury Roll for that model, then the piece loses MINED; if not Down or Out of Action the model continues its move. FLYING models only detonate it by finishing a move in contact." }
+  ]
+}

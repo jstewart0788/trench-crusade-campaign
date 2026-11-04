@@ -206,7 +206,7 @@ export const TerrainTraits = z.object({
   blocksLoS: z.union([z.boolean(), z.literal("partial")]),
   climbable: z.boolean(),
   impassable: z.boolean(),
-  elevated: z.boolean(),
+  elevated: z.union([z.boolean(), z.literal("partial")]),
 });
 
 export const TerrainFile = z
