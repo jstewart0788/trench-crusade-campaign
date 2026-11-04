@@ -33,6 +33,19 @@ describe("warbandCost", () => {
     expect(itemCost(d, "new-antioch", "new-antioch/yeoman", "iron-wall-kalkan").ducats).toBe(kalkan);
   });
 
+  it("charges nothing for a mercenary's loadout kit (Mamluk Faris, p179)", () => {
+    const d = data();
+    const row = d.unitsById.get("new-antioch/mamluk-faris")!.equipmentAccess.find((a) => a.itemId === "great-sword-axe")!;
+    expect(row).toMatchObject({ group: "loadout" });
+    expect(row.cost).toBeUndefined();
+    expect(row.fixed).toBeUndefined();
+    expect(d.equipmentById.get("great-sword-axe")!.cost.ducats).toBe(12);
+    expect(itemCost(d, "new-antioch", "new-antioch/mamluk-faris", "great-sword-axe")).toEqual({ id: "great-sword-axe", ducats: 0, glory: 0 });
+    const w = newAntioch({ members: [member("new-antioch/lieutenant"), member("new-antioch/mamluk-faris", ["great-sword-axe"])], glory: 4 });
+    expect(warbandCost(w, d)).toMatchObject({ ducats: 70, glory: 4 });
+    expect(warbandCost({ ...w, members: [w.members[0]!, member("iron-sultanate/mamluk-faris", ["polearm", "shield"])], factionId: "iron-sultanate" }, d).perMember[1]?.ducats).toBe(0);
+  });
+
   it("includes upgrades and glory-priced mercenaries", () => {
     const d = data();
     const berserker = d.unitsById.get("new-antioch/lieutenant")!.upgrades!.find((g) => g.name === "Berserker")!;

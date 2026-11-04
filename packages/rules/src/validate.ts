@@ -1,6 +1,6 @@
 import { warbandCost } from "./cost.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
-import { accessFor, findUnit, thresholdFor, upgradeFor, type RosterAccess, type RosterUnit, type RulesData } from "./load.js";
+import { accessFor, findUnit, thresholdFor, upgradeFor, type RosterAccess, type RosterUnit, type RulesData, type Upgrade } from "./load.js";
 import { Warband as WarbandSchema, type Warband, type WarbandMember } from "./roster.js";
 import type { EquipmentItem } from "./schema.js";
 
@@ -27,6 +27,9 @@ export const ROSTER_ERROR_CODES = [
   "item-max-per-warband",
   "upgrade-unknown",
   "upgrade-variant-locked",
+  "upgrade-duplicate",
+  "upgrade-max-per-model",
+  "upgrade-max-per-warband",
   "battlekit-ranged",
   "battlekit-melee",
   "battlekit-grenade",
@@ -48,7 +51,7 @@ export interface RosterError {
   message: string;
 }
 
-export type RosterWarningCode = "unmodelled";
+export type RosterWarningCode = "unmodelled" | "glory-unknown";
 
 export interface RosterWarning {
   code: RosterWarningCode;
@@ -75,7 +78,9 @@ export const MAX_ELITES = 6;
 // Access groups whose weapons carry the Shield Combo stipulation in every
 // faction armoury (Warbands of Trench Crusade p24, p50, p74, p106, p129). The
 // dataset has no stipulation field, so the BattleScribe group name stands in.
-const SHIELD_COMBO_GROUPS = new Set(["shield-combo", "shield-combos", "bayonet"]);
+// A mercenary's `loadout` is its fixed kit, and the Mamluk Faris's Polearm
+// comes paired with a Trench Shield (p179).
+const SHIELD_COMBO_GROUPS = new Set(["shield-combo", "shield-combos", "bayonet", "loadout"]);
 
 interface ResolvedMember {
   member: WarbandMember;
@@ -86,6 +91,12 @@ interface CarriedItem {
   itemId: string;
   item: EquipmentItem;
   access: RosterAccess;
+  count: number;
+}
+
+interface TakenUpgrade {
+  upgrade: Upgrade;
+  unit: RosterUnit;
   count: number;
 }
 
@@ -146,21 +157,31 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   }
 
   const ctx = buildLimitContext(warband, data, members);
+  const variant = faction.variants.find((v) => v.id === warband.variantId);
 
   // Digital Rulebook p97–98: total cost (models, Battlekit, paid upgrades) must
-  // not exceed the Threshold Value for the game being played.
+  // not exceed the Threshold Value for the game being played. A variant that
+  // starts with a smaller purse keeps the same shortfall in later games
+  // (Papal States: "Threshold Value is reduced by 200", Warbands p35).
   const cost = warbandCost(warband, data);
   let threshold = opts.threshold;
   if (threshold === undefined) {
     const t = thresholdFor(data, warband.gameNumber);
     threshold = t.row.threshold;
     if (t.clamped) warn({ message: `Threshold table ends at game ${t.row.game}; using ${t.row.threshold} for game ${warband.gameNumber}` });
+    if (variant?.startingDucats !== undefined) threshold -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
   }
   if (cost.ducats > threshold) {
     fail({ code: "over-threshold", message: `Warband costs ${cost.ducats} ducats; Threshold Value is ${threshold}` });
   }
-  if (warband.glory !== undefined && cost.glory > warband.glory) {
-    fail({ code: "over-glory", message: `Warband spends ${cost.glory} Glory Points but only ${warband.glory} are available` });
+
+  // Warbands p10: a new warband has no Glory unless its variant grants some.
+  let glory = warband.glory;
+  if (glory === undefined && warband.gameNumber === 1) glory = variant?.startingGlory ?? 0;
+  if (glory === undefined) {
+    if (cost.glory > 0) warnings.push({ code: "glory-unknown", message: `Warband spends ${cost.glory} Glory Points; set glory to check them against the pool` });
+  } else if (cost.glory > glory) {
+    fail({ code: "over-glory", message: `Warband spends ${cost.glory} Glory Points but only ${glory} are available` });
   }
 
   checkUnitCounts(warband, faction.id, data, members, ctx, fail, warn);
@@ -171,23 +192,45 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   }
 
   const carriedByItem = new Map<string, { total: number; sample: CarriedItem; memberId: string }>();
+  const takenByUpgrade = new Map<string, { total: number; rows: TakenUpgrade[] }>();
   for (const { member, unit } of members) {
     const carried = checkMemberItems(member, unit, data, warband, ctx, fail, warn);
-    checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
+    const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
     checkBattlekit(member, unit, carried, fail, warn);
     for (const c of carried) {
       const entry = carriedByItem.get(c.itemId);
       if (entry) entry.total += c.count;
       else carriedByItem.set(c.itemId, { total: c.count, sample: c, memberId: member.id });
     }
+    for (const t of taken) {
+      const key = normaliseName(t.upgrade.name);
+      const entry = takenByUpgrade.get(key);
+      if (entry) (entry.total += t.count), entry.rows.push(t);
+      else takenByUpgrade.set(key, { total: t.count, rows: [t] });
+    }
   }
 
   // Warbands of Trench Crusade p11, "Limit X": a warband-wide cap on a piece of Battlekit.
   for (const [itemId, { total, sample }] of carriedByItem) {
-    const limit = resolveLimit(sample.access.limitsText ?? sample.item.limits ?? undefined, "max", "warband", sample.access.maxPerWarband ?? null, ctx);
+    const limit = resolveLimit(sample.access.limitsText ?? sample.item.limits ?? undefined, "max", "warband", sample.access.maxPerWarband ?? null, ctx, sample.item.name);
     if (limit.value !== null && total > limit.value) {
       fail({ code: "item-max-per-warband", itemId, message: `${sample.item.name}: ${total} in the warband, limit ${limit.value}` });
       warnUnresolved(warn, limit.unresolved, { itemId }, sample.item.name);
+    }
+  }
+
+  // Upgrades capped per warband ("Up to 2 Yeomen can be upgraded to Trench
+  // Moles", p30; Forward Positions p41) count across every unit that offers
+  // the same-named entry, which is how BattleScribe shares the constraint.
+  for (const { total, rows } of takenByUpgrade.values()) {
+    for (const { upgrade, unit } of rows) {
+      const where = { unitId: unit.id };
+      const limit = resolveLimit(upgrade.limitsText, "max", "warband", upgrade.maxPerWarband ?? null, ctx, upgrade.name);
+      if (limit.value !== null && total > limit.value) {
+        fail({ code: "upgrade-max-per-warband", ...where, message: `${upgrade.name}: ${total} in the warband, limit ${limit.value}` });
+        warnUnresolved(warn, limit.unresolved, where, upgrade.name);
+        break;
+      }
     }
   }
 
@@ -301,7 +344,16 @@ function checkGates(
 }
 
 function unitLimit(unit: RosterUnit, field: LimitField, ctx: LimitContext) {
-  return resolveLimit(unit.limits.text, field, "warband", unit.limits[field], ctx);
+  return resolveLimit(unit.limits.text, field, "warband", unit.limits[field], ctx, unit.name);
+}
+
+// A minimum binds only when the roster can take the unit at all: a leader the
+// variant swaps out (Matagot Hag, Chieftain, the Yüzbaşı under Fida'i of
+// Alamut, Warbands p89 / p94) is not missing from a warband that cannot have it.
+function unitAvailable(unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): boolean {
+  if (unit.onlyWith?.length && !evalGate(unit.onlyWith, warband, data, ctx).matched) return false;
+  if (unit.onlyWithout?.length && evalGate(unit.onlyWithout, warband, data, ctx).matched) return false;
+  return true;
 }
 
 // Warbands of Trench Crusade p13: some entries must be taken, some are 0-X.
@@ -339,7 +391,7 @@ function checkUnitCounts(
     }
 
     const min = unitLimit(unit, "min", ctx);
-    if (min.value !== null && count < min.value) {
+    if (min.value !== null && count < min.value && unitAvailable(unit, warband, data, ctx)) {
       fail({ code: "unit-min", ...where, message: `${count} x ${unit.name}; at least ${min.value} required` });
       warnUnresolved(warn, min.unresolved, where, unit.name);
     }
@@ -373,7 +425,7 @@ function checkMemberItems(
     }
     checkGates(item.name, access.onlyWith, access.onlyWithout, warband, data, ctx, { locked: "item-variant-locked", excluded: "item-variant-locked" }, where, fail, warn);
 
-    const perModel = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx);
+    const perModel = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx, item.name);
     if (perModel.value !== null && count > perModel.value) {
       fail({ code: "item-max-per-model", ...where, message: `${count} x ${item.name} on one model; limit ${perModel.value}` });
       warnUnresolved(warn, perModel.unresolved, where, item.name);
@@ -391,16 +443,40 @@ function checkMemberUpgrades(
   ctx: LimitContext,
   fail: (e: RosterError) => void,
   warn: (w: Omit<RosterWarning, "code">) => void,
-): void {
+): TakenUpgrade[] {
+  const where = { memberId: member.id, unitId: unit.id };
+  // Keyed by name, not bsId: the converter splits one ability into an entry
+  // per variant gate (the Yüzbaşı's Janissary Veteran, one +10 ability on p81).
+  const taken = new Map<string, TakenUpgrade>();
   for (const id of member.upgradeIds ?? []) {
-    const where = { memberId: member.id, unitId: unit.id };
     const upgrade = upgradeFor(unit, id);
     if (!upgrade) {
       fail({ code: "upgrade-unknown", ...where, message: `Unknown upgrade "${id}" for ${unit.name}` });
       continue;
     }
     checkGates(upgrade.name, upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, { locked: "upgrade-variant-locked", excluded: "upgrade-variant-locked" }, where, fail, warn);
+    const key = normaliseName(upgrade.name);
+    const entry = taken.get(key);
+    if (entry) entry.count += 1;
+    else taken.set(key, { upgrade, unit, count: 1 });
   }
+
+  // Warbands p14: an upgrade "cannot be purchased more than once for the same
+  // model" unless its entry says otherwise, so the data's per-model max only
+  // changes the code when it is not the default of one.
+  for (const t of taken.values()) {
+    const perModel = resolveLimit(t.upgrade.limitsText, "max", "model", t.upgrade.max ?? null, ctx, t.upgrade.name);
+    const max = perModel.value ?? 1;
+    if (t.count > max) {
+      fail({
+        code: max === 1 ? "upgrade-duplicate" : "upgrade-max-per-model",
+        ...where,
+        message: `${t.upgrade.name} taken ${t.count} times on one ${t.unit.name}; limit ${max} per model`,
+      });
+      warnUnresolved(warn, perModel.unresolved, where, t.upgrade.name);
+    }
+  }
+  return [...taken.values()];
 }
 
 interface TwoHanded {

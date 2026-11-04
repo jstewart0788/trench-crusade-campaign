@@ -37,6 +37,10 @@ export function newAntioch(overrides: Partial<Warband> = {}): Warband {
   };
 }
 
+export function warband(factionId: string, members: WarbandMember[], overrides: Partial<Warband> = {}): Warband {
+  return { id: "w1", name: "Test warband", factionId, gameNumber: 1, members, ...overrides };
+}
+
 export function withMembers(extra: WarbandMember[], overrides: Partial<Warband> = {}): Warband {
   const base = newAntioch(overrides);
   return { ...base, members: [...base.members, ...extra] };

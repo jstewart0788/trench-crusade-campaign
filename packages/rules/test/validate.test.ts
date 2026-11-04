@@ -1,10 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { warbandCost } from "../src/cost.js";
+import type { RulesData } from "../src/load.js";
 import type { Warband } from "../src/roster.js";
-import { MAX_ELITES, validateWarband } from "../src/validate.js";
-import { codes, data, member, newAntioch, withMembers } from "./fixtures.js";
+import { MAX_ELITES, validateWarband, type RosterErrorCode } from "../src/validate.js";
+import { codes, data, member, newAntioch, warband, withMembers } from "./fixtures.js";
 
 const validate = (w: Warband) => validateWarband(w, data());
+
+/** Asserts the exact multiset of error codes, so an unrelated error cannot hide behind the expected one. */
+const expectCode = (w: Warband, ...expected: RosterErrorCode[]) => {
+  const result = validate(w);
+  expect([...codes(result)].sort()).toEqual([...expected].sort());
+  expect(result.ok).toBe(expected.length === 0);
+  return result;
+};
 
 describe("validateWarband: legal warbands", () => {
   it("accepts a starting New Antioch warband within 700 ducats", () => {
@@ -63,13 +72,6 @@ describe("validateWarband: legal warbands", () => {
 });
 
 describe("validateWarband: one failing case per error code", () => {
-  const expectCode = (w: Warband, code: string) => {
-    const result = validate(w);
-    expect(result.ok).toBe(false);
-    expect(codes(result)).toContain(code);
-    return result;
-  };
-
   it("roster-invalid", () => {
     expectCode({ ...newAntioch(), gameNumber: 0 }, "roster-invalid");
   });
@@ -108,8 +110,39 @@ describe("validateWarband: one failing case per error code", () => {
   it("over-glory: Glory Point spend above the pool", () => {
     const w = withMembers([member("new-antioch/scripture-guardian")], { glory: 6 });
     expectCode(w, "over-glory");
-    expect(codes(validate({ ...w, glory: 7 }))).not.toContain("over-glory");
-    expect(codes(validate({ ...w, glory: undefined }))).not.toContain("over-glory");
+    expect(validate({ ...w, glory: 7 }).errors).toEqual([]);
+  });
+
+  it("over-glory: a new warband with no declared pool has no Glory to spend (p10)", () => {
+    const w = withMembers([member("new-antioch/scripture-guardian")]);
+    expect(w.glory).toBeUndefined();
+    const result = expectCode(w, "over-glory");
+    expect(result.errors[0]?.message).toContain("only 0 are available");
+    expect(result.warnings).toEqual([]);
+    // Later in a campaign the pool is state the roster may not carry: skip the check, but say so.
+    const later = validate({ ...w, gameNumber: 2 });
+    expect(later.errors).toEqual([]);
+    expect(later.warnings).toEqual([{ code: "glory-unknown", message: expect.stringContaining("7 Glory Points") }]);
+    expect(validate(newAntioch({ gameNumber: 2 })).warnings).toEqual([]);
+  });
+
+  it("over-threshold / over-glory: a variant with its own purse (Papal States: 500 ducats and 11 glory, p35)", () => {
+    const papal = { variantId: "new-antioch/papal-states-intervention-force" };
+    const cleric = member("new-antioch/trench-cleric", ["sword-axe"]);
+    const yeomen = (n: number) => Array.from({ length: n }, () => member("new-antioch/yeoman", ["bolt-action-rifle", "standard-armour", "combat-helmet"]));
+    const w = warband("new-antioch", [cleric, ...yeomen(9)], papal); // 64 + 9 x 55 = 559
+    expect(warbandCost(w, data()).ducats).toBe(559);
+    expect(expectCode(w, "over-threshold").errors[0]?.message).toContain("Threshold Value is 500");
+    // "Their Threshold Value is reduced by 200" in every later game: 800 - 200 for game 2.
+    expect(validate({ ...w, gameNumber: 2 }).errors).toEqual([]);
+    const game2 = expectCode({ ...w, gameNumber: 2, members: [...w.members, ...yeomen(1)] }, "over-threshold");
+    expect(game2.errors[0]?.message).toContain("Threshold Value is 600");
+
+    const hired = warband("new-antioch", [cleric, member("new-antioch/scripture-guardian", ["sword-axe", "trench-club"])], papal);
+    expect(warbandCost(hired, data()).glory).toBe(7);
+    expect(validate(hired).errors).toEqual([]);
+    expectCode({ ...hired, glory: 6 }, "over-glory");
+    expectCode({ ...hired, variantId: undefined, members: [member("new-antioch/lieutenant"), hired.members[1]!] }, "over-glory");
   });
 
   it("unit-min: no Lieutenant", () => {
@@ -118,17 +151,39 @@ describe("validateWarband: one failing case per error code", () => {
     expectCode(w, "unit-min");
   });
 
+  it("unit-min: only binds on a unit the roster can take", () => {
+    // Matagot Hag (min 1) is The Great Hunger's leader; a standard Black Grail warband does not need one.
+    const thralls = () => [member("black-grail/grail-thrall"), member("black-grail/grail-thrall")];
+    expect(validate(warband("black-grail", [member("black-grail/lord-of-tumours", ["sword-axe"]), ...thralls()])).errors).toEqual([]);
+    const hunger = expectCode(warband("black-grail", thralls(), { variantId: "black-grail/the-great-hunger" }), "unit-min");
+    expect(hunger.errors[0]?.unitId).toBe("black-grail/matagot-hag");
+    // Chieftain (min 1) is gated on a selection the data does not model; the War Prophet leads.
+    expect(validate(warband("trench-pilgrims", [member("trench-pilgrims/war-prophet", ["sword-axe"]), member("trench-pilgrims/trench-pilgrim")])).errors).toEqual([]);
+    // The Yüzbaşı (min 1) is excluded under Fida'i of Alamut and the House of Wisdom (p89, p94) but required otherwise.
+    const azebs = () => [member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/azeb", ["jezzail"])];
+    expect(expectCode(warband("iron-sultanate", azebs()), "unit-min").errors[0]?.unitId).toBe("iron-sultanate/yuzbasi-captain");
+    expect(validate(warband("iron-sultanate", [member("iron-sultanate/sultanate-assassin", ["sword-axe"]), ...azebs()], { variantId: "iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins" })).errors).toEqual([]);
+  });
+
   it("unit-max: two leaders", () => {
     const result = expectCode(withMembers([member("new-antioch/lieutenant")]), "unit-max");
-    expect(result.errors.filter((e) => e.code === "unit-max")).toHaveLength(1);
     expect(result.errors[0]?.unitId).toBe("new-antioch/lieutenant");
   });
 
+  it("unit-max: a 0-1 unit whose own repeat clause names itself (Brazen Bull, p88)", () => {
+    const bulls = (n: number) => Array.from({ length: n }, () => member("iron-sultanate/brazen-bull"));
+    const lead = () => member("iron-sultanate/yuzbasi-captain", ["sword-axe"]);
+    expect(validate(warband("iron-sultanate", [lead(), ...bulls(1)])).errors).toEqual([]);
+    const result = expectCode(warband("iron-sultanate", [lead(), ...bulls(2)]), "unit-max");
+    expect(result.errors[0]?.message).toContain("at most 1 per warband");
+    expect(result.warnings.some((x) => x.unitId === "iron-sultanate/brazen-bull" && x.message.includes("repeat per Brazen Bull"))).toBe(true);
+    expectCode(warband("iron-sultanate", [lead(), ...bulls(3)]), "unit-max");
+  });
+
   it("mercenary-limit: the same 0-1 mercenary hired twice", () => {
-    const w = withMembers([member("new-antioch/scripture-guardian"), member("mercenary/scripture-guardian")]);
-    const result = expectCode(w, "mercenary-limit");
-    expect(codes(result)).not.toContain("unit-max");
-    expect(validate(withMembers([member("new-antioch/scripture-guardian")])).ok).toBe(true);
+    const w = withMembers([member("new-antioch/scripture-guardian"), member("mercenary/scripture-guardian")], { glory: 14 });
+    expectCode(w, "mercenary-limit");
+    expect(validate(withMembers([member("new-antioch/scripture-guardian")], { glory: 7 })).ok).toBe(true);
   });
 
   it("variant-locked: a variant-only unit without the variant", () => {
@@ -158,6 +213,7 @@ describe("validateWarband: one failing case per error code", () => {
         member("trench-pilgrims/huscarl"),
         member("trench-pilgrims/witchburner"),
       ],
+      glory: 5, // the Witchburner's hire price
     };
     const result = expectCode(w, "elite-cap");
     expect(result.errors.find((e) => e.code === "elite-cap")?.message).toContain(String(MAX_ELITES));
@@ -181,7 +237,7 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("item-max-per-model", () => {
-    const result = expectCode(withMembers([member("new-antioch/yeoman", ["gas-mask", "gas-mask"])]), "item-max-per-model");
+    const result = expectCode(withMembers([member("new-antioch/yeoman", ["gas-mask", "gas-mask"])]), "item-max-per-model", "battlekit-duplicate");
     expect(result.errors[0]?.itemId).toBe("gas-mask");
   });
 
@@ -200,6 +256,60 @@ describe("validateWarband: one failing case per error code", () => {
     w.members[0]!.upgradeIds = [berserker.bsId];
     expectCode(w, "upgrade-variant-locked");
     expect(validate({ ...w, variantId: "new-antioch/eire-rangers" }).ok).toBe(true);
+  });
+
+  it("upgrade-duplicate: an upgrade bought twice for one model (p14)", () => {
+    const berserker = data().unitsById.get("new-antioch/lieutenant")!.upgrades!.find((g) => g.name === "Berserker")!.bsId;
+    const eire = { variantId: "new-antioch/eire-rangers" };
+    expect(validate(warband("new-antioch", [member("new-antioch/lieutenant", [], [berserker])], eire)).errors).toEqual([]);
+    // Berserker is also "max 1 per warband", so the second copy trips both rules.
+    const twice = warband("new-antioch", [member("new-antioch/lieutenant", [], [berserker, berserker])], eire);
+    const result = expectCode(twice, "upgrade-duplicate", "upgrade-max-per-warband");
+    expect(result.errors[0]).toMatchObject({ code: "upgrade-duplicate", memberId: twice.members[0]!.id, unitId: "new-antioch/lieutenant" });
+  });
+
+  it("upgrade-duplicate: two entries with one name are one upgrade (Janissary Veteran, p81)", () => {
+    const veteran = data().unitsById.get("iron-sultanate/yuzbasi-captain")!.upgrades!.filter((g) => g.name === "Janissary Veteran").map((g) => g.bsId);
+    expect(veteran).toHaveLength(2);
+    expect(new Set(veteran).size).toBe(2);
+    const captain = (ids: string[]) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"], ids)]);
+    expect(validate(captain([veteran[0]!])).errors).toEqual([]);
+    expectCode(captain(veteran), "upgrade-duplicate");
+  });
+
+  it("upgrade-max-per-model: an entry that allows repeats caps them at its own max (no real entry does; data patched)", () => {
+    const d = data();
+    const unit = d.unitsById.get("new-antioch/shocktrooper")!;
+    const forward = unit.upgrades!.find((g) => g.name === "Forward Positions")!;
+    const patchedUnit = { ...unit, upgrades: unit.upgrades!.map((g) => (g === forward ? { ...g, limitsText: "max 2 per model; max 5 per warband" } : g)) };
+    const patched: RulesData = {
+      ...d,
+      unitsById: new Map([...d.unitsById, [unit.id, patchedUnit]]),
+      unitsByFaction: new Map([...d.unitsByFaction, ["new-antioch", d.unitsByFaction.get("new-antioch")!.map((u) => (u.id === unit.id ? patchedUnit : u))]]),
+    };
+    const w = (n: number) =>
+      warband("new-antioch", [member("new-antioch/lieutenant"), member("new-antioch/shocktrooper"), member("new-antioch/shocktrooper", [], Array<string>(n).fill(forward.bsId))], {
+        variantId: "new-antioch/stosstruppen-of-the-free-state-of-prussia",
+      });
+    expect(validateWarband(w(2), patched).errors).toEqual([]);
+    expect(codes(validateWarband(w(3), patched))).toEqual(["upgrade-max-per-model"]);
+    expect(codes(validateWarband(w(2), d))).toEqual(["upgrade-duplicate"]);
+  });
+
+  it("upgrade-max-per-warband: Forward Positions on more than 2 Shock Troopers (p41), more than 2 Trench Moles (p30)", () => {
+    const forward = data().unitsById.get("new-antioch/shocktrooper")!.upgrades!.find((g) => g.name === "Forward Positions")!.bsId;
+    const troopers = (n: number) => Array.from({ length: n }, () => member("new-antioch/shocktrooper", ["submachine-gun"], [forward]));
+    const prussia = (n: number) => warband("new-antioch", [member("new-antioch/lieutenant"), ...troopers(n)], { variantId: "new-antioch/stosstruppen-of-the-free-state-of-prussia" });
+    expect(validate(prussia(2)).errors).toEqual([]);
+    const result = expectCode(prussia(4), "upgrade-max-per-warband");
+    expect(result.errors[0]).toMatchObject({ unitId: "new-antioch/shocktrooper", message: expect.stringContaining("4 in the warband, limit 2") });
+
+    const mole = data().unitsById.get("new-antioch/yeoman")!.upgrades!.find((g) => g.name === "Trench Mole")!.bsId;
+    const moles = (n: number) => warband("new-antioch", [member("new-antioch/lieutenant"), ...Array.from({ length: n }, () => member("new-antioch/yeoman", [], [mole]))]);
+    expect(validate(moles(2)).errors).toEqual([]);
+    const third = expectCode(moles(5), "upgrade-max-per-warband");
+    // A 3rd Trench Mole is allowed at 1,000+ ducats of other models, which the data only carries as text.
+    expect(third.warnings.some((x) => x.unitId === "new-antioch/yeoman" && x.message.includes("1000"))).toBe(true);
   });
 
   it("battlekit-ranged: two 2-Handed ranged weapons", () => {
@@ -227,11 +337,11 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("battlekit-headgear: two pieces of headgear", () => {
-    expectCode(withMembers([member("new-antioch/yeoman", ["combat-helmet", "combat-helmet"])]), "battlekit-headgear");
+    expectCode(withMembers([member("new-antioch/yeoman", ["combat-helmet", "combat-helmet"])]), "battlekit-headgear", "battlekit-duplicate", "item-max-per-model");
   });
 
   it("battlekit-duplicate: the same equipment twice", () => {
-    expectCode(withMembers([member("new-antioch/yeoman", ["shovel", "shovel"])]), "battlekit-duplicate");
+    expectCode(withMembers([member("new-antioch/yeoman", ["shovel", "shovel"])]), "battlekit-duplicate", "item-max-per-model");
   });
 
   it("battlekit-heavy: two HEAVY pieces on a model that is not STRONG", () => {
@@ -241,9 +351,19 @@ describe("validateWarband: one failing case per error code", () => {
   it("battlekit-hands: a shield with a 2-Handed weapon that lacks Shield Combo", () => {
     expectCode(withMembers([member("new-antioch/yeoman", ["trench-shield", "bolt-action-rifle"])]), "battlekit-hands");
     expectCode(withMembers([member("new-antioch/yeoman", ["trench-shield", "pistol", "pistol"])]), "battlekit-hands");
-    expectCode(withMembers([member("new-antioch/yeoman", ["troop-flag", "trench-shield", "sword-axe"])]), "battlekit-hands");
-    expectCode(withMembers([member("new-antioch/yeoman", ["troop-flag", "polearm"])]), "battlekit-hands");
-    expect(validate(withMembers([member("new-antioch/yeoman", ["troop-flag", "sword-axe", "pistol"])])).ok).toBe(true);
+    const flag = { glory: 1 }; // a Troop Flag costs 1 Glory
+    expectCode(withMembers([member("new-antioch/yeoman", ["troop-flag", "trench-shield", "sword-axe"])], flag), "battlekit-hands");
+    expectCode(withMembers([member("new-antioch/yeoman", ["troop-flag", "polearm"])], flag), "battlekit-hands");
+    expect(validate(withMembers([member("new-antioch/yeoman", ["troop-flag", "sword-axe", "pistol"])], flag)).ok).toBe(true);
+  });
+
+  it("accepts a Mamluk Faris with its Polearm and Trench Shield loadout (p179) and nothing outside it", () => {
+    const faris = (kit: string[]) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"]), member("iron-sultanate/mamluk-faris", kit)], { glory: 4 });
+    const result = validate(faris(["polearm", "shield"]));
+    expect(result.errors).toEqual([]);
+    expect(result.warnings.map((x) => x.message)).toEqual([expect.stringContaining("Polearm with a Shield relies on Shield Combo")]);
+    expect(validate(faris(["great-sword-axe"])).errors).toEqual([]);
+    expect(expectCode(faris(["polearm", "shield", "bolt-action-rifle"]), "item-not-available").errors[0]?.itemId).toBe("bolt-action-rifle");
   });
 
   it("bayonet-lug: a bayonet without a weapon to mount it on", () => {
@@ -270,5 +390,42 @@ describe("validateWarband: unmodelled rules surface as warnings, not errors", ()
     expect(codes(validate(withMembers([member("new-antioch/trench-dog")])))).toContain("mercenary-limit");
     const fed = withMembers([member("new-antioch/trench-dog"), member("new-antioch/yeoman", ["dog-food"])]);
     expect(codes(validate(fed))).not.toContain("mercenary-limit");
+  });
+});
+
+// One plainly legal starting warband per faction, built from the data: the
+// leader each list must take plus two to four troops with basic kit.
+describe("validateWarband: a legal starting warband for every faction", () => {
+  const rifleman = (unitId: string) => member(unitId, ["bolt-action-rifle", "bayonet"]);
+  const starters: Array<[string, Warband]> = [
+    ["New Antioch", newAntioch()],
+    ["Heretic Legion", warband("heretic-legion", [member("heretic-legion/heretic-priest", ["sword-axe", "pistol", "standard-armour"]), rifleman("heretic-legion/heretic-trooper"), rifleman("heretic-legion/heretic-trooper"), rifleman("heretic-legion/heretic-trooper")])],
+    ["Iron Sultanate", warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe", "pistol", "reinforced-armour"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/janissary", ["sword-axe", "reinforced-armour"])])],
+    ["Court of the Seven-Headed Serpent", warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["sword-axe", "pistol"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"])])],
+    ["Trench Pilgrims", warband("trench-pilgrims", [member("trench-pilgrims/war-prophet", ["sword-axe", "pistol"]), rifleman("trench-pilgrims/trench-pilgrim"), rifleman("trench-pilgrims/trench-pilgrim"), rifleman("trench-pilgrims/trench-pilgrim")])],
+    ["Black Grail", warband("black-grail", [member("black-grail/lord-of-tumours", ["sword-axe", "pistol", "standard-armour"]), member("black-grail/grail-thrall"), member("black-grail/grail-thrall")])],
+    ["Iron Sultanate, Fida'i of Alamut (p89): a Sultanate Assassin leads, no Yüzbaşı", warband("iron-sultanate", [member("iron-sultanate/sultanate-assassin", ["sword-axe", "pistol"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/azeb", ["jezzail"])], { variantId: "iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins" })],
+    ["Iron Sultanate, House of Wisdom (p94): a Jabirean Alchemist leads, no Yüzbaşı", warband("iron-sultanate", [member("iron-sultanate/jabirean-alchemist", ["sword-axe"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/azeb", ["jezzail"])], { variantId: "iron-sultanate/the-house-of-wisdom" })],
+  ];
+
+  for (const [name, w] of starters) {
+    it(`${name}: no errors, within 700 ducats, no Glory`, () => {
+      const result = validate(w);
+      expect(result.errors).toEqual([]);
+      expect(result.ok).toBe(true);
+      const cost = warbandCost(w, data());
+      expect(cost.ducats).toBeLessThanOrEqual(700);
+      expect(cost.glory).toBe(0);
+    });
+  }
+
+  it("New Antioch, Papal States Intervention Force (p35): a Trench Cleric leads, no Lieutenant, within 500 ducats", () => {
+    const w = warband("new-antioch", [member("new-antioch/trench-cleric", ["sword-axe", "pistol", "standard-armour"]), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman")], {
+      variantId: "new-antioch/papal-states-intervention-force",
+    });
+    const result = validate(w);
+    expect(result.errors).toEqual([]);
+    expect(result.ok).toBe(true);
+    expect(warbandCost(w, data()).ducats).toBeLessThanOrEqual(500);
   });
 });

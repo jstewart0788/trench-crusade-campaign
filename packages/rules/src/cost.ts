@@ -33,14 +33,15 @@ function line(id: string, cost: Cost | undefined): LineCost {
 /**
  * Price of one item for one member: the faction's armoury price on the
  * unit's equipmentAccess row, falling back to the library price. Rows marked
- * `fixed` are built-in kit and never charged unless the row prices them.
+ * `fixed`, and rows in a mercenary's `loadout` group (Warbands p172: the kit
+ * they arrive with), are built-in and never charged unless the row prices them.
  * Unknown units or items cost nothing here; validateWarband reports them.
  */
 export function itemCost(data: RulesData, factionId: string, unitId: string, itemId: string): LineCost {
   const unit = findUnit(data, factionId, unitId);
   const access = unit ? accessFor(unit, itemId) : undefined;
   if (access?.cost) return line(itemId, access.cost);
-  if (access?.fixed) return { ...ZERO, id: itemId };
+  if (access?.fixed || access?.group === "loadout") return { ...ZERO, id: itemId };
   return line(itemId, data.equipmentById.get(itemId)?.cost);
 }
 

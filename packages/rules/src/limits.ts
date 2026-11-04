@@ -43,6 +43,7 @@ export function resolveLimit(
   scope: LimitScope,
   base: number | null,
   ctx: LimitContext,
+  subject?: string,
 ): ResolvedLimit {
   let value = base;
   const unresolved: string[] = [];
@@ -77,7 +78,10 @@ export function resolveLimit(
       const atLeast = AT_LEAST.exec(cond);
       const repeat = REPEAT.exec(cond);
       const name = atLeast?.[2] ?? repeat?.[1];
-      const count = name === undefined ? undefined : ctx.count(name);
+      // "repeat per X" on X's own limit would raise the cap by the count it
+      // caps (Brazen Bull: 0-1, Warbands p88), so it is left unresolved.
+      const self = repeat !== null && subject !== undefined && normaliseName(repeat[1]!) === normaliseName(subject);
+      const count = name === undefined || self ? undefined : ctx.count(name);
       if (count === undefined) {
         unknown = true;
         continue;

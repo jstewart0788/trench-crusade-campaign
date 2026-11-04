@@ -27,12 +27,26 @@ export const Upgrade = z
     name: z.string(),
     group: z.string(),
     cost: Cost.optional(),
+    max: z.number().int().nullable().optional(),
+    maxPerWarband: z.number().int().nullable().optional(),
+    limitsText: z.string().optional(),
     onlyWith: Gate,
     onlyWithout: Gate,
     conditionNote: z.string().optional(),
   })
   .passthrough();
 export type Upgrade = z.infer<typeof Upgrade>;
+
+// Variants that recruit with their own purse (Papal States Intervention Force:
+// 500 ducats and 11 glory, Warbands of Trench Crusade p35).
+export const RosterVariant = Faction.shape.variants.element.extend({
+  startingDucats: z.number().int().nonnegative().optional(),
+  startingGlory: z.number().int().nonnegative().optional(),
+});
+export type RosterVariant = z.infer<typeof RosterVariant>;
+
+export const RosterFaction = Faction.extend({ variants: z.array(RosterVariant) });
+export type RosterFaction = z.infer<typeof RosterFaction>;
 
 export const RosterAccess = EquipmentAccess.extend({
   maxPerWarband: z.number().int().nullable().optional(),
@@ -67,13 +81,13 @@ export interface ThresholdRow {
 }
 
 export interface RulesData {
-  factions: Faction[];
+  factions: RosterFaction[];
   units: RosterUnit[];
   equipment: EquipmentItem[];
   campaign: Campaign;
   scenarios: Scenarios;
   terrain: Terrain;
-  factionsById: Map<string, Faction>;
+  factionsById: Map<string, RosterFaction>;
   unitsById: Map<string, RosterUnit>;
   unitsByFaction: Map<string, RosterUnit[]>;
   equipmentById: Map<string, EquipmentItem>;
@@ -108,7 +122,7 @@ const ThresholdTable = z.array(
 );
 
 export function loadRulesData(rootDir: string): RulesData {
-  const factionsFile = readJson(rootDir, "data/rules/factions.json", FactionsFile);
+  const factionsFile = readJson(rootDir, "data/rules/factions.json", FactionsFile.extend({ factions: z.array(RosterFaction) }));
   const unitsFile = readJson(rootDir, "data/rules/units.json", UnitsFile.extend({ units: z.array(RosterUnit) }));
   const equipmentFile = readJson(rootDir, "data/rules/equipment.json", EquipmentFile);
   const campaign = readJson(rootDir, "data/rules/campaign.json", CampaignFile);

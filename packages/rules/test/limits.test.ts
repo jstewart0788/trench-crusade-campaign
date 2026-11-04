@@ -29,6 +29,17 @@ describe("resolveLimit", () => {
     expect(resolveLimit(repeat, "max", "warband", 1, ctx({ sipahicaptain: 2 })).value).toBe(3);
   });
 
+  it("leaves a repeat clause that names the limited thing itself unresolved", () => {
+    const text = "max 1 per warband; max increment 1 per warband when repeat per Brazen Bull (roster)";
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Brazen Bull")).toEqual({
+      value: 1,
+      unresolved: ["max increment 1 when repeat per Brazen Bull (roster)"],
+    });
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Brazen Bull [Iron Sultanate]").value).toBe(1);
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Janissary").value).toBe(4);
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 })).value).toBe(4);
+  });
+
   it("chains bare conditions onto the previous modifier as alternatives", () => {
     const text = "max 3 per warband; max set 1 per warband when atLeast 1 Eire Rangers (roster); atLeast 1 Kingdom of Alba Assault Detachment (roster)";
     expect(resolveLimit(text, "max", "warband", 3, ctx({ eirerangers: 0, kingdomofalbaassaultdetachment: 1 })).value).toBe(1);
