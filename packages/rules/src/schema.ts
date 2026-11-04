@@ -161,7 +161,13 @@ export const CampaignFile = z
     skillTables: z.array(RollTable.extend({ id: z.string(), name: z.string() })),
     exploration: z.object({ tables: z.array(RollTable.extend({ id: z.string(), name: z.string() })) }).merge(Paged).passthrough(),
     gloryItems: z.object({
-      tables: z.array(RollTable.extend({ id: z.string(), name: z.string() })),
+      tables: z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          rows: z.array(z.object({ itemId: z.string(), glory: z.number().int().nullable(), limit: z.number().int().nullable() }).passthrough()),
+        }).merge(Paged).passthrough(),
+      ),
       cartulary: z.array(z.object({ id: z.string(), name: z.string(), cost: Cost }).passthrough()),
     }).merge(Paged).passthrough(),
   })

@@ -1,0 +1,3262 @@
+{
+  "$schema": "tc-rules-campaign-v1",
+  "source": {
+    "file": "Trench-Crusade-Digital-Rulebook.pdf",
+    "edition": "1.0.2",
+    "editionNote": "No version string printed; front matter carries only '© [2026] Factory Fortress Inc.' PDF metadata: InDesign 21.5, created 2026-09-09.",
+    "pages": "87-143"
+  },
+  "intro": {
+    "page": 87,
+    "text": "A campaign is a series of linked games. At least 2 players are needed; games may also be played against non-campaign players. Each player recruits a starting Warband (see Warbands of Trench Crusade) and then picks a Patron. The Patron determines which skill may be chosen when a Patron Skill result is rolled on any Skill Table."
+  },
+  "patrons": [
+    {
+      "id": "temporal-lord",
+      "name": "Temporal Lord",
+      "page": 87,
+      "factions": [
+        "New Antioch"
+      ],
+      "skills": [
+        {
+          "name": "Armour & Equipment Procurement",
+          "text": "Cost of any Armour, Shield or Equipment worth 15 ducats or more is reduced by 5 ducats if a model with this Skill is in the Warband when it is purchased.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Melee Weapon Procurement",
+          "text": "Cost of any Melee Weapon worth 10 ducats or more is reduced by 5 ducats if the model with this Skill is in the Warband when it is purchased.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Mendelist Chemicals",
+          "text": "Opposing player cannot spend BLOOD MARKERS next to this model to add +1 INJURY DICE (they may still use them to convert to a Bloodbath Roll).",
+          "limit": null
+        },
+        {
+          "name": "Ranged Weapon Procurement",
+          "text": "Cost of any Ranged Weapon or Grenade worth 20 ducats or more is reduced by 5 ducats if a model with this Skill is in the Warband when it is purchased.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Sniper School",
+          "text": "Ranged Attacks by this model need 1 less BLOOD MARKER to convert an Injury Roll to a Bloodbath Roll.",
+          "limit": null
+        },
+        {
+          "name": "Special Assault Training",
+          "text": "Melee Attacks by this model need 1 less BLOOD MARKER to convert an Injury Roll to a Bloodbath Roll.",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "warrior-saint",
+      "name": "Warrior Saint",
+      "page": 88,
+      "factions": [
+        "Trench Pilgrims",
+        "New Antioch"
+      ],
+      "skills": [
+        {
+          "name": "Blessings of the Warrior Saint",
+          "text": "Model gains the BLESSED D3 Keyword.",
+          "limit": null
+        },
+        {
+          "name": "David and Goliath",
+          "text": "+1 DICE to a Melee Attack by this model if the target is on a 40mm or larger base.",
+          "limit": null
+        },
+        {
+          "name": "Dragonslayer",
+          "text": "When making an Injury Roll for a Melee Attack by this model, you may change one of the D6s used to a 6.",
+          "limit": null
+        },
+        {
+          "name": "Endure the Suffering",
+          "text": "Model can suffer 1 extra Battle Scar before being unfit for duty.",
+          "limit": null
+        },
+        {
+          "name": "On your Knees!",
+          "text": "Enemy models that are Down may not stand up while within 1” of this model (even if this model is also Down).",
+          "limit": null
+        },
+        {
+          "name": "Warrior's Prayer ACTION",
+          "text": "ACTION: Risky Success Roll. Failure: nothing, Activation ends. Success/Critical: model has FEAR until end of Turn and you may remove up to 1 BLOOD MARKER from it.",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "learned-saint",
+      "name": "Learned Saint",
+      "page": 89,
+      "factions": [
+        "Trench Pilgrims",
+        "New Antioch"
+      ],
+      "skills": [
+        {
+          "name": "Favoured by God",
+          "text": "At the end of each game, Warband gains 1 additional glory for each model with this Skill on the battlefield.",
+          "limit": null
+        },
+        {
+          "name": "Healing Arts",
+          "text": "You may re-roll the Trauma Table result for this model.",
+          "limit": null
+        },
+        {
+          "name": "Knowledge of Sciences",
+          "text": "The Limit of one chosen item of Battlekit (excluding Glory Items) is increased by 1 while a model with this Skill is in the Warband. Record the chosen Battlekit on the roster.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Logistical Skills",
+          "text": "Warband may increase any model-count Limit by 1 (e.g. 0-2 becomes 0-3) for models that are not ELITE, not on a 50mm+ base, and not Mercenaries. If the model with this Skill is removed, excess models are kept but no new models may be added in excess of normal limits.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Pennies from Heaven",
+          "text": "At the end of each game, Warband gains D6x5 additional ducats for each model with this Skill on the battlefield.",
+          "limit": null
+        },
+        {
+          "name": "Walk with God",
+          "text": "Pick one Skill from any Skill Table available to the model, including any Exploration Skill, and give it to this model.",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "infernal-noble",
+      "name": "Infernal Noble",
+      "page": 90,
+      "factions": [
+        "Heretic Legions",
+        "The Court of the Seven-Headed Serpent"
+      ],
+      "skills": [
+        {
+          "name": "30 Pieces of Silver",
+          "text": "At the end of each game, Warband gains D6x5 ducats for each model with this Skill on the battlefield.",
+          "limit": null
+        },
+        {
+          "name": "Blessed Murder",
+          "text": "If a Melee Attack by this model takes an enemy Out of Action, place 1 BLESSING MARKER next to this model.",
+          "limit": null
+        },
+        {
+          "name": "Blood Sacrifice ACTION",
+          "text": "ACTION: Success Roll. On Success/Critical, remove 1 BLOOD MARKER from this model and place it next to any other model within 6” and in line of sight that does not have ARTIFICIAL, BLACK GRAIL or DEMONIC.",
+          "limit": null
+        },
+        {
+          "name": "Hellfire ACTION",
+          "text": "ACTION: Risky Success Roll. Failure: nothing, Activation ends. Success/Critical: pick a friendly model within 18” and in line of sight; draw a 1mm-wide straight line between the closest points of the two bases and make an Injury Roll with FIRE for every model (friend or foe) crossed or reached, including the chosen friendly model but not the acting model.",
+          "limit": null
+        },
+        {
+          "name": "Lash of Acheron ACTION",
+          "text": "ACTION: Risky Success Roll. Failure: nothing, Activation ends. Success/Critical: make an Injury Roll with IGNORE ARMOUR against 1 enemy model within 6” and in line of sight.",
+          "limit": null
+        },
+        {
+          "name": "Sadistic",
+          "text": "+1 DICE and +1 INJURY DICE to Melee Attacks by this model if the target is Down.",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "sublime-gate",
+      "name": "Sublime Gate",
+      "page": 91,
+      "factions": [
+        "Iron Sultanate"
+      ],
+      "skills": [
+        {
+          "name": "Güreş",
+          "text": "+1 DICE and +1 INJURY DICE to Melee Attacks by this model if the target is Down. This model ignores the -1 DICE modifier to Success Rolls for being Down.",
+          "limit": null
+        },
+        {
+          "name": "Imported Wares",
+          "text": "In the following Quartermaster Step you may purchase 1 Weapon or 1 suit of Armour from the New Antioch Armoury for this model. Record the choice; if the item is lost it can be repurchased.",
+          "limit": null
+        },
+        {
+          "name": "Janissary Training",
+          "text": "If the first ACTION of this model's Activation is a Charge, +1 DICE to its Melee Attacks for the rest of the Activation. Model also has IGNORE OFF-HAND WEAPON.",
+          "limit": null
+        },
+        {
+          "name": "Rightly Guided",
+          "text": "At the start of the game after deployment, pick 1 ACTION (not Charge, Shoot or Fight) that targets or affects an enemy model. For the rest of the game this model cannot be targeted or affected by that ACTION.",
+          "limit": null
+        },
+        {
+          "name": "Sultan's Favour",
+          "text": "Warband may increase any model-count Limit by 1 (e.g. 0-2 becomes 0-3) for models that are not ELITE, not on a 50mm+ base, and not Mercenaries. If the model with this Skill is removed, excess models are kept but no new models may be added in excess of normal limits.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Sword of Allah",
+          "text": "Choose 1 Skill from the Melee & Strength Skills Table for this model.",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "order-of-the-fly",
+      "name": "The Order of the Fly",
+      "page": 92,
+      "factions": [
+        "Black Grail"
+      ],
+      "skills": [
+        {
+          "name": "Cockroach Vitality",
+          "text": "Opposing player cannot spend BLOOD MARKERS next to this model to add +1 INJURY DICE for a Melee or Ranged Attack.",
+          "limit": null
+        },
+        {
+          "name": "Deceit of Beelzebub ACTION",
+          "text": "ACTION: Risky Success Roll. Failure: nothing, Activation ends. Success/Critical: pick an enemy model within 8” and swap the positions of the two models (base centres exchanged). If impossible (impassable terrain, other models), both stay put.",
+          "limit": null
+        },
+        {
+          "name": "Eyes of the Fly",
+          "text": "Model has IGNORE COVER and IGNORE LONG RANGE.",
+          "limit": null
+        },
+        {
+          "name": "Grail Plague",
+          "text": "At the start of each game after deployment, for each model with this Skill on the battlefield, place 1 INFECTION MARKER next to an enemy model without BLACK GRAIL.",
+          "limit": null
+        },
+        {
+          "name": "Knight of the Flies",
+          "text": "-1 DICE to Ranged Attacks that target this model.",
+          "limit": null
+        },
+        {
+          "name": "Wings of the Fly",
+          "text": "Model gains FLYING if it does not already have it.",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "mammon",
+      "name": "Mammon",
+      "page": 93,
+      "factions": [
+        "Heretic Legions",
+        "The Court of the Seven-Headed Serpent"
+      ],
+      "factionNote": "Greed Warband only.",
+      "skills": [
+        {
+          "name": "Aureate Skin",
+          "text": "Each time a BLOOD MARKER is placed next to this model, add 5 ducats to your treasury.",
+          "limit": null
+        },
+        {
+          "name": "Crooked Dice",
+          "text": "Once per game, re-roll all dice of a Success Roll for this model, or all dice of an Injury Roll for an attack made by this model.",
+          "limit": null
+        },
+        {
+          "name": "Eternal Debt",
+          "text": "All Wretched models in a Warband containing a model with this Skill automatically make a Full Recovery after the battle if taken Out of Action.",
+          "limit": null
+        },
+        {
+          "name": "Money Can Buy Anything",
+          "text": "The Limit of one chosen item of Battlekit (excluding Glory Items) is increased by 1 while a model with this Skill is in the Warband. Record the chosen Battlekit on the roster.",
+          "limit": "one model per warband"
+        },
+        {
+          "name": "Plutocracy",
+          "text": "When taken, the model may immediately form a FIRETEAM with 1 other non-ELITE model; both gain FIRETEAM. If the two take a simultaneous Activation, all their Risky Success Rolls that Activation are treated as normal Success Rolls.",
+          "limit": null
+        },
+        {
+          "name": "Unsecured Loan",
+          "text": "Add 100 ducats to your Strongbox when this Skill is taken (once only).",
+          "limit": null
+        }
+      ]
+    },
+    {
+      "id": "antipope-of-avignon",
+      "name": "The Antipope of Avignon",
+      "page": 94,
+      "factions": [
+        "Black Grail"
+      ],
+      "skills": [
+        {
+          "name": "Beelzebub's Wisdom",
+          "text": "If this model is chosen as the target of an enemy charge, the enemy receives no Charge Bonus and must charge using only its Movement Characteristic.",
+          "limit": null
+        },
+        {
+          "name": "Eye of Beelzebub ACTION",
+          "text": "ACTION: Success Roll. Failure: nothing. Success/Critical: pick an enemy model within 24”, in Cover, and not within 1” of your models; opponent must move it 1” so it stays in line of sight but is no longer in Cover and is more than 1” from your models. If impossible, it is not moved.",
+          "limit": null
+        },
+        {
+          "name": "Feast on Disease",
+          "text": "If the target of this model's Melee Attack has 1+ INFECTION MARKERS, converting the Injury Roll to a Bloodbath Roll costs 1 less BLOOD MARKER or INFECTION MARKER.",
+          "limit": null
+        },
+        {
+          "name": "Infect the Mind",
+          "text": "At the start of each game after deployment, for each model with this Skill on the battlefield, pick an enemy model and move it 6” as if it took a Move ACTION (cannot Charge).",
+          "limit": null
+        },
+        {
+          "name": "Silvered Tongue ACTION",
+          "text": "ACTION: Success Roll. Failure: nothing. Success/Critical: pick an enemy model within 1”; it must make one Melee Attack against itself (you choose the weapon if it has more than one). Only one attack regardless of its normal number.",
+          "limit": null
+        },
+        {
+          "name": "Swine Hybrid",
+          "text": "Add 2” to this model's Movement Characteristic.",
+          "limit": null
+        }
+      ]
+    }
+  ],
+  "campaignGames": {
+    "page": 95,
+    "text": "A campaign links individual games. Arrange a game with any other campaign player, select the scenario (see Selecting a Campaign Scenario), play with normal rules, then carry out a Campaign Phase. After 11 campaign games a player may play no more until every other player has also played 11. Each player then plays a final 12th game against another player using The Great War scenario. With an odd number of players one player plays an extra 13th game against the odd player and chooses whether the 12th or 13th result (not both) counts for Campaign Victory Points.",
+    "gamesBeforeFinal": 11,
+    "finalGame": {
+      "number": 12,
+      "scenario": "The Great War"
+    },
+    "oddPlayerRule": "One player plays an extra 13th game; they choose which of game 12 or 13 counts.",
+    "lengthVariants": "Players may change the number of games before the Final Battle (e.g. 4-5 for a weekend; 23 at 2 games/month for a year).",
+    "victoryPoints": {
+      "text": "Campaign Victory Points are scored per game and tracked on the Warband Roster. Most points at campaign end wins; ties are joint winners.",
+      "win": 15,
+      "loss": 7,
+      "draw": 10
+    },
+    "latecomers": {
+      "text": "A player joining in progress recruits using the Warband Threshold Value of the player who has played the most games, and receives 4 Experience Points per game that top player has played, divided between ELITE models as the latecomer sees fit.",
+      "experiencePerGamePlayedByLeader": 4
+    }
+  },
+  "scenarioSelection": {
+    "page": 96,
+    "text": "Count games played so far and roll on the matching table. If players have played different numbers of games, use the greater number to choose the table. Pick & Choose option: after rolling, if both players agree they may swap the rolled scenario for another from the same table (e.g. when terrain or table size is unavailable).",
+    "dice": "D6",
+    "brackets": [
+      {
+        "id": "early",
+        "name": "Early Campaign",
+        "games": "1-3"
+      },
+      {
+        "id": "mid",
+        "name": "Mid-Campaign",
+        "games": "4-8"
+      },
+      {
+        "id": "endgame",
+        "name": "Endgame",
+        "games": "9-11"
+      },
+      {
+        "id": "final",
+        "name": "Final Battle",
+        "games": "12"
+      }
+    ],
+    "table": [
+      {
+        "bracket": "early",
+        "games": "1-3",
+        "roll": "1",
+        "result": "Claim No Man's Land"
+      },
+      {
+        "bracket": "early",
+        "games": "1-3",
+        "roll": "2",
+        "result": "Hunt for Heroes"
+      },
+      {
+        "bracket": "early",
+        "games": "1-3",
+        "roll": "3",
+        "result": "The High Ground"
+      },
+      {
+        "bracket": "early",
+        "games": "1-3",
+        "roll": "4",
+        "result": "Relic Hunt"
+      },
+      {
+        "bracket": "early",
+        "games": "1-3",
+        "roll": "5",
+        "result": "Supply Raid"
+      },
+      {
+        "bracket": "early",
+        "games": "1-3",
+        "roll": "6",
+        "result": "Player who has played fewer games chooses from this table; if tied, roll-off and winner chooses."
+      },
+      {
+        "bracket": "mid",
+        "games": "4-8",
+        "roll": "1",
+        "result": "Hunt for Heroes"
+      },
+      {
+        "bracket": "mid",
+        "games": "4-8",
+        "roll": "2",
+        "result": "Armoured Train"
+      },
+      {
+        "bracket": "mid",
+        "games": "4-8",
+        "roll": "3",
+        "result": "Trench Warfare"
+      },
+      {
+        "bracket": "mid",
+        "games": "4-8",
+        "roll": "4",
+        "result": "Claim No Man's Land"
+      },
+      {
+        "bracket": "mid",
+        "games": "4-8",
+        "roll": "5",
+        "result": "Dragon Hunt"
+      },
+      {
+        "bracket": "mid",
+        "games": "4-8",
+        "roll": "6",
+        "result": "Player who has played fewer games chooses from this table; if tied, roll-off and winner chooses."
+      },
+      {
+        "bracket": "endgame",
+        "games": "9-11",
+        "roll": "1",
+        "result": "Trench Warfare"
+      },
+      {
+        "bracket": "endgame",
+        "games": "9-11",
+        "roll": "2",
+        "result": "Dragon Hunt"
+      },
+      {
+        "bracket": "endgame",
+        "games": "9-11",
+        "roll": "3",
+        "result": "From Below"
+      },
+      {
+        "bracket": "endgame",
+        "games": "9-11",
+        "roll": "4",
+        "result": "Fields of Glory"
+      },
+      {
+        "bracket": "endgame",
+        "games": "9-11",
+        "roll": "5",
+        "result": "Don't Breathe"
+      },
+      {
+        "bracket": "endgame",
+        "games": "9-11",
+        "roll": "6",
+        "result": "Player who has played fewer games chooses from this table; if tied, roll-off and winner chooses."
+      },
+      {
+        "bracket": "final",
+        "games": "12",
+        "roll": "-",
+        "result": "The Great War"
+      }
+    ]
+  },
+  "campaignForces": {
+    "page": 97,
+    "text": "The models used in a campaign game are a Force. Threshold Value: total Cost of all models in the Force (including Battlekit, upgrades paid in ducats, and any Cost discounts) must be less than or equal to the Warband's Threshold Value. Field Strength: number of models in the Force may not exceed Field Strength; a scenario model limit lower than Field Strength takes precedence. Only models with a Warband Entry count; models representing Battlekit or Glory Items do not. Both values increase after each game per the Warband Threshold Table; rising values grant nothing automatically — recruit or call Reinforcements. Models left out of a Force sit the game out and earn no experience.",
+    "rules": [
+      "Force total Cost <= Threshold Value (includes Battlekit, ducat-paid upgrades, and discounts).",
+      "Force model count <= Field Strength; scenario limits override when lower.",
+      "Only Warband Entry models count toward Field Strength; Battlekit/Glory Item models (e.g. Trench Dog) do not.",
+      "Models not fielded earn no Experience and cannot influence the game."
+    ]
+  },
+  "warbandThreshold": {
+    "page": 98,
+    "text": "Threshold Value and Field Strength by game number. Values are indexed by the game about to be played.",
+    "table": [
+      {
+        "range": "1",
+        "game": 1,
+        "threshold": 700,
+        "fieldStrength": 10,
+        "note": ""
+      },
+      {
+        "range": "2",
+        "game": 2,
+        "threshold": 800,
+        "fieldStrength": 11,
+        "note": ""
+      },
+      {
+        "range": "3",
+        "game": 3,
+        "threshold": 900,
+        "fieldStrength": 12,
+        "note": ""
+      },
+      {
+        "range": "4",
+        "game": 4,
+        "threshold": 1000,
+        "fieldStrength": 13,
+        "note": ""
+      },
+      {
+        "range": "5",
+        "game": 5,
+        "threshold": 1100,
+        "fieldStrength": 14,
+        "note": ""
+      },
+      {
+        "range": "6",
+        "game": 6,
+        "threshold": 1200,
+        "fieldStrength": 15,
+        "note": ""
+      },
+      {
+        "range": "7",
+        "game": 7,
+        "threshold": 1300,
+        "fieldStrength": 16,
+        "note": ""
+      },
+      {
+        "range": "8",
+        "game": 8,
+        "threshold": 1400,
+        "fieldStrength": 17,
+        "note": ""
+      },
+      {
+        "range": "9",
+        "game": 9,
+        "threshold": 1500,
+        "fieldStrength": 18,
+        "note": ""
+      },
+      {
+        "range": "10",
+        "game": 10,
+        "threshold": 1600,
+        "fieldStrength": 19,
+        "note": ""
+      },
+      {
+        "range": "11",
+        "game": 11,
+        "threshold": 1700,
+        "fieldStrength": 20,
+        "note": ""
+      },
+      {
+        "range": "12",
+        "game": 12,
+        "threshold": 1800,
+        "fieldStrength": 22,
+        "note": "Field Strength jumps by 2 (20 -> 22), not 1."
+      }
+    ]
+  },
+  "gloriousDeeds": {
+    "page": 98,
+    "text": "Every scenario lists Glorious Deeds. Track which models carried out which Deeds each game. Each Deed can be carried out once per game but may be repeated in different games.",
+    "effects": [
+      "+1 Victory Point toward winning the game.",
+      "ELITE models that carry out any Glorious Deed receive 1 Experience Point (one, regardless of how many Deeds).",
+      "Warband gains 1 glory.",
+      "+1 D6 to the Promotion Pool after the game for each Glorious Deed carried out."
+    ]
+  },
+  "gloryPoints": {
+    "page": 99,
+    "text": "Each Glorious Deed in a campaign earns the Warband 1 glory, recorded on the Warband Roster. Glory is spent in the Quartermaster Step; unspent glory may be banked for later. One-off games: players may agree to allow glory when building Warbands for a one-off game, spent as in the Quartermaster Step.",
+    "uses": [
+      "Purchase Battlekit or models from the Faction List that have a Cost in glory rather than ducats.",
+      "Purchase Glory Items (see Purchase Glory Items).",
+      "Recruit Mercenaries (see Mercenaries in Warbands of Trench Crusade)."
+    ]
+  },
+  "campaignPhase": {
+    "page": 100,
+    "text": "After each campaign game both players carry out a Campaign Phase, working through the steps in order.",
+    "steps": [
+      {
+        "order": 1,
+        "id": "trauma",
+        "name": "Trauma Step",
+        "page": 101,
+        "text": "Determine what happened to models taken Out of Action."
+      },
+      {
+        "order": 2,
+        "id": "promotions-experience",
+        "name": "Promotions & Experience Step",
+        "page": 104,
+        "text": "Promote Troops, record Experience Points, check for new Skills."
+      },
+      {
+        "order": 3,
+        "id": "reinforcements",
+        "name": "Reinforcements Step",
+        "page": 112,
+        "optional": true,
+        "text": "Optionally call for reinforcements after heavy losses. Doing so forfeits the Exploration and Quartermaster Steps."
+      },
+      {
+        "order": 4,
+        "id": "exploration",
+        "name": "Exploration Step",
+        "page": 113,
+        "text": "Roll to see what the Warband discovers in the area it occupies."
+      },
+      {
+        "order": 5,
+        "id": "quartermaster",
+        "name": "Quartermaster Step",
+        "page": 123,
+        "text": "Recruit, hire Mercenaries, sell/purchase/reallocate Battlekit and Glory Items."
+      },
+      {
+        "order": 6,
+        "id": "roster",
+        "name": "Roster Step",
+        "page": 124,
+        "text": "Update the Warband Roster with all changes."
+      }
+    ],
+    "disbanding": "A Warband may be disbanded at the end of any game; the replacement starts as a latecomer (see Latecomers to Campaign)."
+  },
+  "traumaTable": {
+    "page": 102,
+    "dice": "D66",
+    "text": "Troops (non-ELITE) taken Out of Action make a Survival Roll: D6, on 1-2 they are removed from the roster (dead), on 3+ they fight on. ELITE models taken Out of Action then roll D66 (first D6 = tens, second = units) on the Trauma Table. Removed models lose all Battlekit unless stated otherwise. Battle Scars: unless stated otherwise, each time an ELITE model is taken Out of Action it receives a Battle Scar (some results say no Scar). Unfit for Duty: on the third Battle Scar the model is removed; its Battlekit and Glory Items go to the Arsenal unless a rule says they cannot be removed. A model can suffer each type of Injury only once; if the same Injury is rolled again, re-roll until a usable result (exception: Lost an Eye a second time = blinded, removed). Modifiers: Healing Arts (Learned Saint) and 'Tis But a Scratch (Wildcard) allow a re-roll; Resurrection Engine (Glory Item) changes a result to Full Recovery; Endure the Suffering, War-Luck and Damascus Armour raise the Battle Scar limit; Eternal Debt (Mammon) gives Wretched automatic Full Recovery; Field Hospital / Curative Fluids / Salvaged Resurrection Machine can remove Battle Scars later.",
+    "troopSurvival": {
+      "dice": "D6",
+      "dead": "1-2",
+      "survive": "3+"
+    },
+    "battleScars": {
+      "perOutOfAction": 1,
+      "unfitForDutyAt": 3,
+      "retireOptionAt": 2
+    },
+    "rows": [
+      {
+        "roll": "11",
+        "name": "Dead",
+        "effect": "Remove the model and its Battlekit from the roster."
+      },
+      {
+        "roll": "12",
+        "name": "Captured",
+        "effect": "Opponent captures the model. Players negotiate a ransom in ducats before continuing the Trauma Step. Not paid: model executed, remove from roster. Paid: transfer the ducats from your Strongbox to the opponent's and treat as Full Recovery."
+      },
+      {
+        "roll": "13",
+        "name": "Severe Nerve Damage",
+        "effect": "All Success Rolls for this model are treated as Risky Success Rolls (no extra penalty if already Risky)."
+      },
+      {
+        "roll": "14",
+        "name": "Hand Wound",
+        "effect": "Randomly determine the injured hand. -1 DICE to attacks with a Melee Weapon held (or jointly held) by that hand."
+      },
+      {
+        "roll": "15",
+        "name": "Lost an Eye",
+        "effect": "-1 DICE to Ranged Attacks by this model. A second Lost an Eye blinds the model: remove from roster instead of re-rolling. Treat as Full Recovery for a Sniper Priest."
+      },
+      {
+        "roll": "16",
+        "name": "Chest Wound",
+        "effect": "+1 INJURY DICE to Injury Rolls for attacks targeting this model."
+      },
+      {
+        "roll": "21",
+        "name": "Insomniac",
+        "effect": "Must always be the first model you deploy in any game it takes part in; loses INFILTRATOR if it has it."
+      },
+      {
+        "roll": "22",
+        "name": "Head Wound",
+        "effect": "Can no longer gain Experience Points. May be assigned Promotion Dice as if a Troop; if one of its assigned dice rolls a 6 it regains the ability to gain Experience (Battle Scar remains)."
+      },
+      {
+        "roll": "23",
+        "name": "Shell-shocked",
+        "effect": "Roll a D6 the first time this model is deployed in a game; on 1-2, -1 DICE to all rolls for this model for the rest of that game."
+      },
+      {
+        "roll": "24",
+        "name": "Dark Memory",
+        "effect": "Record the Warband from the game where received. -1 DICE to Melee Attacks by this model against models from that Warband."
+      },
+      {
+        "roll": "25",
+        "name": "Paranoid",
+        "effect": "Cannot be deployed within 8” of a friendly model; friendly models may be deployed within 8” of it after it is deployed."
+      },
+      {
+        "roll": "26",
+        "name": "Lost Arm",
+        "effect": "Cannot use Battlekit requiring 2 hands, and may use only one piece of Battlekit requiring 1 hand."
+      },
+      {
+        "roll": "31",
+        "name": "Leg Wound",
+        "effect": "-2” Movement. -1 DICE to the Risky Success Roll when taking a Dash ACTION."
+      },
+      {
+        "roll": "32",
+        "name": "Expensive Treatment",
+        "effect": "Before deploying this model you must deduct 10 ducats from the Strongbox. The payment does not count toward Threshold Value."
+      },
+      {
+        "roll": "33",
+        "name": "Possessed",
+        "effect": "When Activated more than 1” from any enemy, its first ACTION must be a Dash (even if a rule says it cannot Dash); the first 3” must be in a straight line directly away from its starting position if possible. If Down at start of Activation it stands up if able, then must attempt to move 3” straight away."
+      },
+      {
+        "roll": "34",
+        "name": "Muscle Damage",
+        "effect": "Cannot have Battlekit with HEAVY; any held when the Injury is suffered is lost."
+      },
+      {
+        "roll": "35",
+        "name": "Minor Wound",
+        "effect": "Cannot be used in the next game."
+      },
+      {
+        "roll": "36",
+        "name": "Robbed",
+        "effect": "All Battlekit is lost (except Battlekit that cannot be lost/removed in a campaign). No Injury and no Battle Scar."
+      },
+      {
+        "roll": "41-63",
+        "name": "Full Recovery",
+        "effect": "No ill effects. No Injury and no Battle Scar."
+      },
+      {
+        "roll": "64",
+        "name": "Hardened",
+        "effect": "Gains NEGATE FEAR. No Injury and no Battle Scar."
+      },
+      {
+        "roll": "65",
+        "name": "Bitter Lessons",
+        "effect": "Gains D3 extra Experience Points. No Injury and no Battle Scar."
+      },
+      {
+        "roll": "66",
+        "name": "Prominent Scar",
+        "effect": "Record the Warband from the game where received. +1 DICE to Melee Attacks by this model against models from that Warband. No Injury and no Battle Scar."
+      }
+    ]
+  },
+  "promotions": {
+    "page": 104,
+    "text": "First attempt to Promote Troops (non-ELITE models) to ELITE, then ELITE models use Experience to learn Skills.",
+    "pool": {
+      "text": "Promotion Dice Pool = 1D6 + 1D6 per Glorious Deed carried out in the game by any model in the Warband (Troop or not). Some Skills (Show Off) and Glory Items add more dice.",
+      "base": "1D6",
+      "perGloriousDeed": "1D6"
+    },
+    "assignment": "Assign pool dice to Troop models that can be Promoted. You cannot assign a 3rd die to a model until all eligible Troops have at least 2, nor a 4th until all have at least 3, and so on. Unassigned dice are lost.",
+    "rolling": "Roll a model's assigned dice one at a time in any order; stop at the first 6 and Promote. Track consecutive dice rolled without a 6 on the roster: once the count reaches 5, the next (6th) roll is automatically a 6.",
+    "pityCounter": {
+      "rollsWithoutSixBeforeAuto": 5
+    },
+    "promotedModel": "Gains ELITE immediately (counts as Elite for the rest of this step). Move the entry to the Elite Models section. Starts at 0 Experience Points but gains at least 1 for surviving this game.",
+    "maxElites": {
+      "value": 6,
+      "text": "Skip the Promotion step entirely if the Warband already has 6+ ELITE models at the start of the step; stop rolling once a Promotion brings the count to 6. Models with Bad Company do not count toward this total."
+    },
+    "cannotBePromoted": {
+      "page": 106,
+      "byFaction": {
+        "The Principality of New Antioch": [],
+        "Trench Pilgrims": [
+          "Ecclesiastic Prisoners",
+          "Anchorite Shrine"
+        ],
+        "The Sultanate of the Iron Wall": [],
+        "Heretic Legions": [
+          "War Wolf Assault Beast",
+          "Wretched"
+        ],
+        "The Cult of the Black Grail": [
+          "Grail Thralls",
+          "Fly Thralls",
+          "Hounds of the Black Grail",
+          "Amalgam"
+        ],
+        "The Court of the Seven-Headed Serpent": [
+          "Wretched",
+          "Yoke Fiends"
+        ]
+      },
+      "alsoTrenchDog": true
+    },
+    "experience": {
+      "page": 105,
+      "text": "After Promotions, each ELITE model that took part and survived gains 1 Experience Point (even if taken Out of Action). Any ELITE model that performed at least one Glorious Deed gains a second point (max one extra regardless of Deed count). Record by checking Experience boxes left to right from the top row; reaching a circle box grants an Advancement Roll.",
+      "perGameSurvived": 1,
+      "perAnyGloriousDeed": 1,
+      "thresholds": [
+        2,
+        4,
+        7,
+        10
+      ],
+      "thresholdsNote": "INFERRED from the roster-strip illustration on p105 (circles at boxes 2, 4, 7, 10; strip is cropped after box 12). The roster sheet itself is not in this PDF; the rules text only says 'when you reach a box that is a circle'. Verify against the published roster sheet before relying on a pattern beyond 10.",
+      "limitedPotential": {
+        "page": 111,
+        "maxExperience": 7,
+        "byFaction": {
+          "The Principality of New Antioch": [],
+          "Trench Pilgrims": [
+            "Communicant"
+          ],
+          "The Sultanate of the Iron Wall": [
+            "Lion of Jabir",
+            "Brazen Bull",
+            "Homunculi (House of Wisdom)"
+          ],
+          "Heretic Legions": [
+            "Artillery Witch"
+          ],
+          "The Cult of the Black Grail": [],
+          "The Court of the Seven-Headed Serpent": [
+            "Pit Locust",
+            "Desecrated Saint"
+          ]
+        }
+      },
+      "otherSources": [
+        "Trauma 65 Bitter Lessons: +D3 XP.",
+        "Wildcard 11 War Stories: +1 XP to each other ELITE model when recording (one model per warband).",
+        "Common Exploration 4 Moonshine Stash (Destroy): +1 XP to up to two ELITE models; Advancement Roll immediately if triggered.",
+        "Latecomers: 4 XP per game played by the leading player, split among ELITE models."
+      ]
+    },
+    "advancementRoll": {
+      "page": 105,
+      "steps": [
+        "Pick two Skill Tables to roll on.",
+        "Roll 2D6 on each table to find the Skill offered.",
+        "If the rolled Skill is already known, use the next lowest Skill on that table the model lacks; if it has all lower ones, use the next highest.",
+        "If a Patron Skill is rolled, use one of the Skills for the Warband's Patron.",
+        "Pick one of the two offered Skills and record it."
+      ]
+    },
+    "rules": [
+      "Troops = models without ELITE.",
+      "Promotion Pool: 1D6 + 1D6 per Glorious Deed (+1 per Show Off model, + items).",
+      "Dice assignment must be spread evenly (no 3rd die until all have 2, etc.).",
+      "5 consecutive non-6 Promotion rolls (tracked across games on the roster) make the 6th automatic.",
+      "Maximum 6 ELITE models (Bad Company models excluded from the count).",
+      "Head Wound models may receive Promotion Dice as a Troop; a 6 restores XP gain.",
+      "Experience: +1 per game survived, +1 if any Glorious Deed; some models capped at 7 XP.",
+      "Advancement: 2 tables, 2D6 each, choose one of the two results; duplicate -> next lowest unowned, then next highest."
+    ]
+  },
+  "skillTables": [
+    {
+      "id": "melee-strength",
+      "name": "Melee & Strength Skills",
+      "page": 107,
+      "dice": "2D6",
+      "rows": [
+        {
+          "roll": "2",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        },
+        {
+          "roll": "3",
+          "name": "Stand Firm",
+          "text": "First time per game this model suffers a Down result on the Injury table, treat it as Minor Hit."
+        },
+        {
+          "roll": "4",
+          "name": "Parry",
+          "text": "-1 DICE to Success Rolls for Melee Attacks targeting this model."
+        },
+        {
+          "roll": "5",
+          "name": "Close Quarters Combat",
+          "text": "+1 DICE and +1 INJURY DICE to Melee Attacks by this model if it is in contact with a terrain piece."
+        },
+        {
+          "roll": "6",
+          "name": "Relentless Charge",
+          "text": "+1 DICE to Melee Attacks by this model if it successfully charged earlier in the same Activation."
+        },
+        {
+          "roll": "7",
+          "name": "Melee Proficiency",
+          "text": "+1 DICE to the model's Melee Characteristic."
+        },
+        {
+          "roll": "8",
+          "name": "Strength of Samson",
+          "text": "+1 INJURY DICE to Melee Attacks using a Melee Weapon. Model has STRONG."
+        },
+        {
+          "roll": "9",
+          "name": "Hard as Nails",
+          "text": "First time per game this model suffers a Down result on the Injury table, treat it as No Effect."
+        },
+        {
+          "roll": "10",
+          "name": "Surgical Strike",
+          "text": "Once per Activation, before an Injury Roll for a Melee Attack by this model, declare it has IGNORE ARMOUR."
+        },
+        {
+          "roll": "11",
+          "name": "Champion",
+          "text": "Melee Weapons without CLEAVE used by this model gain CLEAVE 2; -1 DICE to the Success Roll for the second Melee Attack with each such weapon."
+        },
+        {
+          "roll": "12",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        }
+      ]
+    },
+    {
+      "id": "ranged",
+      "name": "Ranged Skills",
+      "page": 108,
+      "dice": "2D6",
+      "rows": [
+        {
+          "roll": "2",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        },
+        {
+          "roll": "3",
+          "name": "Hunter",
+          "text": "Ranged Attacks by this model have IGNORE COVER."
+        },
+        {
+          "roll": "4",
+          "name": "Gunslinger",
+          "text": "With PISTOL weapons: if equipped with 2 PISTOL weapons, may Shoot with one then immediately Shoot with the other. PISTOL weapons gain ASSAULT and IGNORE OFF-HAND WEAPON."
+        },
+        {
+          "roll": "5",
+          "name": "Far Shot",
+          "text": "+6” Range to any PISTOL weapon, any weapon with 'Rifle' in its name, and any weapon with 'Jezzail' or 'Arquebus' in its name."
+        },
+        {
+          "roll": "6",
+          "name": "Sharp Eyes",
+          "text": "Ranged Attacks by this model have IGNORE LONG RANGE."
+        },
+        {
+          "roll": "7",
+          "name": "Ranged Proficiency",
+          "text": "+1 DICE to the model's Ranged Characteristic."
+        },
+        {
+          "roll": "8",
+          "name": "Sniper's Nest",
+          "text": "Elevated Position modifier gives +2 DICE instead of +1 DICE to this model's Ranged Attacks."
+        },
+        {
+          "roll": "9",
+          "name": "Point Blank",
+          "text": "May make a Melee Attack using a Ranged Weapon and Ranged Characteristic instead of a Melee Weapon (must be within 1”). May also make a Ranged Attack with that weapon in the same Activation if it has ASSAULT."
+        },
+        {
+          "roll": "10",
+          "name": "Hip Shot",
+          "text": "Ranged Weapons used by this model count as having ASSAULT."
+        },
+        {
+          "roll": "11",
+          "name": "Headshot",
+          "text": "Ranged Attacks by this model have IGNORE ARMOUR if the attack was a Critical Success."
+        },
+        {
+          "roll": "12",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        }
+      ]
+    },
+    {
+      "id": "stealth-speed",
+      "name": "Stealth & Speed Skills",
+      "page": 109,
+      "dice": "2D6",
+      "rows": [
+        {
+          "roll": "2",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        },
+        {
+          "roll": "3",
+          "name": "Sixth Sense",
+          "text": "A Down result on the Injury table is treated as Minor Hit if this model has no BLOOD MARKERS. If it also has TOUGH, once per game it may use TOUGH to change Out of Action to Down and then this Skill to change Down to No Effect."
+        },
+        {
+          "roll": "4",
+          "name": "Assassinate",
+          "text": "+1 DICE to attacks by this model if the target has not yet been Activated this Turn."
+        },
+        {
+          "roll": "5",
+          "name": "Shadow Walker",
+          "text": "Ranged Attacks targeting this model at Long Range suffer -2 DICE instead of -1 DICE."
+        },
+        {
+          "roll": "6",
+          "name": "Athletic",
+          "text": "+1 DICE to Risky Success Rolls when Climbing, Jumping or making a Diving Charge; -1 INJURY DICE to Injury Rolls if it Falls."
+        },
+        {
+          "roll": "7",
+          "name": "Sprinter",
+          "text": "+1 DICE to the Risky Success Roll when taking a Dash ACTION."
+        },
+        {
+          "roll": "8",
+          "name": "Disengage",
+          "text": "Enemy models cannot make a Melee Attack on this model when it Retreats."
+        },
+        {
+          "roll": "9",
+          "name": "Incoming",
+          "text": "When rolling the Charge Bonus, roll 1 extra D6 and use the single highest."
+        },
+        {
+          "roll": "10",
+          "name": "Nimble",
+          "text": "Movement is not halved when this model stands up."
+        },
+        {
+          "roll": "11",
+          "name": "Dodge",
+          "text": "-1 DICE to Ranged Attacks targeting this model."
+        },
+        {
+          "roll": "12",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        }
+      ]
+    },
+    {
+      "id": "wildcard",
+      "name": "Wildcard Skills",
+      "page": 110,
+      "dice": "2D6",
+      "rows": [
+        {
+          "roll": "2",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        },
+        {
+          "roll": "3",
+          "name": "War-Luck",
+          "text": "Model can suffer 1 extra Battle Scar before being Unfit for Duty."
+        },
+        {
+          "roll": "4",
+          "name": "'Tis But a Scratch",
+          "text": "You may re-roll the Trauma Table result for this model."
+        },
+        {
+          "roll": "5",
+          "name": "Bad Company",
+          "text": "Model does not count toward the number of ELITE models in the Warband at the start of the Promotion step."
+        },
+        {
+          "roll": "6",
+          "name": "Scavenger",
+          "text": "Model has the Extra Dice Exploration Skill."
+        },
+        {
+          "roll": "7",
+          "name": "Skill & Expertise",
+          "text": "When taken, choose 1 ACTION from the model's Warband Entry or 1 Common ACTION other than Fight or Shoot; record it. +1 DICE to rolls made as part of that ACTION by this model."
+        },
+        {
+          "roll": "8",
+          "name": "Show Off",
+          "text": "+1 die to the Promotion Pool for each model in the Warband with this Skill."
+        },
+        {
+          "roll": "9",
+          "name": "Friends In High Places",
+          "text": "Model has the Re-roll Dice Exploration Skill."
+        },
+        {
+          "roll": "10",
+          "name": "Glory Hound",
+          "text": "At the end of each game, Warband gains 1 extra glory for each model with this Skill on the battlefield."
+        },
+        {
+          "roll": "11",
+          "name": "War Stories",
+          "text": "When recording Experience in the Campaign Phase, give each other ELITE model (not this one) +1 extra Experience Point.",
+          "limit": "one model per warband"
+        },
+        {
+          "roll": "12",
+          "name": "Patron Skill",
+          "text": "Pick one of the Skills offered by your Patron."
+        }
+      ]
+    }
+  ],
+  "reinforcements": {
+    "page": 112,
+    "text": "Optional. Call for Reinforcements if losses leave too few models to field a viable Force. Work through the sequence below.",
+    "rules": [
+      "1. Discard all Battlekit in the Arsenal.",
+      "2. Reduce the Strongbox to zero ducats.",
+      "3. Calculate the total Cost of all models in the Warband (including Battlekit and ducat-paid upgrades).",
+      "4. Subtract that total from the Threshold Value of the next game; the difference is the ducats available to recruit new models (recruited as starting models, with any Battlekit allowed and affordable; may form new Fireteams). Example: 1000 - 635 = 365 ducats.",
+      "5. Unspent reinforcement ducats are lost; no Battlekit may be added to the Arsenal (Strongbox and Arsenal start the next game empty).",
+      "6. Skip the Exploration Step and Quartermaster Step entirely; go directly to the Roster Step."
+    ]
+  },
+  "exploration": {
+    "page": 113,
+    "text": "Explore the campaign territory for discoveries and loot. Locations are recorded on the roster; each Location can be discovered only once per player (a repeat is a Pillaged result: nothing). Different players may discover the same Location. A roll not on the table discovers nothing but still yields loot. Discovered Battlekit/Glory Items are free and go to the Arsenal, but all normal stipulations (Limits, faction restrictions) still apply; a discovery of ducat-valued Battlekit cannot be used for glory-costed items or vice versa.",
+    "sequence": [
+      {
+        "order": 1,
+        "text": "Determine the number of Exploration Dice (by games played)."
+      },
+      {
+        "order": 2,
+        "text": "Roll the Exploration Dice and sum them. You may re-roll one die; if you won the game just played you may re-roll one additional die (never the same die twice)."
+      },
+      {
+        "order": 3,
+        "text": "Use Allies (Mercenaries), Equipment and Exploration Skills to modify the Exploration Roll."
+      },
+      {
+        "order": 4,
+        "text": "Consult the Exploration Table for your games-played bracket (choose Common/Rare or Rare/Legendary before rolling where applicable)."
+      },
+      {
+        "order": 5,
+        "text": "Collect loot equal to 10 x Exploration Roll in ducats, added to the Strongbox."
+      }
+    ],
+    "dicePool": "Games played 1-2: 3 dice; 3-5: 4 dice; 6-9: 5 dice; 10+: 6 dice. One free re-roll of one die; a second re-roll of a different die if you won the game. Further modification via Exploration Skills, Mercenaries and Equipment.",
+    "diceByGamesPlayed": [
+      {
+        "games": "1-2",
+        "dice": 3
+      },
+      {
+        "games": "3-5",
+        "dice": 4
+      },
+      {
+        "games": "6-9",
+        "dice": 5
+      },
+      {
+        "games": "10+",
+        "dice": 6
+      }
+    ],
+    "tableByGamesPlayed": [
+      {
+        "games": "1-2",
+        "tables": [
+          "common"
+        ],
+        "chooseBeforeRoll": false
+      },
+      {
+        "games": "3-5",
+        "tables": [
+          "common",
+          "rare"
+        ],
+        "chooseBeforeRoll": true
+      },
+      {
+        "games": "6-9",
+        "tables": [
+          "rare"
+        ],
+        "chooseBeforeRoll": false
+      },
+      {
+        "games": "10+",
+        "tables": [
+          "rare",
+          "legendary"
+        ],
+        "chooseBeforeRoll": true
+      }
+    ],
+    "lootPerPoint": 10,
+    "skills": {
+      "page": 115,
+      "text": "Exploration Skills are Warband-level, gained from allies, discoveries or Equipment; a Warband may hold multiples of each. Recorded on the roster.",
+      "list": [
+        {
+          "id": "extra-dice",
+          "name": "Extra Dice",
+          "text": "Roll 1 extra Exploration Die."
+        },
+        {
+          "id": "duplicate",
+          "name": "Duplicate",
+          "text": "After rolling, pick one Exploration Die and add an extra die with an identical result."
+        },
+        {
+          "id": "re-roll",
+          "name": "Re-roll",
+          "text": "Re-roll up to 1 extra Exploration Die."
+        },
+        {
+          "id": "set-dice",
+          "name": "Set Dice",
+          "text": "After rolling, pick one Exploration Die and change it to any result."
+        },
+        {
+          "id": "seek",
+          "name": "Seek",
+          "text": "+1 to the Exploration Roll."
+        },
+        {
+          "id": "circle-back",
+          "name": "Circle Back",
+          "text": "-1 to the Exploration Roll."
+        },
+        {
+          "id": "lucky",
+          "name": "Lucky",
+          "text": "After rolling, pick one Exploration Die and roll an extra die; keep either the picked die or the new one."
+        }
+      ]
+    },
+    "tables": [
+      {
+        "id": "common",
+        "name": "Common Exploration Location Table",
+        "page": 116,
+        "dice": "Exploration Roll (sum of Exploration Dice, modified)",
+        "rows": [
+          {
+            "roll": "4",
+            "name": "Moonshine Stash",
+            "page": 116,
+            "text": "Choose one: Distribute (New Antioch, Trench Pilgrims only): +2 DICE to Morale Checks next game. Destroy (New Antioch, Trench Pilgrims, Iron Sultanate only): up to two ELITE models gain +1 XP each, Advancement Roll immediately if entitled. Sell (any): +30 ducats.",
+            "rewards": {
+              "ducats": 30,
+              "glory": null,
+              "other": "or +2 DICE Morale next game, or +1 XP to two ELITE models (faction-gated)"
+            },
+            "options": [
+              {
+                "name": "Distribute",
+                "factions": [
+                  "New Antioch",
+                  "Trench Pilgrims"
+                ],
+                "effect": "+2 DICE to Morale Checks in next game"
+              },
+              {
+                "name": "Destroy",
+                "factions": [
+                  "New Antioch",
+                  "Trench Pilgrims",
+                  "Iron Sultanate"
+                ],
+                "effect": "Up to two ELITE models +1 XP each; immediate Advancement Roll if entitled"
+              },
+              {
+                "name": "Sell",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+30 ducats"
+              }
+            ]
+          },
+          {
+            "roll": "5",
+            "name": "Heavy Weapons Cache",
+            "page": 116,
+            "text": "Choose one: Surplus: one HEAVY Battlekit from your Armoury Tables to Arsenal. Specialise: one Glory Item costing up to 5 glory to Arsenal.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "one HEAVY Battlekit, or one Glory Item up to 5 glory"
+            },
+            "options": [
+              {
+                "name": "Surplus",
+                "factions": [
+                  "any"
+                ],
+                "effect": "One Battlekit with HEAVY from your Armoury Tables to Arsenal"
+              },
+              {
+                "name": "Specialise",
+                "factions": [
+                  "any"
+                ],
+                "effect": "One Glory Item with Cost up to 5 glory to Arsenal"
+              }
+            ]
+          },
+          {
+            "roll": "6",
+            "name": "Trench Shrine",
+            "page": 116,
+            "text": "Choose one: Standard: Troop Flag to Arsenal. Shrine: Field Shrine to Arsenal. Return: +2 glory.",
+            "rewards": {
+              "ducats": null,
+              "glory": 2,
+              "other": "or a Troop Flag, or a Field Shrine"
+            },
+            "options": [
+              {
+                "name": "Standard",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Troop Flag to Arsenal"
+              },
+              {
+                "name": "Shrine",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Field Shrine to Arsenal"
+              },
+              {
+                "name": "Return",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+2 glory"
+              }
+            ]
+          },
+          {
+            "roll": "8",
+            "name": "Ruined House",
+            "page": 116,
+            "text": "Choose one: Rummage: Equipment from your Armoury Tables worth up to 30 ducats total to Arsenal. Relic: one Glory Item worth up to 7 glory to Arsenal.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Equipment up to 30 ducats total, or one Glory Item up to 7 glory"
+            },
+            "options": [
+              {
+                "name": "Rummage",
+                "factions": [
+                  "any"
+                ],
+                "effect": "One or more Equipment items worth up to 30 ducats total to Arsenal"
+              },
+              {
+                "name": "Relic",
+                "factions": [
+                  "any"
+                ],
+                "effect": "One Glory Item worth up to 7 glory to Arsenal"
+              }
+            ]
+          },
+          {
+            "roll": "9",
+            "name": "Survivor",
+            "page": 116,
+            "text": "Add the faction's model to the Warband with no Battlekit (purchase in Quartermaster Step): New Antioch: Yeoman without a Ranged Weapon; Trench Pilgrims: Ecclesiastical Prisoner; Iron Sultanate: Azeb; Heretic Legions: Wretched; Black Grail: Grail Thrall; The Court: Wretched.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "one free faction Troop model, no Battlekit"
+            },
+            "byFaction": {
+              "New Antioch": "Yeoman without a Ranged Weapon",
+              "Trench Pilgrims": "Ecclesiastical Prisoner",
+              "Iron Sultanate": "Azeb",
+              "Heretic Legions": "Wretched",
+              "Black Grail": "Grail Thrall",
+              "The Court": "Wretched"
+            }
+          },
+          {
+            "roll": "10",
+            "name": "Fallen Soldier",
+            "page": 117,
+            "text": "One Ranged Weapon from your Armoury Tables worth up to 15 ducats, plus a Combat Helmet and a suit of Standard Armour, to Arsenal. Then roll D6: on 4+ also add one of Medi-kit, Mountaineer's Kit or Shovel.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Ranged Weapon up to 15 ducats + Combat Helmet + Standard Armour; D6 4+: Medi-kit / Mountaineer's Kit / Shovel"
+            }
+          },
+          {
+            "roll": "11",
+            "name": "Trench Merchant",
+            "page": 117,
+            "text": "Choose one: Report: +2 glory. Trade: from now on you may purchase Glory Items costing 5 glory or less in the Quartermaster Step.",
+            "rewards": {
+              "ducats": null,
+              "glory": 2,
+              "other": "or unlock purchase of Glory Items costing <= 5 glory"
+            },
+            "options": [
+              {
+                "name": "Report",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+2 glory"
+              },
+              {
+                "name": "Trade",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Unlock Glory Item purchases up to 5 glory"
+              }
+            ]
+          },
+          {
+            "roll": "14",
+            "name": "Map & Document Bag",
+            "page": 117,
+            "text": "Warband gains the Re-roll Exploration Skill.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Exploration Skill: Re-roll"
+            }
+          },
+          {
+            "roll": "16",
+            "name": "Sniper's Lair",
+            "page": 117,
+            "text": "Add the faction's Battlekit to Arsenal; any item you are not allowed to add instead adds its ducat Cost to the Strongbox. New Antioch or Trench Pilgrims: Sniper Rifle or Sniper Scope. Iron Sultanate: Siege Jezzail, Alchemical Ammunition and a Cloak of Alamut. Heretic Legions: Automatic Rifle. Black Grail: Corruption Belcher and Field Shrine. The Court: Ophidian Rifle.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "faction-specific Battlekit (or its ducat value if not allowed)"
+            },
+            "byFaction": {
+              "New Antioch": "Sniper Rifle or Sniper Scope",
+              "Trench Pilgrims": "Sniper Rifle or Sniper Scope",
+              "Iron Sultanate": "Siege Jezzail, Alchemical Ammunition, Cloak of Alamut",
+              "Heretic Legions": "Automatic Rifle",
+              "Black Grail": "Corruption Belcher and Field Shrine",
+              "The Court": "Ophidian Rifle"
+            }
+          },
+          {
+            "roll": "18",
+            "name": "Fallen Knight",
+            "page": 117,
+            "text": "Choose one: Loot: Reinforced Armour, Trench Shield, Combat Helmet, and either a Sword or Polearm to Arsenal. Memorialise: +2 glory.",
+            "rewards": {
+              "ducats": null,
+              "glory": 2,
+              "other": "or Reinforced Armour + Trench Shield + Combat Helmet + Sword/Polearm"
+            },
+            "options": [
+              {
+                "name": "Loot",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Reinforced Armour, Trench Shield, Combat Helmet, Sword or Polearm to Arsenal"
+              },
+              {
+                "name": "Memorialise",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+2 glory"
+              }
+            ]
+          },
+          {
+            "roll": "20",
+            "name": "Warband Strongbox",
+            "page": 117,
+            "text": "Choose one: Trove: Battlekit from your Armoury Tables worth up to 120 ducats total to Arsenal. Panoply: Glory Items worth up to 9 glory total to Arsenal; while choosing, Weapons cost 1 glory less (minimum 1).",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Battlekit up to 120 ducats total, or Glory Items up to 9 glory total (Weapons -1 glory, min 1)"
+            },
+            "options": [
+              {
+                "name": "Trove",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Battlekit worth up to 120 ducats total to Arsenal"
+              },
+              {
+                "name": "Panoply",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Glory Items worth up to 9 glory total; Weapons cost -1 glory (min 1) when choosing"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rare",
+        "name": "Rare Exploration Location Table",
+        "page": 118,
+        "dice": "Exploration Roll (sum of Exploration Dice, modified)",
+        "rows": [
+          {
+            "roll": "5",
+            "name": "Angelic Instrument",
+            "page": 118,
+            "text": "Add an Angelic Instrument to Arsenal: counts as a Musical Instrument but its Effect has 8” range instead of 4”. May replace an existing Musical Instrument (no ducats refunded).",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Angelic Instrument (Musical Instrument, 8” range)"
+            }
+          },
+          {
+            "roll": "9",
+            "name": "Abandoned Prophetic Radio Post",
+            "page": 118,
+            "text": "Warband gains the Extra Dice Exploration Skill.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Exploration Skill: Extra Dice"
+            }
+          },
+          {
+            "roll": "11",
+            "name": "Pot of Manna",
+            "page": 118,
+            "text": "Add 10 ducats to the loot received each Exploration Step, including this one.",
+            "rewards": {
+              "ducats": 10,
+              "glory": null,
+              "other": "+10 ducats loot per Exploration Step, ongoing"
+            }
+          },
+          {
+            "roll": "12",
+            "name": "Ransacked Alchemist Workshop",
+            "page": 118,
+            "text": "Add Curative Fluids to Arsenal. Once, in any future Quartermaster Step, remove 1 Battle Scar (not the Trauma effect) from a model; then remove the Curative Fluids.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Curative Fluids (consumable: remove 1 Battle Scar)"
+            }
+          },
+          {
+            "roll": "15",
+            "name": "Black Market",
+            "page": 118,
+            "text": "From now on you may purchase Glory Items costing 8 glory or less in the Quartermaster Step.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Unlock Glory Item purchases up to 8 glory"
+            }
+          },
+          {
+            "roll": "17",
+            "name": "Book of Golems",
+            "page": 118,
+            "text": "Add a Takwin Homunculus (House of Wisdom variant, Iron Sultanate list) to the Warband with the Human Hands Alchemical Formula plus Formulas worth up to 50 ducats, free. It has GOLEM and replaces SULTANATE with your Faction Keyword. Buy its Battlekit from your own Armoury Tables. Treated as an Ally; can never be Promoted or receive more Formulas.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Takwin Homunculus Golem ally with up to 50 ducats of free Alchemical Formulas"
+            }
+          },
+          {
+            "roll": "19",
+            "name": "Ruined Church/Masjid/Synagogue",
+            "page": 119,
+            "text": "Choose one: Report: +4 glory. Keep: one Glory Item worth up to 10 glory to Arsenal.",
+            "rewards": {
+              "ducats": null,
+              "glory": 4,
+              "other": "or one Glory Item up to 10 glory"
+            },
+            "options": [
+              {
+                "name": "Report",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+4 glory"
+              },
+              {
+                "name": "Keep",
+                "factions": [
+                  "any"
+                ],
+                "effect": "One Glory Item worth up to 10 glory to Arsenal"
+              }
+            ]
+          },
+          {
+            "roll": "21",
+            "name": "Stash of Drugs & Erotica",
+            "page": 119,
+            "text": "Choose one: Indulge: +1 DICE to Morale Checks for the rest of the campaign. Sell: +120 ducats. Confiscate: +4 glory. Trench Pilgrims must choose Confiscate.",
+            "rewards": {
+              "ducats": 120,
+              "glory": 4,
+              "other": "one of: +1 DICE Morale for campaign / +120 ducats / +4 glory (Trench Pilgrims forced to Confiscate)"
+            },
+            "options": [
+              {
+                "name": "Indulge",
+                "factions": [
+                  "any except Trench Pilgrims"
+                ],
+                "effect": "+1 DICE to Morale Checks for the rest of the campaign"
+              },
+              {
+                "name": "Sell",
+                "factions": [
+                  "any except Trench Pilgrims"
+                ],
+                "effect": "+120 ducats"
+              },
+              {
+                "name": "Confiscate",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+4 glory; mandatory for Trench Pilgrims"
+              }
+            ]
+          },
+          {
+            "roll": "23",
+            "name": "Saint's Reliquary",
+            "page": 119,
+            "text": "Add a Saintly Relic (Equipment, ELITE only) to Arsenal. Bearer gains TOUGH, loses INFILTRATOR if it has it, and the opponent ignores Cover and Defended Obstacle modifiers for attacks targeting the bearer.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Saintly Relic (Equipment, ELITE only: TOUGH; lose INFILTRATOR; enemy ignores Cover/Defended Obstacle vs bearer)"
+            }
+          },
+          {
+            "roll": "25",
+            "name": "High-Ranking Captive",
+            "page": 119,
+            "text": "Choose one: Ransom: +100 ducats. Execute: +4 glory. Imprison: one Glory Item costing up to 8 glory to Arsenal. Indenture: Warband gains the Set Dice Exploration Skill.",
+            "rewards": {
+              "ducats": 100,
+              "glory": 4,
+              "other": "one of: +100 ducats / +4 glory / Glory Item up to 8 glory / Exploration Skill: Set Dice"
+            },
+            "options": [
+              {
+                "name": "Ransom",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+100 ducats"
+              },
+              {
+                "name": "Execute",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+4 glory"
+              },
+              {
+                "name": "Imprison",
+                "factions": [
+                  "any"
+                ],
+                "effect": "One Glory Item with Cost up to 8 glory to Arsenal"
+              },
+              {
+                "name": "Indenture",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Exploration Skill: Set Dice"
+              }
+            ]
+          },
+          {
+            "roll": "32",
+            "name": "Abandoned Resurrection Machines",
+            "page": 119,
+            "text": "Add a Salvaged Resurrection Machine to Arsenal. In any future Quartermaster Step, remove 1 Battle Scar and its corresponding Trauma from a model; then remove the Machine from the roster.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Salvaged Resurrection Machine (consumable: remove 1 Battle Scar and its Trauma)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "legendary",
+        "name": "Legendary Exploration Location Table",
+        "page": 120,
+        "dice": "Exploration Roll (sum of Exploration Dice, modified)",
+        "rows": [
+          {
+            "roll": "6",
+            "name": "Battlefield of Corpses",
+            "page": 120,
+            "text": "Choose up to 2 pieces of Battlekit from your Armoury Tables worth up to 100 ducats total and add them to Arsenal.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "up to 2 Battlekit worth up to 100 ducats total"
+            }
+          },
+          {
+            "roll": "8",
+            "name": "Esoteric Library",
+            "page": 120,
+            "text": "Choose one: Burn (New Antioch, Trench Pilgrims, Sultanate only): +3+D3 glory. Release Plague (Black Grail only): at the start of each game after deployment, place 1 INFECTION MARKER next to 1 model of your choice (friend or foe). Sell (any): +6D6 x 10 ducats. Study (The Court or Heretic Legions only): at the start of each game after deployment, pick 1 model (friend or foe) and place 1 BLOOD MARKER next to it.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "faction-gated choice: 3+D3 glory / 6D6x10 ducats / ongoing INFECTION or BLOOD MARKER placement"
+            },
+            "options": [
+              {
+                "name": "Burn",
+                "factions": [
+                  "New Antioch",
+                  "Trench Pilgrims",
+                  "Iron Sultanate"
+                ],
+                "effect": "+3+D3 glory"
+              },
+              {
+                "name": "Release Plague",
+                "factions": [
+                  "Black Grail"
+                ],
+                "effect": "Each game after deployment: place 1 INFECTION MARKER next to 1 model (friend or foe)"
+              },
+              {
+                "name": "Sell",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+6D6 x 10 ducats"
+              },
+              {
+                "name": "Study",
+                "factions": [
+                  "The Court",
+                  "Heretic Legions"
+                ],
+                "effect": "Each game after deployment: place 1 BLOOD MARKER next to 1 model (friend or foe)"
+              }
+            ]
+          },
+          {
+            "roll": "10",
+            "name": "Hidden Passages",
+            "page": 120,
+            "text": "Warband gains the Duplicate Exploration Skill.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Exploration Skill: Duplicate"
+            }
+          },
+          {
+            "roll": "12",
+            "name": "Jabirean Alchemical Book",
+            "page": 120,
+            "text": "Choose one: Keep: from now on you may purchase Fire Shields from the House of Wisdom Armoury Tables in the Quartermaster Step. Sell: +150 ducats or +5 glory (your choice). Study (House of Wisdom only): Alchemical Formulae cost 5 ducats less, minimum 5 ducats.",
+            "rewards": {
+              "ducats": 150,
+              "glory": 5,
+              "other": "one of: unlock Fire Shields / +150 ducats / +5 glory / (House of Wisdom) Formulae -5 ducats (min 5)"
+            },
+            "options": [
+              {
+                "name": "Keep",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Unlock purchase of Fire Shields from House of Wisdom Armoury Tables"
+              },
+              {
+                "name": "Sell",
+                "factions": [
+                  "any"
+                ],
+                "effect": "+150 ducats or +5 glory"
+              },
+              {
+                "name": "Study",
+                "factions": [
+                  "House of Wisdom"
+                ],
+                "effect": "Alchemical Formulae cost 5 ducats less, to a minimum of 5 ducats"
+              }
+            ]
+          },
+          {
+            "roll": "14",
+            "name": "Black Network Contact",
+            "page": 120,
+            "text": "From now on you may purchase Glory Items costing 12 glory or less in the Quartermaster Step.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Unlock Glory Item purchases up to 12 glory"
+            }
+          },
+          {
+            "roll": "16",
+            "name": "Treasure of the Holies",
+            "page": 121,
+            "text": "Score D3 Campaign Victory Points and add one Glory Item (any) to Arsenal for free; the Glory Item may instead be chosen in any future Quartermaster Step.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "+D3 Campaign Victory Points; one free Glory Item of any cost (now or later)"
+            }
+          },
+          {
+            "roll": "18",
+            "name": "Skull of a Saint",
+            "page": 121,
+            "text": "New Antioch, Trench Pilgrims, Iron Sultanate: add a Skull Relic (Equipment, HELD, any model) to Arsenal; bearer gains INFILTRATOR. Heretic Legions, Black Grail, The Court: add a Screaming Skull (Equipment, HELD, any model) to Arsenal; +2 DICE to Morale Checks while the bearer is on the battlefield and not Down/Out of Action, and +1 glory at the end of any game in which the bearer is on the battlefield and not Down/Out of Action.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "faction-determined: Skull Relic (INFILTRATOR) or Screaming Skull (+2 DICE Morale, +1 glory per game)"
+            },
+            "byFaction": {
+              "New Antioch": "Skull Relic",
+              "Trench Pilgrims": "Skull Relic",
+              "Iron Sultanate": "Skull Relic",
+              "Heretic Legions": "Screaming Skull",
+              "Black Grail": "Screaming Skull",
+              "The Court": "Screaming Skull"
+            }
+          },
+          {
+            "roll": "20",
+            "name": "Lock of Samson's Hair",
+            "page": 121,
+            "text": "Add a Lock of Samson's Hair (Equipment, any model) to Arsenal. Bearer gains STRONG and +1 INJURY DICE to its Melee Attacks.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "Lock of Samson's Hair (STRONG, +1 INJURY DICE melee)"
+            }
+          },
+          {
+            "roll": "23",
+            "name": "Patron's Visit",
+            "page": 121,
+            "text": "You may immediately exchange up to 10 glory for an equal number of Campaign Victory Points.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "convert up to 10 glory into Campaign Victory Points 1:1"
+            }
+          },
+          {
+            "roll": "26",
+            "name": "Sample of Holy DNA",
+            "page": 121,
+            "text": "Pick 1 model and note it is treated with Holy DNA. When Activated, before any ACTIONS, it may remove 1 BLOOD MARKER or INFECTION MARKER and replace it with a BLESSING MARKER.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "one model: convert 1 BLOOD/INFECTION MARKER to BLESSING MARKER each Activation"
+            }
+          },
+          {
+            "roll": "30",
+            "name": "Golgotha Tektites",
+            "page": 122,
+            "text": "Pick up to two suits of Armour and note they are treated with Golgotha Tektites: they gain NEGATE FIRE, NEGATE GAS and NEGATE SHRAPNEL. A New Antioch Warband may instead hand the Tektites to the Church for +15 glory.",
+            "rewards": {
+              "ducats": null,
+              "glory": 15,
+              "other": "two Armour suits gain NEGATE FIRE/GAS/SHRAPNEL, or (New Antioch only) +15 glory"
+            },
+            "options": [
+              {
+                "name": "Treat Armour",
+                "factions": [
+                  "any"
+                ],
+                "effect": "Up to two suits of Armour gain NEGATE FIRE, NEGATE GAS, NEGATE SHRAPNEL"
+              },
+              {
+                "name": "Hand to the Church",
+                "factions": [
+                  "New Antioch"
+                ],
+                "effect": "+15 glory"
+              }
+            ]
+          },
+          {
+            "roll": "36",
+            "name": "Fruit from the Tree of Good and Evil Knowledge",
+            "page": 122,
+            "text": "Pick 1 model; it gains DEMONIC and one Skill of your choice from any Skill Table, any Patron Skill (not restricted to your Patron), or any Exploration Skill.",
+            "rewards": {
+              "ducats": null,
+              "glory": null,
+              "other": "one model gains DEMONIC and any one Skill"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "quartermaster": {
+    "page": 123,
+    "text": "Recruit models, purchase and sell Battlekit and Glory Items, and allocate them to models, in any order and interleaved freely.",
+    "rules": [
+      "Retire Injured Models: any model with 2 Battle Scars may be retired (removed); its Battlekit/Glory Items may be sold or reallocated first, or kept by the retiree.",
+      "Hire New Recruits: same rules and restrictions as the Starting Warband; a 0-1 slot freed by a removed model may be refilled.",
+      "Purchase Battlekit: spend ducats on ducat-costed Armoury items and glory on glory-costed ones; all Starting Warband stipulations (Limits) apply, counting items in the Arsenal and equipped; removed items free up Limit slots. Restricted items (e.g. ELITE only) may be bought into the Arsenal but only allocated to eligible models.",
+      "Sell Battlekit / Glory Items: receive half the Cost, rounding fractions up, in the original currency. Items that cannot be removed from a model cannot be sold.",
+      "Purchase Glory Items: spend glory on Glory Items (see Glory Item Tables); they go to the Arsenal or are allocated.",
+      "Allocate Battlekit & Glory Items: Arsenal items may be allocated to any eligible model; items may be reallocated between models or back to the Arsenal, subject to eligibility and carrying limits (e.g. no second 2-Handed Weapon without a special rule). Items marked as non-removable cannot be reallocated.",
+      "Create New Fireteams: eligible models not already in a Fireteam may form one; a surviving member of a broken Fireteam may form a new one.",
+      "Roster Step: bring the Warband Roster up to date."
+    ],
+    "sellRate": {
+      "fraction": 0.5,
+      "rounding": "up"
+    }
+  },
+  "gloryItems": {
+    "page": 125,
+    "text": "Glory Items are Battlekit purchasable only with glory, only during a campaign, and only once a discovery from an Exploration Table allows them (free, or unlocking purchase up to a glory cap: Trench Merchant 5, Black Market 8, Black Network Contact 12). Each Faction's table lists the Glory Items it may take, with Cost and stipulations, which work like Armoury Table stipulations. Limits count Arsenal plus equipped.",
+    "purchaseUnlocks": [
+      {
+        "source": "Trench Merchant (Common 11, Trade)",
+        "maxGlory": 5
+      },
+      {
+        "source": "Black Market (Rare 15)",
+        "maxGlory": 8
+      },
+      {
+        "source": "Black Network Contact (Legendary 14)",
+        "maxGlory": 12
+      }
+    ],
+    "tables": [
+      {
+        "id": "new-antioch",
+        "name": "The Principality of New Antioch Glory Items",
+        "page": 125,
+        "dice": null,
+        "rows": [
+          {
+            "item": "Battlefield Title",
+            "itemId": "battlefield-title",
+            "glory": 5,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Book of Battle Prayers",
+            "itemId": "book-of-battle-prayers",
+            "glory": 7,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Ducal Winged Armour",
+            "itemId": "ducal-winged-armour",
+            "glory": 8,
+            "limit": 1,
+            "restrictions": "Battlefield Title or Knighthood only; only a model that already has a Battlefield Title or Knighthood can have it"
+          },
+          {
+            "item": "Field Hospital",
+            "itemId": "field-hospital",
+            "glory": 10,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Great Banner of New Antioch",
+            "itemId": "great-banner-of-new-antioch",
+            "glory": 12,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Knighthood",
+            "itemId": "knighthood",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Resurrection Engine",
+            "itemId": "resurrection-engine",
+            "glory": 11,
+            "limit": 1,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Rocket-Propelled Grenade",
+            "itemId": "rocket-propelled-grenade",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Salvage Golem",
+            "itemId": "salvage-golem",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Smokescreen",
+            "itemId": "smokescreen",
+            "glory": 5,
+            "limit": 1,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Sniper Scope",
+            "itemId": "sniper-scope",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": null
+          },
+          {
+            "item": "Trench Dog",
+            "itemId": "trench-dog",
+            "glory": 1,
+            "gloryMax": 3,
+            "gloryRange": "1-3",
+            "limit": 1,
+            "restrictions": null
+          }
+        ]
+      },
+      {
+        "id": "trench-pilgrims",
+        "name": "Trench Pilgrims Glory Items",
+        "page": 126,
+        "dice": null,
+        "rows": [
+          {
+            "item": "Donkey's Jawbone",
+            "itemId": "donkeys-jawbone",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Holy Grenade",
+            "itemId": "holy-grenade",
+            "glory": 2,
+            "limit": 3,
+            "restrictions": null
+          },
+          {
+            "item": "Horn of Joshua",
+            "itemId": "horn-of-joshua",
+            "glory": 9,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Rocket-Propelled Grenade",
+            "itemId": "rocket-propelled-grenade",
+            "glory": 2,
+            "limit": 1,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Trench Dog",
+            "itemId": "trench-dog",
+            "glory": 1,
+            "gloryMax": 3,
+            "gloryRange": "1-3",
+            "limit": 1,
+            "restrictions": null
+          }
+        ]
+      },
+      {
+        "id": "iron-sultanate",
+        "name": "The Sultanate of the Iron Wall Glory Items",
+        "page": 126,
+        "dice": null,
+        "rows": [
+          {
+            "item": "Damascus Armour",
+            "itemId": "damascus-armour",
+            "glory": 5,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Field Hospital",
+            "itemId": "field-hospital",
+            "glory": 10,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Kilij",
+            "itemId": "kilij",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Knighthood",
+            "itemId": "knighthood",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Masterwork Jezzail",
+            "itemId": "masterwork-jezzail",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Rocket-Propelled Grenade",
+            "itemId": "rocket-propelled-grenade",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Sniper Scope",
+            "itemId": "sniper-scope",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": null
+          },
+          {
+            "item": "Mobile Sultanate Grand Cannon",
+            "itemId": "mobile-sultanate-grand-cannon",
+            "glory": 10,
+            "limit": 1,
+            "restrictions": "Brazen Bull only"
+          },
+          {
+            "item": "Trench Dog",
+            "itemId": "trench-dog",
+            "glory": 1,
+            "gloryMax": 3,
+            "gloryRange": "1-3",
+            "limit": 1,
+            "restrictions": null
+          }
+        ]
+      },
+      {
+        "id": "heretic-legions",
+        "name": "Heretic Legions Glory Items",
+        "page": 126,
+        "dice": null,
+        "rows": [
+          {
+            "item": "Armour of Cobar",
+            "itemId": "armour-of-cobar",
+            "glory": 8,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Battlefield Title",
+            "itemId": "battlefield-title",
+            "glory": 5,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Demonic Aura Grenade",
+            "itemId": "demonic-aura-grenade",
+            "glory": 3,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Executioner's Axe",
+            "itemId": "executioners-axe",
+            "glory": 6,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Knighthood",
+            "itemId": "knighthood",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Rocket-Propelled Grenade",
+            "itemId": "rocket-propelled-grenade",
+            "glory": 2,
+            "limit": 1,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Sniper Scope",
+            "itemId": "sniper-scope",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": null
+          },
+          {
+            "item": "The Mark of Cain",
+            "itemId": "the-mark-of-cain",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Tormentor Chain",
+            "itemId": "tormentor-chain",
+            "glory": 3,
+            "limit": 2,
+            "restrictions": null
+          },
+          {
+            "item": "Trench Dog",
+            "itemId": "trench-dog",
+            "glory": 1,
+            "gloryMax": 3,
+            "gloryRange": "1-3",
+            "limit": 1,
+            "restrictions": "Not available to Trench Ghost Warbands"
+          }
+        ]
+      },
+      {
+        "id": "black-grail",
+        "name": "The Cult of the Black Grail Glory Items",
+        "page": 127,
+        "dice": null,
+        "rows": [
+          {
+            "item": "Armour of the Fly",
+            "itemId": "armour-of-the-fly",
+            "glory": 7,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Battlefield Title",
+            "itemId": "battlefield-title",
+            "glory": 5,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Beelzebub's Embrace",
+            "itemId": "beelzebubs-embrace",
+            "glory": 12,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Cup of Filth",
+            "itemId": "cup-of-filth",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Knighthood",
+            "itemId": "knighthood",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Locust Spitter",
+            "itemId": "locust-spitter",
+            "glory": 6,
+            "limit": 1,
+            "restrictions": null
+          },
+          {
+            "item": "Rocket-Propelled Grenade",
+            "itemId": "rocket-propelled-grenade",
+            "glory": 2,
+            "limit": 1,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Trench Dog",
+            "itemId": "trench-dog",
+            "glory": 1,
+            "gloryMax": 3,
+            "gloryRange": "1-3",
+            "limit": 1,
+            "restrictions": null
+          }
+        ]
+      },
+      {
+        "id": "the-court",
+        "name": "The Court of the Seven-Headed Serpent Glory Items",
+        "page": 127,
+        "dice": null,
+        "rows": [
+          {
+            "item": "Battlefield Title",
+            "itemId": "battlefield-title",
+            "glory": 5,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Bestial Skin Cloak",
+            "itemId": "bestial-skin-cloak",
+            "glory": 6,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Cruel Helmet",
+            "itemId": "cruel-helmet",
+            "glory": 2,
+            "limit": 2,
+            "restrictions": "Wretched only; Headgear"
+          },
+          {
+            "item": "Knighthood",
+            "itemId": "knighthood",
+            "glory": 4,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Koraktor, the Great Tome of Hell",
+            "itemId": "koraktor-the-great-tome-of-hell",
+            "glory": 8,
+            "limit": 1,
+            "restrictions": "Sorcerer only"
+          },
+          {
+            "item": "Lordship of This World",
+            "itemId": "lordship-of-this-world",
+            "glory": 9,
+            "limit": 1,
+            "restrictions": "Praetors & Sorcerers only"
+          },
+          {
+            "item": "Piece of Silver",
+            "itemId": "piece-of-silver",
+            "glory": 12,
+            "limit": 1,
+            "restrictions": "ELITE only"
+          },
+          {
+            "item": "Restraining Muzzle",
+            "itemId": "restraining-muzzle",
+            "glory": 1,
+            "limit": 3,
+            "restrictions": "Yoke Fiends only; up to 3 purchased with glory in addition to up to 3 purchased with ducats"
+          },
+          {
+            "item": "Rocket-Propelled Grenade",
+            "itemId": "rocket-propelled-grenade",
+            "glory": 2,
+            "limit": 1,
+            "restrictions": "Consumable"
+          },
+          {
+            "item": "Trench Dog",
+            "itemId": "trench-dog",
+            "glory": 1,
+            "gloryMax": 3,
+            "gloryRange": "1-3",
+            "limit": 1,
+            "restrictions": null
+          }
+        ]
+      }
+    ],
+    "cartulary": [
+      {
+        "id": "armour-of-cobar",
+        "name": "Armour of Cobar",
+        "page": 128,
+        "cost": {
+          "glory": 8,
+          "ducats": null
+        },
+        "type": "armour",
+        "factions": [
+          "heretic-legions"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Lead to Death: place 1 BLESSING MARKER next to the wearer each time a friendly model is taken Out of Action. Weight of Sins: -1 DICE to the wearer's Risky Success Roll for a Dash ACTION; wearer cannot have a Shield.",
+        "profile": {
+          "type": "Armour",
+          "range": null,
+          "keywords": [
+            "-3 INJURY MODIFIER"
+          ]
+        }
+      },
+      {
+        "id": "armour-of-the-fly",
+        "name": "Armour of the Fly",
+        "page": 128,
+        "cost": {
+          "glory": 7,
+          "ducats": null
+        },
+        "type": "armour",
+        "factions": [
+          "black-grail"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Insect Wings: wearer's Movement becomes 8”/Flying. Sucked Dry: after a Fight ACTION the wearer may immediately make an additional Melee Attack at +1 DICE; if it hits, place 1 BLOOD MARKER next to the target instead of making an Injury Roll.",
+        "profile": {
+          "type": "Armour",
+          "range": null,
+          "keywords": [
+            "-2 INJURY MODIFIER",
+            "FLYING",
+            "NEGATE SHRAPNEL"
+          ]
+        }
+      },
+      {
+        "id": "battlefield-title",
+        "name": "Battlefield Title",
+        "page": 129,
+        "cost": {
+          "glory": 5,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "new-antioch",
+          "heretic-legions",
+          "black-grail",
+          "the-court"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Privileged Access: pick 1 Weapon or suit of Armour from your Armoury Tables that has a Limit; that Limit is increased by 1 for the Warband, permanently (persists even if the titled model is later removed).",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "beelzebubs-embrace",
+        "name": "Beelzebub's Embrace",
+        "page": 129,
+        "cost": {
+          "glory": 12,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "black-grail"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Many-Legged Form: model cannot have Weapons, Grenades, Shields or HELD Equipment. It makes Melee Attacks with CLEAVE 4 without a Melee Weapon. If all 4 attacks hit the same target on a 32mm or smaller base, the target is taken Out of Action on the fourth hit with no Injury Roll and no result-changing rules (e.g. TOUGH). Cannot be removed or lost for any reason during the campaign.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "bestial-skin-cloak",
+        "name": "Bestial Skin Cloak",
+        "page": 130,
+        "cost": {
+          "glory": 6,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "the-court"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Spirit of the Beast: once per Turn choose one for the wearer: +1 DICE to a Melee Attack roll; +1 INJURY DICE to a Melee Attack roll; or +1 DICE to the Risky Success Roll for a Dash ACTION. A Hunter of the Left-Hand Path with this cloak cannot cast the Oracle Beast Cloak Goetic Spell.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "book-of-battle-prayers",
+        "name": "Book of Battle Prayers",
+        "page": 130,
+        "cost": {
+          "glory": 7,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "new-antioch"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Continuous Litany of Prayers: bearer cannot take a Dash ACTION. Speak a Blessing ACTION: Success Roll; on Success/Critical place 1 BLESSING MARKER next to a friendly model within 12”.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": [
+            "HELD"
+          ]
+        }
+      },
+      {
+        "id": "cruel-helmet",
+        "name": "Cruel Helmet",
+        "page": 131,
+        "cost": {
+          "glory": 2,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "the-court"
+        ],
+        "restrictions": "Wretched only, Headgear, Limit 2",
+        "text": "Gruesome Weight: wearer is placed Down when first deployed in a game. If targeted by an attack on the first Turn before being Activated, place 1 extra BLOOD MARKER next to it (even on a miss or No Effect).",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": [
+            "HEAVY",
+            "NEGATE SHRAPNEL"
+          ]
+        }
+      },
+      {
+        "id": "cup-of-filth",
+        "name": "Cup of Filth",
+        "page": 131,
+        "cost": {
+          "glory": 4,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "black-grail"
+        ],
+        "restrictions": "Limit 1",
+        "text": "Drink from the Cup: at the start of the game before deployment, pick either 1 ELITE model or up to 4 Thralls; for the rest of the game they get +1 DICE to the Risky Success Roll for Dash ACTIONS.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "damascus-armour",
+        "name": "Damascus Armour",
+        "page": 131,
+        "cost": {
+          "glory": 5,
+          "ducats": null
+        },
+        "type": "armour",
+        "factions": [
+          "iron-sultanate"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Inspiring Gift: wearer is not sent home until its 4th Battle Scar. Cannot be removed from the wearer during the campaign unless the wearer is killed or declared Unfit for Duty.",
+        "profile": {
+          "type": "Armour",
+          "range": null,
+          "keywords": [
+            "-2 INJURY MODIFIER",
+            "IMPERVIOUS"
+          ]
+        }
+      },
+      {
+        "id": "demonic-aura-grenade",
+        "name": "Demonic Aura Grenade",
+        "page": 132,
+        "cost": {
+          "glory": 3,
+          "ducats": null
+        },
+        "type": "grenade",
+        "factions": [
+          "heretic-legions"
+        ],
+        "restrictions": "Limit 1",
+        "text": "Deadly Light: double the BLOOD MARKERS placed by an Injury Roll from this grenade. An Injury Roll is made for all models within 3” of the target point even if terrain blocks line of sight.",
+        "profile": {
+          "type": "Grenade",
+          "range": "8”",
+          "keywords": [
+            "ASSAULT",
+            "BLAST 3”",
+            "IGNORE ARMOUR",
+            "IGNORE COVER",
+            "SCATTER"
+          ]
+        }
+      },
+      {
+        "id": "donkeys-jawbone",
+        "name": "Donkey's Jawbone",
+        "page": 132,
+        "cost": {
+          "glory": 4,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "trench-pilgrims"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Bone club granting the strength of Samson.",
+        "profile": {
+          "type": "1-Handed",
+          "range": "Melee",
+          "keywords": [
+            "+2 INJURY DICE"
+          ]
+        }
+      },
+      {
+        "id": "ducal-winged-armour",
+        "name": "Ducal Winged Armour",
+        "page": 132,
+        "cost": {
+          "glory": 8,
+          "ducats": null
+        },
+        "type": "armour",
+        "factions": [
+          "new-antioch"
+        ],
+        "restrictions": "Limit 1; only a model that already has a Battlefield Title or Knighthood",
+        "text": "Myrmidon Wings: wearer's Movement becomes 10”/Flying. Steadfast: a Down result on the Injury table is treated as Minor Hit.",
+        "profile": {
+          "type": "Armour",
+          "range": null,
+          "keywords": [
+            "-3 INJURY MODIFIER",
+            "FLYING"
+          ]
+        }
+      },
+      {
+        "id": "executioners-axe",
+        "name": "Executioner's Axe",
+        "page": 133,
+        "cost": {
+          "glory": 6,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "heretic-legions"
+        ],
+        "restrictions": "Limit 1",
+        "text": "Two-handed axe of Hell's executioners.",
+        "profile": {
+          "type": "2-Handed",
+          "range": "Melee",
+          "keywords": [
+            "+2 INJURY DICE",
+            "CLEAVE 2",
+            "CRITICAL"
+          ]
+        }
+      },
+      {
+        "id": "field-hospital",
+        "name": "Field Hospital",
+        "page": 133,
+        "cost": {
+          "glory": 10,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "new-antioch",
+          "iron-sultanate"
+        ],
+        "restrictions": "Limit 1; held in Arsenal, not allocated",
+        "text": "Battlefield Surgery: if the Warband also includes a Combat Medic, Jabirean Alchemist or Sister of Saint Cosmas, at the end of the Trauma Step treat 1 model with 1+ Battle Scars: roll 2D6; 7+ remove 1 Battle Scar; 3-6 nothing; 2 the model gains 1 extra Battle Scar.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "great-banner-of-new-antioch",
+        "name": "Great Banner of New Antioch",
+        "page": 133,
+        "cost": {
+          "glory": 12,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "new-antioch"
+        ],
+        "restrictions": "Limit 1",
+        "text": "Rally to the Flag: if the bearer is on the battlefield (even Down) when you take a Morale Check, you may choose for the check to be a Success or for the Warband to flee.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": [
+            "HELD"
+          ]
+        }
+      },
+      {
+        "id": "holy-grenade",
+        "name": "Holy Grenade",
+        "page": 134,
+        "cost": {
+          "glory": 2,
+          "ducats": null
+        },
+        "type": "grenade",
+        "factions": [
+          "trench-pilgrims"
+        ],
+        "restrictions": "Limit 3",
+        "text": "Spirit of Vengeance: +1 INJURY DICE against models with BLACK GRAIL or DEMONIC.",
+        "profile": {
+          "type": "Grenade",
+          "range": "8”",
+          "keywords": [
+            "ASSAULT",
+            "BLAST 2”",
+            "IGNORE COVER",
+            "IGNORE LONG RANGE",
+            "SHRAPNEL"
+          ]
+        }
+      },
+      {
+        "id": "horn-of-joshua",
+        "name": "Horn of Joshua",
+        "page": 134,
+        "cost": {
+          "glory": 9,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "trench-pilgrims"
+        ],
+        "restrictions": "Limit 1",
+        "text": "Blow Thy Horn ACTION: Risky Success Roll at +1 DICE. Failure: nothing, Activation ends. Success/Critical: pick 1 terrain piece within 12” measuring up to 8” by 8”; make an Injury Roll for each model (friend or foe) on or in contact with it, then remove the terrain piece; models on top Fall to the battlefield (extra Injury Roll if 3”+). Once used successfully, cannot be used again that game.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "kilij",
+        "name": "Kilij",
+        "page": 134,
+        "cost": {
+          "glory": 2,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "iron-sultanate"
+        ],
+        "restrictions": "ELITE only, Limit 2",
+        "text": "Curved sword honed to unsurpassed sharpness.",
+        "profile": {
+          "type": "1-Handed",
+          "range": "Melee",
+          "keywords": [
+            "+1 INJURY MODIFIER",
+            "CRITICAL"
+          ]
+        }
+      },
+      {
+        "id": "knighthood",
+        "name": "Knighthood",
+        "page": 135,
+        "cost": {
+          "glory": 4,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "new-antioch",
+          "iron-sultanate",
+          "heretic-legions",
+          "black-grail",
+          "the-court"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Famous Deeds: at the end of each game the Warband receives 1 glory for each model with a Knighthood on the battlefield.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "koraktor-the-great-tome-of-hell",
+        "name": "Koraktor, the Great Tome of Hell",
+        "page": 135,
+        "cost": {
+          "glory": 8,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "the-court"
+        ],
+        "restrictions": "Sorcerer only, Limit 1",
+        "text": "Goetic Secrets: the Sorcerer may purchase one additional Goetic Power beyond its normal 3, ignoring stipulations (Sin dedication, non-Sorcerer-only). Bought in the Quartermaster Step at normal Cost.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "locust-spitter",
+        "name": "Locust Spitter",
+        "page": 136,
+        "cost": {
+          "glory": 6,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "black-grail"
+        ],
+        "restrictions": "Limit 1",
+        "text": "Devouring Swarm: on a Success/Critical Ranged Attack, after the target's Injury Roll, subtract the range to the target from 18”; make an Injury Roll (no Success Roll) for the closest model (friend or foe) within that remaining distance with line of sight to the previous target. Repeat, reducing the remaining distance by each hop, against models not yet attacked, until no target or 0”. A Critical's Injury modifier applies only to the first roll; -1 INJURY DICE and IGNORE ARMOUR apply to all.",
+        "profile": {
+          "type": "2-Handed",
+          "range": "18”",
+          "keywords": [
+            "-1 INJURY DICE",
+            "IGNORE ARMOUR"
+          ]
+        }
+      },
+      {
+        "id": "lordship-of-this-world",
+        "name": "Lordship of This World",
+        "page": 137,
+        "cost": {
+          "glory": 9,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "the-court"
+        ],
+        "restrictions": "Praetors & Sorcerers only, Limit 1",
+        "text": "Mark of the Pit: at the start of each game after both sides deploy, if the bearer is on the battlefield, pick 1 terrain piece up to 8” by 8” with none of your models on it and move it 6” in any direction (wholly on the battlefield, more than 1” from other terrain, not onto your models). Enemy models on it move with it; enemy models it is moved onto are removed and redeployed by the opponent anywhere in their deployment zone.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "masterwork-jezzail",
+        "name": "Masterwork Jezzail",
+        "page": 137,
+        "cost": {
+          "glory": 4,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "iron-sultanate"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Enhanced Bullets: no D6 roll to see if a friendly model within 1” of the target is hit. If the Success Roll exceeds 7, after the target's Injury Roll subtract 7 from the Success Roll and make an Injury Roll (no Success Roll) for the closest enemy within that many inches of the target with line of sight to it. A Critical's extra INJURY DICE applies only to the first roll.",
+        "profile": {
+          "type": "2-Handed",
+          "range": "36”",
+          "keywords": [
+            "+1 DICE",
+            "CRITICAL"
+          ]
+        }
+      },
+      {
+        "id": "mobile-sultanate-grand-cannon",
+        "name": "Mobile Sultanate Grand Cannon",
+        "page": 140,
+        "cost": {
+          "glory": 10,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "iron-sultanate"
+        ],
+        "restrictions": "Brazen Bull only, Limit 1",
+        "text": "Brazen Bull Grand Cannon: must be carried by a Brazen Bull and uses this profile. Unstoppable Object: a model hit but not taken Out of Action is pushed D6” directly away from the attacker, stopping at models, Impassable terrain or terrain requiring a Climb.",
+        "profile": {
+          "type": "1-Handed",
+          "range": "48”",
+          "keywords": [
+            "+2 INJURY DICE",
+            "HEAVY",
+            "IGNORE ARMOUR"
+          ]
+        }
+      },
+      {
+        "id": "piece-of-silver",
+        "name": "Piece of Silver",
+        "page": 138,
+        "cost": {
+          "glory": 12,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "the-court"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Luck of the Devil: at the start of each game before deployment, set aside 3 D6 showing 6. During the game, except for Injury Rolls and Bloodbath Rolls, you may replace a D6 you are about to roll with one of them (treated as a rolled 6); one per roll. If the bearer is taken Out of Action, remaining set-aside dice are discarded.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "restraining-muzzle",
+        "name": "Restraining Muzzle",
+        "page": 138,
+        "cost": {
+          "glory": 1,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "the-court"
+        ],
+        "restrictions": "Yoke Fiends only, Limit 3 (glory-bought, in addition to up to 3 ducat-bought)",
+        "text": "Brought to Heel: +1 DICE to Ranged Attacks by a Yoke Fiend wearing it; the Hateful ability does not apply to that Yoke Fiend.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "resurrection-engine",
+        "name": "Resurrection Engine",
+        "page": 138,
+        "cost": {
+          "glory": 11,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "new-antioch"
+        ],
+        "restrictions": "Consumable, Limit 1; held in Arsenal, not allocated",
+        "text": "Holy Machine: once during the campaign, change a result rolled on the Trauma Table to Full Recovery. Consumed when used.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": [
+            "CONSUMABLE"
+          ]
+        }
+      },
+      {
+        "id": "rocket-propelled-grenade",
+        "name": "Rocket-Propelled Grenade",
+        "page": 139,
+        "cost": {
+          "glory": 2,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "new-antioch",
+          "trench-pilgrims",
+          "iron-sultanate",
+          "heretic-legions",
+          "black-grail",
+          "the-court"
+        ],
+        "restrictions": "Consumable; Limit 2 (New Antioch, Iron Sultanate) or 1 (others)",
+        "text": "Disposable Rocket: usable once during the campaign as a Ranged Weapon. A model hit but not taken Out of Action is blown D6” directly away from the attacker, stopping at models, Impassable terrain or terrain requiring a Climb.",
+        "profile": {
+          "type": "Special",
+          "range": "36”",
+          "keywords": [
+            "+1 INJURY DICE",
+            "CONSUMABLE",
+            "IGNORE ARMOUR",
+            "RELOAD"
+          ]
+        }
+      },
+      {
+        "id": "salvage-golem",
+        "name": "Salvage Golem",
+        "page": 139,
+        "cost": {
+          "glory": 4,
+          "ducats": null
+        },
+        "type": "special",
+        "factions": [
+          "new-antioch"
+        ],
+        "restrictions": "Limit 1; held in Arsenal, not allocated",
+        "text": "Helpful Servitor: at the end of each game the Warband receives an extra D6x5 ducats for each Salvage Golem in its Arsenal.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "smokescreen",
+        "name": "Smokescreen",
+        "page": 139,
+        "cost": {
+          "glory": 5,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "new-antioch"
+        ],
+        "restrictions": "Consumable, Limit 1",
+        "text": "Swathed in Smoke: at the start of a game after deployment, declare use; divide the battlefield into 4 equal quarters and name one; -1 DICE to Ranged Attacks whose line of sight crosses any part of that quarter.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": [
+            "CONSUMABLE"
+          ]
+        }
+      },
+      {
+        "id": "sniper-scope",
+        "name": "Sniper Scope",
+        "page": 140,
+        "cost": {
+          "glory": 2,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "new-antioch",
+          "iron-sultanate",
+          "heretic-legions"
+        ],
+        "restrictions": "Limit 2",
+        "text": "Enhanced Accuracy: when given to a model, choose 1 Ranged Weapon it already has with 'Rifle' in its name; that weapon gains IGNORE LONG RANGE. Cannot be reallocated in the Quartermaster Step.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "the-mark-of-cain",
+        "name": "The Mark of Cain",
+        "page": 141,
+        "cost": {
+          "glory": 4,
+          "ducats": null
+        },
+        "type": "equipment",
+        "factions": [
+          "heretic-legions"
+        ],
+        "restrictions": "ELITE only, Limit 1",
+        "text": "Retribution: if an ACTION by a model causes BLOOD MARKERS to be placed next to the bearer, place an equal number of BLOOD MARKERS next to the model that took the ACTION.",
+        "profile": {
+          "type": "Equipment",
+          "range": null,
+          "keywords": []
+        }
+      },
+      {
+        "id": "tormentor-chain",
+        "name": "Tormentor Chain",
+        "page": 141,
+        "cost": {
+          "glory": 3,
+          "ducats": null
+        },
+        "type": "weapon",
+        "factions": [
+          "heretic-legions"
+        ],
+        "restrictions": "Limit 2",
+        "text": "Dragged Forwards: on a Success/Critical, no Injury Roll; place 1 BLOOD MARKER on the target plus a second for SHRAPNEL, then move the target up to 12” in a straight line finishing as close as possible to the attacker (may move within 1” of an enemy, retreat, Climb, Jump, Jump Down; no Diving Charge). Deadly Embrace: enemy models within 1” of the bearer cannot retreat.",
+        "profile": {
+          "type": "1-Handed",
+          "range": "10”",
+          "keywords": [
+            "ASSAULT",
+            "IGNORE COVER",
+            "IGNORE LONG RANGE",
+            "SHRAPNEL"
+          ],
+          "keywordsNote": "Printed as 'IGNORE LONG, RANGE' (stray comma); read as IGNORE LONG RANGE."
+        }
+      },
+      {
+        "id": "trench-dog",
+        "name": "Trench Dog",
+        "page": 142,
+        "cost": {
+          "glory": 1,
+          "ducats": null,
+          "gloryRange": "1-3"
+        },
+        "type": "special",
+        "factions": [
+          "new-antioch",
+          "trench-pilgrims",
+          "iron-sultanate",
+          "heretic-legions",
+          "black-grail",
+          "the-court"
+        ],
+        "restrictions": "Limit 1; not available to Trench Ghost Warbands (Heretic Legions)",
+        "text": "Represented by a 25mm-base model. Loyal Hound: when given to a model, may give model and dog FIRETEAM for +1 glory. The Dogs of War: deployed after its owner; treated as a Warband model except it does not count for Morale Checks; if taken Out of Action roll for survival as a Troop; cannot be Promoted. Special Training: when given, may buy one ability for +1 glory: Guard Dog (not Black Grail or The Court): enemies cannot use INFILTRATOR to deploy within 12” of it. Hellhound (Fallen Warbands only): NEGATE FIRE; attacks have +1 DICE and GAS (Black Grail or Knights of Avarice) or +1 DICE and FIRE (other Warbands). Martyrdom Dog (Trench Pilgrims only): has a Martyrdom Device, triggered like an Ecclesiastic Prisoner. Mercy Dog (New Antioch only): has and can use a Medi-kit; may drag a Down friendly model (more than 1” from enemies) at half Movement, not when retreating or charging.",
+        "profile": {
+          "type": "Special",
+          "range": null,
+          "keywords": [
+            "DEPLOYABLE"
+          ]
+        },
+        "costBreakdown": {
+          "base": 1,
+          "fireteam": 1,
+          "specialTraining": 1
+        },
+        "model": {
+          "page": 143,
+          "name": "Trench Dog",
+          "movement": "8”/Infantry",
+          "ranged": null,
+          "melee": "+0 DICE",
+          "armour": 0,
+          "base": "25mm",
+          "battlekit": "none allowed",
+          "abilities": [
+            {
+              "name": "Four Paws",
+              "text": "+1 DICE to Risky Success Rolls when Climbing, Jumping or taking a Dash ACTION."
+            },
+            {
+              "name": "Pack Loyalty",
+              "text": "Has the same Faction Keyword as its owner."
+            },
+            {
+              "name": "Teeth and Claws",
+              "text": "Can make a Melee Attack without a Melee Weapon."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
