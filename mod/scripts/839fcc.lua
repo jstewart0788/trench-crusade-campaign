@@ -1,0 +1,3481 @@
+-- FTC-GUID: acae21,839fcc
+function none()
+end
+Yoffset=0.1
+
+toolButtonBorderThickness = 70
+
+-- TTS world buttons have no outline property, so use a larger backing button.
+function createToolButtonWithBorder(params, borderColor)
+    local border = {}
+    for k, v in pairs(params) do border[k] = v end
+    border.label = ""
+    border.font_size = 1
+    border.height = (params.height or 0) + toolButtonBorderThickness
+    border.width = (params.width or 0) + toolButtonBorderThickness
+    local resolvedBorderColor = borderColor or {0.1, 0.1, 0.1, 1}
+    border.color = resolvedBorderColor
+    border.hover_color = resolvedBorderColor
+    border.press_color = resolvedBorderColor
+    self.createButton(border)
+
+    local top = {}
+    for k, v in pairs(params) do top[k] = v end
+    top.position = {params.position[1], params.position[2] + 0.01, params.position[3]}
+    self.createButton(top)
+end
+
+local currentMat
+if self.getPosition().z < 0 then
+    currentMat="Blue"
+else
+    currentMat="Red"
+end
+
+local MM_TO_INCH = 0.0393701
+local MEASURING_RING_Y_OFFSET = 0.17
+local VALID_BASE_SIZES_IN_MM = {
+    {x = 25, z = 25},
+    {x = 28, z = 28},
+    {x = 30, z = 30},
+    {x = 32, z = 32},
+    {x = 40, z = 40},
+    {x = 50, z = 50},
+    {x = 55, z = 55},
+    {x = 60, z = 60},
+    {x = 65, z = 65},
+    {x = 80, z = 80},
+    {x = 90, z = 90},
+    {x = 100, z = 100},
+    {x = 130, z = 130},
+    {x = 160, z = 160},
+    {x = 25, z = 75},
+    {x = 75, z = 25},
+    {x = 35.5, z = 60},
+    {x = 60, z = 35.5},
+    {x = 40, z = 95},
+    {x = 95, z = 40},
+    {x = 52, z = 90},
+    {x = 90, z = 52},
+    {x = 70, z = 105},
+    {x = 105, z = 70},
+    {x = 92, z = 120},
+    {x = 120, z = 92},
+    {x = 95, z = 150},
+    {x = 150, z = 95},
+    {x = 109, z = 170},
+    {x = 170, z = 109}
+}
+
+clearAllDiceBtn={
+    label="Clear mat\n(right click)", click_function="clearDiceAll", function_owner=self,
+    position={-4.6, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=400,
+    font_size=60, color={0,0,0}, font_color={1,1,1}
+}
+
+rollAllBtn={
+    label="Roll all dice", tooltip="Roll all dice on the mat.", click_function="RollAllDice", function_owner=self,
+    position={-3.5, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=520,
+    font_size=60, color={1,1,1}, font_color={0,0,0}
+}
+
+orderedRollLabel = "Ordered roll"
+orderedRollTooltip = "Roll all dice, and display them in the order they're rolled in rather than by results."
+orderedRollBtn={
+    label=orderedRollLabel, tooltip=orderedRollTooltip, click_function="RollDiceOrdered", function_owner=self,
+    position={-2.4, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=520,
+    font_size=60, color={1,1,1}, font_color={0,0,0}
+}
+orderedRollGroup2Label = "In 2s"
+orderedRollGroup2Tooltip = "Roll all dice, and display them in the order they're rolled in rather than by results, grouped into 2s."
+orderedRollGroup2Btn={
+    label=orderedRollGroup2Label, tooltip=orderedRollGroup2Tooltip, click_function="RollDiceOrderedGroup2", function_owner=self,
+    position={-1.6, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={1,1,1}, font_color={0,0,0}
+}
+orderedRollGroup3Label = "In 3s"
+orderedRollGroup3Tooltip = "Roll all dice, and display them in the order they're rolled in rather than by results, grouped into 3s."
+orderedRollGroup3Btn={
+    label=orderedRollGroup3Label, tooltip=orderedRollGroup3Tooltip, click_function="RollDiceOrderedGroup3", function_owner=self,
+    position={-1.1, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={1,1,1}, font_color={0,0,0}
+}
+
+add1d6Btn={
+    label="+ 1d6", click_function="spawnDice1", function_owner=self,
+    tooltip="Left click: Spawns 1d6\nRight click: Quick-roll 1d6 (instant)",
+    position={-0.5, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add2d6Btn={
+    label="+ 2d6", click_function="spawnDice2", function_owner=self,
+    tooltip="Left click: Spawns 2d6\nRight click: Quick-roll 2d6 (instant)",
+    position={-0.03, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add3d6Btn={
+    label="+ 3d6", click_function="spawnDice3", function_owner=self,
+    tooltip="Left click: Spawns 3d6\nRight click: Quick-roll 3d6 (instant)",
+    position={0.44, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add4d6Btn={
+    label="+ 4d6", click_function="spawnDice4", function_owner=self,
+    tooltip="Left click: Spawns 4d6\nRight click: Quick-roll 4d6 (instant)",
+    position={0.91, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add5d6Btn={
+    label="+ 5d6", click_function="spawnDice5", function_owner=self,
+    tooltip="Left click: Spawns 5d6\nRight click: Quick-roll 5d6 (instant)",
+    position={1.38, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add10d6Btn={
+    label="+ 10d6", click_function="spawnDice10", function_owner=self,
+    tooltip="Spawns 10d6 dice",
+    position={1.85, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add25d6Btn={
+    label="+ 25d6", click_function="spawnDice25", function_owner=self,
+    tooltip="Spawns 25d6 dice",
+    position={2.32, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
+}
+add1d3Btn={
+    label="+ 1d3", click_function="spawnDice1d3", function_owner=self,
+    tooltip="Left click: Spawns 1d3\nRight click: Quick-roll 1d3 (instant)",
+    position={2.79, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    font_size=60, color={1,1,1}, font_color={0,0,0}
+}
+
+colorBtnDimension=150
+colorBtnOffset=3.2
+color1Btn={
+    label="", click_function="modifyMenu1", function_owner=self,
+    position={colorBtnOffset, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    font_size=60, color="Red", font_color={0,0,0}
+}
+color2Btn={
+    label="", click_function="modifyMenu2", function_owner=self,
+    position={colorBtnOffset+0.35, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    font_size=60, color="Blue", font_color={0,0,0}
+}
+color3Btn={
+    label="", click_function="modifyMenu3", function_owner=self,
+    position={colorBtnOffset+0.35*2, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    font_size=60, color="Black", font_color={0,0,0}
+}
+color4Btn={
+    label="", click_function="modifyMenu4", function_owner=self,
+    position={colorBtnOffset+0.35*3, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    font_size=60, color="Green", font_color={0,0,0}
+}
+-- Pip-colour toggle, sitting between the Green swatch and Dice+. Click flips every
+-- spawned die between white pips (Die_6_Rounded) and black pips (Die_6) through
+-- setDiceType(); revertRoll() also reads pipColorBtn.color. Its .index is assigned
+-- at runtime in onload (it's created last) so swapPipColor's editButton targets it.
+pipColorBtn=
+{
+  label="White", click_function="swapPipColor", function_owner=self,
+  position={colorBtnOffset + 0.35 * 4 + 0.1, Yoffset, -0.87}, rotation={0, 0, 0}, height=50, width=250,
+  font_size=60, color="White", font_color="Black"
+}
+
+-- "Dice+" sits to the right of the pip toggle. It expands a second row of extra
+-- dice colours below the Red/Blue/Black/Green swatches, and collapses (destroys)
+-- them when clicked again.
+dicePlusBtn={
+  label="Dice+", tooltip="Show/hide extra dice colours", click_function="toggleDicePlus", function_owner=self,
+  position={colorBtnOffset + 0.35 * 4 + 0.6, Yoffset, -0.87}, rotation={0, 0, 0}, height=50, width=250,
+  font_size=60, color={1, 1, 1}, font_color={0, 0, 0}
+}
+
+-- Extra colour squares revealed by Dice+. Same X as the four base swatches, Z
+-- dropped by 1.5 so they form a second row. Created/destroyed on toggle.
+dicePlusExpanded = false
+-- Button positions are in the mat's LOCAL space and the mat is scaled 3.75x, so a
+-- local Z step of 0.4 lands ~1.5 world units apart (0.4 * 3.75). Row 1 sits below
+-- the base swatches; row 2 another equal step further out.
+-- Colours are tuned to a mid luminance band (~WCAG 0.12-0.30) so each die stays
+-- legible with EITHER white or black pips: dark hues are lifted, light hues are
+-- muddied (e.g. yellow -> mustard) since a vivid light colour can't hold white pips.
+dicePlusColors = {
+    -- Row 1 (Z = -1.27)
+    { fn = "dicePlusPurple",   color = {0.5569, 0.2667, 0.6784}, x = colorBtnOffset,           z = -0.87 - 0.4, tip = "Purple #8E44AD" },
+    { fn = "dicePlusYellow",   color = {0.6510, 0.5255, 0.0392}, x = colorBtnOffset + 0.35,     z = -0.87 - 0.4, tip = "Mustard #A6860A" },
+    { fn = "dicePlusTeal",     color = {0.9922, 0.8157, 0.0706}, x = colorBtnOffset + 0.35 * 2, z = -0.87 - 0.4, tip = "Yellow #FDD012" },
+    { fn = "dicePlusOrange",   color = {0.8000, 0.4196, 0.1176}, x = colorBtnOffset + 0.35 * 3, z = -0.87 - 0.4, tip = "Orange #CC6B1E" },
+    { fn = "dicePlusSlate",    color = {0.4392, 0.5020, 0.5647}, x = colorBtnOffset + 0.35 * 4, z = -0.87 - 0.4, tip = "Slate Gray #708090" },
+    { fn = "dicePlusSteel",    color = {0.2745, 0.5098, 0.7059}, x = colorBtnOffset + 0.35 * 5, z = -0.87 - 0.4, tip = "Steel Blue #4682B4" },
+    -- Row 2 (Z = -1.67)
+    { fn = "dicePlusBordeaux", color = {0.9922, 0.9137, 0.7490}, x = colorBtnOffset,           z = -0.87 - 0.8, tip = "Beige #FDE9BF" },
+    { fn = "dicePlusAzure",    color = {0.0784, 0.5804, 0.5373}, x = colorBtnOffset + 0.35,     z = -0.87 - 0.8, tip = "Turquoise #149489" },
+    { fn = "dicePlusLtBrown",  color = {0.6275, 0.4157, 0.2353}, x = colorBtnOffset + 0.35 * 2, z = -0.87 - 0.8, tip = "Light Brown #A06A3C" },
+    { fn = "dicePlusDkGold",   color = {0.7961, 0.2902, 0.5451}, x = colorBtnOffset + 0.35 * 3, z = -0.87 - 0.8, tip = "Pink #CB4A8B" },
+    { fn = "dicePlusOlive",    color = {0.4196, 0.5569, 0.1373}, x = colorBtnOffset + 0.35 * 4, z = -0.87 - 0.8, tip = "Olive #6B8E23" },
+    { fn = "dicePlusIndigo",   color = {0.3529, 0.3098, 0.8118}, x = colorBtnOffset + 0.35 * 5, z = -0.87 - 0.8, tip = "Indigo #5A4FCF" },
+}
+
+-- Generate one click handler per swatch from the table above, so each colour is
+-- defined in exactly one place (the handler and the button share dicePlusColors).
+for _, dpc in ipairs(dicePlusColors) do
+    _G[dpc.fn] = function() modifyMenu(dpc.color) end
+end
+
+customDiceBtn={
+    label="Custom Dice", click_function="customDice", function_owner=self,
+    position={colorBtnOffset+0.35*9, Yoffset ,-0.85}, rotation={0,0,0}, height=50, width=420,
+    font_size=60, color={1,1,1}, font_color={0,0,0}
+}
+
+clearDiceBtnIncrement=0.28
+clearDiceBtnLabel="Del\n"
+clearDiceBtntooltip="LMB Delete this row\nRMB Delete this row and lowers/uppers"
+clearDiceBtn={
+    label=clearDiceBtnLabel, tooltip=clearDiceBtntooltip, click_function="filledInLater", function_owner=self,
+    position={-5.8, Yoffset ,-0.85}, rotation={0,0,0}, height=1000, width=1300, scale={0.1,0.1,0.1},
+    font_size=350, color="Black", font_color="Red"
+}
+
+rollOrSelectDiceBtn={
+    label="filled in later", tooltip="filled in later", click_function="filledInLater", function_owner=self,
+    position={-5.45, Yoffset ,-0.85}, rotation={0,0,0}, height=1000, width=1300, scale={0.1,0.1,0.1},
+    font_size=350, color="White", font_color={0,0,0}
+}
+
+lowerUpper=true
+oneTimeUpper=true
+lowerSign=" (-)"
+upperSign=" (+)"
+lowerUpperBtn={
+    label="RMB\n- / +", tooltip="Changes to upper for the next click", click_function="toggleLowerUpper", function_owner=self,
+    position={-5.62, Yoffset ,1.1}, rotation={0,0,0}, height=1000, width=2800, scale={0.1,0.1,0.1},
+    font_size=500, color="White", font_color={0,0,0}
+}
+
+warningLbl="NO FAST REPETITIONS"
+warningLbl=""
+warningBtn={
+    label=warningLbl, click_function="modifyMenu4", function_owner=self,
+    position={-1.75, Yoffset ,-0.67}, rotation={0,0,0}, height=0, width=0,
+    font_size=50, color="White", font_color="Red"
+}
+
+lowerUpper=true
+oneTimeUpper=true
+lethalButtonsOffset = -4.2
+
+lethalLabel = "Lethal Hits"
+lethalTip   = "Left-click: move dice >= 6. Right-click: move dice >= 5."
+lethalHitsBtn={
+    label=lethalLabel, tooltip=lethalTip, click_function="lethalHitsAction", function_owner=self,
+    position={lethalButtonsOffset, Yoffset ,1.1}, rotation={0,0,0}, height=1000, width=2800, scale={0.1,0.1,0.1},
+    font_size=500, color="White", font_color={0,0,0}
+}
+
+susLabel = "Sustained Hits"
+susTip   = "Left-click: move dice >= 6. Right-click: move dice >= 5."
+sustainedHitsBtn={
+    label=susLabel, tooltip=susTip, click_function="sustainedHitsAction", function_owner=self,
+    position={lethalButtonsOffset + 0.705, Yoffset ,1.1}, rotation={0,0,0}, height=1000, width=3800, scale={0.1,0.1,0.1},
+    font_size=500, color="White", font_color={0,0,0}
+}
+
+susLethalLabel = "Sustained & Lethal"
+susLethalTip   = "Left-click: move dice >= 6. Right-click: move dice >= 5. Applies to sustained and lethal combined."
+
+sustainedLethalHitsBtn = {
+    label=susLethalLabel, tooltip=susLethalTip, click_function="sustainedLethalHitsAction", function_owner=self,
+    position={lethalButtonsOffset + 1.61, Yoffset ,1.1}, rotation={0,0,0}, height=1000, width=4800, scale={0.1,0.1,0.1},
+    font_size=500, color="White", font_color={0,0,0}
+}
+copyOthersDiceBtn = {
+    tooltip="Copy opposite player's dice",
+    click_function = "importOpposDice",
+    function_owner = self,
+    position       = {-7.5, Yoffset, 0.86},
+    rotation       = { 0, 0, 0 },
+    width = 1300, height = 300, font_size = 150,
+    color = (currentMat == "Red" and "Blue" or "Red"), -- Button changes color based on current player
+    font_color = {1, 1, 1}, -- White text for high contrast
+    hover_color = (currentMat == "Red") and {0, 0, 1, 1} or {1, 0, 0, 1},
+    label = (currentMat == "Red") and "Copy Blue's Dice" or "Copy Red's Dice",
+    press_color = {0.27, 0.27, 0.27, 1},
+    scale = {0.5, 0.5, 0.5}
+}
+
+savePositionLabel = "Save"
+saveBtn={
+    label=savePositionLabel, tooltip=savePositionTip, click_function="save", function_owner=self,
+    position={-7.5, Yoffset ,-0.84}, rotation={0,0,0},
+    width = 1300, height = 300, font_size = 150,
+    color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
+    font_color = {1, 1, 1}, -- White text for high contrast
+    hover_color = {0.2, 0.2, 0.2, 1}, -- Dark gray when hovered
+    press_color = {0.27, 0.27, 0.27, 1}, -- Slightly lighter gray when pressed
+    scale = {0.5, 0.5, 0.5}
+}
+restorePositionLabel = "Restore Position"
+restoreBtn={
+    label=restorePositionLabel, click_function="restore", function_owner=self,
+    position={-7.5, Yoffset ,-0.50}, rotation={0,0,0},
+    width = 1300, height = 300, font_size = 150,
+    color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
+    font_color = {1, 1, 1}, -- White text for high contrast
+    hover_color = {0.2, 0.2, 0.2, 1}, -- Dark gray when hovered
+    press_color = {0.27, 0.27, 0.27, 1}, -- Slightly lighter gray when pressed
+    scale = {0.5, 0.5, 0.5}
+}
+
+gap2Btn={
+    label='1"/2" Gap', tooltip='LMB: 1" Gap\nRMB: 2" Gap', click_function='arrangeModelsWithGap', function_owner=self,
+    position={-6.24, Yoffset ,-1.65}, rotation={0,0,0}, height=1000, width=3200, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+clearMeasureAllBtn={
+    label='Clear Bubbles', tooltip='LEFT CLICK: Clear all measuring bubbles from the table\nRIGHT CLICK: Clear all measuring bubbles from highlighted objects only', click_function='clearMeasuringCircles', function_owner=self,
+    position={-7.93, Yoffset ,-1.65}, rotation={0,0,0}, height=1000, width=4200, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+clearLinesBtn={
+    label='Clear Lines', tooltip='Clear all hand-drawn lines, keep measuring bubbles', click_function='clearHandDrawnLines', function_owner=self,
+    position={-7.03, Yoffset ,-1.65}, rotation={0,0,0}, height=1000, width=4200, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+
+checkCoherencyBtn={
+    label='Coherency', tooltip='LEFT CLICK: Show coherency of selected models\n RIGHT CLICK: Toggle off lines\nDrawing new lines will be weird while this is on', click_function='checkCoherency', function_owner=self,
+    position={-7.20, Yoffset ,-1.15}, rotation={0,0,0}, height=1000, width=3300, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+engagementRangeBtn={
+    label='Engagement', tooltip='LEFT CLICK: Highlight every model within 2" of the selected model(s) for 60s\nRIGHT CLICK: Clear the highlights now', click_function='showEngagementRange', function_owner=self,
+    position={-7.97, Yoffset ,-1.15}, rotation={0,0,0}, height=1000, width=3800, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+highlightBtn={
+    label='Highlight', tooltip='LEFT CLICK: Highlight the selected model(s) in the swatch color (permanent)\nRIGHT CLICK: Remove ALL highlights from every object on the table', click_function='applyHighlightPaint', function_owner=self,
+    position={-6.50, Yoffset ,-1.15}, rotation={0,0,0}, height=1000, width=3100, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+-- Colour swatch for the Highlight button. Its face IS the currently chosen
+-- colour; clicking cycles the palette (recoloured live via refreshHighlightSwatch).
+highlightSwatchBtn={
+    label='', tooltip='Highlight color\nLEFT CLICK: next color\nRIGHT CLICK: previous color', click_function='cycleHighlightColor', function_owner=self,
+    position={-6.02, Yoffset ,-1.15}, rotation={0,0,0}, height=1000, width=1000, scale={0.1,0.1,0.1},
+    font_size=700, color={1,1,0}, font_color={0,0,0}
+}
+
+measure1Btn={
+    label='1"', tooltip='Toggle 1" bubble', click_function='toggle1Bubble', function_owner=self,
+    position={-8.23, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure2Btn={
+    label='2"', tooltip='Toggle 2" bubble', click_function='toggle2Bubble', function_owner=self,
+    position={-7.93, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure3Btn={
+    label='3"', tooltip='Toggle 3" bubble', click_function='toggle3Bubble', function_owner=self,
+    position={-7.63, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure6Btn={
+    label='6"', tooltip='Toggle 6" bubble', click_function='toggle6Bubble', function_owner=self,
+    position={-7.33, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure8Btn={
+    label='8"', tooltip='Toggle 8" bubble', click_function='toggle8Bubble', function_owner=self,
+    position={-7.03, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure9Btn={
+    label='9"', tooltip='Toggle 9" bubble', click_function='toggle9Bubble', function_owner=self,
+    position={-6.73, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure12Btn={
+    label='12"', tooltip='Toggle 12" bubble', click_function='toggle12Bubble', function_owner=self,
+    position={-6.41, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1600, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+measure15Btn={
+    label='15"', tooltip='Toggle 15" bubble', click_function='toggle15Bubble', function_owner=self,
+    position={-6.07, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1600, scale={0.1,0.1,0.1},
+    font_size=700, color='White', font_color={0,0,0}
+}
+
+-- Custom Bubble Input BG
+customBubbleInputBG = {
+    label = "", click_function = "none", function_owner = self,
+    position = {-5.78, Yoffset, -1.40}, rotation = {0, 0, 0},
+    width = 1100, height = 1000, font_size = 100,
+    color = {0.95, 0.95, 0.95, 1},
+    scale = {0.1, 0.1, 0.1}
+}
+
+-- Custom Bubble Input Field
+customBubbleInput = {
+    label = "Size", input_function = "setCustomBubbleSize", function_owner = self,
+    position = {-5.78, Yoffset, -1.40}, rotation = {0, 0, 0},
+    width = 900, height = 800, font_size = 500, alignment = 3, scale = {0.1, 0.1, 0.1},
+    color = {1, 1, 1, 1}, font_color = {0.2, 0.2, 0.2}
+}
+
+-- Custom Bubble Button
+-- LEFT CLICK applies the size typed in the on-mat input box.
+-- RIGHT CLICK (alt) opens the on-screen size overlay; 0 or a blank value there
+-- clears the bubbles on the selected models.
+customBubbleBtn = {
+    label = "Go", tooltip = "LEFT CLICK: apply size from the box\nRIGHT CLICK: on-screen size entry (0/blank clears selected)", click_function = "applyCustomBubble", function_owner = self,
+    position = {-5.58, Yoffset, -1.40}, rotation = {0, 0, 0},
+    width = 800, height = 1000, font_size = 500,
+    color = {0.13, 0.13, 0.13, 1}, font_color = {1, 1, 1},
+    hover_color = {0.2, 0.2, 0.2, 1},
+    scale = {0.1, 0.1, 0.1}
+}
+
+function save(obj, player_color, alt)
+    local selected = Player[player_color].getSelectedObjects()
+    if not selected or #selected == 0 then
+        printToColor("Please first select a model to save its position", player_color)
+        return
+    end
+
+    -- Reset and capture all selected objects in one go
+    savedPositions = {}
+    for _, o in ipairs(selected) do
+        table.insert(savedPositions, {
+            guid     = o.getGUID(),
+            position = o.getPosition(),
+            rotation = o.getRotation()
+        })
+    end
+
+    -- Announce on screen (centre) and in chat for everyone, tinted by the saving
+    -- player's seat colour (Blue for blue, Red for red, Yellow, Grey, ...).
+    broadcastToAll(#savedPositions .. " objects saved", player_color)
+end
+
+function restore(playerColor)
+  if not savedPositions or #savedPositions == 0 then
+    broadcastToColor("No saved positions to restore.", playerColor, {1, 0.5, 0})
+    return
+  end
+
+  for i, v in ipairs(savedPositions) do
+    local obj = getObjectFromGUID(v.guid)
+    if obj ~= nil then
+      obj.setRotation(v.rotation)
+      obj.setPositionSmooth(v.position, false, true)
+    end
+  end
+end
+
+local auto2D6 = {
+    label          = "Show/Hide UI",
+    tooltip="Show or hide your VP overlay",
+    click_function = "toggleHudOverlay",
+    function_owner = self,
+    position       = {-7.5, Yoffset, 0.52},
+    rotation       = { 0, 0, 0 },
+    width = 1300, height = 300, font_size = 150,
+    color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
+    font_color = {1, 1, 1}, -- White text for high contrast
+    hover_color = {0.2, 0.2, 0.2, 1}, -- Dark gray when hovered
+    press_color = {0.27, 0.27, 0.27, 1}, -- Slightly lighter gray when pressed
+    scale = {0.5, 0.5, 0.5}
+}
+
+
+local revertRollBtn = {
+    label          = "Revert Roll",
+    tooltip="It takes 1 second after rolling to 'lock in'",
+    click_function = "revertRoll",
+    function_owner = self,
+    position       = {-7.5, Yoffset, 0.18},
+    rotation       = { 0, 0, 0 },
+    width = 1300, height = 300, font_size = 150,
+    color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
+    font_color = {1, 1, 1}, -- White text for high contrast
+    hover_color = {0.2, 0.2, 0.2, 1}, -- Dark gray when hovered
+    press_color = {0.27, 0.27, 0.27, 1}, -- Slightly lighter gray when pressed
+    scale = {0.5, 0.5, 0.5}
+}
+
+-- Modern Black "Last 5 Rolls" Button
+local customDiceSpawnButton = {
+    label = "Last 5 Rolls", click_function = "callLast5Rolls", function_owner = self,
+    position = {-7.5, Yoffset, -0.16}, rotation = {0, 0, 0},
+    width = 1300, height = 300, font_size = 150,
+    color = {0.13, 0.13, 0.13, 1},
+    font_color = {1, 1, 1},
+    hover_color = {0.2, 0.2, 0.2, 1},
+    press_color = {0.27, 0.27, 0.27, 1},
+    scale = {0.5, 0.5, 0.5}
+}
+
+lethalHitsThreshold = 6
+sustainedHitsThreshold = 6
+sustainedLethalHitsThreshold = 6
+
+selectedColor = "White"
+diceType = "Die_6_Rounded"
+customDiceImage = nil
+scaleBtn = 0.1
+previousRollData = {}
+previousRollStack = {}
+previousRollIndex = 0
+maxPreviousRolls = 10
+-- Resolved by initRoller once Global is ready (this script can load before
+-- Global's onLoad has set the *_GUID variables).
+rollerGUID = nil
+roller = nil
+
+-- Defer a callback until Global's onLoad has run (it sets FTC_Global_Ready
+-- last). After 10s run it anyway rather than hang a broken load forever.
+function whenGlobalReady(callback)
+    Wait.condition(callback, function()
+        return Global.getVar("FTC_Global_Ready") == true
+    end, 10, callback)
+end
+
+function initRoller()
+    rollerGUID = Global.getVar("redCustomDiceRoller_GUID")
+    if self.guid == Global.getVar("blueCustomDiceMat_GUID") then
+        rollerGUID = Global.getVar("blueCustomDiceRoller_GUID")
+    end
+    -- rollerGUID is nil when a click races Global's onLoad (resolveRoller calls
+    -- this lazily); getObjectFromGUID(nil) would error out of the click handler.
+    roller = rollerGUID and getObjectFromGUID(rollerGUID) or nil
+end
+
+function resolveRoller()
+    if not roller then
+        initRoller()
+    end
+    return roller
+end
+
+lastClickTimestamp = 0
+
+local function nowSeconds()
+    if Time and Time.time then
+        return Time.time
+    end
+    return os.clock()
+end
+
+-- Ignore Roll All presses for 0.2 seconds after an accepted press, then coalesce
+-- the accepted press for 0.1 seconds before scanning resting dice.
+rollAllPending = { scheduled = false, player = nil }
+local rollAllDelay = 0.1
+local rollAllCooldown = 0.2
+local lastRollAllTimestamp = -math.huge
+
+local function scheduleRollAll(player)
+    local currentTime = nowSeconds()
+    if currentTime - lastRollAllTimestamp < rollAllCooldown then
+        return
+    end
+    lastRollAllTimestamp = currentTime
+    rollAllPending.player = player
+    if rollAllPending.scheduled then
+        return
+    end
+    rollAllPending.scheduled = true
+    Wait.time(function()
+        local queuedPlayer = rollAllPending.player
+        rollAllPending.scheduled = false
+        rollAllPending.player = nil
+        if queuedPlayer then
+            Player[queuedPlayer].clearSelectedObjects()
+        end
+        local dice = getDice()
+        if #dice > 0 then
+            moveDiceToRoller(queuedPlayer or player, dice)
+        end
+    end, rollAllDelay)
+end
+
+function importOpposDice(obj, player, alt)
+    -- clear existing dice
+    for _, d in ipairs(getDice()) do d.destroy() end
+
+    -- get opposite mat and its bounds
+    local oppMatGUID = (currentMat=="Red")
+        and Global.getVar("blueCustomDiceMat_GUID")
+        or   Global.getVar("redCustomDiceMat_GUID")
+    local oppMat = getObjectFromGUID(oppMatGUID)
+    if not oppMat then
+        printToColor("Opposite dice mat not found.", player, "Orange")
+        return
+    end
+    local mb = oppMat.getBounds()
+    local mL, mR = mb.center.x - mb.size.x/2, mb.center.x + mb.size.x/2
+    local mLo, mUp = mb.center.z - mb.size.z/2, mb.center.z + mb.size.z/2
+    local mYl, mYh = mb.center.y - mb.size.y/2, mb.center.y + mb.size.y/2 + 3
+
+    -- get opposite lethal zone and its bounds
+    local oppLethalGUID = (currentMat=="Red")
+        and Global.getVar("blueLethalHits_GUID")
+        or   Global.getVar("redLethalHits_GUID")
+    local oppLethal = getObjectFromGUID(oppLethalGUID)
+    local lb, lL, lR, lLo, lUp, lYl, lYh
+    if oppLethal then
+        lb = oppLethal.getBounds()
+        lL, lR = lb.center.x - lb.size.x/2, lb.center.x + lb.size.x/2
+        lLo, lUp = lb.center.z - lb.size.z/2, lb.center.z + lb.size.z/2
+        lYl, lYh = lb.center.y - lb.size.y/2, lb.center.y + lb.size.y/2 + 3
+    else
+        printToColor("Warning: opposite lethal zone not found.", player)
+    end
+
+    local toImport = {}
+    local seen = {}
+
+    -- gather dice: check lethal zone first, then main mat
+    for _, o in ipairs(getAllObjects()) do
+        if o.tag=="Dice" and o.resting then
+            local p = o.getPosition()
+            -- lethal zone?
+            if lb
+            and p.x > lL and p.x < lR
+            and p.z > lLo and p.z < lUp
+            and p.y > lYl and p.y < lYh
+            then
+                seen[o.getGUID()] = true
+                table.insert(toImport, { die=o, origin=lb.center, lethal=true })
+            -- main mat (excluding any already seen in lethal)
+            elseif p.x > mL and p.x < mR
+            and p.z > mLo and p.z < mUp
+            and p.y > mYl and p.y < mYh
+            and not seen[o.getGUID()]
+            then
+                seen[o.getGUID()] = true
+                table.insert(toImport, { die=o, origin=mb.center, lethal=false })
+            end
+        end
+    end
+
+    if #toImport == 0 then
+        printToColor("No dice found on the opposite mat.", player, "Yellow")
+        return
+    end
+
+    -- clone into this mat: shift lethal dice by (-3, -3) in X/Z
+    local mc = self.getBounds().center
+    local count = 0
+    for _, entry in ipairs(toImport) do
+        local dp = entry.die.getPosition()
+        local cb = entry.origin
+        local relX, relY, relZ = -(dp.x - cb.x), dp.y - cb.y, -(dp.z - cb.z)
+        local nx, ny, nz = mc.x + relX, mc.y + relY, mc.z + relZ
+        if entry.lethal then
+            local dx = (currentMat == "Red") and -6 or 6
+            local dz = (currentMat == "Red") and 4.2 or -4.2
+            nx = nx + dx
+            nz = nz + dz
+        end
+        entry.die.clone({ position={nx, ny, nz}, snap_to_grid=false })
+        count = count + 1
+    end
+
+    printToAll("Imported "..count.." dice from the opposite mat, including lethal hits.", {1,1,1})
+end
+
+
+
+function storeCurrentDiceAsPreviousRoll()
+    -- Build a snapshot of the current dice on the mat (positions, values, tints)
+    local snapshot = {}
+    for _, die in ipairs(getDice()) do
+        local c = die.getCustomObject()
+        local d = {
+            pos  = die.getPosition(),
+            rot  = die.getRotation(),
+            val  = die.getValue(),
+            tint = die.getColorTint(),
+            customImage = nil
+        }
+        if c then d.customImage = c.image end
+        table.insert(snapshot, d)
+    end
+
+    -- If we've undone some rolls and then store a new roll, drop any future redo history
+    if previousRollIndex < #previousRollStack then
+        for i = #previousRollStack, previousRollIndex + 1, -1 do
+            table.remove(previousRollStack, i)
+        end
+    end
+
+    table.insert(previousRollStack, snapshot)
+    -- Trim stack to maximum size
+    while #previousRollStack > maxPreviousRolls do
+        table.remove(previousRollStack, 1)
+    end
+    previousRollIndex = #previousRollStack
+    previousRollData = previousRollStack[previousRollIndex] or {}
+end
+
+function revertRoll(obj, player, alt)
+    -- Undo one step in the previousRollStack. Use previousRollIndex to track position.
+    if previousRollIndex == 0 or not previousRollStack or #previousRollStack == 0 then
+        printToColor("No previous roll found.", player, "Red")
+        return
+    end
+
+    local snapshot = previousRollStack[previousRollIndex]
+    if not snapshot or #snapshot == 0 then
+        printToColor("No previous roll data available.", player, "Red")
+        return
+    end
+
+    -- Destroy current dice and spawn snapshot dice
+    for _, die in ipairs(getDice()) do die.destroy() end
+    for _, data in ipairs(snapshot) do
+        local diceTypeToSpawn = "Die_6_Rounded"
+        if data.customImage then
+            diceTypeToSpawn = "Custom_Dice"
+        elseif pipColorBtn.color == "Black" then
+            diceTypeToSpawn = "Die_6"
+        end
+        local spawned = spawnObject({ type = diceTypeToSpawn, position = data.pos, rotation = data.rot })
+        if data.customImage then spawned.setCustomObject({ image = data.customImage, type = 1 }) end
+        spawned.setColorTint(data.tint)
+        spawned.setValue(data.val)
+    end
+
+    printToColor("Reverted to roll #" .. tostring(previousRollIndex) .. " of " .. tostring(#previousRollStack), player, "Green")
+    -- Move pointer back so another click reverts another step
+    previousRollIndex = math.max(0, previousRollIndex - 1)
+    previousRollData = previousRollStack[previousRollIndex] or {}
+end
+
+function moveDiceToRoller(color, dice)
+    if #dice == 0 then return false end
+    local activeRoller = resolveRoller()
+    if not activeRoller then
+        printToColor("Dice roller is still loading. Try again in a moment.", color, "Yellow")
+        return false
+    end
+    activeRoller.call("setPlayerColor", { color = color })
+    local rollId = activeRoller.call("beginRollBatch", {
+        color = color,
+        count = #dice,
+    })
+    if not rollId then
+        printToAll("Dice roller busy: roll was not started. No dice were moved.", {1, 0.5, 0})
+        return false
+    end
+    -- Re-rolled dice are no longer lethal hits; drop them from lethal tracking so
+    -- a later "clear mat" can't reach back and destroy them wherever they end up.
+    forgetLethalHitsForDice(dice)
+    for _, die in ipairs(dice) do
+        activeRoller.call("setLastHolder", { obj = die, color = color, rollId = rollId })
+        activeRoller.putObject(die)
+    end
+
+    storeCurrentDiceAsPreviousRoll()
+    return true
+end
+
+-- Evaluate a simple arithmetic expression safely (digits, + - * / and parentheses)
+-- Returns number on success, or nil + error message on failure
+
+
+
+-- Reset the last spawn position and dice count when the dice area is cleared
+function callLast5Rolls(obj, player, alt)
+    local r = resolveRoller()
+    if r then
+        r.call("printLast5Innovative")
+    end
+end
+
+-- Bounds of the current mat's lethal-hits zone object, or nil if not found.
+-- Single source of truth: getDice() EXCLUDES dice in this box and
+-- cleanupLethalHits() DESTROYS dice in this box, so they must agree on what
+-- "in the zone" means -- otherwise a die can fall between the two (excluded
+-- from clearing, not recognised for cleanup) and become unclearable.
+local function getLethalZoneBounds()
+    local guid = (currentMat == "Red")
+        and Global.getVar("redLethalHits_GUID")
+        or   Global.getVar("blueLethalHits_GUID")
+    local zone = getObjectFromGUID(guid)
+    if not zone then return nil end
+    local lb = zone.getBounds()
+    return {
+        minx = lb.center.x - lb.size.x/2, maxx = lb.center.x + lb.size.x/2,
+        minz = lb.center.z - lb.size.z/2, maxz = lb.center.z + lb.size.z/2,
+        miny = lb.center.y - lb.size.y/2, maxy = lb.center.y + lb.size.y/2,
+    }
+end
+
+local function isInBounds(p, b)
+    return b ~= nil
+        and p.x > b.minx and p.x < b.maxx
+        and p.z > b.minz and p.z < b.maxz
+        and p.y > b.miny and p.y < b.maxy
+end
+
+-- Dice on this mat: settled (resting), not held, and outside the lethal zone.
+function getDice()
+    local dice = {}
+    local b = self.getBounds()
+    local left  = b.center.x - b.size.x/2
+    local right = b.center.x + b.size.x/2
+    local back  = b.center.z - b.size.z/2
+    local front = b.center.z + b.size.z/2
+    local ybot  = b.center.y - b.size.y/2
+    local ytop  = b.center.y + b.size.y/2 + 3
+
+    if currentMat == "Red" then
+        right = right - 5
+        back  = back  + 2.9
+        front = front - 0.5
+    else
+        left  = left  + 5
+        back  = back  + 0.5
+        front = front - 2.9
+    end
+
+    local lbound = getLethalZoneBounds()
+
+    for _, o in ipairs(getAllObjects()) do
+        if o.tag == "Dice" and o.resting and o.held_by_color == nil then
+            local p = o.getPosition()
+            if p.x > left and p.x < right
+            and p.z > back and p.z < front
+            and p.y > ybot and p.y < ytop
+            and not isInBounds(p, lbound)
+            then
+                table.insert(dice, o)
+            end
+        end
+    end
+
+    return dice
+end
+
+
+
+function customDice(obj, player, alt)
+    found = false
+    newImage = nil
+    newTint = nil
+
+    dice = getDice()
+    for _, die in ipairs(dice) do
+        local image = die.getCustomObject()["image"]
+        if image ~= nil then
+            found = true
+            newTint = die.getColorTint()
+            newImage = image
+            printToColor("You have set a custom die!", player, "Yellow")
+            break
+        else
+            found = true
+            newTint = die.getColorTint()
+            printToColor("You have set a custom colour!", player, "Yellow")
+        end
+    end
+
+    if found then
+        customDiceImage = newImage
+        selectedColor = newTint
+        setDiceType()
+    end
+end
+
+function toggleLowerUpper()
+    setLowerUpper(not lowerUpper)
+end
+
+function setLowerUpper( value )
+    lowerUpper= value
+    modifyBtns()
+end
+
+function modifyBtns()
+    local sign=""
+    for i=1, 6 do
+        if lowerUpper then sign = lowerSign else sign = upperSign end
+        self.editButton({ index = (17+i*2), label = clearDiceBtnLabel .. i .. sign })
+        self.editButton({ index = (18+i*2), label = "Roll\n" .. i .. sign })
+    end
+end
+
+-- Reached via obj.call from the "Roll All Dice" hotkey so the right player's
+-- mat handles the roll (each mat scans its own bounds in getDice()).
+function hotkeyRollAllDice(params)
+    RollAllDice(nil, params.playerColor, false)
+end
+
+-- Reached via obj.call from the "Clear Mat" hotkey. alt=true bypasses the
+-- "Use right click!" guard in clearDiceAll so a single keypress clears.
+function hotkeyClearMat(params)
+    clearDiceAll(nil, params.playerColor, true)
+end
+
+function RollAllDice(obj, player, alt)
+    scheduleRollAll(player)
+end
+
+function RollDiceOrdered(_, player, _)
+    Player[player].clearSelectedObjects()
+    local activeRoller = resolveRoller()
+    if not activeRoller then
+        printToColor("Dice roller is still loading. Try again in a moment.", player, "Yellow")
+        return
+    end
+    activeRoller.setVar("orderedOnNextRoll", true)
+    moveDiceToRoller(player, getDice())
+end
+
+function RollDiceOrderedGroup2(obj, player, alt)
+    local activeRoller = resolveRoller()
+    if not activeRoller then
+        printToColor("Dice roller is still loading. Try again in a moment.", player, "Yellow")
+        return
+    end
+    activeRoller.setVar("groupSizeOnNextRoll", 2)
+    RollDiceOrdered(obj, player, alt)
+end
+
+function RollDiceOrderedGroup3(obj, player, alt)
+    local activeRoller = resolveRoller()
+    if not activeRoller then
+        printToColor("Dice roller is still loading. Try again in a moment.", player, "Yellow")
+        return
+    end
+    activeRoller.setVar("groupSizeOnNextRoll", 3)
+    RollDiceOrdered(obj, player, alt)
+end
+
+function RollOrSelectDeleteDice1(obj, color, alt)
+    SelectDeleteDiceX("Sel", 1, alt, lowerUpper, color)
+end
+function RollOrSelectDeleteDice2(obj, color, alt)
+    SelectDeleteDiceX("Sel", 2, alt, lowerUpper, color)
+end
+function RollOrSelectDeleteDice3(obj, color, alt)
+    SelectDeleteDiceX("Sel", 3, alt, lowerUpper, color)
+end
+function RollOrSelectDeleteDice4(obj, color, alt)
+    SelectDeleteDiceX("Sel", 4, alt, lowerUpper, color)
+end
+function RollOrSelectDeleteDice5(obj, color, alt)
+    SelectDeleteDiceX("Sel", 5, alt, lowerUpper, color)
+end
+function RollOrSelectDeleteDice6(obj, color, alt)
+    SelectDeleteDiceX("Sel", 6, alt, lowerUpper, color)
+end
+
+function SelectDeleteDiceX(action, n, selectOthers, lowUp, color)
+    Player[color].clearSelectedObjects()
+    selDel = true
+    if action == "Del" then selDel = false end
+    local counter = {0,0,0,0,0,0}
+    local numberName = {"ones", "twos", "threes", "fours", "fives", "sixes"}
+    local text = Player[color].steam_name .. " deleted "
+    local somethingToPrint = false
+
+    for i, die in ipairs(getDice()) do
+        if die.getValue() == n or (selectOthers and lowUp and die.getValue()< n)  or (selectOthers and not lowUp and die.getValue()> n) then
+            if selDel then
+                die.addToPlayerSelection(color)
+            else
+                die.destroy()
+                counter[die.getValue()]=counter[die.getValue()]+1
+            end
+
+        end
+    end
+
+    for i, val in ipairs(counter) do
+        if val > 0 then
+            text = text.." \u{00B7} " .. counter[i] .. " " .. numberName[i]
+            somethingToPrint = true
+        end
+    end
+    if somethingToPrint then printToAll(text , "Yellow") end
+    if oneTimeUpper then setLowerUpper( true ) end
+
+    if selDel then
+        moveDiceToRoller(color, Player[color].getSelectedObjects())
+    end
+end
+
+function clearDiceAll(obj, color, alt)
+    if not alt then
+        printToColor("Use right click!", color, "Orange")
+        return
+    end
+    cleanupLethalHits()
+    clearDiceX(6, true, color)
+end
+
+function clearDice1(obj, color, alt)
+    SelectDeleteDiceX("Del", 1, alt, lowerUpper, color)
+end
+function clearDice2(obj, color, alt)
+    SelectDeleteDiceX("Del", 2, alt, lowerUpper, color)
+end
+function clearDice3(obj, color, alt)
+    SelectDeleteDiceX("Del", 3, alt, lowerUpper, color)
+end
+function clearDice4(obj, color, alt)
+    SelectDeleteDiceX("Del", 4, alt, lowerUpper, color)
+end
+function clearDice5(obj, color, alt)
+    SelectDeleteDiceX("Del", 5, alt, lowerUpper, color)
+end
+function clearDice6(obj, color, alt)
+    SelectDeleteDiceX("Del", 6, alt, lowerUpper, color)
+end
+
+function clearDiceX(n, deleteLower, color)
+    local counter={0,0,0,0,0,0}
+    local numberName={"ones", "twos", "threes", "fours", "fives", "sixes"}
+    local text = Player[color].steam_name .. " deleted "
+    local somethingToPrint=false
+        for i, die in ipairs(getDice()) do
+        if die.getValue() == n or (deleteLower and die.getValue()< n) then
+            die.destroy()
+            counter[die.getValue()]=counter[die.getValue()]+1
+        end
+    end
+    for i, val in ipairs(counter) do
+        if val > 0 then
+            text=text.." \u{00B7} "..counter[i].." "..numberName[i]
+            somethingToPrint=true
+        end
+    end
+    if somethingToPrint then printToAll(text , "Yellow") end
+end
+
+function spawnDice1(obj, player, alt)
+    spawnDice(1,player,alt)
+end
+function getHudOverlayColorForThisMat()
+    if self.getGUID() == Global.getVar("redCustomDiceMat_GUID") then
+        return "Red"
+    end
+    if self.getGUID() == Global.getVar("blueCustomDiceMat_GUID") then
+        return "Blue"
+    end
+    return nil
+end
+
+function toggleHudOverlay(obj, player, alt)
+    local color = getHudOverlayColorForThisMat()
+    if not color then
+        printToColor("Could not determine overlay owner for this dice tray.", player, "Orange")
+        return
+    end
+    Global.call("toggleHudOverlayForColor", {color = color})
+end
+
+function spawnDice2(obj, player, alt)
+    spawnDice(2,player,alt)
+end
+function spawnDice3(obj, player, alt)
+    spawnDice(3,player,alt)
+end
+function spawnDice4(obj, player, alt)
+    spawnDice(4,player,alt)
+end
+function spawnDice5(obj, player, alt)
+    spawnDice(5,player,alt)
+end
+function spawnDice10(obj, player, alt)
+    spawnDice(10,player,alt)
+end
+function spawnDice25(obj, player, alt)
+    spawnDice(25,player,alt)
+end
+
+function spawnDice1d3(obj, player, alt)
+    spawnD3(1, player, alt)
+end
+
+function spawnD3(n, player, alt)
+    local playerDiceSpeed = player == "Red" and Global.getVar("redDiceSpawnTime") or Global.getVar("blueDiceSpawnTime")
+    local currentTime = nowSeconds()
+    local disableTime = (playerDiceSpeed == "slow") and 0.6 or 0.2
+    if currentTime - lastClickTimestamp < disableTime then
+        printToColor("Wait a bit!", player, "Yellow")
+        return
+    end
+    lastClickTimestamp = currentTime
+    local offset = #getDice()
+    if offset + n > 128 then printToColor("Dice limit reached!", player, "Orange") end
+    local grid, row, col = 0, 0, 0
+    for i = 1, offset do
+        col = col + 1
+        if col > 4 then col = 0; row = row + 1
+            if row > 4 then row = 0; grid = grid + 1 end
+        end
+    end
+    if offset + n > 128 then n = 128 - offset end
+    local d3Bag = getObjectFromGUID("2d9705")
+    if not d3Bag then
+        printToColor("D3 bag not found!", player, "Red")
+        return
+    end
+    local spawnedDice = {}
+    for i = 1, n do
+        local pos = self.positionToWorld({4 - grid*1.5 - col*0.25, 0.5, -0.3 + row*0.25})
+        d3Bag.takeObject({
+            position          = pos,
+            rotation          = self.getRotation() + Vector(0.0, 180.0, 0.0),
+            smooth            = false,
+            callback_function = function(obj)
+                if selectedColor ~= nil then obj.setColorTint(selectedColor) end
+                table.insert(spawnedDice, obj)
+                -- Right-click (alt) quick-rolls just like the +Nd6 buttons: set values
+                -- from the roller's xoshiro stream (faces=3) without ever entering the
+                -- bag. Dice arrive via async takeObject callbacks, so fire once the last
+                -- one lands. Left-click stays spawn-only (press Roll All to roll).
+                if alt and #spawnedDice == n then
+                    quickRollSpawnedDice(player, spawnedDice, 3, "d3")
+                end
+            end
+        })
+        col = col + 1
+        if col > 4 then col = 0; row = row + 1
+            if row > 4 then row = 0; grid = grid + 1 end
+        end
+    end
+end
+
+function spawnDice(n,player,alt)
+    local playerDiceSpeed = player == "Red" and Global.getVar("redDiceSpawnTime") or Global.getVar("blueDiceSpawnTime")
+    local currentTime = nowSeconds()
+    local disableTime = (playerDiceSpeed == "slow") and 0.6 or 0.2
+    if currentTime-lastClickTimestamp<disableTime then
+        printToColor("Wait a bit!", player, "Yellow")
+        return
+    end
+    lastClickTimestamp=currentTime
+    local offset=#getDice()
+    if offset+n>128 then printToColor("Dice limit reached!", player, "Orange")  end
+    local grid=0
+    local row=0
+    local col=0
+    for i=1, offset do
+        col=col+1
+        if col>4 then
+            col=0
+            row= row+1
+            if row > 4 then
+                row=0
+                grid=grid+1
+            end
+        end
+    end
+
+    if offset+n>128 then n=128-offset end
+    local spawnedDice = {}
+    for i=1, n do
+    local die=spawnObject({
+        type              = diceType,
+        position          = self.positionToWorld({4-grid*1.5-col*0.25,0.5,-0.3+row*0.25}),
+        rotation          = self.getRotation() + Vector(0.0, 180.0, 0.0),
+        })
+        col=col+1
+        if col>4 then
+            col=0
+            row= row+1
+            if row > 4 then
+                row=0
+                grid=grid+1
+            end
+        end
+
+        if customDiceImage ~= nil then
+            die.setCustomObject({
+                image = customDiceImage,
+                type = 1
+            })
+        end
+
+        if selectedColor ~= nil then
+            die.setColorTint(selectedColor)
+        end
+        table.insert(spawnedDice, die)
+    end
+    -- Left-click spawns only (press Roll All to roll through the bag). Right-click
+    -- (alt) on the SMALL spawners (1d6-5d6) "quick rolls": the dice are spawned
+    -- already showing values from the roller's xoshiro RNG and never enter the bag
+    -- (the legacy quick-roll trick) -- instant, and immune to the bag's
+    -- loop/strand/nil-faces failure modes. Gated to n<=5; +10/+25/+1d3 stay
+    -- spawn-only.
+    if alt and n >= 1 and n <= 5 and #spawnedDice > 0 then
+        quickRollSpawnedDice(player, spawnedDice)
+    end
+end
+
+-- Fixed palette for quick-roll dice: one colour is picked per quick-roll and
+-- shared by every die in that roll, so consecutive quick-rolls are easy to tell
+-- apart. Cosmetic only, so plain math.random is fine here (dice VALUES still use
+-- the roller's xoshiro).
+-- Red and blue are intentionally excluded: those are the players' main dice
+-- colours, so quick-roll dice stay visually distinct from them.
+-- Darker/deeper hues so the white pips on the dice contrast clearly.
+local quickRollPalette = {
+    {0.72, 0.38, 0.08}, -- burnt orange
+    {0.68, 0.52, 0.08}, -- dark gold
+    {0.16, 0.46, 0.22}, -- dark green
+    {0.10, 0.42, 0.48}, -- dark teal
+    {0.40, 0.20, 0.58}, -- dark purple
+    {0.68, 0.18, 0.42}, -- dark magenta/pink
+}
+local lastQuickRollColorIndex = 0
+
+-- Use TTS's native dice-value animation for quick rolls. On dice, setValue()
+-- behaves like setRotationValue(): TTS lifts the die, smoothly rotates it to the
+-- requested face, then releases it. Do not follow this with setRotation(), which
+-- would cancel that animation and snap the die directly to its final face.
+local function animateQuickRollDie(die, finalValue)
+    if not die or die.isDestroyed() then return end
+    die.setValue(finalValue)
+end
+
+-- Set already-spawned dice to values from the roller's xoshiro stream so they
+-- appear instantly rolled, without ever entering the bag. Falls back to
+-- math.random only if the roller object can't be reached. All dice in the roll
+-- share one random palette colour.
+function quickRollSpawnedDice(player, dice, faces, dieLabel)
+    faces = faces or 6
+    dieLabel = dieLabel or "d6"
+    local vals
+    if roller then
+        vals = roller.call("rollFacesForQuick", { n = #dice, faces = faces })
+    end
+    -- Pick one palette colour for the whole roll, never repeating the previous
+    -- roll's colour so batches stay visually distinct.
+    local idx = math.random(#quickRollPalette)
+    if #quickRollPalette > 1 and idx == lastQuickRollColorIndex then
+        idx = (idx % #quickRollPalette) + 1
+    end
+    lastQuickRollColorIndex = idx
+    local tint = quickRollPalette[idx]
+    local total = 0
+    for i, die in ipairs(dice) do
+        local v = (vals and tonumber(vals[i])) or math.random(faces)
+        die.setColorTint(tint)
+        -- Custom dice are spawned with setCustomObject, which reloads the object
+        -- asynchronously. Setting the value synchronously here races that reload
+        -- and the value is lost when the die snaps back to its spawn orientation,
+        -- so every die shows the same default face. Defer until the reload has
+        -- settled, then let TTS animate the die to v natively.
+        -- Plain dice don't reload, but the short defer is harmless for them.
+        Wait.frames(function()
+            animateQuickRollDie(die, v)
+        end, 2)
+        total = total + v
+    end
+    printToAll(Player[player].steam_name .. " quick-rolled " .. tostring(total) .. " on " .. #dice .. dieLabel, "White")
+end
+
+-- Cross-object entry point for the stats board. Object.call() can only pass a
+-- single argument, so the stats board sends a {n, player, alt} table which we
+-- unpack into the positional spawnDice signature.
+function spawnStatsDice(params)
+    if type(params) ~= "table" then return end
+    spawnDice(params.n, params.player, params.alt)
+end
+
+-- Sustained hits = one extra attack per hit of `threshold`+. The dice on the mat
+-- ARE the roll, so we operate on the current mat dice directly. This replaced an
+-- earlier scheme that matched against a stored snapshot by value+tint+position,
+-- which was fragile to physics drift and a post-roll timing race and could either
+-- mass-clone everything or silently under-count.
+local function collectSustainedDice(threshold)
+    local dice, positions = {}, {}
+    for _, die in ipairs(getDice()) do
+        if die.getValue() >= threshold then
+            table.insert(dice, die)
+            table.insert(positions, die.getPosition())
+        end
+    end
+    return dice, positions
+end
+
+local function cloneSustainedDice(dice, positions)
+    local directionMultiplier = (currentMat == "Blue") and 1 or -1
+    for i, die in ipairs(dice) do
+        local p = positions[i]
+        p.x = p.x + (8.5 * directionMultiplier)
+        die.clone({position = p, snap_to_grid = false})
+    end
+    return #dice
+end
+
+function sustainedHitsAction(_, color, alt)
+    -- Left-click: apply 6+. Right-click (alt): apply 5+. No toggle.
+    local threshold = alt and 5 or 6
+    local dice, positions = collectSustainedDice(threshold)
+    local count = cloneSustainedDice(dice, positions)
+    printToAll("Sustained Hits duplicated: " .. tostring(count) .. " (threshold " .. tostring(threshold) .. "+)")
+end
+
+
+-- New function for combined action
+function sustainedLethalHitsAction(_, color, alt)
+    -- Left-click: apply 6+. Right-click: apply 5+. No toggle.
+    local threshold = alt and 5 or 6
+    -- Capture the dice and their mat positions BEFORE lethalHitsAction moves them
+    -- off to the lethal zone, then clone at those saved positions so the sustained
+    -- extra-attack dice stay on the mat while the originals go to the lethal zone.
+    local dice, positions = collectSustainedDice(threshold)
+    lethalHitsAction('sustainedAndLethal', color, alt)
+    local count = cloneSustainedDice(dice, positions)
+    printToAll("Sustained & Lethal duplicated: " .. tostring(count) .. " (threshold " .. tostring(threshold) .. "+)")
+end
+
+function getObjectsPositionToSave(player, hoveredObject)
+  if #player.getSelectedObjects() != 0 then
+    return player.getSelectedObjects()
+  elseif hoveredObject != nil then
+    return {hoveredObject}
+  end
+  return nil
+end
+
+function savePosition(obj)
+  table.insert(savedPositions, {
+    guid = obj.getGUID(),
+    position = obj.getPosition(),
+    rotation = obj.getRotation()
+  })
+end
+
+function savePositionClicked(playerColor, hoveredObject)
+    savedPositions = {}
+    local objects = getObjectsPositionToSave(Player[playerColor], hoveredObject)
+    if objects then
+        for _, v in ipairs(objects) do
+            savePosition(v)
+        end
+        -- Announce on screen (centre) and in chat for everyone, tinted by the
+        -- saving player's seat colour (Blue for blue, Red for red, Yellow, ...).
+        broadcastToAll(#objects .. " objects saved", playerColor)
+    end
+end
+
+function restorePositionClicked(playerColor)
+  for i,v in ipairs(savedPositions) do
+    local obj = getObjectFromGUID(v.guid)
+    if obj != nil then
+      obj.setRotation(v.rotation)
+      obj.setPositionSmooth(v.position, false, true)
+    end
+  end
+end
+
+function onload()
+    -- addHotkey("Toggle Floating Icon", toggleFloatingIcon)
+
+    whenGlobalReady(initRoller)
+
+    -- Remove any coherency distance labels that leaked into the save.
+    cleanupOrphanCoherencyLabels()
+
+    -- TTS sorts the Options -> Game Keys list alphabetically by label (call order
+    -- is ignored), so these six are prefixed 1.-6. to pin them to the top in the
+    -- desired order. The numeric prefixes change the labels, which orphans any
+    -- prior player bindings -- hence the "RESET ALL YOUR TTS HOTKEYS" broadcast.
+    addHotkey("1. Save Position", savePositionClicked)
+    addHotkey("2. Restore Position", restorePositionClicked)
+    addHotkey("3. Custom Bubble", function(playerColor, _, _)
+        if playerColor ~= "Red" and playerColor ~= "Blue" then return end
+        local matGUID = (playerColor == "Red")
+            and Global.getVar("redCustomDiceMat_GUID")
+            or  Global.getVar("blueCustomDiceMat_GUID")
+        Global.call("openBubbleInput", {color = playerColor, mat = matGUID})
+    end)
+    addHotkey("4. Coherency Check", checkCoherency)
+    addHotkey("5. Engagement Range", showEngagementRange)
+    addHotkey("6. Roll All Dice", function(playerColor, _, _)
+        local matGUID = (playerColor == "Red")
+            and Global.getVar("redCustomDiceMat_GUID")
+            or  Global.getVar("blueCustomDiceMat_GUID")
+        local mat = getObjectFromGUID(matGUID)
+        if mat then mat.call("hotkeyRollAllDice", { playerColor = playerColor }) end
+    end)
+
+    -- Remaining hotkeys; these sort alphabetically below the numbered group.
+    addHotkey("Auto 1 Inch Gap", arrangeModelsWith1Inch)
+    addHotkey("Auto 2 Inch Gap", arrangeModelsWith2Inch)
+    addHotkey("Clear Bubbles", function(playerColor, _, _)
+        clearMeasuringCircles(nil, playerColor, false)
+    end)
+    addHotkey("Clear Bubbles (Selected)", function(playerColor, _, _)
+        clearMeasuringCircles(nil, playerColor, true)
+    end)
+    addHotkey("Clear Lines", function(playerColor, _, _)
+        clearHandDrawnLines(nil, playerColor, false)
+    end)
+    addHotkey("Clear Mat", function(playerColor, _, _)
+        if playerColor ~= "Red" and playerColor ~= "Blue" then return end
+        local matGUID = (playerColor == "Red")
+            and Global.getVar("redCustomDiceMat_GUID")
+            or  Global.getVar("blueCustomDiceMat_GUID")
+        local mat = getObjectFromGUID(matGUID)
+        if mat then mat.call("hotkeyClearMat", { playerColor = playerColor }) end
+    end)
+    addHotkey("Show/Hide UI", function(playerColor, _, _)
+        if playerColor ~= "Red" and playerColor ~= "Blue" and playerColor ~= "Grey" then return end
+        Global.call("toggleHudOverlayForColor", { color = playerColor })
+    end)
+    addHotkey("Toggle 1 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(1, target, nil, playerColor)
+    end)
+    addHotkey("Toggle 12 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(12.01, target, nil, playerColor)
+    end)
+    addHotkey("Toggle 2 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(2, target, nil, playerColor)
+    end)
+    addHotkey("Toggle 3 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(3, target, nil, playerColor)
+    end)
+    addHotkey("Toggle 6 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(6, target, nil, playerColor)
+    end)
+    addHotkey("Toggle 8 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(8, target, nil, playerColor)
+    end)
+    addHotkey("Toggle 9 Inch Measurment Circle", function(playerColor, target)
+        changeMeasurementCircle(9, target, nil, playerColor)
+    end)
+    lastClickTimestamp=nowSeconds()
+    defaultFontSize=500
+    fontSize=defaultFontSize
+    lineCount=0
+    defaultDivisionLabel="|\n|"
+    self.createButton({
+        label="---", click_function="none", function_owner=Global,
+        position={-6.4,0.11,0.01}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
+        font_color={1, 1, 1},
+        scale={0.25, 0.25, 0.25},
+		alignment=2
+    })
+    self.createButton({
+        label="", click_function="none", function_owner=Global,
+        position={0.75,0.11,0.01}, rotation={0,0,0}, height=0, width=0, font_size=500,
+        font_color={1, 1, 1},
+        scale={0.25,2,1},
+		alignment=2
+    })
+
+	if self.getDescription() == '' then
+		setDefaultState()
+	end
+
+    emptyText = ' '
+	data2 = JSON.decode(self.getDescription())
+	Wait.time(checkDice, data2.Update_Frequency*1,-1)
+
+    self.createButton(clearAllDiceBtn)
+    self.createButton(rollAllBtn)
+    self.createButton(orderedRollBtn)
+    self.createButton(orderedRollGroup2Btn)
+    self.createButton(orderedRollGroup3Btn)
+    self.createButton(add1d3Btn)
+    self.createButton(add1d6Btn)
+    self.createButton(add2d6Btn)
+    self.createButton(add5d6Btn)
+    self.createButton(add10d6Btn)
+    self.createButton(add25d6Btn)
+    self.createButton(color1Btn)
+    self.createButton(color2Btn)
+    self.createButton(color3Btn)
+    self.createButton(color4Btn)
+    self.createButton(warningBtn)
+    self.createButton(dicePlusBtn)
+    local sign=""
+    for i=1, 6 do
+        if lowerUpper then sign= lowerSign else sign=upperSign end
+        clearDiceBtn.position[3]=clearDiceBtn.position[3]+clearDiceBtnIncrement
+        clearDiceBtn.click_function="clearDice"..i
+        clearDiceBtn.label=clearDiceBtnLabel..i..sign
+        self.createButton(clearDiceBtn)
+
+        rollOrSelectDiceBtn.position[3] = rollOrSelectDiceBtn.position[3] + clearDiceBtnIncrement
+        rollOrSelectDiceBtn.label = "Roll\n" .. i .. sign
+        rollOrSelectDiceBtn.tooltip = "LMB Re-rolls this row\nRMB Re-rolls this row and lowers/uppers"
+        rollOrSelectDiceBtn.click_function = "RollOrSelectDeleteDice" .. i
+        self.createButton(rollOrSelectDiceBtn)
+    end
+    self.createButton(lowerUpperBtn)
+    self.createButton(customDiceBtn)
+    self.createButton(add3d6Btn)
+    self.createButton(add4d6Btn)
+    createToolButtonWithBorder(lethalHitsBtn)
+    createToolButtonWithBorder(sustainedHitsBtn)
+    createToolButtonWithBorder(sustainedLethalHitsBtn)
+    self.createButton(copyOthersDiceBtn)
+    self.createButton(auto2D6)
+    self.createButton(revertRollBtn)  -- Add this near the end of the button creations
+    self.createButton(saveBtn)
+    self.createButton(restoreBtn)
+    createToolButtonWithBorder(measure1Btn)
+    createToolButtonWithBorder(measure2Btn)
+    createToolButtonWithBorder(measure3Btn)
+    createToolButtonWithBorder(measure6Btn)
+    createToolButtonWithBorder(measure8Btn)
+    createToolButtonWithBorder(measure9Btn)
+    createToolButtonWithBorder(measure12Btn)
+    createToolButtonWithBorder(measure15Btn)
+    self.createButton(customBubbleInputBG)
+    self.createInput(customBubbleInput)
+    self.createButton(customBubbleBtn)
+    createToolButtonWithBorder(clearMeasureAllBtn)
+    createToolButtonWithBorder(clearLinesBtn)
+    createToolButtonWithBorder(checkCoherencyBtn)
+    createToolButtonWithBorder(engagementRangeBtn)
+    createToolButtonWithBorder(highlightBtn)
+    createToolButtonWithBorder(highlightSwatchBtn)
+    -- The swatch is recoloured at runtime. Its border shares the click_function,
+    -- so grab the TOP button: the one created later, i.e. the higher index.
+    for _, b in ipairs(self.getButtons() or {}) do
+        if b.click_function == "cycleHighlightColor" then
+            if highlightSwatchIndex == nil or b.index > highlightSwatchIndex then
+                highlightSwatchIndex = b.index
+            end
+        end
+    end
+    refreshHighlightSwatch()
+    createToolButtonWithBorder(gap2Btn)
+    self.createButton(customDiceSpawnButton)
+    -- Created last so it doesn't shift the fixed indices modifyMenu() relies on;
+    -- capture its real index so swapPipColor's editButton flips the right button.
+    self.createButton(pipColorBtn)
+    for _, b in ipairs(self.getButtons() or {}) do
+        if b.click_function == "swapPipColor" then pipColorBtn.index = b.index break end
+    end
+    if self.getPosition().z < 0 then selectedColor="Blue" else selectedColor="Red" end modifyMenu(selectedColor)
+
+end
+
+local originalPositions = {}
+local isMoving = false
+
+local lethalTextDisplays = { Red = nil, Blue = nil }
+local lethalTextConfig = {
+    Red  = {position = {18, 0.97, 22},   rotation = {90, 180, 0}},
+    Blue = {position = {-18, 0.97, -22}, rotation = {90, 0, 0}},
+}
+
+function ensureLethalTextDisplay(mat)
+    if lethalTextDisplays[mat] then return end
+    local cfg = lethalTextConfig[mat]
+    local t = spawnObject({
+        type     = "3DText",
+        position = cfg.position,
+        rotation = cfg.rotation,
+        scale    = {1, 1, 1},
+        nickname = "LethalHitsText" .. mat,
+    })
+    t.TextTool.setValue("Lethal Hits (0)")
+    t.TextTool.setFontSize(50)
+    t.TextTool.setFontColor({1, 1, 1})
+    lethalTextDisplays[mat] = t
+end
+
+function updateLethalTextDisplay(mat, count)
+    ensureLethalTextDisplay(mat)
+    lethalTextDisplays[mat].TextTool.setValue("Lethal Hits (" .. tostring(count) .. ")")
+end
+
+local lethalStartPos = {
+    Red  = {x = 18.1,  y = 1.37, z = 23.25},
+    Blue = {x = -19.1, y = 1.47, z = -23.75},
+}
+local lethalSpacing = 1.1
+local lethalRowLimit = 25
+
+function moveLethalHits(isSustainedAndLethal)
+    if isMoving then return end
+    isMoving = true
+    local threshold = isSustainedAndLethal and sustainedLethalHitsThreshold or lethalHitsThreshold
+    local directionMultiplier = (currentMat == "Blue") and 1 or -1
+    local start = lethalStartPos[currentMat]
+    local diceInZone = 0
+    for _ in pairs(originalPositions) do diceInZone = diceInZone + 1 end
+    local currentRow = math.floor(diceInZone / lethalRowLimit)
+    local currentCol = diceInZone % lethalRowLimit
+    local movedCount = 0
+    for _, die in ipairs(getDice()) do
+        if die.getValue() >= threshold then
+            local parked = {
+                x = start.x + (currentCol * lethalSpacing * directionMultiplier),
+                y = start.y,
+                z = start.z + (currentRow * lethalSpacing),
+            }
+            -- Track this die as a lethal hit, remembering exactly where we parked
+            -- it. cleanupLethalHits compares against this recorded slot rather
+            -- than the "Lethal Hit Zone" decal's own bounds, which don't actually
+            -- cover this parking grid (see cleanupLethalHits).
+            originalPositions[die.getGUID()] = parked
+            die.setPosition(parked)
+            movedCount = movedCount + 1
+            currentCol = currentCol + 1
+            if currentCol >= lethalRowLimit then
+                currentCol = 0
+                currentRow = currentRow + 1
+            end
+        end
+    end
+    isMoving = false
+    return movedCount
+end
+
+-- True when a die is still sitting where moveLethalHits parked it. Compared on
+-- x/z only (physics can nudge y); eps comfortably below the 1.1 park spacing so
+-- a die in its own slot matches but one dragged away does not.
+local function isStillParked(curPos, parkedPos)
+    if not curPos or not parkedPos then return false end
+    local dx = curPos.x - parkedPos.x
+    local dz = curPos.z - parkedPos.z
+    return (dx * dx + dz * dz) <= (0.75 * 0.75)
+end
+
+function cleanupLethalHits()
+    -- Only destroy dice that are STILL where we parked them. This is compared
+    -- against the die's OWN recorded slot (set in moveLethalHits) rather than the
+    -- "Lethal Hit Zone" decal's world bounds: that decal is a visual marker whose
+    -- position/size doesn't actually cover the real parking grid (lethalStartPos
+    -- runs well outside it), so bounds-checking against it silently destroyed
+    -- nothing while still wiping the tracking below -- lethal dice were "removed"
+    -- from bookkeeping but left sitting on the table forever. A die tagged lethal
+    -- but since dragged back onto the mat or elsewhere is no longer ours to
+    -- delete here: on-mat dice are handled by the clearDiceX that runs right
+    -- after this in clearDiceAll, and off-mat dice should survive.
+    for guid, parkedPos in pairs(originalPositions) do
+        local die = getObjectFromGUID(guid)
+        if die and isStillParked(die.getPosition(), parkedPos) then
+            die.destruct()
+        end
+    end
+    originalPositions = {}
+    for mat, t in pairs(lethalTextDisplays) do
+        if t then t.destruct() end
+        lethalTextDisplays[mat] = nil
+    end
+end
+
+-- Stop tracking dice as lethal hits once they are sent back to the roller to be
+-- re-rolled. Without this their GUIDs would linger in originalPositions and keep
+-- inflating the lethal count even though they are no longer in the lethal zone.
+function forgetLethalHitsForDice(dice)
+    local changed = false
+    for _, die in ipairs(dice) do
+        local guid = die.getGUID()
+        if originalPositions[guid] then
+            originalPositions[guid] = nil
+            changed = true
+        end
+    end
+    if changed and lethalTextDisplays[currentMat] then
+        local total = 0
+        for _ in pairs(originalPositions) do total = total + 1 end
+        updateLethalTextDisplay(currentMat, total)
+    end
+end
+
+function lethalHitsAction(lethalHits, color, alt)
+    local lethalNumbers = (lethalHits == 'sustainedAndLethal')
+    local oldLethal = lethalHitsThreshold
+    local oldSustainedLethal = sustainedLethalHitsThreshold
+    if lethalNumbers then
+        sustainedLethalHitsThreshold = alt and 5 or 6
+    else
+        lethalHitsThreshold = alt and 5 or 6
+    end
+    local moved = moveLethalHits(lethalNumbers)
+    lethalHitsThreshold = oldLethal
+    sustainedLethalHitsThreshold = oldSustainedLethal
+    local total = 0
+    for _ in pairs(originalPositions) do total = total + 1 end
+    updateLethalTextDisplay(currentMat, total)
+    printToAll("Lethal hits moved: " .. tostring(moved) .. " (threshold " .. tostring(alt and 5 or 6) .. "+)")
+end
+
+function modifyMenu1()
+    modifyMenu("Red")
+end
+function modifyMenu2()
+    modifyMenu("Blue")
+end
+function modifyMenu3()
+    modifyMenu("Black")
+end
+function modifyMenu4()
+    modifyMenu("Green")
+end
+function modifyMenu(color)
+    customDiceImage = nil
+    selectedColor = color
+    setDiceType()
+    self.editButton({index=7, color=color})
+    self.editButton({index=8, color=color})
+    self.editButton({index=9, color=color})
+    self.editButton({index=10, color=color})
+    self.editButton({index=11, color=color})
+    self.editButton({index=12, color=color})
+    self.editButton({index=33, color=color})
+    self.editButton({index=34, color=color})
+    self.editButton({index=35, color="White"})
+    self.editButton({index=36, color="White"})
+    self.editButton({index=37, color="White"})
+end
+
+function toggleDicePlus()
+    if dicePlusExpanded then
+        -- Identify our extra squares by click_function and remove them. Descending
+        -- index order so each removal can't invalidate the indices still to remove.
+        local mine = {}
+        for _, c in ipairs(dicePlusColors) do mine[c.fn] = true end
+        local indices = {}
+        for _, b in ipairs(self.getButtons() or {}) do
+            if mine[b.click_function] then table.insert(indices, b.index) end
+        end
+        table.sort(indices, function(a, b) return a > b end)
+        for _, idx in ipairs(indices) do self.removeButton(idx) end
+        dicePlusExpanded = false
+    else
+        for _, c in ipairs(dicePlusColors) do
+            self.createButton({
+                label = "", tooltip = c.tip, click_function = c.fn, function_owner = self,
+                position = {c.x, Yoffset, c.z}, rotation = {0, 0, 0},
+                height = colorBtnDimension, width = colorBtnDimension,
+                font_size = 60, color = c.color, font_color = {0, 0, 0}
+            })
+        end
+        dicePlusExpanded = true
+    end
+end
+
+function setDiceType()
+    if customDiceImage ~= nil then
+        diceType = "Custom_Dice"
+    elseif pipColorBtn.color == "White" then
+        diceType = "Die_6_Rounded"
+    else
+        diceType = "Die_6"
+    end
+end
+
+function getStatsHelperDiceConfig()
+    setDiceType()
+    return {
+        diceType = diceType,
+        selectedColor = selectedColor,
+        customDiceImage = customDiceImage
+    }
+end
+
+function setDefaultState()
+	self.setDescription(JSON.encode_pretty({
+		Cumulative = 'no',Update_Frequency = '0.2'
+	}))
+end
+
+function checkDice()
+    local data = JSON.decode(self.getDescription())
+    if not data then
+        setDefaultState()
+        data = JSON.decode(self.getDescription())
+        printToAll('Warning - invalid description. Restored default configuration.', {0.8,0.5,0})
+    end
+    if not self.resting then return end
+
+    local b = self.getBounds()
+    local leftBound  = b.center.x - b.size.x/2
+    local rightBound = b.center.x + b.size.x/2
+    local lowerBound = b.center.z - b.size.z/2
+    local upperBound = b.center.z + b.size.z/2
+    if currentMat == "Red" then
+        rightBound = rightBound - 5
+        lowerBound = lowerBound + 2.9
+        upperBound = upperBound - 0.5
+    else
+        leftBound  = leftBound  + 5
+        lowerBound = lowerBound + 0.5
+        upperBound = upperBound - 2.9
+    end
+    local ylowerBound = b.center.y - b.size.y/2
+
+    local valueToCounter, valuesToSort, totaldice, diceSum = {}, {}, 0, 0
+    for _, obj in pairs(getAllObjects()) do
+        if obj.tag == 'Dice' and obj.resting then
+            local p = obj.getPosition()
+            if p.x > leftBound and p.x < rightBound
+            and p.z > lowerBound and p.z < upperBound
+            and p.y > ylowerBound then
+                local v = obj.getValue()
+                if v then
+                    if not valueToCounter[v] then
+                        valueToCounter[v] = 0
+                        table.insert(valuesToSort, v)
+                    end
+                    valueToCounter[v] = valueToCounter[v] + 1
+                    diceSum    = diceSum + v
+                    totaldice  = totaldice + 1
+                end
+            end
+        end
+    end
+
+    local textLines, lineCount = {}, 0
+    if data.Cumulative == 'yes' then
+        table.sort(valuesToSort)
+        for i = 1, 12 do valueToCounter[i] = valueToCounter[i] or 0 end
+        for i = 11, 1, -1 do
+            valueToCounter[i] = valueToCounter[i] + valueToCounter[i+1]
+        end
+        for _, v in ipairs(valuesToSort) do
+            local suffix = (v == 1) and "'s: " or "+: "
+            table.insert(textLines, tostring(v) .. suffix .. valueToCounter[v])
+            lineCount = lineCount + 1
+        end
+    else
+        table.sort(valuesToSort)
+        for _, v in ipairs(valuesToSort) do
+            table.insert(textLines, "#" .. v .. ": " .. valueToCounter[v])
+            lineCount = lineCount + 1
+        end
+    end
+    for i = lineCount+1, 6 do
+        table.insert(textLines, " ")
+    end
+
+    local text = table.concat(textLines, "\n")
+    if text == "" then text = emptyText end
+    local totaltext = (totaldice == 0) and " " or ("\n" .. totaldice .. " ∑ " .. diceSum)
+
+    if lineCount > 6 then
+        fontSize      = defaultFontSize - ((lineCount-6)*37)
+        divisionLabel = defaultDivisionLabel
+    else
+        fontSize      = defaultFontSize
+        divisionLabel = ""
+    end
+
+    self.editButton({ index = 0, label = text .. totaltext, font_size = fontSize })
+    self.editButton({ index = 1, label = divisionLabel })
+end
+
+-- ── DEBUG-ONLY PERF DIAGNOSTIC ───────────────────────────────────────────────
+-- Invoked from the shared debug panel (Global, --test builds only) via
+-- mat.call("runDiceScanBenchmark", {color=<clicker>}). Benchmarks the always-on
+-- getAllObjects() scan that checkDice() runs at 5Hz, and compares it against an
+-- area-limited Physics.cast box over this mat's bounds, so the cost of the
+-- whole-scene scan is visible and the box-cast win is provable in-game.
+-- Timed with os.clock() (real wall time) NOT Time.time (frame time, which is
+-- constant inside a single callback and would read zero).
+function runDiceScanBenchmark(params)
+    local playerColor = params and params.color
+    local ITER = 200   -- bump if the scene is small and timings read ~0
+
+    -- scene population is the real independent variable for getAllObjects()
+    local sceneCount = #getAllObjects()
+
+    -- mat box (same bounds checkDice uses to filter dice)
+    local b = self.getBounds()
+    local origin = { x = b.center.x, y = b.center.y, z = b.center.z }
+    local size   = { x = b.size.x,   y = b.size.y + 6, z = b.size.z }
+    local orient = { x = 0, y = self.getRotation().y, z = 0 }
+
+    -- NOTE: TTS's Lua (MoonSharp) returns nil for collectgarbage("count"), so
+    -- per-call heap allocation can't be measured here. Timing is the metric;
+    -- collectgarbage("collect") still works and we use it to settle GC first.
+
+    -- getAllObjects(): avg time per call
+    collectgarbage("collect")
+    local gaoT0 = os.clock()
+    for _ = 1, ITER do getAllObjects() end
+    local gaoMs = (os.clock() - gaoT0) / ITER * 1000
+
+    -- Physics.cast box over the mat: avg time per call
+    collectgarbage("collect")
+    local castT0   = os.clock()
+    local lastHits = 0
+    for _ = 1, ITER do
+        local hits = Physics.cast({
+            origin = origin, direction = { x = 0, y = 1, z = 0 },
+            type = 3, size = size, orientation = orient, max_distance = 0,
+        })
+        lastHits = #hits
+    end
+    local castMs = (os.clock() - castT0) / ITER * 1000
+    collectgarbage("collect")
+
+    -- always-on extrapolation: 2 mats * 5Hz = 10 scans/sec across the session
+    local CALLS_PER_SEC = 10
+    local speedup = (castMs > 0) and (gaoMs / castMs) or 0
+
+    local out = string.format(
+        "── checkDice scan benchmark (%d iters) ──\n" ..
+        "scene objects: %d   box hits: %d\n" ..
+        "getAllObjects: %.4f ms/call\n" ..
+        "Physics.cast : %.4f ms/call\n" ..
+        "speedup: %.1fx\n" ..
+        "always-on (10 scans/s): %.3f ms/s  vs  %.3f ms/s",
+        ITER, sceneCount, lastHits,
+        gaoMs, castMs,
+        speedup,
+        gaoMs * CALLS_PER_SEC, castMs * CALLS_PER_SEC)
+
+    if playerColor then
+        printToColor(out, playerColor, { 0.4, 0.9, 1 })
+    else
+        printToAll(out, { 0.4, 0.9, 1 })
+    end
+    print(out)   -- also to the host's System Console / log
+end
+
+function swapPipColor()
+    customDiceImage = nil
+    if pipColorBtn.color == "Black" then
+        pipColorBtn.label = "White"
+        pipColorBtn.color = "White"
+        pipColorBtn.font_color = "Black"
+    else
+        pipColorBtn.label = "Black"
+        pipColorBtn.color = "Black"
+        pipColorBtn.font_color = "White"
+    end
+
+    setDiceType()
+
+    self.editButton(pipColorBtn)
+end
+
+function arrangeModelsWith2Inch(a, b, c)
+    -- Support being called from a button or a hotkey. When invoked via a button
+    -- the first argument is the object and the second is the player color.
+    -- When invoked via a hotkey the first argument is the player color.
+    local playerColor
+    if type(a) == "string" then
+        playerColor = a
+    else
+        playerColor = b
+    end
+
+    local playerObj = Player[playerColor]
+    if not playerObj then
+      print("Player object not found for color: " .. playerColor)
+      return
+    end
+
+    local objs = playerObj.getSelectedObjects()
+    if #objs < 2 then
+      print("Less than 2 objects selected; nothing to arrange.")
+      return
+    end
+
+    local minPos = { x = objs[1].getPosition().x, z = objs[1].getPosition().z }
+    local maxPos = { x = objs[1].getPosition().x, z = objs[1].getPosition().z }
+    for i = 2, #objs do
+      local p = objs[i].getPosition()
+      if p.x < minPos.x then minPos.x = p.x end
+      if p.z < minPos.z then minPos.z = p.z end
+      if p.x > maxPos.x then maxPos.x = p.x end
+      if p.z > maxPos.z then maxPos.z = p.z end
+    end
+
+    local dx = maxPos.x - minPos.x
+    local dz = maxPos.z - minPos.z
+    local mag = math.sqrt(dx * dx + dz * dz)
+    local d = {}
+    if mag < 0.0001 then
+      d.x, d.z = 1, 0
+    else
+      d.x, d.z = dx / mag, dz / mag
+    end
+
+    local items = {}
+    for _, obj in ipairs(objs) do
+      local pos = obj.getPosition()
+      local half = obj.getBoundsNormalized().size.x / 2
+      local proj = pos.x * d.x + pos.z * d.z
+      table.insert(items, { obj = obj, pos = pos, half = half, proj = proj })
+    end
+
+    table.sort(items, function(a, b) return a.proj < b.proj end)
+
+    local offsetCount = 0
+    if #items > 7 then
+      offsetCount = 2
+    end
+
+    local startIndex = 1
+    if offsetCount == 2 then
+      startIndex = 3
+    end
+
+    local anchorPos = { x = items[startIndex].pos.x, z = items[startIndex].pos.z }
+    items[startIndex].newPos = { x = anchorPos.x, y = items[startIndex].pos.y, z = anchorPos.z }
+
+    for i = startIndex + 1, #items - offsetCount do
+      local prev = items[i - 1]
+      local gapDist = prev.half + 2 + items[i].half
+      items[i].newPos = {
+        x = prev.newPos.x + d.x * gapDist,
+        y = items[i].pos.y,
+        z = prev.newPos.z + d.z * gapDist
+      }
+    end
+
+    if offsetCount == 2 then
+      local p = { x = -d.z, z = d.x }
+
+      -- start offsets: arrange three items as a triangle so pairwise edge gap ~= 2"
+      local baseStart = items[startIndex].newPos -- apex on main line
+      local a = items[startIndex]
+      local b = items[1]
+      local c = items[2]
+      local desiredGap = 2
+      local baseSep = b.half + c.half + desiredGap
+      local baseHalf = baseSep / 2
+      local s1 = a.half + b.half + desiredGap
+      local s2 = a.half + c.half + desiredGap
+      -- compute apex->baseCenter distance from triangle right-triangle: t = sqrt(s1^2 - baseHalf^2)
+      local t1 = math.sqrt(math.max(0, s1 * s1 - baseHalf * baseHalf))
+      local t2 = math.sqrt(math.max(0, s2 * s2 - baseHalf * baseHalf))
+      local t = (t1 + t2) / 2
+      local baseCenter = { x = baseStart.x - d.x * t, z = baseStart.z - d.z * t }
+      items[1].newPos = { x = baseCenter.x + p.x * baseHalf, y = b.pos.y, z = baseCenter.z + p.z * baseHalf }
+      items[2].newPos = { x = baseCenter.x - p.x * baseHalf, y = c.pos.y, z = baseCenter.z - p.z * baseHalf }
+
+      -- debug: print the starting three indices and pairwise distances
+      if true then
+        local function dist(a,b)
+          local dx = a.x - b.x; local dz = a.z - b.z; return math.sqrt(dx*dx + dz*dz)
+        end
+        local Apos = a.pos; local Bpos = b.pos; local Cpos = c.pos
+        local Anew = a.newPos; local Bnew = b.newPos; local Cnew = c.newPos
+        print(string.format("Start triangle items indexes: apex=%s base1=%s base2=%s", a.obj.getGUID(), b.obj.getGUID(), c.obj.getGUID()))
+        print(string.format("Before: AB=%.2f AC=%.2f BC=%.2f", dist(Apos,Bpos), dist(Apos,Cpos), dist(Bpos,Cpos)))
+        print(string.format("After:  AB=%.2f AC=%.2f BC=%.2f", dist(Anew,Bnew), dist(Anew,Cnew), dist(Bnew,Cnew)))
+      end
+
+      -- end offsets
+      local baseEnd = items[#items - offsetCount].newPos
+      -- end offsets: triangle at the end (apex on main line, base beyond)
+      local a_e = items[#items - offsetCount] -- apex at end of line
+      local b_e = items[#items - 1]
+      local c_e = items[#items]
+      local desiredGap = 2
+      local baseSep_e = b_e.half + c_e.half + desiredGap
+      local baseHalf_e = baseSep_e / 2
+      local s1_e = a_e.half + b_e.half + desiredGap
+      local s2_e = a_e.half + c_e.half + desiredGap
+      local t1_e = math.sqrt(math.max(0, s1_e * s1_e - baseHalf_e * baseHalf_e))
+      local t2_e = math.sqrt(math.max(0, s2_e * s2_e - baseHalf_e * baseHalf_e))
+      local t_e = (t1_e + t2_e) / 2
+      local baseCenter_e = { x = baseEnd.x + d.x * t_e, z = baseEnd.z + d.z * t_e }
+      items[#items - 1].newPos = { x = baseCenter_e.x + p.x * baseHalf_e, y = b_e.pos.y, z = baseCenter_e.z + p.z * baseHalf_e }
+      items[#items].newPos     = { x = baseCenter_e.x - p.x * baseHalf_e, y = c_e.pos.y, z = baseCenter_e.z - p.z * baseHalf_e }
+
+      -- debug: print the final three indices and pairwise distances
+      if true then
+        local function dist(a,b)
+          local dx = a.x - b.x; local dz = a.z - b.z; return math.sqrt(dx*dx + dz*dz)
+        end
+        local Apos = a_e.pos; local Bpos = b_e.pos; local Cpos = c_e.pos
+        local Anew = a_e.newPos; local Bnew = b_e.newPos; local Cnew = c_e.newPos
+        print(string.format("End triangle items indexes: apex=%s base1=%s base2=%s", a_e.obj.getGUID(), b_e.obj.getGUID(), c_e.obj.getGUID()))
+        print(string.format("Before: AB=%.2f AC=%.2f BC=%.2f", dist(Apos,Bpos), dist(Apos,Cpos), dist(Bpos,Cpos)))
+        print(string.format("After:  AB=%.2f AC=%.2f BC=%.2f", dist(Anew,Bnew), dist(Anew,Cnew), dist(Bnew,Cnew)))
+      end
+    end
+
+    for _, item in ipairs(items) do
+      item.obj.setPositionSmooth(item.newPos)
+    end
+
+    print("Arranged " .. #items .. " models with a 2-inch gap along the detected orientation.")
+end
+
+-- Single button handler: left-click arranges with a 1" gap, right-click with 2".
+-- For button clicks the third argument (alt_click) is true on a right-click.
+function arrangeModelsWithGap(obj, playerColor, alt_click)
+    if alt_click then
+        arrangeModelsWith2Inch(obj, playerColor, alt_click)
+    else
+        arrangeModelsWith1Inch(obj, playerColor, alt_click)
+    end
+end
+
+function arrangeModelsWith1Inch(a, b, c)
+    local playerColor
+    if type(a) == "string" then
+        playerColor = a
+    else
+        playerColor = b
+    end
+
+    local playerObj = Player[playerColor]
+    if not playerObj then
+      print("Player object not found for color: " .. playerColor)
+      return
+    end
+
+    local objs = playerObj.getSelectedObjects()
+    if #objs < 2 then
+      print("Less than 2 objects selected; nothing to arrange.")
+      return
+    end
+
+    local minPos = { x = objs[1].getPosition().x, z = objs[1].getPosition().z }
+    local maxPos = { x = objs[1].getPosition().x, z = objs[1].getPosition().z }
+    for i = 2, #objs do
+      local p = objs[i].getPosition()
+      if p.x < minPos.x then minPos.x = p.x end
+      if p.z < minPos.z then minPos.z = p.z end
+      if p.x > maxPos.x then maxPos.x = p.x end
+      if p.z > maxPos.z then maxPos.z = p.z end
+    end
+
+    local dx = maxPos.x - minPos.x
+    local dz = maxPos.z - minPos.z
+    local mag = math.sqrt(dx * dx + dz * dz)
+    local d = {}
+    if mag < 0.0001 then
+      d.x, d.z = 1, 0
+    else
+      d.x, d.z = dx / mag, dz / mag
+    end
+
+    local items = {}
+    for _, obj in ipairs(objs) do
+      local pos = obj.getPosition()
+      local half = obj.getBoundsNormalized().size.x / 2
+      local proj = pos.x * d.x + pos.z * d.z
+      table.insert(items, { obj = obj, pos = pos, half = half, proj = proj })
+    end
+
+    table.sort(items, function(a, b) return a.proj < b.proj end)
+
+    local offsetCount = 0
+    if #items > 7 then
+      offsetCount = 2
+    end
+
+    local startIndex = 1
+    if offsetCount == 2 then
+      startIndex = 3
+    end
+
+    local anchorPos = { x = items[startIndex].pos.x, z = items[startIndex].pos.z }
+    items[startIndex].newPos = { x = anchorPos.x, y = items[startIndex].pos.y, z = anchorPos.z }
+
+    for i = startIndex + 1, #items - offsetCount do
+      local prev = items[i - 1]
+      local gapDist = prev.half + 1 + items[i].half
+      items[i].newPos = {
+        x = prev.newPos.x + d.x * gapDist,
+        y = items[i].pos.y,
+        z = prev.newPos.z + d.z * gapDist
+      }
+    end
+
+    if offsetCount == 2 then
+      local p = { x = -d.z, z = d.x }
+
+      -- start offsets: arrange three items as a triangle so pairwise edge gap ~= 1"
+      local baseStart = items[startIndex].newPos -- apex on main line
+      local a = items[startIndex]
+      local b = items[1]
+      local c = items[2]
+      local desiredGap = 1
+      local baseSep = b.half + c.half + desiredGap
+      local baseHalf = baseSep / 2
+      local s1 = a.half + b.half + desiredGap
+      local s2 = a.half + c.half + desiredGap
+      local t1 = math.sqrt(math.max(0, s1 * s1 - baseHalf * baseHalf))
+      local t2 = math.sqrt(math.max(0, s2 * s2 - baseHalf * baseHalf))
+      local t = (t1 + t2) / 2
+      local baseCenter = { x = baseStart.x - d.x * t, z = baseStart.z - d.z * t }
+      items[1].newPos = { x = baseCenter.x + p.x * baseHalf, y = b.pos.y, z = baseCenter.z + p.z * baseHalf }
+      items[2].newPos = { x = baseCenter.x - p.x * baseHalf, y = c.pos.y, z = baseCenter.z - p.z * baseHalf }
+
+      -- end offsets: triangle at the end (apex on main line, base beyond)
+      local baseEnd = items[#items - offsetCount].newPos
+      local a_e = items[#items - offsetCount] -- apex at end of line
+      local b_e = items[#items - 1]
+      local c_e = items[#items]
+      local desiredGap_e = 1
+      local baseSep_e = b_e.half + c_e.half + desiredGap_e
+      local baseHalf_e = baseSep_e / 2
+      local s1_e = a_e.half + b_e.half + desiredGap_e
+      local s2_e = a_e.half + c_e.half + desiredGap_e
+      local t1_e = math.sqrt(math.max(0, s1_e * s1_e - baseHalf_e * baseHalf_e))
+      local t2_e = math.sqrt(math.max(0, s2_e * s2_e - baseHalf_e * baseHalf_e))
+      local t_e = (t1_e + t2_e) / 2
+      local baseCenter_e = { x = baseEnd.x + d.x * t_e, z = baseEnd.z + d.z * t_e }
+      items[#items - 1].newPos = { x = baseCenter_e.x + p.x * baseHalf_e, y = b_e.pos.y, z = baseCenter_e.z + p.z * baseHalf_e }
+      items[#items].newPos     = { x = baseCenter_e.x - p.x * baseHalf_e, y = c_e.pos.y, z = baseCenter_e.z - p.z * baseHalf_e }
+    end
+
+    for _, item in ipairs(items) do
+      item.obj.setPositionSmooth(item.newPos)
+    end
+
+    print("Arranged " .. #items .. " models with a 1-inch gap along the detected orientation.")
+end
+
+function determineBaseInInches(model)
+    local savedBase = model.getTable("chosenBase")
+
+    if savedBase ~= nil then
+        return savedBase.base
+    else
+        local chosenBase =  VALID_BASE_SIZES_IN_MM[1]
+        local modelSize = model.getBoundsNormalized().size
+        local modelSizeX = modelSize.x
+        local modelSizeZ = modelSize.z
+        local closestSum = 10000000000
+        local chosenBaseIdx = 1
+
+        for k, base in pairs(VALID_BASE_SIZES_IN_MM) do
+            local baseInchX = (MM_TO_INCH - 0.001) * base.x
+            local baseInchZ = (MM_TO_INCH - 0.001) * base.z
+            if modelSizeX > baseInchX and modelSizeZ > baseInchZ then
+                local distSum = (modelSizeX - baseInchX) + (modelSizeZ - baseInchZ)
+                if distSum < closestSum then
+                    closestSum = distSum
+                    chosenBase = base
+                    chosenBaseIdx = k
+                end
+            end
+        end
+
+        if chosenBase == nil then
+            chosenBase = { x=modelSizeX/2, z=modelSizeZ/2}
+        else
+            chosenBase = {
+                x = (chosenBase.x * MM_TO_INCH)/2,
+                z = (chosenBase.z * MM_TO_INCH)/2
+            }
+        end
+
+        model.setTable("chosenBase", { baseIdx=chosenBaseIdx, base=chosenBase })
+
+        return chosenBase
+    end
+end
+
+function getCircleVectorPoints(radius, baseX, baseZ, obj)
+    local result = {}
+    local scaleFactor = 1/obj.getScale().x
+    local steps = 64
+    local degrees,sin,cos,toRads = 360/steps, math.sin, math.cos, math.rad
+
+    for i = 0,steps do
+        table.insert(result,{
+            x = cos(toRads(degrees*i))*((radius+baseX)*scaleFactor),
+            z = MEASURING_RING_Y_OFFSET,
+            y = sin(toRads(degrees*i))*((radius+baseZ)*scaleFactor)
+        })
+    end
+
+    return result
+end
+
+function getRectangleVectorPoints(radius, sizeX, sizeZ, obj)
+    local result = {}
+    local scaleFactor = 1/obj.getScale().x
+
+    sizeX = sizeX*scaleFactor
+    sizeZ = sizeZ*scaleFactor
+    radius = radius*scaleFactor
+
+    local steps = 65
+    local degrees,sin,cos,toRads = 360/(steps-1), math.sin, math.cos, math.rad
+    local xOffset,zOffset = sizeX,sizeZ
+    table.insert(result,{
+        x = (cos(toRads(degrees*0))*radius)+sizeX-0.001,
+        y = (sin(toRads(degrees*0))*radius)+sizeZ,
+        z = MEASURING_RING_Y_OFFSET
+    })
+
+    for i = 1,steps-1 do
+        if i == 16 then
+            table.insert(result,{ x= sizeX, y=(radius+sizeZ), z=MEASURING_RING_Y_OFFSET })
+            table.insert(result,{ x=-sizeX, y=(radius+sizeZ), z=MEASURING_RING_Y_OFFSET })
+            xOffset = -sizeX
+        elseif i == 33 then
+            table.insert(result,{ x=-radius-sizeX,       y= sizeZ, z=MEASURING_RING_Y_OFFSET })
+            table.insert(result,{ x=-radius-sizeX-0.001, y=-sizeZ, z=MEASURING_RING_Y_OFFSET })
+            table.insert(result,{ x=-radius-sizeX,       y=-sizeZ, z=MEASURING_RING_Y_OFFSET })
+            zOffset = -sizeZ
+        elseif i == 49 then
+            table.insert(result,{ x=-sizeX, y=-radius-sizeZ, z=MEASURING_RING_Y_OFFSET })
+            table.insert(result,{ x= sizeX, y=-radius-sizeZ, z=MEASURING_RING_Y_OFFSET })
+            xOffset = sizeX
+        elseif i == 65 then
+            table.insert(result,{ x=radius+sizeX,       y=-sizeZ, z=MEASURING_RING_Y_OFFSET })
+            table.insert(result,{ x=radius+sizeX-0.001, y= sizeZ, z=MEASURING_RING_Y_OFFSET })
+        else
+            table.insert(result,{
+                x = (cos(toRads(degrees*i))*radius)+xOffset,
+                y = (sin(toRads(degrees*i))*radius)+zOffset,
+                z = MEASURING_RING_Y_OFFSET
+            })
+        end
+    end
+    table.insert(result,{
+        x = (cos(toRads(degrees*0))*radius)+sizeX-0.001,
+        y = (sin(toRads(degrees*0))*radius)+sizeZ,
+        z = MEASURING_RING_Y_OFFSET
+    })
+
+    return result
+end
+
+function toggleMeasurementCircleForSelection(radius, playerColor)
+    local playerObj = Player[playerColor]
+    if not playerObj then return end
+    local objs = playerObj.getSelectedObjects()
+    for _, obj in ipairs(objs) do
+        changeMeasurementCircle(radius, obj, nil, playerColor)
+    end
+end
+
+function toggle1Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(1, playerColor)
+end
+
+function toggle2Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(2, playerColor)
+end
+
+function toggle3Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(3, playerColor)
+end
+
+function toggle6Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(6, playerColor)
+end
+
+function toggle8Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(8, playerColor)
+end
+
+function toggle9Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(9, playerColor)
+end
+
+function toggle12Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(12.01, playerColor)
+end
+
+function toggle15Bubble(obj, playerColor, alt)
+    toggleMeasurementCircleForSelection(15, playerColor)
+end
+
+local customBubbleSize = 0
+function setCustomBubbleSize(_, _, value, _)
+    customBubbleSize = tonumber(value) or 0
+end
+
+function applyCustomBubble(_, playerColor, alt)
+    if alt then
+        -- Right-click opens the on-screen typed-size overlay instead.
+        requestBubbleInput(_, playerColor, alt)
+        return
+    end
+    if customBubbleSize > 0 then
+        toggleMeasurementCircleForSelection(customBubbleSize, playerColor)
+    else
+        printToColor("Please enter a valid bubble size", playerColor, "Red")
+    end
+end
+
+-- ===== Screen-space custom bubble input overlay (1-60) =====
+-- The overlay panel + its input/submit callbacks live on the Global canvas
+-- (global.ttslua / ftc_base_ui.xml). This button just asks Global to open it,
+-- passing this mat's GUID so Global can call applyBubbleFromOverlay back here.
+function requestBubbleInput(_, playerColor, _)
+    Global.call("openBubbleInput", {color = playerColor, mat = self.getGUID()})
+end
+
+-- Invoked by Global once the player confirms a size in the overlay.
+function applyBubbleFromOverlay(params)
+    toggleMeasurementCircleForSelection(params.radius, params.color)
+end
+
+-- Invoked by Global when the overlay value is 0 / blank: clear bubbles on the
+-- player's selected models (same as the "Clear Bubbles (Selected)" action).
+function clearBubblesFromOverlay(params)
+    clearMeasuringCircles(nil, params.color, true)
+end
+
+function changeMeasurementCircle(newRequestedRadius, target, presetBase, ownerColor)
+    if target == nil then return end
+
+    local measuringRings = target.getTable("ym-measuring-circles")
+    local currentColor = "Teal"
+    local currentColorRadius
+
+    if measuringRings == nil then
+        measuringRings = {}
+        currentColorRadius = 0
+    else
+        for idx = #measuringRings, 1, -1 do
+            if (measuringRings[idx].name == currentColor) or
+               (measuringRings[idx].name == nil and currentColor == nil) then
+                currentColorRadius = measuringRings[idx].radius
+                table.remove(measuringRings, idx)
+            elseif measuringRings[idx].name == "base" then
+                table.remove(measuringRings, idx)
+            end
+        end
+
+        if currentColorRadius == nil then currentColorRadius = 0 end
+    end
+
+    local newRadius
+    if currentColorRadius == newRequestedRadius then
+        newRadius = 0
+    else
+        newRadius = newRequestedRadius
+    end
+
+    if newRadius ~= 0 then
+        local isRectangular = target.hasTag("rectangularMeasuring")
+        local measuring = {
+            name = currentColor,
+            color = Color.fromString(currentColor),
+            radius = newRadius,
+            thickness = 0.5,
+            rotation = {270, 0, 0},
+            owner = ownerColor -- track who created this measuring circle
+        }
+        local base = {
+            name = "base",
+            color = Color.fromString(currentColor),
+            thickness = 0.2,
+            rotation = {270, 0, 0},
+            owner = ownerColor
+        }
+
+        local measuringPoints, basePoints
+        if isRectangular then
+            local modelBounds = target.getBoundsNormalized()
+            measuringPoints = getRectangleVectorPoints(newRadius, modelBounds.size.x / 2, modelBounds.size.z / 2, target)
+            basePoints = getRectangleVectorPoints(0, modelBounds.size.x / 2, modelBounds.size.z / 2, target)
+        else
+            local baseRadiuses = (presetBase == nil) and determineBaseInInches(target) or presetBase
+            measuringPoints = getCircleVectorPoints(newRadius, baseRadiuses.x, baseRadiuses.z, target)
+            basePoints = getCircleVectorPoints(0, baseRadiuses.x, baseRadiuses.z, target)
+        end
+
+        measuring.points = measuringPoints
+        base.points = basePoints
+
+        table.insert(measuringRings, measuring)
+        table.insert(measuringRings, base)
+    end
+
+    target.setVectorLines(measuringRings)
+    target.setTable("ym-measuring-circles", measuringRings)
+end
+
+-- Clear measuring circles helper.
+-- LMB (alt=false): clear bubbles on every object on the table.
+-- RMB (alt=true):  clear bubbles only on the player's currently selected objects.
+function clearMeasuringCircles(obj, playerColor, alt)
+    local targets
+    if alt then
+        local playerObj = Player[playerColor]
+        if not playerObj then return end
+        targets = playerObj.getSelectedObjects()
+        if #targets == 0 then
+            printToColor("No objects selected. Right-click clears bubbles on selected objects only.", playerColor, "Yellow")
+            return
+        end
+    else
+        targets = getAllObjects()
+    end
+
+    local cleared = 0
+    for _, o in ipairs(targets) do
+        local bubbles = o.getTable("ym-measuring-circles")
+        if bubbles ~= nil then
+            o.setVectorLines({})
+            o.setTable("ym-measuring-circles", nil)
+            cleared = cleared + 1
+        end
+    end
+
+    if alt then
+        printToColor("Cleared measuring bubbles on "..cleared.." selected object(s).", playerColor, {1,1,1})
+    else
+        printToAll("Cleared measuring bubbles on "..cleared.." objects.", {1,1,1})
+    end
+end
+
+function clearHandDrawnLines(obj, playerColor, alt)
+    local clearedAll = 0
+    if coherencyMonitorActive then stopCoherencyMonitor() end
+    Global.setVectorLines({})
+    for _, o in ipairs(getAllObjects()) do
+        if o.getTable("ym-measuring-circles") == nil then
+            local lines = o.getVectorLines()
+            if lines and #lines > 0 then
+                o.setVectorLines({})
+                clearedAll = clearedAll + 1
+            end
+        end
+    end
+    printToAll("Cleared hand-drawn lines on "..clearedAll.." objects.", {1,1,1})
+end
+
+-- Highlight ownership coordination with SelectionHighlighter. While our monitors
+-- glow a model, SelectionHighlighter must leave that model alone, otherwise it
+-- snapshots our colour as the model's "original" and re-applies it on deselect
+-- (so the glow survives the monitor). hold/release tell it to stand off and
+-- resume. No-ops when the highlighter object isn't present.
+local SELECTION_HIGHLIGHTER_GUID = "27de4f"
+local function holdSelectionHighlight(guid)
+    local sh = getObjectFromGUID(SELECTION_HIGHLIGHTER_GUID)
+    if sh ~= nil then sh.call("holdHighlight", {guid = guid}) end
+end
+local function releaseSelectionHighlight(guid)
+    local sh = getObjectFromGUID(SELECTION_HIGHLIGHTER_GUID)
+    if sh ~= nil then sh.call("releaseHighlight", {guid = guid}) end
+end
+
+-- Live coherency / range monitor for a captured set of models.
+-- Measures base-to-base (edge-to-edge) on the table plane (x/z), ignoring height,
+-- and enforces two rules:
+--   * Coherency: every model must have at least one other model within 2".
+--   * Range:     every model must be within 9" of every other model.
+-- While active, a repeating timer re-reads the models' live positions and
+-- redraws the breach lines so they follow the models (and appear/disappear as
+-- breaches resolve), like the measuring bubbles. Lines are global vectors.
+--   * orange = model out of 2" coherency (drawn to its nearest model)
+--   * red    = a pair of models more than 9" apart
+coherencyMonitorActive = false
+coherencyMonitorGuids = {}
+coherencyMonitorTimer = nil
+coherencyTimeoutTimer = nil -- one-shot auto-stop timer
+coherencyLabels = {} -- pool of 3DText label entries {obj,key,pos,text,color,active}
+
+-- Cached pairwise geometry so the live monitor doesn't recompute the whole
+-- O(n^2) base-gap matrix every tick. Indices are 1..#coherencyMonitorGuids and
+-- stay aligned with coherencyDesc; a deletion triggers a full rebuild that
+-- compacts the dead entry out. Routine movement only refreshes the moved
+-- models' rows (O(moving * n)) via the motion loop below.
+coherencyDesc = {}            -- desc[i] = base descriptor for monitored model i
+coherencyGap = {}             -- gap[i][j] = cached base-to-base gap
+coherencyCp = {}              -- cp[i][j]  = base-edge point on i toward j (for drawing)
+coherencyIndexByGuid = {}     -- guid -> current index, for O(1) event filtering
+coherencyMotionTimer = nil    -- runs ONLY while monitored models are moving
+coherencyMotionTicks = 0      -- motion-loop tick counter, for the label cadence
+coherencyPrevMoving = {}      -- set of indices that were moving last tick
+coherencyHighlighted = {}     -- guid -> true: monitored models currently glowing green
+
+local COHERENCY_RANGE = 2 -- inches, base-to-base
+local COHERENCY_OK_COLOR = {0, 1, 0} -- green glow on a model that is in coherency
+local COHERENCY_MAX = 9   -- inches, base-to-base
+local COHERENCY_LIFT = 0.2 -- raise lines slightly so they sit above the bases
+local COHERENCY_LABEL_LIFT = 0.5 -- raise distance text a little above the lines
+local COHERENCY_REFRESH = 0.1 -- seconds between redraws WHILE models are moving
+local COHERENCY_TIMEOUT = 60 -- auto-stop if left on this many seconds
+-- Soft backstop on selection size. The monitor is now event-driven (idle costs
+-- nothing; a moving model only re-measures its own row, O(moving * n)), so this
+-- can safely be raised well beyond the old O(n^2)-per-tick limit if desired.
+local COHERENCY_MAX_MODELS = 30
+-- Hard cap on how many breach lines/labels are ever drawn at once. A unit split
+-- into two clusters >9" apart breaches on a*b pairs (a 12+12 split = 144 lines),
+-- and each line is a vector line + a 3DText label -- enough to choke the table.
+-- We cap the rendered set so the draw cost stays bounded no matter the spread.
+local COHERENCY_MAX_LINES = 24
+-- The 3DText distance labels are far costlier than the (batched) vector lines:
+-- each is a separate object needing setPosition + TextTool calls. So update them
+-- only every Nth motion tick (lines still follow every tick), and never more
+-- than a couple of them. Labels are diffed and parked (never destroyed mid-run).
+local COHERENCY_LABEL_EVERY = 2 -- update labels every Nth motion tick (lines: every tick)
+local COHERENCY_LABEL_PARK = {0, -50, 0} -- offscreen spot for unused (parked) labels
+local COHERENCY_LABEL_TAG = "coherencyLabel" -- GMNotes marker for sweep-on-load
+
+-- Spawn a flat, locked 3DText object to use as a floating distance label.
+-- Tagged via GMNotes so any label that leaks into a save is swept on load.
+local function spawnCoherencyLabel(pos, text, color)
+    return spawnObjectData({
+        data = {
+            Name = "3DText",
+            Transform = {
+                posX = pos[1], posY = pos[2], posZ = pos[3],
+                rotX = 90, rotY = 0, rotZ = 0,
+                scaleX = 1, scaleY = 1, scaleZ = 1
+            },
+            Text = {
+                Text = text,
+                colorstate = { r = color[1], g = color[2], b = color[3] },
+                fontSize = 32
+            },
+            Locked = true,
+            GMNotes = COHERENCY_LABEL_TAG
+        }
+    })
+end
+
+-- Destroy any coherency labels left in the world (e.g. from a save taken while
+-- the monitor was active). Identified by their GMNotes marker. Run on load.
+function cleanupOrphanCoherencyLabels()
+    for _, o in ipairs(getAllObjects()) do
+        if o.getGMNotes() == COHERENCY_LABEL_TAG then
+            destroyObject(o)
+        end
+    end
+end
+
+-- Reconcile the label pool with the requested specs ({key, pos, text, color}).
+-- Each spec is keyed by its breach (rule + model pair) so a label keeps a stable
+-- pool slot across ticks and only its OWN object's API calls fire when its pos/
+-- text/colour actually change (diffing). Labels for breaches that vanished are
+-- PARKED offscreen and blanked -- never destroyed -- so an oscillating breach
+-- count during a drag causes no spawn/destroy churn.
+local function applyLabel(e, spec, force)
+    local o = e.obj
+    if o == nil or o.isDestroyed() then return end
+    if force or e.pos[1] ~= spec.pos[1] or e.pos[2] ~= spec.pos[2] or e.pos[3] ~= spec.pos[3] then
+        o.setPosition(spec.pos)
+        e.pos[1], e.pos[2], e.pos[3] = spec.pos[1], spec.pos[2], spec.pos[3]
+    end
+    if force or e.text ~= spec.text then
+        o.TextTool.setValue(spec.text)
+        e.text = spec.text
+    end
+    if force or e.color[1] ~= spec.color[1] or e.color[2] ~= spec.color[2] or e.color[3] ~= spec.color[3] then
+        o.TextTool.setFontColor(spec.color)
+        e.color[1], e.color[2], e.color[3] = spec.color[1], spec.color[2], spec.color[3]
+    end
+end
+
+local function updateCoherencyLabels(specs)
+    -- Index currently-active labels by key for O(1) reuse.
+    local byKey = {}
+    for _, e in ipairs(coherencyLabels) do
+        if e.active and e.key ~= nil then byKey[e.key] = e end
+    end
+
+    local usedKeys = {}
+    for _, spec in ipairs(specs) do
+        usedKeys[spec.key] = true
+        local e = byKey[spec.key]
+        if e ~= nil then
+            applyLabel(e, spec, false) -- same breach as last tick: diff, skip unchanged
+        else
+            -- Reuse a parked entry if one exists, else spawn a new label object.
+            local parked = nil
+            for _, cand in ipairs(coherencyLabels) do
+                if not cand.active then parked = cand; break end
+            end
+            if parked ~= nil then
+                parked.key = spec.key
+                parked.active = true
+                applyLabel(parked, spec, true) -- repurposed: force all fields
+                byKey[spec.key] = parked
+            else
+                local lbl = spawnCoherencyLabel(spec.pos, spec.text, spec.color)
+                local entry = {
+                    obj = lbl, key = spec.key, active = true,
+                    pos = {spec.pos[1], spec.pos[2], spec.pos[3]},
+                    text = spec.text,
+                    color = {spec.color[1], spec.color[2], spec.color[3]},
+                }
+                coherencyLabels[#coherencyLabels + 1] = entry
+                byKey[spec.key] = entry
+            end
+        end
+    end
+
+    -- Park any label whose breach is no longer shown: blank it and move it
+    -- offscreen once, then leave it idle for later reuse (no destroy).
+    for _, e in ipairs(coherencyLabels) do
+        if e.active and not usedKeys[e.key] then
+            e.active = false
+            e.key = nil
+            local o = e.obj
+            if o ~= nil and not o.isDestroyed() then
+                if e.text ~= "" then o.TextTool.setValue(""); e.text = "" end
+                o.setPosition(COHERENCY_LABEL_PARK)
+                e.pos[1], e.pos[2], e.pos[3] = COHERENCY_LABEL_PARK[1], COHERENCY_LABEL_PARK[2], COHERENCY_LABEL_PARK[3]
+            end
+        end
+    end
+end
+
+function stopCoherencyMonitor()
+    coherencyMonitorActive = false
+    if coherencyMonitorTimer ~= nil then
+        Wait.stop(coherencyMonitorTimer)
+        coherencyMonitorTimer = nil
+    end
+    if coherencyMotionTimer ~= nil then
+        Wait.stop(coherencyMotionTimer)
+        coherencyMotionTimer = nil
+    end
+    if coherencyTimeoutTimer ~= nil then
+        Wait.stop(coherencyTimeoutTimer)
+        coherencyTimeoutTimer = nil
+    end
+    -- Drop the green coherency glow from every model we lit, and hand ownership
+    -- back to SelectionHighlighter.
+    for guid in pairs(coherencyHighlighted) do
+        local o = getObjectFromGUID(guid)
+        if o ~= nil and not o.isDestroyed() then o.highlightOff() end
+        releaseSelectionHighlight(guid)
+    end
+    coherencyHighlighted = {}
+    coherencyMonitorGuids = {}
+    coherencyDesc = {}
+    coherencyGap = {}
+    coherencyCp = {}
+    coherencyIndexByGuid = {}
+    coherencyMotionTicks = 0
+    coherencyPrevMoving = {}
+    for _, e in ipairs(coherencyLabels) do
+        if e.obj ~= nil and not e.obj.isDestroyed() then
+            destroyObject(e.obj)
+        end
+    end
+    coherencyLabels = {}
+    Global.setVectorLines({})
+end
+
+-- Build a lightweight descriptor for a model's base: world centre, the base's
+-- two semi-radii (a along local x, b along local z, in inches) and the model's
+-- local x/z unit axes. The base is treated as an ellipse that rotates with the
+-- model -- getTransformRight()/Forward() are unit vectors of the model's local
+-- axes, so this is rotation-correct for ovals without any handedness guess.
+local function buildBaseDescriptor(o)
+    local base = determineBaseInInches(o)
+    return {
+        pos = o.getPosition(),
+        a = base.x,
+        b = base.z,
+        right = o.getTransformRight(),
+        forward = o.getTransformForward()
+    }
+end
+
+-- Radius of the descriptor's ellipse base along world unit direction (dx,dz),
+-- via the ellipse polar equation. Exact for circles and for ovals along the
+-- centre-to-centre line.
+local function baseRadiusInDir(d, dx, dz)
+    local lx = dx * d.right.x + dz * d.right.z      -- direction in local x (unit axis)
+    local lz = dx * d.forward.x + dz * d.forward.z  -- direction in local z (unit axis)
+    return 1 / math.sqrt((lx * lx) / (d.a * d.a) + (lz * lz) / (d.b * d.b))
+end
+
+-- Base-to-base (edge-to-edge) gap between two descriptors, measured along the
+-- centre-to-centre line, plus the base-edge point on each (for drawing). O(1).
+local function baseGap(d1, d2)
+    local dx, dz = d2.pos.x - d1.pos.x, d2.pos.z - d1.pos.z
+    local centre = math.sqrt(dx * dx + dz * dz)
+    if centre < 1e-6 then
+        return 0, d1.pos, d2.pos -- coincident centres
+    end
+    local ux, uz = dx / centre, dz / centre
+    local r1 = baseRadiusInDir(d1, ux, uz)
+    local r2 = baseRadiusInDir(d2, -ux, -uz)
+    local gap = centre - r1 - r2
+    if gap < 0 then gap = 0 end -- bases touching/overlapping
+    local p1 = { x = d1.pos.x + ux * r1, z = d1.pos.z + uz * r1 }
+    local p2 = { x = d2.pos.x - ux * r2, z = d2.pos.z - uz * r2 }
+    return gap, p1, p2
+end
+
+-- Recompute just one model's row/column of the cached gap/cp matrices after its
+-- descriptor (coherencyDesc[i]) has been refreshed. O(n). Used by the motion
+-- loop so a moving model only re-measures against the others, not every pair.
+local function recomputeCoherencyRow(i)
+    local di = coherencyDesc[i]
+    if di == nil then return end
+    for j = 1, #coherencyDesc do
+        if j ~= i and coherencyDesc[j] ~= nil then
+            local g, pi, pj = baseGap(di, coherencyDesc[j])
+            coherencyGap[i][j], coherencyGap[j][i] = g, g
+            coherencyCp[i][j],  coherencyCp[j][i]  = pi, pj
+        end
+    end
+end
+
+-- Full O(n^2) rebuild of the cache: resolve the monitored set to live objects
+-- (compacting any that were deleted so indices stay dense and aligned), then
+-- recompute every pairwise gap once. Returns the live model count. Called on
+-- start and when a monitored model is deleted -- NOT every tick.
+local function coherencyFullRecompute()
+    local guids, desc, indexByGuid = {}, {}, {}
+    for _, guid in ipairs(coherencyMonitorGuids) do
+        local o = getObjectFromGUID(guid)
+        if o ~= nil and not o.isDestroyed() then
+            guids[#guids + 1] = guid
+            desc[#desc + 1] = buildBaseDescriptor(o)
+            indexByGuid[guid] = #guids
+        end
+    end
+    coherencyMonitorGuids = guids
+    coherencyDesc = desc
+    coherencyIndexByGuid = indexByGuid
+
+    local n = #desc
+    coherencyGap, coherencyCp = {}, {}
+    for i = 1, n do coherencyGap[i] = {}; coherencyCp[i] = {} end
+    for i = 1, n do
+        for j = i + 1, n do
+            local g, pi, pj = baseGap(desc[i], desc[j])
+            coherencyGap[i][j], coherencyGap[j][i] = g, g
+            coherencyCp[i][j],  coherencyCp[j][i]  = pi, pj
+        end
+    end
+    return n
+end
+
+-- Build the breach lines/labels from the CACHED gap/cp (no base-gap math here)
+-- and push them to the table. Lines update on every call; labels are far costlier
+-- (per-object 3DText API calls) so they're only reconciled when updateLabels is
+-- true (see the motion loop's cadence) and we draw a number on only a couple of
+-- lines -- the coherency (orange) breaches plus the single worst range (red) one.
+-- The rendered line set is bounded by COHERENCY_MAX_LINES.
+--   * orange = a model with no other model within 2" (drawn to its nearest)
+--   * red    = a model out of 9" range (drawn to its single worst partner)
+local function drawCoherency(updateLabels)
+    if not coherencyMonitorActive then return end
+    local desc, gap, cp = coherencyDesc, coherencyGap, coherencyCp
+    local n = #desc
+    if n < 2 then
+        stopCoherencyMonitor()
+        return
+    end
+
+    -- Collect breach candidates, then render only the most important ones (up to
+    -- COHERENCY_MAX_LINES) so a wide spread can't flood the table with lines.
+    local breaches = {}  -- { i, j, d, color, critical }
+    local function add(i, j, d, color, critical)
+        breaches[#breaches + 1] = { i = i, j = j, d = d, color = color, critical = critical }
+    end
+
+    -- Rule 1: every model needs at least one other model within 2" base-to-base.
+    -- If none qualifies, flag the gap to its nearest neighbour (orange, critical).
+    -- coherent[i] records the per-model status so we can glow it green below.
+    local coherent = {}
+    for i = 1, n do
+        local hasBuddy = false
+        local nearest, nearestDist = nil, math.huge
+        for j = 1, n do
+            if i ~= j then
+                local d = gap[i][j]
+                if d ~= nil then
+                    if d <= COHERENCY_RANGE then hasBuddy = true end
+                    if d < nearestDist then nearestDist = d; nearest = j end
+                end
+            end
+        end
+        coherent[i] = hasBuddy
+        if not hasBuddy and nearest then
+            add(i, nearest, nearestDist, {1, 0.5, 0}, true)
+        end
+    end
+
+    -- Glow each monitored model green while it is in coherency (in-2" of a buddy)
+    -- for at-a-glance clarity; drop the glow when it falls out. We take ownership
+    -- from SelectionHighlighter while glowing (hold) and hand it back when we stop
+    -- (release), so the green can't be snapshotted and restored on deselect.
+    for i = 1, n do
+        local guid = coherencyMonitorGuids[i]
+        local o = guid and getObjectFromGUID(guid)
+        if o ~= nil and not o.isDestroyed() then
+            if coherent[i] then
+                if not coherencyHighlighted[guid] then
+                    holdSelectionHighlight(guid)
+                    o.highlightOn(COHERENCY_OK_COLOR)
+                    coherencyHighlighted[guid] = true
+                end
+            elseif coherencyHighlighted[guid] then
+                o.highlightOff()
+                releaseSelectionHighlight(guid)
+                coherencyHighlighted[guid] = nil
+            end
+        end
+    end
+
+    -- Rule 2: every model must be within 9" of every other. Drawing a line per
+    -- breaching PAIR is O(n^2) lines (a 12+12 split = 144); instead flag at most
+    -- one line per model -- to its single worst out-of-range partner, deduped --
+    -- so a split unit draws ~n lines while still marking every offending model.
+    local redSeen = {}
+    for i = 1, n do
+        local worstJ, worstD = nil, COHERENCY_MAX
+        for j = 1, n do
+            if i ~= j then
+                local d = gap[i][j]
+                if d ~= nil and d > worstD then worstD = d; worstJ = j end
+            end
+        end
+        if worstJ then
+            local key = (i < worstJ) and (i * 100000 + worstJ) or (worstJ * 100000 + i)
+            if not redSeen[key] then
+                redSeen[key] = true
+                add(i, worstJ, worstD, {1, 0, 0}, false)
+            end
+        end
+    end
+
+    -- Render the most important breaches up to the hard cap: critical coherency
+    -- (orange) breaches first, then the most severe range (red) breaches by gap.
+    table.sort(breaches, function(a, b)
+        if a.critical ~= b.critical then return a.critical end
+        return a.d > b.d
+    end)
+    local shown = math.min(#breaches, COHERENCY_MAX_LINES)
+
+    local lines = {}
+    local labelSpecs = updateLabels and {} or nil
+    local redLabelDrawn = false
+    for k = 1, shown do
+        local br = breaches[k]
+        local pi, pj = cp[br.i][br.j], cp[br.j][br.i]
+        if pi ~= nil and pj ~= nil then
+            local yi, yj = desc[br.i].pos.y, desc[br.j].pos.y
+            lines[#lines + 1] = {
+                points = {{pi.x, yi + COHERENCY_LIFT, pi.z}, {pj.x, yj + COHERENCY_LIFT, pj.z}},
+                color = br.color, thickness = 0.15,
+            }
+            -- Number only the orange breaches and the single worst red one.
+            if updateLabels then
+                local wantLabel = br.critical
+                if not br.critical and not redLabelDrawn then wantLabel = true; redLabelDrawn = true end
+                if wantLabel then
+                    local lo, hi = br.i, br.j
+                    if lo > hi then lo, hi = hi, lo end
+                    labelSpecs[#labelSpecs + 1] = {
+                        key = (br.critical and "O" or "R") .. lo .. ":" .. hi,
+                        pos = {(pi.x + pj.x) / 2, (yi + yj) / 2 + COHERENCY_LABEL_LIFT, (pi.z + pj.z) / 2},
+                        text = string.format("%.1f\"", br.d),
+                        color = br.color,
+                    }
+                end
+            end
+        end
+    end
+
+    Global.setVectorLines(lines)
+    if updateLabels then updateCoherencyLabels(labelSpecs) end
+end
+
+-- Motion loop. Runs ONLY while one or more monitored models are in motion
+-- (held or not yet resting). Each tick it refreshes just the moving models'
+-- descriptors and recomputes their rows (O(moving * n)), then redraws. When
+-- nothing is moving it stops itself; the cached lines stay on the table until
+-- the next pickup/drop. A deleted model triggers a one-off full rebuild.
+local function coherencyMotionTick()
+    if not coherencyMonitorActive then return end
+    coherencyMotionTicks = coherencyMotionTicks + 1
+
+    local movingIdx, movingObj, needsRebuild = {}, {}, false
+    for i = 1, #coherencyMonitorGuids do
+        local o = getObjectFromGUID(coherencyMonitorGuids[i])
+        if o == nil or o.isDestroyed() then
+            needsRebuild = true
+        elseif o.held_by_color ~= nil or o.resting == false then
+            movingIdx[i] = true
+            movingObj[i] = o
+        end
+    end
+
+    if needsRebuild then
+        coherencyPrevMoving = {}
+        if coherencyFullRecompute() < 2 then stopCoherencyMonitor() else drawCoherency(true) end
+        return
+    end
+
+    -- Recompute the union of models moving now and last tick, so the tick a model
+    -- comes to rest its final position is captured before the loop stops.
+    local refresh = {}
+    for i in pairs(movingIdx) do refresh[i] = true end
+    for i in pairs(coherencyPrevMoving) do
+        if movingIdx[i] == nil then
+            local o = getObjectFromGUID(coherencyMonitorGuids[i])
+            if o ~= nil and not o.isDestroyed() then movingObj[i] = o; refresh[i] = true end
+        end
+    end
+    for i in pairs(refresh) do coherencyDesc[i] = buildBaseDescriptor(movingObj[i]) end
+    for i in pairs(refresh) do recomputeCoherencyRow(i) end
+
+    coherencyPrevMoving = movingIdx
+
+    if next(movingIdx) == nil then
+        -- Everything is at rest: draw once WITH labels (accurate final numbers),
+        -- then stop polling. Cache and drawn lines persist until the next pickup.
+        drawCoherency(true)
+        coherencyPrevMoving = {}
+        if coherencyMotionTimer ~= nil then
+            Wait.stop(coherencyMotionTimer)
+            coherencyMotionTimer = nil
+        end
+        return
+    end
+
+    -- Lines every tick (cheap, batched); labels only every Nth tick (costly).
+    drawCoherency(coherencyMotionTicks % COHERENCY_LABEL_EVERY == 0)
+end
+
+local function startCoherencyMotionLoop()
+    if not coherencyMonitorActive then return end
+    if coherencyMotionTimer ~= nil then return end -- already running
+    coherencyMotionTimer = Wait.time(coherencyMotionTick, COHERENCY_REFRESH, -1)
+end
+
+-- Manual full redraw / back-compat entry point. The live monitor no longer
+-- calls this every tick -- routine movement updates only the moved rows via the
+-- motion loop; this rebuilds the whole cache and redraws on demand.
+function refreshCoherencyLines()
+    if not coherencyMonitorActive then return end
+    if coherencyFullRecompute() < 2 then
+        stopCoherencyMonitor()
+        return
+    end
+    drawCoherency(true)
+end
+
+-- Object events (delivered for ALL objects). Kept cheap: bail immediately when
+-- the monitor is off or the object isn't part of the monitored set.
+function onObjectPickUp(player_color, obj)
+    if not coherencyMonitorActive then return end
+    if coherencyIndexByGuid[obj.getGUID()] == nil then return end
+    startCoherencyMotionLoop()
+end
+
+function onObjectDrop(player_color, obj)
+    if not coherencyMonitorActive then return end
+    local i = coherencyIndexByGuid[obj.getGUID()]
+    if i == nil then return end
+    -- Snap the lines to the model's new spot immediately (covers a drop that
+    -- lands already-resting), then run the motion loop to track any physics
+    -- settle; it self-stops once everything is at rest.
+    coherencyDesc[i] = buildBaseDescriptor(obj)
+    recomputeCoherencyRow(i)
+    drawCoherency(true)
+    startCoherencyMotionLoop()
+end
+
+function onObjectDestroy(obj)
+    if not coherencyMonitorActive then return end
+    if coherencyIndexByGuid[obj.getGUID()] == nil then return end
+    -- The object still exists during this event; defer a frame so the rebuild's
+    -- getObjectFromGUID skips it, then recompute the smaller set (or stop).
+    Wait.frames(function()
+        if not coherencyMonitorActive then return end
+        if coherencyFullRecompute() < 2 then stopCoherencyMonitor() else drawCoherency(true) end
+    end, 1)
+end
+
+-- Drive the live coherency monitor.
+--   LEFT click  -> (re)start the monitor on the player's selected models.
+--   RIGHT click -> stop it and remove the lines/labels.
+function checkCoherency(a, b, c)
+    -- Support button (a=object, b=color, c=altClick) and hotkey (a=color)
+    -- invocation, mirroring arrangeModelsWith2Inch.
+    local playerColor, alt
+    if type(a) == "string" then
+        playerColor = a       -- hotkey: no right-click concept
+        alt = false
+    else
+        playerColor = b       -- button
+        alt = c and true or false
+    end
+
+    -- Right click removes the lines (stops the monitor).
+    if alt then
+        if coherencyMonitorActive then
+            stopCoherencyMonitor()
+            if playerColor then
+                printToColor("Live coherency check OFF.", playerColor, {1, 1, 1})
+            end
+        elseif playerColor then
+            printToColor("No coherency check is running.", playerColor, {1, 1, 1})
+        end
+        return
+    end
+
+    local playerObj = Player[playerColor]
+    if not playerObj then
+        print("Player object not found for color: " .. tostring(playerColor))
+        return
+    end
+
+    local objs = playerObj.getSelectedObjects()
+    if #objs < 2 then
+        -- Leave any running monitor untouched on an empty/short selection.
+        printToColor("Select at least 2 models to check coherency.", playerColor, {1, 0.5, 0})
+        return
+    end
+
+    -- Soft cap so an accidental whole-army box-select doesn't pay a big one-off
+    -- O(n^2) recompute. Leave any running monitor untouched.
+    if #objs > COHERENCY_MAX_MODELS then
+        broadcastToColor(string.format("Coherency check skipped: %d models selected (max %d). Select a single unit.", #objs, COHERENCY_MAX_MODELS), playerColor, {1, 0.3, 0.3})
+        return
+    end
+
+    -- Left click (re)starts on the current selection. Stop any prior run first
+    -- so a fresh selection fully replaces the old monitored set.
+    if coherencyMonitorActive then
+        stopCoherencyMonitor()
+    end
+
+    -- Capture the monitored set by GUID so it keeps tracking these models even
+    -- after they are deselected or moved.
+    coherencyMonitorGuids = {}
+    for _, o in ipairs(objs) do
+        table.insert(coherencyMonitorGuids, o.getGUID())
+    end
+
+    coherencyMonitorActive = true
+    coherencyMotionTicks = 0
+    coherencyPrevMoving = {}
+    -- One full O(n^2) recompute now; after this the lines are only refreshed
+    -- when a monitored model actually moves (onObjectPickUp/onObjectDrop start
+    -- the motion loop), so an idle check costs nothing.
+    if coherencyFullRecompute() < 2 then
+        stopCoherencyMonitor()
+        printToColor("Coherency needs at least 2 live models.", playerColor, {1, 0.5, 0})
+        return
+    end
+    drawCoherency(true)
+
+    -- Auto-stop after COHERENCY_TIMEOUT seconds so a forgotten monitor does not
+    -- keep redrawing forever. Manual stop / restart cancels this in stopCoherencyMonitor.
+    coherencyTimeoutTimer = Wait.time(function()
+        if coherencyMonitorActive then
+            stopCoherencyMonitor()
+            if playerColor then
+                printToColor(string.format("Live coherency check auto-stopped after %ds.", COHERENCY_TIMEOUT), playerColor, {1, 1, 1})
+            end
+        end
+    end, COHERENCY_TIMEOUT)
+
+    printToColor(string.format("Live coherency check ON for %d models. Orange = out of 2\" coherency, Red = out of 9\" range (one line per offending model). Lines follow models as you move them; auto-stops after %ds or RIGHT-CLICK Coherency to remove them.", #objs, COHERENCY_TIMEOUT), playerColor, {0, 1, 0})
+end
+
+-- ====================================================================
+-- Engagement Range
+-- Highlight every model on the table whose base is within ENGAGEMENT_RANGE
+-- inches of ANY currently-selected model, then keep that set live for
+-- ENGAGEMENT_HIGHLIGHT seconds: it re-scans every ENGAGEMENT_REFRESH seconds
+-- so models that move into range light up and models that move out go dark.
+-- Distances reuse the same base-to-base geometry (buildBaseDescriptor +
+-- baseGap) as the coherency monitor, so an oval base is measured edge-to-edge,
+-- rotation-correct. "Models" are every Figurine/Generic/Custom_Model on the
+-- table; the captured selection is excluded, and each neighbour counts once.
+-- ====================================================================
+local ENGAGEMENT_RANGE = 2          -- inches, base-to-base
+local ENGAGEMENT_HIGHLIGHT = 60     -- seconds the live highlight runs
+local ENGAGEMENT_REFRESH = 0.15      -- seconds between re-scans during the window
+local ENGAGEMENT_COLOR = {1, 0.15, 0.15} -- red glow on neighbours in range
+local ENGAGEMENT_MAX_SELECTED = 30  -- skip an accidental whole-army box-select
+
+-- A table object counts as a "model" using the same tag set as
+-- SelectionHighlighter (Figurine / Generic / Custom_Model).
+local function isModelObject(o)
+    local t = o.tag
+    return t == "Figurine" or t == "Generic" or t == "Custom_Model"
+end
+
+-- Live monitor state. Selection is captured by GUID so it keeps tracking the
+-- same models as they (or their neighbours) move during the window.
+engagementMonitorActive = false
+engagementSelGuids = {}        -- captured selection
+engagementHighlighted = {}     -- guid -> true: models we are currently glowing
+engagementTimer = nil          -- repeating ENGAGEMENT_REFRESH tick
+engagementTicksLeft = 0        -- ticks remaining before auto-stop
+
+function stopEngagementMonitor()
+    engagementMonitorActive = false
+    if engagementTimer ~= nil then
+        Wait.stop(engagementTimer)
+        engagementTimer = nil
+    end
+    -- Drop only the highlights we applied (leave any we never touched alone), and
+    -- hand ownership back to SelectionHighlighter.
+    for guid in pairs(engagementHighlighted) do
+        local o = getObjectFromGUID(guid)
+        if o ~= nil and not o.isDestroyed() then o.highlightOff() end
+        releaseSelectionHighlight(guid)
+    end
+    engagementHighlighted = {}
+    engagementSelGuids = {}
+    engagementTicksLeft = 0
+end
+
+-- One scan pass: resolve the captured selection to live models, find every
+-- other model within range, and reconcile glow on/off against last tick.
+-- Returns the in-range count, or nil if the whole selection is gone.
+local function engagementScan()
+    local selectedSet, selDesc = {}, {}
+    for _, guid in ipairs(engagementSelGuids) do
+        local o = getObjectFromGUID(guid)
+        if o ~= nil and not o.isDestroyed() then
+            selectedSet[guid] = true
+            selDesc[#selDesc + 1] = buildBaseDescriptor(o)
+        end
+    end
+    if #selDesc == 0 then return nil end -- every selected model deleted
+
+    local nowSet, count = {}, 0
+    for _, o in ipairs(getAllObjects()) do
+        local guid = o.getGUID()
+        if isModelObject(o) and not selectedSet[guid] and not nowSet[guid] then
+            local od = buildBaseDescriptor(o)
+            for _, sd in ipairs(selDesc) do
+                if baseGap(sd, od) <= ENGAGEMENT_RANGE then
+                    nowSet[guid] = true
+                    count = count + 1
+                    break
+                end
+            end
+        end
+    end
+
+    -- Reconcile: only toggle models that crossed the threshold this tick. Take
+    -- ownership from SelectionHighlighter while glowing (hold) and return it when
+    -- the model leaves range (release), so the red can't be restored on deselect.
+    for guid in pairs(engagementHighlighted) do
+        if not nowSet[guid] then
+            local o = getObjectFromGUID(guid)
+            if o ~= nil and not o.isDestroyed() then o.highlightOff() end
+            releaseSelectionHighlight(guid)
+        end
+    end
+    for guid in pairs(nowSet) do
+        if not engagementHighlighted[guid] then
+            local o = getObjectFromGUID(guid)
+            if o ~= nil and not o.isDestroyed() then
+                holdSelectionHighlight(guid)
+                o.highlightOn(ENGAGEMENT_COLOR)
+            end
+        end
+    end
+    engagementHighlighted = nowSet
+    return count
+end
+
+function showEngagementRange(a, b, c)
+    -- Support button (a=object, b=color, c=altClick) and hotkey (a=color)
+    -- invocation, mirroring checkCoherency.
+    local playerColor, alt
+    if type(a) == "string" then
+        playerColor = a
+        alt = false
+    else
+        playerColor = b
+        alt = c and true or false
+    end
+
+    -- Right click stops the monitor and clears the glow before the window ends.
+    if alt then
+        if engagementMonitorActive then
+            stopEngagementMonitor()
+            if playerColor then printToColor("Engagement range OFF.", playerColor, {1, 1, 1}) end
+        elseif playerColor then
+            printToColor("No engagement range is running.", playerColor, {1, 1, 1})
+        end
+        return
+    end
+
+    local playerObj = Player[playerColor]
+    if not playerObj then
+        print("Player object not found for color: " .. tostring(playerColor))
+        return
+    end
+
+    local sel = playerObj.getSelectedObjects()
+    if #sel < 1 then
+        printToColor("Select at least one model to check engagement range.", playerColor, {1, 0.5, 0})
+        return
+    end
+    if #sel > ENGAGEMENT_MAX_SELECTED then
+        broadcastToColor(string.format("Engagement range skipped: %d models selected (max %d).", #sel, ENGAGEMENT_MAX_SELECTED), playerColor, {1, 0.3, 0.3})
+        return
+    end
+
+    -- A fresh click fully replaces any prior run.
+    if engagementMonitorActive then stopEngagementMonitor() end
+
+    engagementSelGuids = {}
+    for _, o in ipairs(sel) do
+        engagementSelGuids[#engagementSelGuids + 1] = o.getGUID()
+    end
+    engagementMonitorActive = true
+    engagementHighlighted = {}
+    engagementTicksLeft = math.ceil(ENGAGEMENT_HIGHLIGHT / ENGAGEMENT_REFRESH)
+
+    local count = engagementScan() or 0
+    if count == 0 then
+        printToColor(string.format("No models within %g\" of the selection.", ENGAGEMENT_RANGE), playerColor, {1, 1, 1})
+    else
+        broadcastToColor(string.format("%d model(s) within %g\" of the selection -- live for %ds (refreshing every %.1fs). RIGHT-CLICK Engagement Range to clear early.", count, ENGAGEMENT_RANGE, ENGAGEMENT_HIGHLIGHT, ENGAGEMENT_REFRESH), playerColor, {0, 1, 0})
+    end
+
+    -- Refresh loop: re-scan every ENGAGEMENT_REFRESH seconds, auto-stop after
+    -- the window elapses or once the whole selection is gone.
+    engagementTimer = Wait.time(function()
+        if not engagementMonitorActive then return end
+        if engagementScan() == nil then
+            stopEngagementMonitor()
+            return
+        end
+        engagementTicksLeft = engagementTicksLeft - 1
+        if engagementTicksLeft <= 0 then
+            stopEngagementMonitor()
+            printToAll(string.format("Engagement range check finished (%ds elapsed).", ENGAGEMENT_HIGHLIGHT), {1, 1, 1})
+        end
+    end, ENGAGEMENT_REFRESH, -1)
+end
+
+-- ====================================================================
+-- Highlight painter
+-- LEFT-clicking Highlight paints the player's selected models with the colour
+-- currently shown on the swatch next to it; the swatch cycles its palette on
+-- click (right-click cycles backwards) and its face IS the chosen colour.
+-- Paint is permanent for the session: a paint applied while a model is selected
+-- is also written into SelectionHighlighter's restore-on-deselect snapshot
+-- (setPersistentHighlight), so deselecting restores the paint instead of wiping
+-- it. RIGHT-clicking Highlight removes highlights from every object on the
+-- table -- except models a live coherency/engagement monitor is glowing (their
+-- externalHolds in SelectionHighlighter), which clean up when the monitor stops.
+-- ====================================================================
+local HIGHLIGHT_PALETTE = {
+    {name = "Yellow", rgb = {1, 1, 0}},
+    {name = "Orange", rgb = {1, 0.5, 0}},
+    {name = "Red",    rgb = {1, 0, 0}},
+    {name = "Pink",   rgb = {1, 0.4, 0.7}},
+    {name = "Purple", rgb = {0.7, 0.2, 1}},
+    {name = "Blue",   rgb = {0.2, 0.4, 1}},
+    {name = "Teal",   rgb = {0, 0.9, 0.9}},
+    {name = "Green",  rgb = {0, 1, 0}},
+    {name = "White",  rgb = {1, 1, 1}},
+}
+highlightColorIndex = 1
+highlightSwatchIndex = nil -- resolved in onload after the swatch is created
+
+-- Repaint the swatch's top button to the chosen colour (hover/press too, so it
+-- reads as a solid colour chip) and name the colour in its tooltip.
+function refreshHighlightSwatch()
+    if highlightSwatchIndex == nil then return end
+    local c = HIGHLIGHT_PALETTE[highlightColorIndex]
+    self.editButton({
+        index = highlightSwatchIndex,
+        color = c.rgb, hover_color = c.rgb, press_color = c.rgb,
+        tooltip = "Highlight color: " .. c.name .. "\nLEFT CLICK: next color\nRIGHT CLICK: previous color",
+    })
+end
+
+function cycleHighlightColor(_, _, alt)
+    local step = alt and -1 or 1
+    highlightColorIndex = ((highlightColorIndex - 1 + step) % #HIGHLIGHT_PALETTE) + 1
+    refreshHighlightSwatch()
+end
+
+-- Remove highlights from every object on the table (both players' paint, and
+-- any stray glow), then reset SelectionHighlighter's tracking so currently
+-- selected models fall back to the plain player-colour selection glow on its
+-- next tick. Models glowed by a live monitor (held in SelectionHighlighter's
+-- externalHolds) are left alone -- the monitor owns their highlight lifecycle.
+function clearAllHighlightPaint(playerColor)
+    local sh = getObjectFromGUID(SELECTION_HIGHLIGHTER_GUID)
+    local holds = {}
+    if sh ~= nil then
+        holds = sh.call("getExternalHolds") or {}
+        sh.call("clearPersistentHighlights")
+    end
+    local n = 0
+    for _, o in ipairs(getAllObjects()) do
+        if holds[o.getGUID()] == nil then
+            if o.getHighlightColor() ~= nil then n = n + 1 end
+            o.highlightOff()
+        end
+    end
+    if playerColor then
+        printToColor(string.format("Removed highlights from %d object(s).", n), playerColor, {1, 1, 1})
+    end
+end
+
+-- LEFT click: paint the selection in the swatch colour. RIGHT click: clear all.
+function applyHighlightPaint(a, b, c)
+    -- Support button (a=object, b=color, c=altClick) and hotkey (a=color)
+    -- invocation, mirroring checkCoherency.
+    local playerColor, alt
+    if type(a) == "string" then
+        playerColor = a
+        alt = false
+    else
+        playerColor = b
+        alt = c and true or false
+    end
+
+    if alt then
+        clearAllHighlightPaint(playerColor)
+        return
+    end
+
+    local playerObj = Player[playerColor]
+    if not playerObj then
+        print("Player object not found for color: " .. tostring(playerColor))
+        return
+    end
+
+    local sel = playerObj.getSelectedObjects()
+    if #sel == 0 then
+        printToColor("Select at least one model to highlight.", playerColor, {1, 0.5, 0})
+        return
+    end
+
+    local col = HIGHLIGHT_PALETTE[highlightColorIndex]
+    local sh = getObjectFromGUID(SELECTION_HIGHLIGHTER_GUID)
+    local n = 0
+    for _, o in ipairs(sel) do
+        if not o.isDestroyed() then
+            o.highlightOn(col.rgb)
+            -- The model is selected, so SelectionHighlighter has snapshotted (or
+            -- is about to snapshot) an "original" colour to restore on deselect;
+            -- point that snapshot at our paint so deselecting keeps it.
+            if sh ~= nil then
+                sh.call("setPersistentHighlight", {guid = o.getGUID(), color = col.rgb})
+            end
+            n = n + 1
+        end
+    end
+    printToColor(string.format("Highlighted %d model(s) in %s. RIGHT-CLICK Highlight to remove all highlights.", n, col.name), playerColor, col.rgb)
+end

@@ -1,0 +1,1125 @@
+-- FTC-GUID: f4ee71
+
+--[[
+	Gizmo's Chess Clock/Timer by Gizmo
+	https://steamcommunity.com/sharedfiles/filedetails/?id=1541793481
+
+	Keybind Addon by MoonkeyMod
+	https://steamcommunity.com/sharedfiles/filedetails/?id=2310083136
+
+	Color patch by Nyss AKA Liyarin
+	https://steamcommunity.com/id/Liyarin/myworkshopfiles/?appid=286160
+Host/Payed by Cratos
+https://steamcommunity.com/id/GodCratos/myworkshopfiles?appid=286160
+such Liyarin on Fiverr, he do good work.
+]]
+
+-- Liyarin's Vars
+
+pColors = {
+	pColor1 = "Blue",
+	pColor2 = "Red"
+}
+
+-- HUD overlay colours (hex rgba). Richer tones vs flat named colours.
+-- pColors above is kept for setColorTint() which only accepts TTS named colours.
+uiPanelColors = {
+	pColor1 = "#1A5FC8E6",  -- rich navy-blue, 90% opaque
+	pColor2 = "#B52020E6"   -- deep crimson,   90% opaque
+}
+
+-- Outline styles for active (running) vs passive (waiting) clock panels.
+UI_ACTIVE_OUTLINE       = "#FFFFFF"
+UI_ACTIVE_OUTLINE_SIZE  = "6"
+UI_P1_PASSIVE_OUTLINE   = "#5B8FDECC"
+UI_P2_PASSIVE_OUTLINE   = "#D46060CC"
+UI_PASSIVE_OUTLINE_SIZE = "2"
+
+-- Clock pill states: active (running) vs paused.
+CLOCK_PILL_ACTIVE_OUTLINE      = "#FFFFFF"
+CLOCK_PILL_ACTIVE_OUTLINE_SIZE = "4"
+CLOCK_PILL_ACTIVE_BG           = "rgba(0,0,0,0)"
+CLOCK_PILL_ACTIVE_TEXT         = "White"
+CLOCK_PILL_PASSIVE_OUTLINE     = "rgba(0,0,0,0)"
+CLOCK_PILL_PASSIVE_SIZE        = "0"
+CLOCK_PILL_PASSIVE_BG          = "#1A1A1ACC"
+CLOCK_PILL_PASSIVE_TEXT        = "#FFFFFF40"
+
+
+-- Original Vars
+
+clockWaitId = nil  Colons      = true
+holding  = false  holdTime    = 0
+holding_1= false hold_1Time  = 0
+holding_2= false hold_2Time  = 0
+
+unColoredColor = {105/255,101/255,98/255}
+holdColor_1 ="" holdColor_2 ="" holdColor=""
+holdPlayer_1="" holdPlayer_2=""
+
+data = {
+	start_1  = 5400   ,start_2     = 5400,
+	seconds_1= 5400   ,seconds_2   = 5400,
+	bonus_1  = 0      ,bonus_2     = 0,
+	delay_1  = 0      ,delay_2     = 0,
+	selDigit = 6      ,delayed     = 0,
+	state    = 11     ,storedState = 11,
+	ended_1  = true   ,ended_2     = true,
+DoTurns  = false  ,color_1="", color_2=""
+}
+
+HOLD = 1 RESOLUTION = 0.25
+tmpDigits =  {0,0,0,0,0,0,0,0,0,0}
+digitNames = {"Hr1_1","Mn1_10","Mn1_01","Sc1_10","Sc1_01","Hr2_1","Mn2_10","Mn2_01","Sc2_10","Sc2_01"}
+states = {"increment_1","increment_2","decrement_1","decrement_2","adjustTime","setTime","setBonus","setDelay","doDelay_1","doDelay_2","Paused"}
+--            1                2            3            4            5            6          7         8          9           10        11
+
+function onSave()
+	self.script_state = JSON.encode({
+		data = data,
+		colors = pColors
+	})
+--    return self.script_state
+end
+
+function onDestroy()
+	onSave()
+    if clockWaitId then
+        Wait.stop(clockWaitId)
+        clockWaitId = nil
+    end
+end
+
+function onLoad(json)
+
+	if json~="" and json~=nil then
+		local decoded = JSON.decode(json)
+		data = decoded.data
+		pColors = decoded.colors
+	else
+		data.seconds_1 = data.start_1 data.seconds_2 = data.start_2
+	end
+
+	Wait.condition(function()
+		Wait.frames(function()
+			changeButtonColors()
+		end, 10)
+	end, function()
+		for _, obj in pairs(getAllObjects()) do
+			if not obj.resting then
+				return false
+			end
+		end
+		return true
+	end, 10, changeButtonColors)
+
+    DisplayClock(1, data.seconds_1)
+    DisplayClock(2, data.seconds_2)
+    ensureChessStopwatchUI()
+    refreshHudHighlight()
+    -- Re-apply once Global.UI is guaranteed live (see note in refreshHudHighlight):
+    -- the immediate call can lose the load race against the overlay coming up.
+    -- The onClick wiring is re-pushed too, for the same reason.
+    Wait.time(function()
+        ensureChessStopwatchUI()
+        refreshHudHighlight()
+    end, 1)
+    -- Game Keys (Options -> Game Keys). Shared controls: the target side is
+    -- derived from the clock state, not from who pressed, so a single binding
+    -- serves every player (spectators included) - see PassClock/PauseClock.
+    addHotkey("Pass Chess Clock", function(playerColor, _, _)
+        PassClock(playerColor)
+    end)
+    addHotkey("Pause Chess Clock", function(playerColor, _, _)
+        PauseClock(playerColor)
+    end)
+    clockWaitId = Wait.time(Tick, RESOLUTION, -1)
+	end
+
+
+	function Tick()
+	    self.call(states[data.state],{})
+	    if holding==true then
+			if holdColor == "Grey" or (data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black") then
+	            return
+	        end
+	        holdTime = holdTime+RESOLUTION
+	    end
+	    if holding_1==true then
+	        hold_1Time = hold_1Time+RESOLUTION
+	    end
+	    if holding_2==true then
+	        hold_2Time = hold_2Time+RESOLUTION
+	    end
+	end
+	--Allows script buuton to call Gizmo's click functions
+
+
+-- Legacy numpad keys, kept for muscle memory but re-pointed at the shared
+-- state-derived controls (the primary bindings are the "Pass/Pause Chess Clock"
+-- Game Keys registered in onLoad). The old per-seat semantics - 9 Blue-only,
+-- 7 Red-only, each starting the presser's OWN clock while broadcasting "Time
+-- passed" - were misleading: pressed at the end of your turn they paused your
+-- clock instead of passing it.
+function onScriptingButtonDown(index, color)
+	if index == 9 or index == 7 then
+		PassClock(color)
+	elseif index == 8 then
+		PauseClock(color)
+	end
+end
+
+
+
+
+
+-- Gizmo's click functions
+	function Click_1(player, _, _)
+	    if hold_1Time<HOLD then
+	        if data.ended_1==true and data.seconds_1==0 then
+	            data.storedState=11 data.ended_1=false
+	            data.seconds_1 = data.start_1
+	        end
+	        if player.color == "Grey" or (data.DoTurns == true and data.color_1 ~= player.color and data.color_2 ~= player.color and player.color ~= "Black") then
+				-- Guarded click (spectator / colour-mode mismatch): swallow it, but
+				-- RESET the hold state instead of arming it. HUD/hotkey paths have no
+				-- mouse-up to clear holding_1, so arming here leaked an ever-growing
+				-- hold_1Time that swallowed the next legitimate click (Click_C below
+				-- already resets; this now matches it).
+				holding_1=false
+	            hold_1Time=0
+	            return
+	        end
+	        -- Blue clock already running → pause and turn panel Beige
+	        if data.state==1 or data.state==3 or data.state==9 then
+	            Pause()
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "outline", value = CLOCK_PILL_PASSIVE_OUTLINE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "outlineSize", value = CLOCK_PILL_PASSIVE_SIZE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "color", value = CLOCK_PILL_PASSIVE_BG})
+	            Global.call("setHudAttribute", {id = "ChsStpWatch1", attr = "color", value = CLOCK_PILL_PASSIVE_TEXT})
+	        elseif data.state==11 or data.state==1 or data.state==3 or data.state==9 or data.state==2 or data.state==4 or data.state==10 then
+	            -- Start player 1 (Blue) clock
+	            self.setColorTint(pColors.pColor1)
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "outline", value = CLOCK_PILL_ACTIVE_OUTLINE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "outlineSize", value = CLOCK_PILL_ACTIVE_OUTLINE_SIZE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "color", value = CLOCK_PILL_ACTIVE_BG})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "outline", value = CLOCK_PILL_PASSIVE_OUTLINE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "outlineSize", value = CLOCK_PILL_PASSIVE_SIZE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "color", value = CLOCK_PILL_PASSIVE_BG})
+	            Global.call("setHudAttribute", {id = "ChsStpWatch1", attr = "color", value = CLOCK_PILL_ACTIVE_TEXT})
+	            Global.call("setHudAttribute", {id = "ChsStpWatch2", attr = "color", value = CLOCK_PILL_PASSIVE_TEXT})
+	            Resume()
+	            if data.start_1==0 then
+	                data.seconds_1 = data.seconds_1-data.bonus_1
+	                if data.delay_1==0 then
+	                    data.state = 1
+	                else
+	                    data.delayed = data.delay_1
+	                    data.state = 9
+	                end
+	            else
+	                data.seconds_1 = data.seconds_1+data.bonus_1
+	                if data.delay_1==0 then
+	                    data.state = 3
+	                else
+	                    data.delayed = data.delay_1
+	                    data.state = 9
+	                end
+	            end
+	            SetTurn()
+	        elseif data.state==5 or data.state==6 then
+	            tmpDigits[data.selDigit] = tmpDigits[data.selDigit]+1
+	            if data.selDigit==1 or data.selDigit==3 or data.selDigit==5 or data.selDigit==6 or data.selDigit==8 or data.selDigit==10 then
+	                if tmpDigits[data.selDigit] > 9 then
+	                    tmpDigits[data.selDigit]=0
+	                end
+	            else
+	                if tmpDigits[data.selDigit] > 5 then
+	                    tmpDigits[data.selDigit]=0
+	                end
+	            end
+	            self.UI.show(digitNames[data.selDigit])
+	            self.UI.setAttribute(digitNames[data.selDigit] , "image", tmpDigits[data.selDigit])
+	        elseif data.state==7 or data.state==8 then
+	            tmpDigits[data.selDigit] = tmpDigits[data.selDigit]+1
+	            if data.selDigit==5 or data.selDigit==10 then
+	                if tmpDigits[data.selDigit] > 9 then
+	                    tmpDigits[data.selDigit]=0
+	                end
+	            else
+	                if tmpDigits[data.selDigit] > 5 then
+	                    tmpDigits[data.selDigit]=0
+	                end
+	            end
+	            self.UI.show(digitNames[data.selDigit])
+	            self.UI.setAttribute(digitNames[data.selDigit] , "image", tmpDigits[data.selDigit])
+	        end
+	    end
+	    holding_1=false
+	    hold_1Time=0
+	end
+	function Click_2(player, _, _)
+	    if hold_2Time<HOLD then
+	        if data.ended_2==true and data.seconds_2==0 then
+	            data.storedState=11 data.ended_2=false
+	            data.seconds_2 = data.start_2
+	        end
+	        if player.color == "Grey" or (data.DoTurns == true and data.color_1 ~= player.color and data.color_2 ~= player.color and player.color ~= "Black") then
+	            -- Same reset-not-arm fix as Click_1 (see comment there).
+	            holding_2=false
+	            hold_2Time=0
+	            return
+	        end
+	        -- Red clock already running → pause and turn panel Beige
+	        if data.state==2 or data.state==4 or data.state==10 then
+	            Pause()
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "outline", value = CLOCK_PILL_PASSIVE_OUTLINE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "outlineSize", value = CLOCK_PILL_PASSIVE_SIZE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "color", value = CLOCK_PILL_PASSIVE_BG})
+	            Global.call("setHudAttribute", {id = "ChsStpWatch2", attr = "color", value = CLOCK_PILL_PASSIVE_TEXT})
+	        elseif data.state==11 or data.state==1 or data.state==3 or data.state==9 or data.state==2 or data.state==4 or data.state==10 then
+	            -- Start player 2 (Red) clock
+	            self.setColorTint(pColors.pColor2)
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "outline", value = CLOCK_PILL_ACTIVE_OUTLINE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "outlineSize", value = CLOCK_PILL_ACTIVE_OUTLINE_SIZE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel2", attr = "color", value = CLOCK_PILL_ACTIVE_BG})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "outline", value = CLOCK_PILL_PASSIVE_OUTLINE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "outlineSize", value = CLOCK_PILL_PASSIVE_SIZE})
+	            Global.call("setHudAttribute", {id = "ClockSubPanel1", attr = "color", value = CLOCK_PILL_PASSIVE_BG})
+	            Global.call("setHudAttribute", {id = "ChsStpWatch2", attr = "color", value = CLOCK_PILL_ACTIVE_TEXT})
+	            Global.call("setHudAttribute", {id = "ChsStpWatch1", attr = "color", value = CLOCK_PILL_PASSIVE_TEXT})
+	            Resume()
+	            if data.start_2==0 then
+	                data.seconds_2 = data.seconds_2-data.bonus_2
+	                if data.delay_2==0 then
+	                    data.state = 2
+	                else
+	                    data.delayed = data.delay_2
+	                    data.state = 10
+	                end
+	            else
+	                data.seconds_2 = data.seconds_2+data.bonus_2
+	                if data.delay_2==0 then
+	                    data.state = 4
+	                else
+	                    data.delayed = data.delay_2
+	                    data.state = 10
+	                end
+	            end
+	            SetTurn()
+	        elseif data.state==5 or data.state==6 then
+	            tmpDigits[data.selDigit] = tmpDigits[data.selDigit]-1
+	            if tmpDigits[data.selDigit] < 0 then
+	                if data.selDigit==1 or data.selDigit==3 or data.selDigit==5 or data.selDigit==6 or data.selDigit==8 or data.selDigit==10 then
+	                    tmpDigits[data.selDigit]=9
+	                else
+	                    tmpDigits[data.selDigit]=5
+	                end
+	            end
+	            self.UI.show(digitNames[data.selDigit])
+	            self.UI.setAttribute(digitNames[data.selDigit] , "image", tmpDigits[data.selDigit])
+	        elseif data.state==7 or data.state==8 then
+	            tmpDigits[data.selDigit] = tmpDigits[data.selDigit]-1
+	            if tmpDigits[data.selDigit] < 0 then
+	                if data.selDigit==5 or data.selDigit==10 then
+	                    tmpDigits[data.selDigit]=9
+	                else
+	                    tmpDigits[data.selDigit]=5
+	                end
+	            end
+	            self.UI.show(digitNames[data.selDigit])
+	            self.UI.setAttribute(digitNames[data.selDigit] , "image", tmpDigits[data.selDigit])
+	        end
+	    end
+	    holding_2=false
+	    hold_2Time=0
+	end
+	function Click_C(player, _, _)
+	    if holdTime<HOLD then
+	        if player.color == "Grey" or (data.DoTurns == true and data.color_1 ~= player.color and data.color_2 ~= player.color and player.color ~= "Black") then
+	            holding=false
+	            holdTime=0
+	            return
+	        end
+	        if data.state==1 or data.state==2 or data.state==3 or data.state==4 or data.state==9 or data.state==10 then
+	            Pause()
+	        elseif data.state==11 and data.storedState~=0 then
+	            Resume()
+	            SetTurn()
+	        elseif data.state==5 or data.state==6 then
+	            self.UI.show(digitNames[data.selDigit])
+	            if data.selDigit==5 then
+	                if data.state==6 then
+	                    tmpToStartSec()
+	                    secsToTmp(data.bonus_1, data.bonus_2)
+	                    data.state = 7
+	                    data.selDigit = 9
+	                    HideColons()
+	                    HideDigits()
+	                    DisplayClock(2, data.bonus_2)
+	                    self.UI.setAttribute("Hr2_1" , "image", "b")
+	                else
+	                    data.state = 11
+	                    data.selDigit = 6
+	                    adj = tmpToSecs()
+	                    data.seconds_1 = adj[1] data.seconds_2 = adj[2]
+	                    DisplayClock(1, data.seconds_1)
+	                    DisplayClock(2, data.seconds_2)
+	                    ShowDigits()
+	                end
+	            else
+	                data.selDigit = data.selDigit+1
+	                if data.selDigit>10 then
+	                    if data.state==6 then
+	                        tmpDigits[1]=tmpDigits[6]
+	                        tmpDigits[2]=tmpDigits[7]
+	                        tmpDigits[3]=tmpDigits[8]
+	                        tmpDigits[4]=tmpDigits[9]
+	                        tmpDigits[5]=tmpDigits[10]
+	                        tmpToStartSec()
+	                        DisplayClock(1, data.start_1)
+	                    end
+	                    data.selDigit=1
+	                end
+	            end
+	        elseif data.state==7 then
+	            self.UI.show(digitNames[data.selDigit])
+	            if data.selDigit==5 then
+	                bon = tmpToSecs() data.bonus_1 = bon[1] data.bonus_2 = bon[2]
+	                secsToTmp(data.delay_1, data.delay_2)
+	                data.state = 8
+	                data.selDigit = 9
+	                HideColons()
+	                HideDigits()
+	                DisplayClock(2, data.delay_2)
+	                self.UI.setAttribute("Hr2_1" , "image", "d")
+	            else
+	                data.selDigit = data.selDigit+1
+	                if data.selDigit>10 then
+	                    tmpDigits[4]=tmpDigits[9]
+	                    tmpDigits[5]=tmpDigits[10]
+	                    bon = tmpToSecs()
+	                    DisplayClock(1, bon[1])
+	                    self.UI.setAttribute("Hr1_1" , "image", "b")
+	                    data.selDigit=4
+	                end
+	            end
+	        elseif data.state==8 then
+	            self.UI.show(digitNames[data.selDigit])
+	            if data.selDigit==5 then
+	                del = tmpToSecs() data.delay_1 = del[1] data.delay_2 = del[2]
+	                data.state = 11
+	                data.selDigit = 6
+	                data.seconds_1 = data.start_1 data.seconds_2 = data.start_2
+	                DisplayClock(1, data.seconds_1)
+	                DisplayClock(2, data.seconds_2)
+	                ShowDigits()
+	            else
+	                data.selDigit = data.selDigit+1
+	                if data.selDigit>10 then
+	                    tmpDigits[4]=tmpDigits[9]
+	                    tmpDigits[5]=tmpDigits[10]
+	                    del = tmpToSecs()
+	                    DisplayClock(1, del[1])
+	                    self.UI.setAttribute("Hr1_1" , "image", "d")
+	                    data.selDigit=4
+	                end
+	            end
+	        end
+	    end
+	    holding=false
+	    holdTime=0
+	end
+	function Hold_C(player, _, _)
+		if player.color == "Grey" then
+			return
+		end
+	    holding=true
+	    holdColor = player.color
+	end
+	function Hold_1(player, _, _)
+		if player.color == "Grey" then
+			return
+		end
+	    holdColor_1 = player.color
+	    holdPlayer_1 = player.steam_name
+	    holding_1=true
+	end
+	function Hold_2(player, _, _)
+		if player.color == "Grey" then
+			return
+		end
+	    holdColor_2 = player.color
+	    holdPlayer_2 = player.steam_name
+	    holding_2=true
+	end
+
+	function Pause()
+	    data.storedState=data.state
+	    data.state=11
+	    if data.DoTurns==true then
+	        self.setColorTint(unColoredColor)
+	        Turns.enable=false
+	    end
+	end
+	function Resume()
+	    data.state=data.storedState
+	    data.storedState=11
+	end
+	function SetTurn()
+	    if data.DoTurns==true then
+	--      Turns.type=2
+	--      Turns.pass_turns=false
+	--      Turns.skip_empty_hands=false
+	--      Turns.disable_interactations=true
+	        if data.state==1 or data.state==3 or data.state==9 then
+	            self.setColorTint(stringColorToRGB(data.color_1))
+	--          Turns.order={data.color_1}
+	--          Turns.turn_color=data.color_1
+	        elseif data.state==2 or data.state==4 or data.state==10 then
+	            self.setColorTint(stringColorToRGB(data.color_2))
+	--          Turns.order={data.color_2}
+	--          Turns.turn_color=data.color_2
+	        end
+	--      Turns.enable=true
+	    end
+	end
+
+	function HideDigits()
+	    for i=1,10,1 do
+	        self.UI.hide(digitNames[i])
+	    end
+	end
+	function ShowDigits()
+	    for i=1,10,1 do
+	        self.UI.show(digitNames[i])
+	    end
+	end
+	function HideColons()
+	    self.UI.hide("Cn1")
+	    self.UI.hide("Cn2")
+	    self.UI.hide("Cn3")
+	    self.UI.hide("Cn4")
+	end
+	function ShowColons()
+	    self.UI.show("Cn1")
+	    self.UI.show("Cn2")
+	    self.UI.show("Cn3")
+	    self.UI.show("Cn4")
+	end
+
+	function Paused()
+	    TurnCheck()
+		    if data.storedState~=9 and data.storedState~=10 then
+			        DisplayClock(1, data.seconds_1)
+			        DisplayClock(2, data.seconds_2)
+			        ShowDigits()
+		    end
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        data.state=6
+	        secsToTmp(data.start_1, data.start_2)
+	        DisplayClock(1, data.start_1)
+	        DisplayClock(2, data.start_2)
+	    elseif Colons==true then
+	        if data.storedState==11 then
+	            HideColons()
+	        elseif data.storedState==1 or data.storedState==3 then
+	            self.UI.hide("Cn1")
+	            self.UI.hide("Cn2")
+			        elseif data.storedState==9 then
+				            self.UI.hide("Cn1")
+	            self.UI.hide("Cn2")
+				            HideDigits()
+				            self.UI.show(digitNames[4])
+				            self.UI.show(digitNames[5])
+				            DisplayClock(1, data.delayed)
+	        elseif data.storedState==2 or data.storedState==4 then
+	            self.UI.hide("Cn3")
+	            self.UI.hide("Cn4")
+			        elseif data.storedState==10 then
+				            self.UI.hide("Cn3")
+	            self.UI.hide("Cn4")
+				            HideDigits()
+				            self.UI.show(digitNames[9])
+				            self.UI.show(digitNames[10])
+				            DisplayClock(2, data.delayed)
+	        end
+	        Colons = false
+	        return
+	    end
+	    ShowColons()
+	    Colons = true
+	end
+
+	function DisplayClock(which, value)
+	    secs = value
+	    hours = secs/3600
+	    secs = secs%3600
+	    minutes = secs/60
+	    secs = secs%60
+	    self.UI.setAttribute("Hr"..which.."_1" , "image", math.floor(hours%10))
+	    self.UI.setAttribute("Mn"..which.."_10", "image", math.floor(minutes/10))
+	    self.UI.setAttribute("Mn"..which.."_01", "image", math.floor(minutes%10))
+	    self.UI.setAttribute("Sc"..which.."_10", "image", math.floor(secs/10))
+	    self.UI.setAttribute("Sc"..which.."_01", "image", math.floor(secs%10))
+		DisplayUIClock(which)
+	end
+
+	function increment_1()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        if data.DoTurns==true then
+	            self.setColorTint(unColoredColor)
+	            Turns.enable=false
+	        end
+	        data.storedState=data.state
+	        data.state=5
+	        secsToTmp(data.seconds_1, data.seconds_2)
+	        DisplayClock(1, data.seconds_1)
+	        DisplayClock(2, data.seconds_2)
+	    elseif holdTime==0 then
+	        ShowColons()
+	        DisplayClock(1, data.seconds_1)
+	        data.seconds_1=data.seconds_1+RESOLUTION
+
+	    end
+	end
+	function increment_2()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        if data.DoTurns==true then
+	            self.setColorTint(unColoredColor)
+	            Turns.enable=false
+	        end
+	        data.storedState=data.state
+	        data.state=5
+	        secsToTmp(data.seconds_1, data.seconds_2)
+	        DisplayClock(1, data.seconds_1)
+	        DisplayClock(2, data.seconds_2)
+	    elseif holdTime==0 then
+	        ShowColons()
+	        DisplayClock(2, data.seconds_2)
+	        data.seconds_2=data.seconds_2+RESOLUTION
+
+	    end
+	end
+	function decrement_1()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        if data.DoTurns==true then
+	            self.setColorTint(unColoredColor)
+	            Turns.enable=false
+	        end
+	        data.storedState=data.state
+	        data.state=5
+	        secsToTmp(data.seconds_1, data.seconds_2)
+	        DisplayClock(1, data.seconds_1)
+	        DisplayClock(2, data.seconds_2)
+	    elseif holdTime==0 then
+	        ShowColons()
+
+	        DisplayClock(1, data.seconds_1)
+	        data.seconds_1 = data.seconds_1-RESOLUTION
+	        if data.seconds_1 < 0 then
+	            Ding()
+	            data.ended_1=true
+	            data.state=11
+	            data.storedState=data.state
+	        end
+	    end
+	end
+	function decrement_2()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        if data.DoTurns==true then
+	            self.setColorTint(unColoredColor)
+	            Turns.enable=false
+	        end
+	        data.storedState=data.state
+	        data.state=5
+	        secsToTmp(data.seconds_1, data.seconds_2)
+	        DisplayClock(1, data.seconds_1)
+	        DisplayClock(2, data.seconds_2)
+	    elseif holdTime==0 then
+	        ShowColons()
+
+	        DisplayClock(2, data.seconds_2)
+	        data.seconds_2 = data.seconds_2-RESOLUTION
+	        if data.seconds_2 < 0 then
+	            Ding()
+	            data.ended_2=true
+	            data.state=11
+	            data.storedState=data.state
+	        end
+	    end
+	end
+
+	function adjustTime()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        data.state=11 data.storedState=11 data.selDigit=6
+	        data.seconds_1 = data.start_1 data.seconds_2 = data.start_2
+	        DisplayClock(1, data.start_1)
+	        DisplayClock(2, data.start_2)
+	    else
+	        ShowColons()
+	        for i=1,10,1 do
+	            if i~=data.selDigit then
+	                self.UI.show(digitNames[i])
+	            end
+	        end
+	        if Colons==true then
+	            self.UI.hide(digitNames[data.selDigit])
+	            Colons = false
+	        else
+	            self.UI.show(digitNames[data.selDigit])
+	            Colons = true
+	        end
+	    end
+	end
+	function setTime()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        data.state=11 data.storedState=11 data.selDigit=6
+			        tmpToStartSec()
+	        data.seconds_1 = data.start_1 data.seconds_2 = data.start_2
+	        DisplayClock(1, data.start_1)
+	        DisplayClock(2, data.start_2)
+	    else
+			        ShowColons()
+			        for i=1,10,1 do
+				            if i~=data.selDigit then
+					                self.UI.show(digitNames[i])
+				            end
+			        end
+			        if Colons==true then
+				            self.UI.hide(digitNames[data.selDigit])
+				            HideColons()
+				            Colons = false
+			        else
+				            self.UI.show(digitNames[data.selDigit])
+				            ShowColons()
+				            Colons = true
+			        end
+		    end
+	end
+	function setBonus()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        data.state=11 data.storedState=11 data.selDigit=6
+			        bon = tmpToSecs() data.bonus_1 = bon[1] data.bonus_2 = bon[2]
+	        data.seconds_1 = data.start_1 data.seconds_2 = data.start_2
+	        DisplayClock(1, data.start_1)
+	        DisplayClock(2, data.start_2)
+	    else
+	        		count=2
+			        if data.selDigit>5 then
+				            self.UI.show("Hr2_1")
+				            burp={9,10}
+			        else
+				            self.UI.show("Hr1_1")
+				            burp={4,5,9,10}
+				            count=4
+			        end
+			        HideColons()
+			        for i=1,count,1 do
+	    			        if burp[i]~=data.selDigit then
+					                self.UI.show(digitNames[burp[i]])
+				            end
+			        end
+			        if Colons==true then
+	    			        self.UI.hide(digitNames[data.selDigit])
+				            Colons = false
+			        else
+				            self.UI.show(digitNames[data.selDigit])
+				            Colons = true
+			        end
+		    end
+	end
+	function setDelay()
+	    if holdTime==HOLD then
+	        if data.DoTurns == true and data.color_1 ~= holdColor and data.color_2 ~= holdColor and holdColor ~= "Black" then
+	            return
+	        end
+	        data.state=11 data.storedState=11 data.selDigit=6
+	        		del = tmpToSecs() data.delay_1 = del[1] data.delay_2 = del[2]
+	        data.seconds_1 = data.start_1 data.seconds_2 = data.start_2
+	        DisplayClock(1, data.start_1)
+	        DisplayClock(2, data.start_2)
+	    else
+	        		count=2
+			        if data.selDigit>5 then
+				            self.UI.show("Hr2_1")
+				            burp={9,10}
+			        else
+				            self.UI.show("Hr1_1")
+				            burp={4,5,9,10}
+				            count=4
+			        end
+			        HideColons()
+			        for i=1,2,1 do
+				            if burp[i]~=data.selDigit then
+					                self.UI.show(digitNames[burp[i]])
+				            end
+			        end
+			        if Colons==true then
+				            self.UI.hide(digitNames[data.selDigit])
+				            Colons = false
+			        else
+				            self.UI.show(digitNames[data.selDigit])
+				            Colons = true
+			        end
+		    end
+	end
+
+	function doDelay_1()
+
+	    if data.delayed==0 then
+	        ShowColons()
+	        ShowDigits()
+	        DisplayClock(1, data.seconds_1)
+	        DisplayClock(2, data.seconds_2)
+	        if data.start_1==0 then
+	            data.state = 1
+	        else
+	            data.state = 3
+	        end
+	    else
+	        HideColons()
+	        HideDigits()
+	        self.UI.show(digitNames[4])
+	        self.UI.show(digitNames[5])
+	        DisplayClock(1, data.delayed)
+	        data.delayed=data.delayed-RESOLUTION
+	    end
+	end
+
+	function doDelay_2()
+
+	    if data.delayed==0 then
+	        ShowColons()
+	        ShowDigits()
+	        DisplayClock(1, data.seconds_1)
+	        DisplayClock(2, data.seconds_2)
+	        if data.start_2==0 then
+	            data.state = 2
+	        else
+	            data.state = 4
+	        end
+	    else
+	        HideColons()
+	        HideDigits()
+	        self.UI.show(digitNames[9])
+	        self.UI.show(digitNames[10])
+	        DisplayClock(2, data.delayed)
+	        data.delayed=data.delayed-RESOLUTION
+	    end
+	end
+
+	function secsToTmp(secs_1, secs_2)
+	    secs = secs_1
+	    hours = secs/3600
+	    secs = secs%3600
+	    minutes = secs/60
+	    secs = secs%60
+	    tmpDigits[1] = math.floor(hours%10)
+	    tmpDigits[2] = math.floor(minutes/10)
+	    tmpDigits[3] = math.floor(minutes%10)
+	    tmpDigits[4] = math.floor(secs/10)
+	    tmpDigits[5] = math.floor(secs%10)
+	    secs = secs_2
+	    hours = secs/3600
+	    secs = secs%3600
+	    minutes = secs/60
+	    secs = secs%60
+	    tmpDigits[6] = math.floor(hours%10)
+	    tmpDigits[7] = math.floor(minutes/10)
+	    tmpDigits[8] = math.floor(minutes%10)
+	    tmpDigits[9] = math.floor(secs/10)
+	    tmpDigits[10]= math.floor(secs%10)
+	end
+	function tmpToStartSec()
+	    data.start_1=(tmpDigits[1]*3600)+(tmpDigits[2]*600)+(tmpDigits[3]*60)+(tmpDigits[4]*10)+tmpDigits[5]
+	    data.start_2=(tmpDigits[6]*3600)+(tmpDigits[7]*600)+(tmpDigits[8]*60)+(tmpDigits[9]*10)+tmpDigits[10]
+	end
+	function tmpToSecs()
+	    return {(tmpDigits[1]*3600)+(tmpDigits[2]*600)+(tmpDigits[3]*60)+(tmpDigits[4]*10)+tmpDigits[5], (tmpDigits[6]*3600)+(tmpDigits[7]*600)+(tmpDigits[8]*60)+(tmpDigits[9]*10)+tmpDigits[10]}
+	end
+	function Ding()
+	    Wait.time(Dong, 0.025, 50)
+	end
+	function Dong()
+	    pos = self.getPosition()
+	    pos.y = pos.y+0.125
+	    self.setPosition(pos)
+	    self.setVelocity({0,-200,0})
+	end
+	function TurnCheck()
+	    if hold_1Time==HOLD then
+	        if data.DoTurns==false then
+	            data.color_1=holdColor_1
+	            if data.color_2~="" then
+	                broadcastToAll("Color-Mode Enabled.", {0,1,0})
+	                data.DoTurns=true
+	            else
+	                broadcastToAll("Waiting For Player 2...", {1,1,1})
+	            end
+	            broadcastToAll("Set Player 1 to "..holdPlayer_1.." ("..holdColor_1..")", {0.5,0.5,1})
+	        elseif holdColor_1==data.color_1 or holdColor_1==data.color_2 or holdColor_1=="Black" then
+	            broadcastToAll("Color-Mode Disabled.", {1,0,0})
+	            data.DoTurns=false
+	            data.color_1=""
+	            data.color_2=""
+	            self.setColorTint(unColoredColor)
+	        end
+	    end
+	    if hold_2Time==HOLD then
+	        if data.DoTurns==false then
+	            data.color_2=holdColor_2
+	            if data.color_1~="" then
+	                broadcastToAll("Color-Mode Enabled.", {0,1,0})
+	                data.DoTurns=true
+	            else
+	                broadcastToAll("Waiting For Player 1...", {1,1,1})
+	            end
+	            broadcastToAll("Set Player 2 to "..holdPlayer_2.." ("..holdColor_2..")", {0.5,0.5,1})
+	        elseif holdColor_2==data.color_1 or holdColor_2==data.color_2 or holdColor_2=="Black" then
+	            broadcastToAll("Color-Mode Disabled.", {1,0,0})
+	            data.DoTurns=false
+	            data.color_1=""
+	            data.color_2=""
+	            self.setColorTint(unColoredColor)
+	        end
+	    end
+	end
+
+-- Liyarin's color functions
+
+function ensureChessStopwatchUI()
+	local guid = self.getGUID()
+	Global.call("setHudAttribute", {id = "ChsStpBtn1", attr = "onClick", value = guid .. "/Click_1"})
+	Global.call("setHudAttribute", {id = "ChsStpBtn2", attr = "onClick", value = guid .. "/Click_2"})
+	Global.call("setHudAttribute", {id = "ChsStpMinus1", attr = "onClick", value = guid .. "/SubTime1"})
+	Global.call("setHudAttribute", {id = "ChsStpPlus1", attr = "onClick", value = guid .. "/AddTime1"})
+	Global.call("setHudAttribute", {id = "ChsStpMinus2", attr = "onClick", value = guid .. "/SubTime2"})
+	Global.call("setHudAttribute", {id = "ChsStpPlus2", attr = "onClick", value = guid .. "/AddTime2"})
+	Global.call("setHudAttribute", {id = "ChsStpPlay1", attr = "onClick", value = guid .. "/PlayClock1"})
+	Global.call("setHudAttribute", {id = "ChsStpPlay2", attr = "onClick", value = guid .. "/PlayClock2"})
+	Global.call("setHudAttribute", {id = "ChsStpPause1", attr = "onClick", value = guid .. "/PauseClock"})
+	Global.call("setHudAttribute", {id = "ChsStpPause2", attr = "onClick", value = guid .. "/PauseClock"})
+end
+
+-- ===== Shared clock controls (HUD play/pause buttons, Game Keys, numpad keys) =====
+-- Design: the affected side is derived from the CLOCK STATE, never from who
+-- pressed - so one binding serves both players and spectators alike. The real
+-- presser is only used for the chat announcement. Gizmo's Click_1/Click_2 keep
+-- their seat/colour-mode guards for direct pill clicks and the physical clock,
+-- so these controls drive them through a synthetic "Black" actor, which those
+-- guards explicitly exempt.
+local CLOCK_ACTOR = {color = "Black"}
+
+-- Accepts a Player instance (XML onClick) or a colour string (hotkeys).
+-- NOTE: XML-callback Player instances are MoonSharp userdata, not Lua tables,
+-- so duck-type the fields instead of checking type(player) == "table".
+local function presserName(player)
+	if type(player) == "string" then
+		local seated = Player[player]
+		if seated and seated.steam_name then
+			return seated.steam_name
+		end
+		return player
+	end
+	if player ~= nil then
+		local ok, name = pcall(function() return player.steam_name end)
+		if ok and name and name ~= "" then
+			return name
+		end
+		local okColor, color = pcall(function() return player.color end)
+		if okColor and color then
+			return tostring(color)
+		end
+	end
+	return "?"
+end
+
+-- 1 = Blue running, 2 = Red running, nil = neither (paused/editing).
+local function clockSideRunning(state)
+	if state == 1 or state == 3 or state == 9 then return 1 end
+	if state == 2 or state == 4 or state == 10 then return 2 end
+	return nil
+end
+
+-- States 5-8 are the physical clock's digit-editing modes (set time/bonus/delay);
+-- remote controls must not fire mid-edit because Click_1/Click_2 double as
+-- digit +/- buttons there.
+local function clockEditing()
+	return data.state >= 5 and data.state <= 8
+end
+
+local function startClockSide(side, byName)
+	if side == 1 then
+		Click_1(CLOCK_ACTOR)
+		broadcastToAll("Clock passed to Blue by " .. byName, {0.4, 0.6, 1})
+	else
+		Click_2(CLOCK_ACTOR)
+		broadcastToAll("Clock passed to Red by " .. byName, {1, 0.4, 0.4})
+	end
+end
+
+-- Pass = stop whichever clock is running and start the other one. When paused,
+-- falls back to whoever ran LAST (storedState), so a pass from pause still
+-- hands the time to the opponent and starts it.
+function PassClock(player)
+	if clockEditing() then
+		broadcastToAll("Clock is in time-setup mode - finish editing first.", {1, 0.6, 0})
+		return
+	end
+	local side = clockSideRunning(data.state) or clockSideRunning(data.storedState)
+	if not side then
+		broadcastToAll("No clock has been started yet - use a play button first.", {1, 0.6, 0})
+		return
+	end
+	startClockSide(side == 1 and 2 or 1, presserName(player))
+end
+
+-- Pause toggle: pauses the running clock; pressed again while paused it
+-- resumes whoever was running (Pause() stashes that side in storedState, and
+-- Resume() restores it exactly - no Click_N, so no time bonus is re-granted).
+-- Before any clock has ever run (start of game) storedState is also the paused
+-- state, so there is nothing to resume and the press is a no-op.
+function PauseClock(player)
+	if clockEditing() then return end
+	local running = clockSideRunning(data.state)
+	if running then
+		Pause()
+		refreshHudHighlight()
+		broadcastToAll("Clock paused by " .. presserName(player), {0.8, 0.8, 0.8})
+		return
+	end
+	local side = clockSideRunning(data.storedState)
+	if not side then return end
+	Resume()
+	SetTurn()
+	refreshHudHighlight()
+	local sideName = (side == 1) and "Blue" or "Red"
+	broadcastToAll("Clock resumed by " .. presserName(player) .. " - " .. sideName .. "'s time is running",
+		(side == 1) and {0.4, 0.6, 1} or {1, 0.4, 0.4})
+end
+
+-- HUD play buttons: explicitly start one side's clock. Doubles as resume after
+-- a pause and as a pass when the other side was running. No-op if that side is
+-- already running.
+local function playClockSide(side, player)
+	if clockEditing() then
+		broadcastToAll("Clock is in time-setup mode - finish editing first.", {1, 0.6, 0})
+		return
+	end
+	if clockSideRunning(data.state) == side then return end
+	local byName = presserName(player)
+	if side == 1 then
+		Click_1(CLOCK_ACTOR)
+		broadcastToAll("Blue clock started by " .. byName, {0.4, 0.6, 1})
+	else
+		Click_2(CLOCK_ACTOR)
+		broadcastToAll("Red clock started by " .. byName, {1, 0.4, 0.4})
+	end
+end
+
+function PlayClock1(player) playClockSide(1, player) end
+function PlayClock2(player) playClockSide(2, player) end
+
+-- Called by startMenu.passTurn after the active player flips: if the clock was
+-- running for the previous player, switch it to the new active player. A
+-- paused, editing, or never-started clock is left alone, so turn passes made
+-- before the game clock is started never start it.
+function SyncClockToTurn(params)
+	local color = params and params.color
+	local side = (color == "Blue" and 1) or (color == "Red" and 2) or nil
+	if not side then return end
+	if clockEditing() then return end
+	local running = clockSideRunning(data.state)
+	if not running or running == side then return end
+	if side == 1 then Click_1(CLOCK_ACTOR) else Click_2(CLOCK_ACTOR) end
+	-- printToAll, not broadcast: passTurn already pops the turn banner.
+	printToAll("Chess clock follows the turn - now running for " .. color .. ".",
+		(side == 1) and {0.4, 0.6, 1} or {1, 0.4, 0.4})
+end
+
+-- Changes the color of the UI buttons based on the set colors
+function changeButtonColors()
+	-- Stopwatch Buttons
+	self.UI.setAttribute("pColor1", "color", pColors.pColor1)
+	self.UI.setAttribute("pColor2", "color", pColors.pColor2)
+
+	--UI Buttons
+	ensureChessStopwatchUI()
+end
+
+-- Changes the button of one side based on the player that clicked it
+function changeColors(clickPlayer, clickBtn, buttonID)
+	if buttonID == "pColor1" or buttonID == "pColor2" then
+		pColors[buttonID] = clickPlayer.color
+
+		changeButtonColors()
+	end
+end
+
+-- +/- 5-minute adjustments from the HUD buttons
+function AddTime1() data.seconds_1 = data.seconds_1 + 300; DisplayClock(1, data.seconds_1) end
+function SubTime1() data.seconds_1 = math.max(0, data.seconds_1 - 300); DisplayClock(1, data.seconds_1) end
+function AddTime2() data.seconds_2 = data.seconds_2 + 300; DisplayClock(2, data.seconds_2) end
+function SubTime2() data.seconds_2 = math.max(0, data.seconds_2 - 300); DisplayClock(2, data.seconds_2) end
+
+-- Calculates numbers for UI clock
+function DisplayUIClock(which) -- which 1,2
+	local clockString = string.format("%02d:%02d:%02d", math.floor(hours), math.floor(minutes), math.floor(secs))
+
+	Global.call("setHudAttribute", {id = "ChsStpWatch"..which, attr = "text", value = clockString})
+end
+
+-- Style one clock pill (which = 1 Blue / 2 Red) as active (running) or passive.
+function applyClockPill(which, active)
+	local panel = "ClockSubPanel"..which
+	local watch = "ChsStpWatch"..which
+	if active then
+		Global.call("setHudAttribute", {id = panel, attr = "outline",     value = CLOCK_PILL_ACTIVE_OUTLINE})
+		Global.call("setHudAttribute", {id = panel, attr = "outlineSize", value = CLOCK_PILL_ACTIVE_OUTLINE_SIZE})
+		Global.call("setHudAttribute", {id = panel, attr = "color",       value = CLOCK_PILL_ACTIVE_BG})
+		Global.call("setHudAttribute", {id = watch, attr = "color",       value = CLOCK_PILL_ACTIVE_TEXT})
+	else
+		Global.call("setHudAttribute", {id = panel, attr = "outline",     value = CLOCK_PILL_PASSIVE_OUTLINE})
+		Global.call("setHudAttribute", {id = panel, attr = "outlineSize", value = CLOCK_PILL_PASSIVE_SIZE})
+		Global.call("setHudAttribute", {id = panel, attr = "color",       value = CLOCK_PILL_PASSIVE_BG})
+		Global.call("setHudAttribute", {id = watch, attr = "color",       value = CLOCK_PILL_PASSIVE_TEXT})
+	end
+end
+
+-- Re-apply the active/passive clock pill styling from the persisted clock state.
+-- Click_1/Click_2 set this live, but the styling lives only in the non-persistent
+-- Global overlay, so on reload it resets to the passive XML default while
+-- data.state keeps the clock running. Blue (player 1) runs in states 1/3/9, Red
+-- (player 2) in 2/4/10; any other state is paused/editing (both passive).
+function refreshHudHighlight()
+	local s = data.state
+	local blueRunning = (s == 1 or s == 3 or s == 9)
+	local redRunning  = (s == 2 or s == 4 or s == 10)
+	applyClockPill(1, blueRunning)
+	applyClockPill(2, redRunning)
+end

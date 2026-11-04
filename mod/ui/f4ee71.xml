@@ -1,0 +1,73 @@
+<Panel rotation="45.0,0.0,180.0" position="-65.0,110.0,-190.0" width="75" height="90">
+    <Image id="Sc1_01" image="0" preserveAspect="true" height="90" offsetXY="264,0" raycastTarget="false"/>
+    <Image id="Sc1_10" image="0" preserveAspect="true" height="90" offsetXY="198,0" raycastTarget="false"/>
+    <Image id="Cn1"    image=":" preserveAspect="true" height="90" offsetXY="165,0" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.125" raycastTarget="false"/>
+    <Image id="Mn1_01" image="0" preserveAspect="true" height="90" offsetXY="132,0" raycastTarget="false"/>
+    <Image id="Mn1_10" image="0" preserveAspect="true" height="90" offsetXY= "66,0" raycastTarget="false"/>
+    <Image id="Cn2"    image=":" preserveAspect="true" height="90" offsetXY= "33,0" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.125" raycastTarget="false"/>
+    <Image id="Hr1_1"  image="0" preserveAspect="true" height="90" offsetXY="000,0" raycastTarget="false"/>
+</Panel>
+<Panel rotation="45.0,0.0,180.0" position="330.0,110.0,-190.0" width="75" height="90">
+    <Image id="Sc2_01" image="0" preserveAspect="true" height="90" offsetXY="264,0" raycastTarget="false"/>
+    <Image id="Sc2_10" image="0" preserveAspect="true" height="90" offsetXY="198,0" raycastTarget="false"/>
+    <Image id="Cn3"    image=":" preserveAspect="true" height="90" offsetXY="165,0" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.125" raycastTarget="false"/>
+    <Image id="Mn2_01" image="0" preserveAspect="true" height="90" offsetXY="132,0" raycastTarget="false"/>
+    <Image id="Mn2_10" image="0" preserveAspect="true" height="90" offsetXY= "66,0" raycastTarget="false"/>
+    <Image id="Cn4"    image=":" preserveAspect="true" height="90" offsetXY= "33,0" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="0.125" raycastTarget="false"/>
+    <Image id="Hr2_1"  image="0" preserveAspect="true" height="90" offsetXY="000,0" raycastTarget="false"/>
+</Panel>
+<!--Player 1-->
+<Button                    position="-295,-95,-315" width="75"  height="75"  color="#FF000000" onClick="Click_1" onMouseDown="Hold_1"/>
+<Button                    position="-295,-95,-278" width="200" height="200" color="#FF000000" onClick="Click_1" onMouseDown="Hold_1"/>
+<Button rotation=" 90,0,0" position="-295,-95,-300" width="40"  height="95"  color="#FF000000" onClick="Click_1" onMouseDown="Hold_1"/>
+<Button rotation="90,90,0" position="-295,-95,-300" width="40"  height="95"  color="#FF000000" onClick="Click_1" onMouseDown="Hold_1"/>
+<!--Center-->
+<Button                    position=   "0,-95,-278" width="75"  height="75"  color="#00FF0000" onClick="Click_C" onMouseDown="Hold_C"/>
+<!--Player 2-->
+<Button                    position= "295,-95,-320" width="75"  height="75"  color="#0000FF00" onClick="Click_2" onMouseDown="Hold_2"/>
+<Button                    position= "295,-95,-278" width="200" height="200" color="#0000FF00" onClick="Click_2" onMouseDown="Hold_2"/>
+<Button rotation=" 90,0,0" position= "295,-95,-300" width="40"  height="95"  color="#0000FF00" onClick="Click_2" onMouseDown="Hold_2"/>
+<Button rotation="90,90,0" position= "295,-95,-300" width="40"  height="95"  color="#0000FF00" onClick="Click_2" onMouseDown="Hold_2"/>
+
+
+<!-- Color Select -->
+
+<!-- Player 1 -->
+<Panel
+    height="500"
+    width="500"
+    scale="0.2 0.2 0.2"
+    rotation="180 0 0"
+    position="250 -30 0.25"
+    >
+    <Text
+        text="Right"
+        fontSize="200"
+        offsetXY="0 200 0"
+    />
+    <Button
+        id="pColor1"
+        onClick="changeColors"
+        offsetXY="0 -200 0"
+    />
+</Panel>
+
+<!-- Player 2 -->
+<Panel
+    height="500"
+    width="500"
+    scale="0.2 0.2 0.2"
+    rotation="180 0 0"
+    position="-250 -30 0.25"
+    >
+    <Text
+        text="Left"
+        fontSize="200"
+        offsetXY="0 200 0"
+    />
+    <Button
+        id="pColor2"
+        onClick="changeColors"
+        offsetXY="0 -200 0"
+    />
+</Panel>

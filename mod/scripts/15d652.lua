@@ -1,0 +1,78 @@
+-- FTC-GUID: 15d652
+
+local onState  = 'https://steamusercontent-a.akamaihd.net/ugc/15473991661851235143/8834767C61229AE6ED0741E4051392B6D4922AE5/'
+local offState = 'https://steamusercontent-a.akamaihd.net/ugc/10740144134536449694/39CFD91BE19B3842102254DD674F222A8BF8A274/'
+local managerGUID = "738804"
+local clickCooldownSeconds = 0.5
+local objectivesOn = false
+
+function onLoad(saved_data)
+    if saved_data and saved_data ~= "" then
+        local loaded_data = JSON.decode(saved_data)
+        objectivesOn = loaded_data.objectivesOn == true
+    end
+    Global.setVar("interactiveButtonShowObjectives", objectivesOn and 2 or 1)
+
+    self.createButton({
+        click_function  = "toggleObjectives",
+        function_owner  = self,
+        label           = "",
+        position        = {0, 0.2, 0},
+        width           = 2000,
+        height          = 2000,
+        color           = {0, 0, 0, 0}
+    })
+    -- RNG Test moved to the shared debug panel (Global, --test builds only).
+end
+
+function onSave()
+    return JSON.encode({
+        objectivesOn = objectivesOn,
+    })
+end
+
+function setObjectivesVisible(visible)
+    local manager = getObjectFromGUID(managerGUID)
+    if not manager then
+        printToAll("Cannot toggle objectives: objectives manager not found.", {1, 0.25, 0.25})
+        return false
+    end
+
+    objectivesOn = visible == true
+    Global.setVar("interactiveButtonShowObjectives", objectivesOn and 2 or 1)
+
+    local params
+    if objectivesOn then
+        manager.call("placeObjectives")
+        params = {
+            image = onState,
+        }
+    else
+        manager.call("destroyAllObjectives")
+        params = {
+            image = offState,
+        }
+    end
+    self.script_state = onSave()
+    self.setCustomObject(params)
+    self.reload()
+    return true
+end
+
+function turnObjectivesOn()
+    setObjectivesVisible(true)
+end
+
+function turnObjectivesOff()
+    setObjectivesVisible(false)
+end
+
+function toggleObjectives()
+    local now = Time.time
+    local nextClickAt = Global.getVar("interactiveButtonShowObjectivesNextClickAt") or 0
+    if now < nextClickAt then return end
+
+    -- Stored globally because changing the custom-token image reloads this script.
+    Global.setVar("interactiveButtonShowObjectivesNextClickAt", now + clickCooldownSeconds)
+    setObjectivesVisible(not objectivesOn)
+end

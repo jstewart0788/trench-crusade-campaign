@@ -1,0 +1,1018 @@
+-- FTC-GUID: 17ca2b,927ca1
+--Based off: https://steamcommunity.com/sharedfiles/filedetails/?id=726800282
+--Link for this mod: https://steamcommunity.com/sharedfiles/filedetails/?id=959360907
+-- Randomness note:
+-- This roller uses a vendored xoshiro128++ pseudorandom number generator
+-- instead of Lua 5.2 math.random. TTS is based on Lua 5.2, whose RNG maps
+-- to the host C rand() implementation, so we use an explicit 32-bit PRNG to
+-- get known behavior, better auditability, and saved/restored RNG state.
+lastRolls={}
+scaleBtn=3
+
+function printLast()
+	printResults(1)
+end
+
+function printLast5()
+	printResults(5)
+end
+
+-- Return pastel color if player is Red or Blue
+--Initialize Global Variables and pRNG Seed
+ver = 'BCB-2022-12-30'
+lastHolder = {}
+customFace = {4, 6, 8, 10, 12, 20}
+resultsTotal = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+local rngState = nil
+
+local UINT32 = 4294967296
+local UINT16 = 65536
+local rngReseedCounter = 0
+
+local function isDebugBuild()
+    local ok, enabled = pcall(function() return Global.getVar("DEBUG") end)
+    return ok and enabled == true
+end
+
+local function nowSeconds()
+    if Time and Time.time then
+        return Time.time
+    end
+    return os.clock()
+end
+
+-- TTS's bit32 implementation can enter a broken state where xor/shift/rotate
+-- return incorrect values until the game is reloaded. That corrupts xoshiro's
+-- state and can make every die produce the same face. These arithmetic helpers
+-- are exact for 32-bit integers in Lua's double-number runtime and avoid bit32.
+local xorNibble = {}
+for a = 0, 15 do
+    xorNibble[a] = {}
+    for b = 0, 15 do
+        local x, y, value, place = a, b, 0, 1
+        for _ = 1, 4 do
+            if (x % 2) ~= (y % 2) then value = value + place end
+            x = math.floor(x / 2)
+            y = math.floor(y / 2)
+            place = place * 2
+        end
+        xorNibble[a][b] = value
+    end
+end
+
+local function u32(value)
+    value = tonumber(value) or 0
+    return math.floor(value) % UINT32
+end
+
+local function xorTwo32(a, b)
+    a, b = u32(a), u32(b)
+    local value, place = 0, 1
+    for _ = 1, 8 do
+        value = value + xorNibble[a % 16][b % 16] * place
+        a = math.floor(a / 16)
+        b = math.floor(b / 16)
+        place = place * 16
+    end
+    return value
+end
+
+local function xor32(...)
+    local value = 0
+    for i = 1, select("#", ...) do
+        value = xorTwo32(value, select(i, ...))
+    end
+    return value
+end
+
+local function rshift32(value, amount)
+    return math.floor(u32(value) / (2 ^ amount))
+end
+
+local function lshift32(value, amount)
+    return (u32(value) * (2 ^ amount)) % UINT32
+end
+
+local function lrotate32(value, amount)
+    value = u32(value)
+    amount = amount % 32
+    if amount == 0 then return value end
+    return (lshift32(value, amount) + rshift32(value, 32 - amount)) % UINT32
+end
+
+local function mul32(a, b)
+    local aLo = a % UINT16
+    local aHi = math.floor(a / UINT16)
+    local bLo = b % UINT16
+    local bHi = math.floor(b / UINT16)
+    local low = aLo * bLo
+    local mid = (aHi * bLo) + (aLo * bHi)
+
+    return (low + ((mid % UINT16) * UINT16)) % UINT32
+end
+
+local function mix32(x)
+    x = xor32(x, rshift32(x, 16))
+    x = mul32(x, 0x85ebca6b)
+    x = xor32(x, rshift32(x, 13))
+    x = mul32(x, 0xc2b2ae35)
+    x = xor32(x, rshift32(x, 16))
+    return x
+end
+
+local function hashGuid(guid)
+    local h = 0x811c9dc5
+    for i = 1, #guid do
+        h = xor32(h, string.byte(guid, i))
+        h = mul32(h, 0x01000193)
+    end
+    return h
+end
+
+local function isBlueRoller()
+    return self.getGUID() == "927ca1"
+end
+
+local function createSeedWords()
+    local guidHash = hashGuid(self.getGUID())
+    local baseSeed = os.time() % UINT32
+    local clockSeed = math.floor((os.clock() * 1000000) % UINT32)
+    rngReseedCounter = rngReseedCounter + 1
+    local boxSeed = isBlueRoller() and 0x6a09e667 or 0xbb67ae85
+    local material = {
+        xor32(baseSeed, guidHash, rngReseedCounter),
+        xor32(clockSeed, boxSeed, rngReseedCounter * 0x9e37),
+        xor32(guidHash, 0x9e3779b9, rngReseedCounter * 0x79b9),
+        xor32(baseSeed, clockSeed, 0x243f6a88, rngReseedCounter * 0x6a88),
+    }
+    local state = {}
+
+    for i, value in ipairs(material) do
+        state[i] = mix32((value + ((i - 1) * 0x9e3779b9)) % UINT32)
+    end
+
+    if state[1] == 0 and state[2] == 0 and state[3] == 0 and state[4] == 0 then
+        state[4] = 1
+    end
+
+    return state
+end
+
+local function hasUsableStateWords(state)
+    if type(state) ~= "table" then return false end
+    local nonZero = 0
+    for i = 1, 4 do
+        local value = tonumber(state[i])
+        if value == nil then return false end
+        if u32(value) ~= 0 then nonZero = nonZero + 1 end
+    end
+    -- A single non-zero word is technically legal, but it creates the exact
+    -- low-complexity startup trajectory seen in the Red-side failure report.
+    return nonZero >= 2
+end
+
+local function setRngState(state)
+    if not hasUsableStateWords(state) then
+        state = createSeedWords()
+    end
+
+    rngState = {
+        u32(state[1]),
+        u32(state[2]),
+        u32(state[3]),
+        u32(state[4]),
+    }
+
+    if not hasUsableStateWords(rngState) then
+        -- Deterministic last-resort state. This should only be reachable if the
+        -- host clock/GUID APIs themselves returned unusable values.
+        rngState = {0x9e3779b9, 0x243f6a88, 0xb7e15162, 0x8aed2a6b}
+    end
+end
+
+local function stepRngState(state)
+    local s0 = state[1]
+    local s1 = state[2]
+    local s2 = state[3]
+    local s3 = state[4]
+
+    local result = (lrotate32((s0 + s3) % UINT32, 7) + s0) % UINT32
+    local t = lshift32(s1, 9)
+
+    s2 = xor32(s2, s0)
+    s3 = xor32(s3, s1)
+    s1 = xor32(s1, s2)
+    s0 = xor32(s0, s3)
+    s2 = xor32(s2, t)
+    s3 = lrotate32(s3, 11)
+
+    state[1] = s0
+    state[2] = s1
+    state[3] = s2
+    state[4] = s3
+
+    return result
+end
+
+local function rngStateIsHealthy(state)
+    if not hasUsableStateWords(state) then return false end
+    local probe = {u32(state[1]), u32(state[2]), u32(state[3]), u32(state[4])}
+    local seen = {}
+    for _ = 1, 8 do
+        local raw = stepRngState(probe)
+        if seen[raw] then return false end
+        seen[raw] = true
+    end
+    return true
+end
+
+local function ensureHealthyRngState()
+    if rngStateIsHealthy(rngState) then return false end
+    for _ = 1, 3 do
+        setRngState(createSeedWords())
+        if rngStateIsHealthy(rngState) then return true end
+    end
+    rngState = {0x9e3779b9, 0x243f6a88, 0xb7e15162, 0x8aed2a6b}
+    return true
+end
+
+local function nextRngU32()
+    if rngState == nil then setRngState(createSeedWords()) end
+    return stepRngState(rngState)
+end
+
+local function nextRngBounded(bound)
+    -- Defensive at the exact line that has crashed in the wild ("compare nil with
+    -- number"): never compare a non-number. rollFace already sanitises its input,
+    -- so this is a second, independent guarantee that this line can't throw.
+    if type(bound) ~= "number" or bound <= 0 then
+        return 0
+    end
+
+    local threshold = (UINT32 - bound) % bound
+    while true do
+        local value = nextRngU32()
+        if value >= threshold then
+            return value % bound
+        end
+    end
+end
+
+local function rollFace(faces)
+    -- Never let an unknown/invalid face count crash the roll. takeDiceOut assigns
+    -- a value to every die in one loop and only then takes them out in a second
+    -- loop, so a single throw here would strand the ENTIRE batch inside the
+    -- container (dice in, nothing out). A rare wrong face count is cosmetic;
+    -- stranded dice are a system-down event. Default anything bad to d6.
+    if type(faces) ~= "number" or faces < 1 then
+        faces = 6
+    end
+    faces = math.floor(faces)
+    return nextRngBounded(faces) + 1
+end
+
+-- Safely resolve a die's face count from a live Object reference. Returns a
+-- number, or nil when it can't be determined (rollFace then defaults nil to d6).
+-- The custom-object branch is the historical crash site: getCustomObject() on an
+-- odd Workshop die can lack a numeric .type, and the old `customFace[type + 1]`
+-- did arithmetic on nil, which later surfaced as "attempt to compare nil with
+-- number" in nextRngBounded and stranded the whole batch. Guard every step.
+local function detectFaces(obj)
+    local faces = tonumber(string.match(tostring(obj), 'Die_(%d+).*'))
+    if faces ~= nil then
+        return faces
+    end
+    local ok, custom = pcall(function() return obj.getCustomObject() end)
+    if ok and type(custom) == "table" and type(custom.type) == "number" then
+        return tonumber(customFace[custom.type + 1])
+    end
+    return nil
+end
+
+-- Quick-roll support for the dice table: returns n face values from THIS roller's
+-- xoshiro stream WITHOUT any die entering the bag. The table spawns dice and
+-- setValue()s them to these, so quick-rolls share the same seeded/persisted RNG as
+-- normal rolls but skip the container entirely (instant, loop/strand-proof).
+function rollFacesForQuick(params)
+    local n = math.floor(tonumber(params and params.n) or 0)
+    local faces = tonumber(params and params.faces) or 6
+    local out = {}
+    if ensureHealthyRngState() and isDebugBuild() then
+        printToAll("[RNG RECOVERY] Unhealthy dice RNG state detected and reseeded.", {1, 0.7, 0})
+    end
+    for i = 1, n do
+        out[i] = rollFace(faces)
+    end
+    return out
+end
+
+thisBoxIsBlue = isBlueRoller()
+
+orderedOnNextRoll = false
+groupSizeOnNextRoll = 1
+
+local takeDiceOutDelay = 0.1
+local collectDiceDelay = 0.2
+local nextRollBatchId = 0
+local activeRollBatch = nil
+local requestedPlayerColor = nil
+local ejectedDiceCount = 0
+local ejectedDiceNoticeTimer = nil
+
+local function createRollBatch(params, manual)
+    params = params or {}
+    nextRollBatchId = nextRollBatchId + 1
+    return {
+        id = nextRollBatchId,
+        playerColor = params.color or requestedPlayerColor,
+        expectedCount = tonumber(params.count),
+        ordered = params.ordered == true or orderedOnNextRoll == true,
+        groupSize = math.max(1, math.floor(tonumber(params.groupSize) or groupSizeOnNextRoll or 1)),
+        dice = {},
+        count = 0,
+        manual = manual == true,
+        phase = "collecting",
+        drainTimer = nil,
+        timeoutTimer = nil,
+        pendingCallbacks = 0,
+        extractionScheduled = false,
+        startedAt = nowSeconds(),
+        processingAt = nil,
+    }
+end
+
+local function releaseRollLock(batch)
+    if activeRollBatch ~= batch then return end
+    if batch.drainTimer then
+        Wait.stop(batch.drainTimer)
+        batch.drainTimer = nil
+    end
+    if batch.timeoutTimer then
+        Wait.stop(batch.timeoutTimer)
+        batch.timeoutTimer = nil
+    end
+    if isDebugBuild() then
+        local finishedAt = nowSeconds()
+        local processingAt = batch.processingAt or finishedAt
+        printToAll(string.format(
+            "[DBG-TIMER] bag roll #%d dice=%d collect=%.3fs process=%.3fs total=%.3fs",
+            batch.id,
+            batch.count,
+            math.max(0, processingAt - batch.startedAt),
+            math.max(0, finishedAt - processingAt),
+            math.max(0, finishedAt - batch.startedAt)
+        ), {0.6, 0.8, 1})
+    end
+    activeRollBatch = nil
+end
+
+local function startRollLock(params, manual)
+    if activeRollBatch then return nil end
+    local batch = createRollBatch(params, manual)
+    activeRollBatch = batch
+    orderedOnNextRoll = false
+    groupSizeOnNextRoll = 1
+    batch.timeoutTimer = Wait.time(function()
+        if activeRollBatch == batch then
+            printToAll("Dice roller safety timeout released a stuck roll.", {1, 0.6, 0})
+            releaseRollLock(batch)
+        end
+    end, 15)
+    return batch
+end
+
+function beginRollBatch(params)
+    local batch = startRollLock(params, false)
+    if not batch then
+        -- These options belonged to the rejected roll, not the next accepted one.
+        orderedOnNextRoll = false
+        groupSizeOnNextRoll = 1
+    end
+    return batch and batch.id or false
+end
+
+local function announceEjectedDice()
+    ejectedDiceNoticeTimer = nil
+    if ejectedDiceCount == 0 then return end
+    local noun = ejectedDiceCount == 1 and "die was" or "dice were"
+    local msg = "Dice roller busy: " .. ejectedDiceCount .. " unexpected "
+        .. noun .. " ejected. Please roll them again."
+    printToAll(msg, {1, 0.5, 0})
+    broadcastToAll(msg, {1, 0.5, 0})
+    ejectedDiceCount = 0
+end
+
+local function ejectBusyDie(guid)
+    local pos = self.getPosition()
+    self.takeObject({
+        guid = guid,
+        position = {pos.x + 12, pos.y + 5, pos.z + 12},
+        smooth = false,
+    })
+    ejectedDiceCount = ejectedDiceCount + 1
+    if ejectedDiceNoticeTimer then
+        Wait.stop(ejectedDiceNoticeTimer)
+    end
+    ejectedDiceNoticeTimer = Wait.time(announceEjectedDice, 0.2)
+end
+
+-- Placeholder until initDiceMat resolves the real mat once Global is ready;
+-- the `self` fallback keeps dice placement functional in the meantime.
+objectToPlaceDiceOnGUID = nil
+objectToPlaceDiceOn = self
+
+-- Defer a callback until Global's onLoad has run (it sets FTC_Global_Ready
+-- last). After 10s run it anyway rather than hang a broken load forever.
+function whenGlobalReady(callback)
+    Wait.condition(callback, function()
+        return Global.getVar("FTC_Global_Ready") == true
+    end, 10, callback)
+end
+
+function initDiceMat()
+    objectToPlaceDiceOnGUID = thisBoxIsBlue and Global.getVar("blueCustomDiceMat_GUID") or Global.getVar("redCustomDiceMat_GUID")
+    objectToPlaceDiceOn = getObjectFromGUID(objectToPlaceDiceOnGUID) or self
+end
+
+function clearDataForGC(data)
+    if data == nil then
+        return
+    end
+    for n, element in ipairs(data) do
+        element = nil
+    end
+end
+
+function onObjectPickUp(playerColor, obj)
+	lastHolder[obj] = playerColor
+end
+
+function onObjectDestroy(obj)
+	lastHolder[obj] = nil
+end
+
+function onLoad(save_state)
+    if self.getDescription() == '' then
+		setDefaultState()
+	end
+
+    -- Resolve the dice mat only once Global has set its GUIDs; onLoad itself
+    -- can run before Global's onLoad, which used to silently fall back to self.
+    whenGlobalReady(initDiceMat)
+
+    -- Always reseed on load. We deliberately ignore any persisted rngState so a
+    -- frozen seed can never be baked into the published mod's save (which would
+    -- replay the identical roll sequence every game). createSeedWords() mixes
+    -- os.time/os.clock/GUID through SplitMix, so fresh loads decorrelate.
+    setRngState(createSeedWords())
+end
+
+function onSave()
+	-- Intentionally persist no RNG state: rolls reseed on every load.
+	return ""
+end
+
+function onDrop(player_color)
+	if self.getDescription() == '' then
+		setDefaultState()
+	end
+end
+
+function setDefaultState()
+	self.setDescription(JSON.encode_pretty({Results = 'no', SmoothDice = 'no', RotateDice = 'no', Rows = 'yes', SortNoRows = 'asc', Step = 1.05, Version = ver}))
+end
+
+function sortByVal(t, type)
+	local keys = {}
+	for key in pairs(t) do
+		table.insert(keys, key)
+	end
+	if type == 'asc' then
+		table.sort(keys, function(a, b) return t[a] < t[b] end)
+	elseif type == 'desc' then
+		table.sort(keys, function(a, b) return t[a] > t[b] end)
+	end
+	return keys
+end
+
+function hasGuid(t, g)
+	for k, v in ipairs(t) do
+		if v.guid == g then return true end
+	end
+	return false
+end
+
+function onObjectEnterContainer(container, obj)
+    if container == self then
+        if obj.tag == "Dice" then
+            local guid = obj.getGUID()
+            if not guid then return end
+
+            local holder = lastHolder[obj]
+            local holderColor = type(holder) == "table" and holder.color or holder
+            local rollId = type(holder) == "table" and holder.rollId or nil
+            local batch = activeRollBatch
+            local belongsToActiveRoll = batch and rollId == batch.id
+
+            if batch and batch.phase ~= "collecting" then
+                ejectBusyDie(guid)
+                return
+            elseif batch and not belongsToActiveRoll then
+                if not batch.manual or batch.phase ~= "collecting" then
+                    ejectBusyDie(guid)
+                    return
+                end
+            elseif not batch then
+                if rollId then
+                    -- A scripted die arrived after its roll already drained or
+                    -- timed out. Never reinterpret it as a new manual roll.
+                    ejectBusyDie(guid)
+                    return
+                end
+                batch = startRollLock({color = holderColor}, true)
+            end
+
+            if not batch.dice[guid] then
+                batch.count = batch.count + 1
+            end
+            batch.dice[guid] = {
+                faces = detectFaces(obj),
+                name = obj.getName(),
+            }
+            if not batch.playerColor then
+                batch.playerColor = holderColor
+            end
+
+            if batch.drainTimer then
+                Wait.stop(batch.drainTimer)
+            end
+            local complete = batch.expectedCount and batch.count >= batch.expectedCount
+            batch.drainTimer = Wait.time(function()
+                batch.drainTimer = nil
+                if activeRollBatch ~= batch then return end
+                batch.phase = "processing"
+                batch.processingAt = nowSeconds()
+                local ok, err = pcall(takeDiceOut, batch)
+                if not ok then
+                    printToAll("Dice roll failed: " .. tostring(err), {1, 0.4, 0.4})
+                    releaseRollLock(batch)
+                end
+            end, complete and takeDiceOutDelay or collectDiceDelay)
+        else
+            local pos = self.getPosition()
+            self.takeObject({
+                position          = {pos.x+20,pos.y+50,pos.z+20},
+                smooth            = false,
+            })
+        end
+    end
+end
+
+function onCollisionEnter(collision_info)
+    -- Container entry owns batching. Collision events may occur while another
+    -- roll is draining, so they must never clear or rewrite roll state.
+end
+
+function takeDiceOut(batch)
+	local data = JSON.decode(self.getDescription())
+	if data == nil then
+		setDefaultState()
+		data = JSON.decode(self.getDescription())
+		printToAll('Warning - invalid description. Restored default configuration.', {0.8, 0.5, 0})
+	end
+
+	if type(data.Step) ~= "number" or data.Step < 1 then
+		setDefaultState()
+		data = JSON.decode(self.getDescription())
+		printToAll('Warning - "step" can\'t be lower than 1. Restored default configuration.', {0.8, 0.5, 0})
+	end
+
+    -- Recover before a roll if the host/runtime ever corrupted the state.
+    local debugEnabled = isDebugBuild()
+    if ensureHealthyRngState() and debugEnabled then
+        printToAll("[RNG RECOVERY] Unhealthy dice RNG state detected and reseeded.", {1, 0.7, 0})
+    end
+
+    if debugEnabled then
+        driftCheckPending = 0
+        driftCheckTotal   = 0
+        driftCheckDrifted = 0
+
+        -- Print RNG state so we can reproduce/simulate the seed externally.
+        local s = rngState or {}
+        printToAll("[DBG-SEED] s0=" .. tostring(s[1]) .. " s1=" .. tostring(s[2])
+            .. " s2=" .. tostring(s[3]) .. " s3=" .. tostring(s[4]), {0.6, 0.6, 1})
+
+        -- Probe first 5 raw outputs and restore state so the actual roll is unaffected.
+        local savedState = {s[1], s[2], s[3], s[4]}
+        local probeStr = ""
+        for _ = 1, 5 do
+            local raw = nextRngU32()
+            probeStr = probeStr .. raw .. "(" .. (raw % 6) .. ") "
+        end
+        setRngState(savedState)
+        printToAll("[DBG-RNG] probe(raw%6): " .. probeStr, {0.6, 0.6, 1})
+    end
+
+    local diceGuids = {}
+    local dbgTotal = 0
+    local dbgNilFaces = 0
+    local dbgValCounts = {}
+    local dbgFaceSample = ""   -- face counts for first 5 dice
+    local dbgGuidSample = ""   -- guids for first 5 dice (last 4 chars)
+    local dbgSampleCount = 0
+    local objs = {}
+	for _, v in pairs(self.getObjects()) do
+        local dieMeta = batch.dice[v.guid]
+        if dieMeta then
+            table.insert(objs, v)
+            local faces = dieMeta.faces
+            if dieMeta.name == "BCB-D3" then
+                faces = 3
+            end
+            local r = rollFace(faces)
+            diceGuids[v.guid] = r
+	        if debugEnabled then
+            driftCheckPending = driftCheckPending + 1
+            driftCheckTotal   = driftCheckTotal   + 1
+            dbgTotal = dbgTotal + 1
+            if faces == nil then dbgNilFaces = dbgNilFaces + 1 end
+            dbgValCounts[r] = (dbgValCounts[r] or 0) + 1
+            if dbgSampleCount < 5 then
+                dbgSampleCount = dbgSampleCount + 1
+                dbgFaceSample = dbgFaceSample .. tostring(faces) .. " "
+                local g = tostring(v.guid or "?")
+                dbgGuidSample = dbgGuidSample .. string.sub(g, -4) .. " "
+	            end
+	        end
+        end
+	end
+    if debugEnabled then
+        local dbgDist = ""
+        for i = 1, 20 do
+            if dbgValCounts[i] then
+                dbgDist = dbgDist .. i .. ":" .. dbgValCounts[i] .. " "
+            end
+        end
+        printToAll("[DBG] dice=" .. dbgTotal .. " nilFaces=" .. dbgNilFaces
+            .. " faces5=[" .. dbgFaceSample .. "] guids5=[" .. dbgGuidSample .. "]", {0.7, 0.7, 1})
+        printToAll("[DBG] dist=" .. dbgDist, {0.7, 0.7, 1})
+    end
+
+	local ordered = batch.ordered
+	local groupSize = batch.groupSize
+
+	local position = objectToPlaceDiceOn.getPosition()
+	local rotation = objectToPlaceDiceOn.getRotation()
+	local displayInRows = true
+	if data.Rows == 'no' then displayInRows = false end
+	if ordered then displayInRows = false end
+	local sortType = data.SortNoRows
+	if ordered then sortType = "none" end
+	local sortedKeys = sortByVal(diceGuids, sortType)
+	local Rows = {}
+	local n = 1
+    local batchResults = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+
+	for _, key in pairs(sortedKeys) do
+		if diceGuids[key] == math.floor(diceGuids[key]) then
+			batchResults[diceGuids[key]] = batchResults[diceGuids[key]] + 1
+            resultsTotal[diceGuids[key]] = resultsTotal[diceGuids[key]] + 1
+		end
+
+        if hasGuid(objs, key) then
+            if Rows[diceGuids[key]] == nil then
+                Rows[diceGuids[key]] = 0
+            end
+            Rows[diceGuids[key]] = Rows[diceGuids[key]] + 1
+            local params = {}
+            params.guid = key
+            local d12Xoffset=0
+            if diceGuids[key]>6 then
+                d12Xoffset=-24
+            end
+
+            local newXPos
+            local newZPos
+            if displayInRows then
+				-- Wrap a long same-value run into stacked Z-bands instead of letting
+				-- X grow without bound and push dice off the mat (where getDice()
+				-- can no longer see them to roll/clear). First 25 per value are
+				-- placed exactly as before; each band drops 7 rows in Z (6 value
+				-- rows + 1 gap) so bands never interleave.
+				local rowColLimit = 25
+				local rowIdx  = Rows[diceGuids[key]] - 1
+				local rowBand = math.floor(rowIdx / rowColLimit)
+				local rowCol  = rowIdx % rowColLimit
+				newXPos = 0 - d12Xoffset - 20.4 + ((rowCol + 1) * data.Step)
+				newZPos = -3.17 + ((((diceGuids[key] - 1) % 6) + 1) * data.Step) + (rowBand * 7 * data.Step)
+            else
+				local pos = n - 1
+				local limit = 25
+				if groupSize > 1 then
+					pos = pos + math.floor(pos / groupSize)
+					local step = groupSize + 1
+					local maxGroups = math.floor(limit / step)
+					local remainder = limit % (step * maxGroups)
+					limit = limit - remainder
+				end
+				local row = math.floor(pos / limit) + 1
+				local col = pos % limit
+				newXPos = 0 - 15.0 + (col * data.Step)
+				newZPos = -3.17 + (row * data.Step)
+            end
+
+			params.position = {
+				position.x + (newXPos * math.cos((180 + rotation.y) * 0.0174532))
+                                   - (newZPos * math.sin((180 + rotation.y) * 0.0174532)),
+				position.y + 2,
+				position.z + (newXPos * math.sin((rotation.y) * 0.0174532))
+                                   + (newZPos* math.cos((0 + rotation.y) * 0.0174532))
+			}
+            params.rotation = rotation
+            params.callback = 'setValueCallback'
+            params.params = {diceGuids[key], batch.id}
+            params.smooth = false
+            if data.SmoothDice == 'yes' then params.smooth = true end
+
+            batch.pendingCallbacks = batch.pendingCallbacks + 1
+            self.takeObject(params)
+            n = n + 1
+        end
+    end
+
+    batch.extractionScheduled = true
+	printresultsTable(batchResults, batch.playerColor)
+    Wait.time(function()
+        -- "objectToPlaceDiceOn" is your dice-mat object
+        objectToPlaceDiceOn.call("storeCurrentDiceAsPreviousRoll")
+    end, 1)
+    if batch.pendingCallbacks == 0 then
+        releaseRollLock(batch)
+    end
+end
+
+function sum(t)
+	local sum = 0
+	for k, v in pairs(t) do
+		sum = sum + v
+	end
+	return sum
+end
+
+function setPlayerColor(params)
+    requestedPlayerColor = params.color
+end
+
+function setLastHolder(params)
+    lastHolder[params.obj] = {
+        color = params.color,
+        rollId = tonumber(params.rollId),
+    }
+end
+
+function finishRollCallback(rollId)
+    local batch = activeRollBatch
+    if not batch or batch.id ~= tonumber(rollId) then return end
+    batch.pendingCallbacks = math.max(0, batch.pendingCallbacks - 1)
+    if batch.extractionScheduled and batch.pendingCallbacks == 0 then
+        releaseRollLock(batch)
+    end
+end
+
+function printresultsTable(batchResults, batchPlayerColor)
+    local data = JSON.decode(self.getDescription())
+    local description = {
+        'Ones.', 'Twos.', 'Threes.', 'Fours.', 'Fives.', 'Sixes.',
+        'Sevens.', 'Eights.', 'Nines.', 'Tens.', 'Elevens.', 'Twelves.',
+        'Thirteens.', 'Fourteens.', 'Fifteens.', 'Sixteens.', 'Seventeens.',
+        'Eighteens.', 'Nineteens.', 'Twenties.'
+    }
+
+    local msg = ''
+    local color = {1,1,1}
+
+    -- Build a chat message about the results
+for dieFace, numRolled in ipairs(batchResults) do
+    if numRolled > 0 then
+        msg = msg .. numRolled .. ' ' .. description[dieFace] .. ' '
+    end
+end
+
+    local time = '[' .. os.date("%H") .. ':' .. os.date("%M") .. ':' .. os.date("%S") .. ' UTC] '
+    if batchPlayerColor == nil then
+        msg = time .. '~UNKNOWN PLAYER~ rolls:\n' .. msg .. '*******************************************************'
+    else
+        local player = Player[batchPlayerColor]
+        local playerName = player and player.steam_name or batchPlayerColor
+        msg = time .. playerName .. ' rolls:\n' .. msg .. '*******************************************************'
+        color = stringColorToRGB(batchPlayerColor)
+    end
+
+    local rolltorecord = {msg = msg, color = color}
+    if sum(batchResults) > 0 then
+        if #lastRolls >= 5 then
+            table.remove(lastRolls, 1)
+        end
+        table.insert(lastRolls, #lastRolls + 1, rolltorecord)
+    end
+
+    if sum(batchResults) > 0 and data.Results == 'yes' then
+        printToAll(msg, color)
+        broadcastToAll(msg, color)
+    end
+end
+
+function printResults(n)
+    if #lastRolls == 0 then
+        printToAll("NO LAST ROLLS\n", "Yellow")
+        return
+    end
+
+    printToAll("LAST 5 ROLLS SUMMARY\n", "White")
+
+    function supportsUnicode()
+        local testString = "⚀"
+        return testString ~= ""
+    end
+
+    local diceFaces = supportsUnicode() and {
+        [1] = "⚀",
+        [2] = "⚁",
+        [3] = "⚂",
+        [4] = "⚃",
+        [5] = "⚄",
+        [6] = "⚅"
+    } or {
+        [1] = " 1",
+        [2] = " 2",
+        [3] = " 3",
+        [4] = " 4",
+        [5] = " 5",
+        [6] = " 6"
+    }
+
+    -- Determine if the dice roller is red or blue based on GUID
+    local redDiceRollerGUID = "17ca2b"
+    local blueDiceRollerGUID = "927ca1"
+    local diceColor = {1, 1, 1}  -- Default to white
+
+    if self.getGUID() == redDiceRollerGUID then
+        diceColor = {0.91, 0.29, 0.23} -- Red color for red dice roller
+    elseif self.getGUID() == blueDiceRollerGUID then
+        diceColor = {0.2, 0.62, 0.91}   -- Blue color for blue dice roller
+    end
+
+    for i = 1, n do
+        if lastRolls[i] then
+            local roll = lastRolls[i]
+            local countTable = {0, 0, 0, 0, 0, 0}  -- Initialize all dice counts to 0
+
+            -- Extract dice counts accurately
+            for dice, count in roll.msg:gmatch("(%d+) (%a+)") do
+                local diceMap = {
+                    ["Ones"] = 1, ["Twos"] = 2, ["Threes"] = 3,
+                    ["Fours"] = 4, ["Fives"] = 5, ["Sixes"] = 6
+                }
+                local diceIndex = diceMap[count]
+                if diceIndex then
+                    countTable[diceIndex] = countTable[diceIndex] + tonumber(dice)
+                end
+            end
+
+            -- Construct the dice row visually
+            local diceRow = ""
+            local countRow = ""
+
+            for face = 1, 6 do
+                diceRow = diceRow .. " " .. diceFaces[face] .. " "
+                countRow = countRow .. string.format(" %2d ", countTable[face])
+            end
+
+            -- Label rolls correctly
+            local rollLabel = (i == 1) and "Oldest Roll" or (i == n and "Most Recent Roll") or ("Roll " .. (n - i + 1))
+
+            -- Print roll summary with colors
+            printToAll(rollLabel .. ":", {1, 1, 1})  -- White color for label
+            printToAll(diceRow, diceColor)            -- Conditional color for dice symbols
+            printToAll(countRow, {1, 1, 1})            -- White color for counts
+            printToAll("-------------------------------------------------", {1, 1, 1})
+        end
+    end
+end
+
+-- Now printLast5Innovative uses the stored color without overriding it.
+function printLast5Innovative(pointless, player_color)
+    if #lastRolls == 0 then
+        printToAll("NO LAST ROLLS", {1,1,0})
+        return
+    end
+
+    -- Word names match the Clear Mat message (see SelectDeleteDiceX on the mat):
+    -- count as a digit, face spelled out, e.g. "3 ones, 2 twos".
+    local numberName = {"ones", "twos", "threes", "fours", "fives", "sixes"}
+    local faceIndex = {Ones=1, Twos=2, Threes=3, Fours=4, Fives=5, Sixes=6}
+
+    printToAll("–––––––––––––––––––––––––––––––––––––––––", {1,1,1})
+
+    for i = #lastRolls, 1, -1 do
+        local rollData = lastRolls[i]
+        local rollColor = rollData.color or {1,1,1}  -- use stored pastel color if present
+
+        local tally = {0,0,0,0,0,0}
+        for numStr, faceStr in rollData.msg:gmatch("(%d+) (%a+)") do
+            local idx = faceIndex[faceStr]
+            if idx then
+                tally[idx] = tally[idx] + tonumber(numStr)
+            end
+        end
+
+        local totalDice = 0
+        for face = 1, 6 do
+            totalDice = totalDice + tally[face]
+        end
+
+        local prefix
+        if i == #lastRolls then
+            prefix = "Latest   =>"
+        elseif i == 1 then
+            prefix = "Oldest  =>"
+        else
+            prefix = string.format("Roll #%d =>", i)
+        end
+
+        -- Only list faces that were actually rolled, like Clear Mat does.
+        local faceParts = {}
+        for face = 1, 6 do
+            if tally[face] > 0 then
+                table.insert(faceParts, string.format("%d %s", tally[face], numberName[face]))
+            end
+        end
+        local rollLine = prefix .. " " .. table.concat(faceParts, ", ") .. string.format(" [Total:%d]", totalDice)
+
+        printToAll(rollLine, rollColor)
+    end
+end
+
+
+
+function debugRngCheck()
+    if not isDebugBuild() then return end
+    local expected = {641, 1573767, 3222811527, 3517856514, 836907274}
+    local saved = {rngState[1], rngState[2], rngState[3], rngState[4]}
+    setRngState({1, 2, 3, 4})
+    local pass = true
+    local lines = {}
+    for i = 1, 5 do
+        local v = nextRngU32()
+        local ok = (v == expected[i])
+        if not ok then pass = false end
+        table.insert(lines, string.format("  [%d] got %-12s expected %-12s %s",
+            i, tostring(v), tostring(expected[i]), ok and "OK" or "FAIL"))
+    end
+    setRngState(saved)
+    if pass then
+        printToAll("[RNG CHECK] PASS - portable 32-bit xoshiro operations are correct.", {0, 1, 0})
+    else
+        printToAll("[RNG CHECK] FAIL - portable xoshiro operations are incorrect:", {1, 0.5, 0})
+        for _, line in ipairs(lines) do
+            printToAll(line, {1, 0.8, 0.4})
+        end
+    end
+end
+
+function setValueCallback(obj, tab)
+    function insidef()
+        local data = JSON.decode(self.getDescription())
+
+        local scripted = tab[1]
+        obj.setValue(scripted)
+
+        local rotValues = obj.getRotationValues()
+	    obj.setRotation(rotValues[scripted].rotation + Vector(0, 180.0 + objectToPlaceDiceOn.getRotation()[2], 0))
+        finishRollCallback(tab[2])
+
+        if isDebugBuild() then
+            Wait.condition(
+                function()
+                    local landed = obj.getValue()
+                    if landed ~= scripted then
+                        driftCheckDrifted = driftCheckDrifted + 1
+                        printToAll("[DRIFT] scripted=" .. scripted .. " landed=" .. landed, {1, 0.5, 0})
+                    end
+                    driftCheckPending = driftCheckPending - 1
+                    if driftCheckPending == 0 then
+                        local color = driftCheckDrifted == 0 and {0, 1, 0} or {1, 0.5, 0}
+                        printToAll("[DRIFT CHECK] " .. driftCheckDrifted .. " / " .. driftCheckTotal .. " dice drifted", color)
+                    end
+                end,
+                function() return obj.resting end,
+                10
+            )
+        end
+
+        return 1
+    end
+
+    startLuaCoroutine(self, 'insidef')
+end

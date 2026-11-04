@@ -1,4 +1,5 @@
 node_modules/
+__pycache__/
 dist/
 .env
 .env.*
@@ -8,3 +9,6 @@ dist/
 # Copyrighted source material stays local — never commit the rulebooks or raw workshop dumps
 *.pdf
 data/raw/
+
+# Packed TTS saves are derived from mod/ (pnpm mod:build)
+mod/build/

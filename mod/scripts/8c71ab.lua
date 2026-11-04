@@ -1,0 +1,65 @@
+-- FTC-GUID: 8c71ab
+
+-- Shared variables
+deployLineHeight = 2.1
+deployLineYPos = deployLineHeight-0.1
+sizeMulti        = 36
+local onState = 'https://steamusercontent-a.akamaihd.net/ugc/13208748527118320669/CB6C3A4B6E2A966FE0DEF4F816E3DAF80B9EF7B3/'
+local offState = 'https://steamusercontent-a.akamaihd.net/ugc/18395342256881191528/F49462F67144A18AA0377B410ECDAAE1A039905B/'
+
+function onLoad(saved_data)
+    self.createButton({
+        click_function  = "toggleAeraDeny",
+        function_owner  = self,
+        label           = "",
+        position        = {0, 0.2, 0},
+        width           = 2000,
+        height          = 2000,
+        color           = {0, 0, 0, 0}
+    })
+end
+function toggleAeraDeny()
+    local state = Global.getVar("interactiveButtonAreaDenial")
+    if state == 1 then
+        Global.setVar("interactiveButtonAreaDenial", 2)
+        drawCircle({color="White", fromCenter=6}, "areaDeny")
+        drawCircle({color="White", fromCenter=3}, "areaDeny")
+        params = {
+            image = onState,
+        }
+    else
+        Global.setVar("interactiveButtonAreaDenial", 1)
+        params = {
+            image = offState,
+        }        
+        for i, obj in ipairs(getAllObjects()) do
+            if obj.getGMNotes() == "areaDeny" then
+                obj.destroy()
+            end
+        end
+    end
+    self.setCustomObject(params)
+    self.reload()
+end
+
+function drawCircle(drawData, type)
+    local originalCircle=getObjectFromGUID(Global.getVar("centerCircle_GUID"))
+    local circleObj = originalCircle.clone({ position = {0, -5, 0}})
+    if circleObj then
+        circleObj.setLock(true)
+        circleObj.interactable = false
+        circleObj.setScale({drawData.fromCenter, deployLineHeight, drawData.fromCenter})
+        circleObj.setPosition({0, deployLineYPos, 0})
+        circleObj.setColorTint(drawData.color)
+        circleObj.setGMNotes(type)
+        circleObj.setName("")
+        local blockComp = circleObj.getComponent("BoxCollider")
+        if blockComp then
+            blockComp.set("enabled", false)
+        end
+        local meshComp = circleObj.getComponent("MeshCollider")
+        if meshComp then
+            meshComp.set("enabled", false)
+        end
+    end
+end

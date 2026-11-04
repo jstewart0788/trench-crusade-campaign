@@ -1,0 +1,35 @@
+-- FTC-GUID: 7e7711
+
+-- Shared variables
+deployLineHeight = 2.1
+sizeMulti        = 36
+
+local noLineState = 'https://steamusercontent-a.akamaihd.net/ugc/12932446331391677200/26670D21AC69A469974C90BAA06B0F7A94358459/'
+local lineOnState = 'https://steamusercontent-a.akamaihd.net/ugc/13483922162153684809/EC47EBA4101B6D3127E3C94509BE9C01A426CC08/'
+
+function onLoad(saved_data)
+    self.createButton({
+        click_function  = "toggleTerritoryLine",
+        function_owner  = self,
+        label           = "",
+        position        = {0, 0.2, 0},
+        width           = 2000,
+        height          = 2000,
+        color           = {0, 0, 0, 0}
+    })
+end
+
+function toggleTerritoryLine()
+    local manager = getObjectFromGUID("738804")
+    manager.call("showHideTerritoryLine")
+    syncTerritoryLineButtonImage()
+end
+
+function syncTerritoryLineButtonImage()
+    local state = Global.getVar("interactiveButtonTerritoryLine")
+    local params = {
+        image = state == 1 and noLineState or lineOnState,
+    }
+    self.setCustomObject(params)
+    self.reload()
+end
