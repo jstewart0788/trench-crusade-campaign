@@ -203,6 +203,9 @@ asset overlap at identical scale between TC:Map and the reference mods, so no gl
 - Copyright: units/equipment/factions JSON carry ~220K chars of near-verbatim Warbands ability and rule
   text inherited from upstream. Acceptable while private (decision 5); must be paraphrased or stripped
   before anything goes public.
+- Engine judgement calls to settle: HELD item + 1H weapon + shield counting (Digital Rulebook p55 reads
+  "either a 1-Handed Weapon or a Shield"); mercenary loadout bundles (`bundle` field) not enforced, so
+  Greatsword + Pistol on a Mamluk Faris passes; Scripture Guardian's mandatory weapon purchase (p182).
 - 22 gate names the engine cannot count (Cadaver Corps, Remnants of Byzantium, Book of Golems, the Goetic
   sins…) emit `unmodelled` warnings on legal rosters; needs a `campaignSelections` field on the roster.
 
