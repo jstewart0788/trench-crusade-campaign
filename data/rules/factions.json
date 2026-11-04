@@ -52,6 +52,7 @@
           "text": "Enemy Warbands roll Morale Tests with -1 DICE when fighting a Black Grail Warband. The Court Warbands and other Black Grail Warbands ignore this penalty."
         }
       ],
+      "startingDucats": 700,
       "unitIds": [
         "black-grail/amalgam",
         "black-grail/corpse-guard",
@@ -235,6 +236,7 @@
         "Minimum 1 Leader (Sorcerer or Faceless) when atLeast 1 Fang of the Seething Black (roster); lessThan 1 Faceless (roster); lessThan 1 Sorcerer (roster)"
       ],
       "rules": [],
+      "startingDucats": 700,
       "unitIds": [
         "court-of-the-seven-headed-serpent/desecrated-saint",
         "court-of-the-seven-headed-serpent/faceless",
@@ -280,6 +282,7 @@
       ],
       "name": "Heretic Legion",
       "rules": [],
+      "startingDucats": 700,
       "unitIds": [
         "heretic-legion/anointed-heavy-infantry",
         "heretic-legion/artillery-witch",
@@ -446,11 +449,13 @@
       ],
       "name": "Iron Sultanate",
       "rules": [],
+      "startingDucats": 700,
       "unitIds": [
         "iron-sultanate/archeologist",
         "iron-sultanate/azeb",
         "iron-sultanate/bedu-sharpshooter",
         "iron-sultanate/brazen-bull",
+        "iron-sultanate/combat-biologist",
         "iron-sultanate/disciple-of-st-roch",
         "iron-sultanate/jabirean-alchemist",
         "iron-sultanate/janissary",
@@ -613,8 +618,15 @@
         "New Antioch"
       ],
       "name": "New Antioch",
-      "rules": [],
+      "rules": [
+        {
+          "name": "New Antioch Fireteams",
+          "text": "A New Antioch Warband can include up to 2 Fireteams. Each Fireteam consists of any two models from the Warband. All of the models in the Fireteams are given the FIRETEAM Keyword at no additional cost in ducats. Fireteams in a New Antioch Warband have the Concentrated Attack ability: if a model from a Fireteam hits a target that had been hit by an attack made by the other member of their Fireteam earlier in the same joint Activation, you can spend 3 BLOOD MARKERS to convert the Injury Roll for the second attack to a Bloodbath Roll, even if the target is not Down."
+        }
+      ],
+      "startingDucats": 700,
       "unitIds": [
+        "new-antioch/combat-biologist",
         "new-antioch/combat-engineer",
         "new-antioch/combat-medic",
         "new-antioch/communicant-anti-tank-hunter",
@@ -623,6 +635,7 @@
         "new-antioch/fireteam",
         "new-antioch/homunculus",
         "new-antioch/lieutenant",
+        "new-antioch/mamluk-faris",
         "new-antioch/mamluk-faris-fireteam",
         "new-antioch/mechanized-heavy-infantry",
         "new-antioch/observer",
@@ -797,6 +810,8 @@
               "text": "You have 500 Ducats and 11 Glory to recruit a Papal State Force Warband for a campaign. A Papal States Intervention Force gains 4 Glory each time it calls for Reinforcements. In a campaign, its Threshold Value is reduced by 200 Ducats. When recruiting models for a one-off game, after agreeing upon the size of the game, reduce the amount of Ducats a Papal States Intervention Force Warband has to spend by 200 Ducats and increase the amount of Glory they have to spend by 11 Glory."
             }
           ],
+          "startingDucats": 500,
+          "startingGlory": 11,
           "text": "Lector: A Papal States Intervention Force Warband must include 1 Trench Cleric, but does not have to include a Lieutenant. A Trench Cleric in a Papal States Intervention Force Warband has the LEADER Keyword and the following additional ability::\n* Arise and be Healed! ACTION: A Papal States Intervention Force Trench Cleric can take an Arise and be Healed! ACTION. If they do so, take a Risky Success Roll for the Trench Cleric. If the roll is a Failure, nothing happens, and the Trench Cleric’s Activation ends. If the roll is a Success or Critical Success, pick the Trench Cleric or 1 friendly model within 3\" of the Trench Cleric. The model you pick can stand back up at no cost to their movement, and you can remove up to D3 BLOOD MARKERS and/or INFECTION MARKERS from the model.\nSwiss Guard: The Lieutenant and up to 4 models in a Papal States Intervention Force Warband can have the NEGATE FEAR Keyword at no additional cost in ducats.\nFar from Home: A Papal States Intervention Force Warband cannot include Trench Moles.\nSupreme Blessing: When you recruit a Papal States Intervention Force Warband, you must give the Supreme Pontiff ’s Crucifix to one model in the Warband. The Supreme Pontiff ’s Crucifix taken when the Warband is created is free and does not cost any glory (if it is lost then the replacement must be paid for normally).\nSpecialist Force: You have 500 Ducats and 11 Glory to recruit a Papal State Force Warband for a campaign. A Papal States Intervention Force gains 4 Glory each time it calls for Reinforcements. In a campaign, its Threshold Value is reduced by 200 Ducats. When recruiting models for a one-off game, after agreeing upon the size of the game, reduce the amount of Ducats a Papal States Intervention Force Warband has to spend by 200 Ducats and increase the amount of Glory they have to spend by 11 Glory."
         },
         {
@@ -907,8 +922,10 @@
       ],
       "name": "Trench Pilgrims",
       "rules": [],
+      "startingDucats": 700,
       "unitIds": [
         "trench-pilgrims/anchorite-shrine",
+        "trench-pilgrims/captive-giant",
         "trench-pilgrims/castigator",
         "trench-pilgrims/chieftain",
         "trench-pilgrims/communicant",
@@ -1106,6 +1123,11 @@
       "revision": "17"
     },
     "generator": "scripts/convert_newrecruit.py",
+    "pdfOverrides": {
+      "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86",
+      "edition": "1.0.2",
+      "file": "Warbands-of-Trench-Crusade.pdf"
+    },
     "repo": "https://github.com/Fawkstrot11/TrenchCrusade"
   }
 }

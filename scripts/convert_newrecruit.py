@@ -2,7 +2,7 @@
 """Convert the NewRecruit/BattleScribe Trench Crusade dataset into data/rules/*.json.
 
 Usage:
-    python3 -I scripts/convert_newrecruit.py --src <path-to-fawkstrot-clone> --out data/rules
+    python3 -I scripts/convert_newrecruit.py --src <path-to-fawkstrot-clone> --out data/rules [--overrides data/rules/pdf-overrides.json]
 
 Reads `Trench Crusade.gst` plus every `*.cat` in --src and writes factions.json,
 units.json and equipment.json (contract: packages/rules/src/schema.ts) and a
@@ -284,6 +284,14 @@ def eval_condition(c, ctx, deps, tally):
                 return False
             tally.add(("condition", ctype, scope, "category"))
             return None
+        # a model/unit entry other than this unit can never be the scoped selection
+        # (e.g. "instanceOf Lieutenant" evaluated for a Sniper Priest)
+        target = ctx.ds.get(ctx.ds.resolve_target(child))
+        if ctx.entry_ids and target is not None and tag(target) == "selectionEntry" and target.attrib.get("type") in ("model", "unit"):
+            if ctype in POSITIVE:
+                return False
+            if ctype in NEGATIVE:
+                return True
         deps.append(("selection", ctype, child))
         return None
     if scope in ROSTER_SCOPES:
@@ -300,20 +308,45 @@ def eval_condition(c, ctx, deps, tally):
     return None
 
 
+def _eval_children(el, ctx, tally):
+    """Evaluate each condition/group child with its own deps list -> [(value, deps)]."""
+    out = []
+    for c in kids(el, "conditions"):
+        d = []
+        out.append((eval_condition(c, ctx, d, tally), d))
+    for sg in kids(el, "conditionGroups"):
+        d = []
+        out.append((eval_group(sg, ctx, d, tally), d))
+    return out
+
+
+def _combine(results, gtype, deps):
+    """Three-valued and/or over child results. Dependencies are only reported when
+    the combined result is unknown, and then only from the children that were unknown;
+    a child that resolved (or a group short-circuited by a known value) contributes none."""
+    vals = [v for v, _ in results]
+    res = any3(vals) if gtype == "or" else all3(vals)
+    if res is None:
+        for v, d in results:
+            if v is None:
+                deps.extend(d)
+    return res
+
+
 def eval_group(g, ctx, deps, tally):
     gtype = g.attrib.get("type", "and")
-    vals = [eval_condition(c, ctx, deps, tally) for c in kids(g, "conditions")]
-    vals += [eval_group(sg, ctx, deps, tally) for sg in kids(g, "conditionGroups")]
-    if not vals:
+    results = _eval_children(g, ctx, tally)
+    if not results:
         return True
-    return any3(vals) if gtype == "or" else all3(vals)
+    return _combine(results, gtype, deps)
 
 
 def eval_modifier_conditions(m, ctx, deps, tally, extra=()):
-    vals = [eval_condition(c, ctx, deps, tally) for c in kids(m, "conditions")]
-    vals += [eval_group(g, ctx, deps, tally) for g in kids(m, "conditionGroups")]
-    vals += list(extra)
-    return all3(vals) if vals else True
+    results = _eval_children(m, ctx, tally)
+    results += [(v, []) for v in extra]
+    if not results:
+        return True
+    return _combine(results, "and", deps)
 
 
 def iter_modifiers(el, ctx, tally):
@@ -764,27 +797,39 @@ class Converter:
                     faction.setdefault("rosterErrors", []).append(clean(m.attrib.get("value", "")) + describe_conditions(self.ds, m))
         # units
         candidates = []
-        for se in kids(cat["root"], "selectionEntries"):
-            if se.attrib.get("type") in ("model", "unit"):
-                candidates.append((se, None))
-        for el in kids(cat["root"], "entryLinks"):
-            if el.attrib.get("type") == "selectionEntry":
-                target = self.ds.get(el.attrib.get("targetId"))
-                if target is not None and target.attrib.get("type") in ("model", "unit"):
-                    candidates.append((target, el))
-        merc = self.ds.by_name.get(MERCENARY_NAME)
-        if merc:
-            for se in kids(merc["root"], "selectionEntries"):
-                if se.attrib.get("type") in ("model", "unit"):
+
+        def is_unit_entry(se):
+            # the Combat Biologist is typed "upgrade" upstream but carries a Unit profile
+            return se.attrib.get("type") in ("model", "unit") or any(
+                p.attrib.get("typeName") == "Unit" for p, _ in profiles_of(self.ds, se)
+            )
+
+        def add_root(root_el):
+            for se in kids(root_el, "selectionEntries"):
+                if is_unit_entry(se):
                     candidates.append((se, None))
-            for el in kids(merc["root"], "entryLinks"):
+                    if se.attrib.get("type") == "unit":
+                        # a deprecated fireteam wrapper can hold the only link a faction has to a
+                        # mercenary model (Mamluk Faris); the model is still recruitable on its own
+                        for ln in kids(se, "entryLinks"):
+                            target = self.ds.get(ln.attrib.get("targetId"))
+                            if target is not None and target.attrib.get("type") == "model" and self.ds.owner_name(target) == MERCENARY_NAME:
+                                candidates.append((target, None))
+            for el in kids(root_el, "entryLinks"):
                 if el.attrib.get("type") == "selectionEntry":
                     target = self.ds.get(el.attrib.get("targetId"))
-                    if target is not None and target.attrib.get("type") in ("model", "unit"):
+                    if target is not None and is_unit_entry(target):
                         candidates.append((target, el))
-        seen_targets = set()
-        tags_seen = collections.Counter()
-        campaign_links = set()
+
+        add_root(cat["root"])
+        merc = self.ds.by_name.get(MERCENARY_NAME)
+        if merc:
+            add_root(merc["root"])
+        # several candidates can point at one target (e.g. a hidden variant-only link and the
+        # plain mercenary entry); the plainly visible one describes the unit, a conditional one is
+        # only used when nothing visible exists
+        by_target = {}
+        order = []
         for entry, link in candidates:
             name = clean(entry.attrib.get("name", ""))
             if name in SKIP_ENTRY_NAMES:
@@ -793,14 +838,22 @@ class Converter:
             if cats & SKIP_CATEGORIES:
                 continue
             tid = entry.attrib["id"]
-            if tid in seen_targets:
-                continue
             ctx = Ctx(self.ds, entry, link, cat["id"], variant_ids)
             state, deps = visibility([entry, link], ctx, self.tally)
+            rank = {"visible": 0, "conditional": 1, "hidden": 2}[state]
+            if tid not in by_target:
+                order.append(tid)
+                by_target[tid] = (rank, entry, link, ctx, state, deps)
+            elif rank < by_target[tid][0]:
+                by_target[tid] = (rank, entry, link, ctx, state, deps)
+        tags_seen = collections.Counter()
+        campaign_links = set()
+        for tid in order:
+            rank, entry, link, ctx, state, deps = by_target[tid]
+            name = clean(entry.attrib.get("name", ""))
             if state == "hidden":
                 self.hidden_units[f"{name} ({tid}, {self.ds.owner_name(entry)})"].append(cat["name"])
                 continue
-            seen_targets.add(tid)
             unit = self.convert_unit(cat, fid, entry, link, ctx, state, deps, campaign_links)
             if unit is None:
                 continue
@@ -1137,10 +1190,17 @@ class Converter:
                     for other in (el, via):
                         if other is None:
                             continue
-                        for m in kids(other, "modifiers"):
+                        for m, gres, gdeps in iter_modifiers(other, ctx, self.tally):
                             if m.attrib.get("field") in self.ds.cost_ids:
-                                self.tally.add(("modifier", m.attrib.get("type"), "cost", "conditional" if list(m) else "unconditional"), name)
-                                if not list(m):
+                                applies = True
+                                if list(m) or gres is not True:
+                                    # a conditional price only counts when its condition is known to hold
+                                    # for this unit (e.g. Bolt-Action Rifle 5 ducats "instanceOf Yeoman")
+                                    applies = eval_modifier_conditions(m, ctx, [], self.tally, extra=[gres])
+                                    self.tally.add(("modifier", m.attrib.get("type"), "cost", "conditional" if applies is None else "conditional-resolved"), name)
+                                else:
+                                    self.tally.add(("modifier", m.attrib.get("type"), "cost", "unconditional"), name)
+                                if applies is True:
                                     cname = self.ds.cost_ids[m.attrib["field"]]
                                     val = float(m.attrib.get("value", "0") or 0)
                                     mt = m.attrib.get("type")
@@ -1222,6 +1282,22 @@ class Converter:
                     up = {"name": name, "bsId": el.attrib.get("id"), "group": slug(path[-1]) if path else "direct", "rules": texts}
                     if costs:
                         up["cost"] = cost_obj(costs)
+                    parts, _, _ = describe_constraints(self.ds, [el, via], False, self.tally)
+                    for other in (el, via):
+                        if other is None:
+                            continue
+                        for c in kids(other, "constraints"):
+                            if c.attrib.get("type") != "max" or c.attrib.get("field") != "selections":
+                                continue
+                            v = first_int(c.attrib.get("value"))
+                            if v is None or v <= 0:
+                                continue
+                            if c.attrib.get("scope") in ("parent", "self", "model"):
+                                up["max"] = v if up.get("max") is None else min(up["max"], v)
+                            elif c.attrib.get("scope") in ("roster", "force"):
+                                up["maxPerWarband"] = v if up.get("maxPerWarband") is None else min(up["maxPerWarband"], v)
+                    if parts:
+                        up["limitsText"] = "; ".join(parts)
                     for k, v in cond.items():
                         up[k] = v
                     upgrades.append(up)
@@ -1543,10 +1619,121 @@ def dump(path, obj):
         fh.write("\n")
 
 
+# PDF overrides -------------------------------------------------------------------
+
+OVERRIDE_COLLECTIONS = {"units.json": "units", "equipment.json": "items", "factions.json": "factions"}
+_SEG_RE = re.compile(r"^([A-Za-z0-9_$-]+)(?:\[([A-Za-z0-9_$.-]+)=(.*)\])?$")
+
+
+def _coerce(raw, sample):
+    """A selector value is matched as a number when the field holds numbers, else as text."""
+    if isinstance(sample, bool) or sample is None:
+        return raw
+    if isinstance(sample, (int, float)):
+        try:
+            return type(sample)(raw)
+        except ValueError:
+            return raw
+    return raw
+
+
+def resolve_override_path(root, path):
+    """Return (container, key) for a dot path such as `cost.ducats` or
+    `equipmentAccess[itemId=standard-armour].cost.ducats`; raise KeyError when a
+    segment cannot be found. A `list[key=value]` segment selects exactly one element."""
+    node = root
+    segments = path.split(".")
+    i = 0
+    while i < len(segments):
+        seg = segments[i]
+        # a selector value may itself contain dots (e.g. [name=St. Roch]); re-join until the bracket closes
+        while seg.count("[") > seg.count("]") and i + 1 < len(segments):
+            i += 1
+            seg += "." + segments[i]
+        m = _SEG_RE.match(seg)
+        if not m:
+            raise KeyError(f"bad segment {seg!r}")
+        name, skey, sval = m.group(1), m.group(2), m.group(3)
+        last = i == len(segments) - 1
+        if not isinstance(node, dict) or name not in node:
+            if last and skey is None and isinstance(node, dict):
+                return node, name  # a new field may be created on the final segment
+            raise KeyError(f"no field {name!r}")
+        if skey is None:
+            if last:
+                return node, name
+            node = node[name]
+        else:
+            lst = node[name]
+            if not isinstance(lst, list):
+                raise KeyError(f"{name!r} is not a list")
+            hits = [x for x in lst if isinstance(x, dict) and skey in x and str(x[skey]) == str(_coerce(sval, x[skey]))]
+            if len(hits) != 1:
+                raise KeyError(f"{name}[{skey}={sval}] matched {len(hits)} elements")
+            if last:
+                return lst, lst.index(hits[0])
+            node = hits[0]
+        i += 1
+    raise KeyError("empty path")
+
+
+def apply_overrides(overrides_path, outputs):
+    """Apply every override in the file to the in-memory outputs ({file: payload}).
+    Prints one line per applied override; returns the list of overrides it could not resolve."""
+    with open(overrides_path, encoding="utf-8") as fh:
+        spec = json.load(fh)
+    if spec.get("$schema") != "tc-rules-pdf-overrides-v1":
+        raise SystemExit(f"{overrides_path}: unexpected $schema {spec.get('$schema')!r}")
+    failures = []
+    applied = 0
+    for ov in spec.get("overrides", []):
+        fname, eid, path = ov.get("file"), ov.get("id"), ov.get("path")
+        coll = OVERRIDE_COLLECTIONS.get(fname)
+        payload = outputs.get(fname)
+        label = f"{fname}:{eid}:{path}"
+        if coll is None or payload is None:
+            failures.append((label, f"unknown file {fname!r}"))
+            continue
+        entries = [e for e in payload[coll] if e.get("id") == eid]
+        if len(entries) != 1:
+            failures.append((label, f"id matched {len(entries)} entries"))
+            continue
+        try:
+            container, key = resolve_override_path(entries[0], path)
+        except KeyError as exc:
+            failures.append((label, str(exc)))
+            continue
+        current = container[key] if (isinstance(container, dict) and key in container) or isinstance(container, list) else None
+        if "upstream" in ov and current != ov["upstream"]:
+            print(f"  warning: {label} upstream value is {json.dumps(current, ensure_ascii=False)}, override expected {json.dumps(ov['upstream'], ensure_ascii=False)}")
+        if ov.get("pdf", "__missing__") == "__missing__":
+            failures.append((label, "override has no 'pdf' value"))
+            continue
+        if ov["pdf"] is None:
+            # null removes a list element or drops a field (e.g. an onlyWith gate)
+            if isinstance(container, list):
+                del container[key]
+            else:
+                container.pop(key, None)
+            applied += 1
+            print(f"  override {label}: removed")
+            continue
+        container[key] = ov["pdf"]
+        applied += 1
+        print(f"  override {label}: {json.dumps(current, ensure_ascii=False)} -> {json.dumps(ov['pdf'], ensure_ascii=False)}")
+    print(f"applied {applied} override(s) from {overrides_path}")
+    return failures
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--src", required=True, help="path to the Fawkstrot11/TrenchCrusade clone")
     ap.add_argument("--out", required=True, help="output directory (data/rules)")
+    ap.add_argument(
+        "--overrides",
+        default=None,
+        help="PDF overrides file applied as the last step (default: <out>/pdf-overrides.json when it exists; pass '' to skip)",
+    )
     args = ap.parse_args(argv)
     ds = Dataset(args.src)
     if ds.gst is None:
@@ -1557,9 +1744,28 @@ def main(argv=None):
     commit = git_commit(args.src)
     source = conv.source_block(commit)
     os.makedirs(args.out, exist_ok=True)
-    dump(os.path.join(args.out, "factions.json"), {"$schema": "tc-rules-factions-v1", "source": source, "factions": sorted(conv.factions, key=lambda f: f["id"])})
-    dump(os.path.join(args.out, "units.json"), {"$schema": "tc-rules-units-v1", "source": source, "units": conv.units})
-    dump(os.path.join(args.out, "equipment.json"), {"$schema": "tc-rules-equipment-v1", "source": source, "items": conv.items})
+    outputs = {
+        "factions.json": {"$schema": "tc-rules-factions-v1", "source": source, "factions": sorted(conv.factions, key=lambda f: f["id"])},
+        "units.json": {"$schema": "tc-rules-units-v1", "source": source, "units": conv.units},
+        "equipment.json": {"$schema": "tc-rules-equipment-v1", "source": source, "items": conv.items},
+    }
+    overrides_path = args.overrides
+    if overrides_path is None:
+        candidate = os.path.join(args.out, "pdf-overrides.json")
+        overrides_path = candidate if os.path.exists(candidate) else ""
+    if overrides_path:
+        failures = apply_overrides(overrides_path, outputs)
+        if failures:
+            print(f"{len(failures)} override(s) could not be resolved:", file=sys.stderr)
+            for label, why in failures:
+                print(f"  {label}: {why}", file=sys.stderr)
+            return 3
+        with open(overrides_path, encoding="utf-8") as fh:
+            ov_source = json.load(fh).get("source", {})
+        for payload in outputs.values():
+            payload["source"]["pdfOverrides"] = {"file": os.path.basename(overrides_path), **ov_source}
+    for fname, payload in outputs.items():
+        dump(os.path.join(args.out, fname), payload)
     write_notes(conv, args.out, commit)
     print(f"factions={len(conv.factions)} units={len(conv.units)} items={len(conv.items)} -> {args.out}")
     return 0

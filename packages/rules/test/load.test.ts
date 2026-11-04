@@ -7,10 +7,10 @@ describe("loadRulesData", () => {
   it("loads and indexes the six data files", () => {
     const d = data();
     expect(d.factions).toHaveLength(6);
-    expect(d.units).toHaveLength(101);
+    expect(d.units).toHaveLength(105);
     expect(d.equipment).toHaveLength(213);
     expect(d.factionsById.get("new-antioch")?.name).toBe("New Antioch");
-    expect(d.unitsByFaction.get("new-antioch")).toHaveLength(19);
+    expect(d.unitsByFaction.get("new-antioch")).toHaveLength(21);
     expect(d.unitsById.get("new-antioch/yeoman")?.cost.ducats).toBe(30);
     expect(d.equipmentById.get("bolt-action-rifle")?.hands).toBe(2);
     expect(d.variantsById.get("new-antioch/the-red-brigade")?.factionId).toBe("new-antioch");
@@ -25,8 +25,9 @@ describe("loadRulesData", () => {
     const guardian = d.unitsById.get("new-antioch/scripture-guardian")!;
     expect(guardian.mercenary).toBe(true);
     expect(guardian.mercenaryId).toBe("mercenary/scripture-guardian");
+    const medic = d.unitsById.get("new-antioch/combat-medic")!;
+    expect(medic.equipmentAccess.find((a) => a.itemId === "misericordia")?.maxPerWarband).toBe(1);
     const yeoman = d.unitsById.get("new-antioch/yeoman")!;
-    expect(yeoman.equipmentAccess.find((a) => a.itemId === "misericordia")?.maxPerWarband).toBe(1);
     expect(yeoman.upgrades?.some((g) => g.name === "Trench Mole")).toBe(true);
   });
 

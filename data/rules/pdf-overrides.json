@@ -1,0 +1,3434 @@
+{
+  "$schema": "tc-rules-pdf-overrides-v1",
+  "source": {
+    "file": "Warbands-of-Trench-Crusade.pdf",
+    "edition": "1.0.2",
+    "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86"
+  },
+  "overrides": [
+    {
+      "file": "factions.json",
+      "id": "new-antioch",
+      "path": "startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "page": 23,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a ... Warband'; the dataset carries no starting-ducat figure"
+    },
+    {
+      "file": "factions.json",
+      "id": "trench-pilgrims",
+      "path": "startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "page": 49,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a ... Warband'; the dataset carries no starting-ducat figure"
+    },
+    {
+      "file": "factions.json",
+      "id": "iron-sultanate",
+      "path": "startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "page": 73,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a ... Warband'; the dataset carries no starting-ducat figure"
+    },
+    {
+      "file": "factions.json",
+      "id": "heretic-legion",
+      "path": "startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "page": 105,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a ... Warband'; the dataset carries no starting-ducat figure"
+    },
+    {
+      "file": "factions.json",
+      "id": "black-grail",
+      "path": "startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "page": 127,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a ... Warband'; the dataset carries no starting-ducat figure"
+    },
+    {
+      "file": "factions.json",
+      "id": "court-of-the-seven-headed-serpent",
+      "path": "startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "page": 146,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a ... Warband'; the dataset carries no starting-ducat figure"
+    },
+    {
+      "file": "factions.json",
+      "id": "new-antioch",
+      "path": "rules",
+      "upstream": [],
+      "pdf": [
+        {
+          "name": "New Antioch Fireteams",
+          "text": "A New Antioch Warband can include up to 2 Fireteams. Each Fireteam consists of any two models from the Warband. All of the models in the Fireteams are given the FIRETEAM Keyword at no additional cost in ducats. Fireteams in a New Antioch Warband have the Concentrated Attack ability: if a model from a Fireteam hits a target that had been hit by an attack made by the other member of their Fireteam earlier in the same joint Activation, you can spend 3 BLOOD MARKERS to convert the Injury Roll for the second attack to a Bloodbath Roll, even if the target is not Down."
+        }
+      ],
+      "page": 23,
+      "confidence": "high",
+      "note": "faction special rule missing upstream (the deprecated Fireteam wrapper unit carries a copy as 'Concerted Attack')"
+    },
+    {
+      "file": "factions.json",
+      "id": "new-antioch",
+      "path": "variants[id=new-antioch/papal-states-intervention-force].startingDucats",
+      "upstream": null,
+      "pdf": 500,
+      "page": 35,
+      "confidence": "high",
+      "note": "Specialist Force: 500 ducats and 11 glory instead of 700 ducats; Threshold reduced by 200"
+    },
+    {
+      "file": "factions.json",
+      "id": "new-antioch",
+      "path": "variants[id=new-antioch/papal-states-intervention-force].startingGlory",
+      "upstream": null,
+      "pdf": 11,
+      "page": 35,
+      "confidence": "high",
+      "note": "Specialist Force: 500 ducats and 11 glory; +4 glory each time it calls for Reinforcements"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-medic",
+      "path": "cost.ducats",
+      "upstream": 40,
+      "pdf": 65,
+      "page": 34,
+      "confidence": "high",
+      "note": "Warband Entry cost is 65 with Standard Armour, Gas Mask, Medi-kit and Misericordia included; upstream prices the fixed kit at 0 and leaves the Misericordia as a 15-ducat purchase"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-medic",
+      "path": "equipmentAccess[itemId=misericordia].cost",
+      "upstream": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 0
+      },
+      "page": 34,
+      "confidence": "high",
+      "note": "included in the 65-ducat entry cost; the 15-ducat Armoury line is the replacement price"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-medic",
+      "path": "equipmentAccess[itemId=misericordia].fixed",
+      "upstream": null,
+      "pdf": true,
+      "page": 34,
+      "confidence": "high",
+      "note": "'A Combat Medic always has ... a Misericordia'"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-medic",
+      "path": "keywords",
+      "upstream": [
+        "New Antioch",
+        "Troop"
+      ],
+      "pdf": [
+        "Negate Fear",
+        "New Antioch",
+        "Troop"
+      ],
+      "page": 34,
+      "confidence": "high",
+      "note": "keyword(s) Negate Fear listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-engineer",
+      "path": "keywords",
+      "upstream": [
+        "New Antioch",
+        "Troop"
+      ],
+      "pdf": [
+        "Negate Mined",
+        "New Antioch",
+        "Troop"
+      ],
+      "page": 32,
+      "confidence": "high",
+      "note": "keyword(s) Negate Mined listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/sniper-priest",
+      "path": "keywords",
+      "upstream": [
+        "Clergy",
+        "Elite",
+        "New Antioch"
+      ],
+      "pdf": [
+        "Elite",
+        "New Antioch"
+      ],
+      "page": 28,
+      "confidence": "medium",
+      "note": "Warband Entry lists NEW ANTIOCH, ELITE only; 'Clergy' is an upstream-only category"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/lieutenant",
+      "path": "abilities[name=On my Command!].name",
+      "upstream": "On my Command!",
+      "pdf": "Hold Your Fire!",
+      "page": 27,
+      "confidence": "high",
+      "note": "same ACTION text, PDF name"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/yeoman",
+      "path": "equipmentAccess[itemId=automatic-pistol].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 24,
+      "confidence": "high",
+      "note": "Armoury: Automatic Pistol is ELITE only; the Stosstruppen variant lifts the stipulation (p41). Upstream's unhide modifier never fires because the link is already visible"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/shocktrooper",
+      "path": "equipmentAccess[itemId=automatic-pistol].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 24,
+      "confidence": "high",
+      "note": "Armoury: Automatic Pistol is ELITE only; the Stosstruppen variant lifts the stipulation (p41). Upstream's unhide modifier never fires because the link is already visible"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-engineer",
+      "path": "equipmentAccess[itemId=automatic-pistol].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 24,
+      "confidence": "high",
+      "note": "Armoury: Automatic Pistol is ELITE only; the Stosstruppen variant lifts the stipulation (p41). Upstream's unhide modifier never fires because the link is already visible"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-medic",
+      "path": "equipmentAccess[itemId=automatic-pistol].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 24,
+      "confidence": "high",
+      "note": "Armoury: Automatic Pistol is ELITE only; the Stosstruppen variant lifts the stipulation (p41). Upstream's unhide modifier never fires because the link is already visible"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mechanized-heavy-infantry",
+      "path": "equipmentAccess[itemId=automatic-pistol].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 24,
+      "confidence": "high",
+      "note": "Armoury: Automatic Pistol is ELITE only; the Stosstruppen variant lifts the stipulation (p41). Upstream's unhide modifier never fires because the link is already visible"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/shocktrooper",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Berserker; hidden if atLeast Varangian Warlord",
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model; max increment 1 per model when repeat per Knowledge of the Machine Armour (roster); repeat per Entitled to Machine Armour (roster)",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 25,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE & Mechanized Heavy Infantry only"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/yeoman",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Berserker; hidden if atLeast Varangian Warlord",
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model; max increment 1 per model when repeat per Knowledge of the Machine Armour (roster); repeat per Entitled to Machine Armour (roster)",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 25,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE & Mechanized Heavy Infantry only"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/sniper-priest",
+      "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/eire-rangers",
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 38,
+      "confidence": "high",
+      "note": "Eire: only MHI may have Reinforced/Machine Armour (p38); Alba and Stosstruppen: only the Lieutenant and MHI (p40, p41)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/sniper-priest",
+      "path": "equipmentAccess[itemId=machine-armour].onlyWithout",
+      "upstream": [
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "pdf": [
+        "new-antioch/eire-rangers",
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 38,
+      "confidence": "high",
+      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/sniper-priest",
+      "path": "equipmentAccess[itemId=martyrdom-pills].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 41,
+      "confidence": "high",
+      "note": "Stosstruppen Specialised Equipment: models cannot have Grenade Launchers or Martyrdom Pills"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-cleric",
+      "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/eire-rangers",
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 38,
+      "confidence": "high",
+      "note": "Eire: only MHI may have Reinforced/Machine Armour (p38); Alba and Stosstruppen: only the Lieutenant and MHI (p40, p41)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-cleric",
+      "path": "equipmentAccess[itemId=machine-armour].onlyWithout",
+      "upstream": [
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "pdf": [
+        "new-antioch/eire-rangers",
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 38,
+      "confidence": "high",
+      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-cleric",
+      "path": "equipmentAccess[itemId=martyrdom-pills].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 41,
+      "confidence": "high",
+      "note": "Stosstruppen Specialised Equipment: models cannot have Grenade Launchers or Martyrdom Pills"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/lieutenant",
+      "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/eire-rangers"
+      ],
+      "page": 38,
+      "confidence": "high",
+      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/lieutenant",
+      "path": "equipmentAccess[itemId=machine-armour].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/eire-rangers"
+      ],
+      "page": 38,
+      "confidence": "high",
+      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/lieutenant",
+      "path": "equipmentAccess[itemId=martyrdom-pills].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
+      "page": 41,
+      "confidence": "high",
+      "note": "Stosstruppen Specialised Equipment: models cannot have Grenade Launchers or Martyrdom Pills"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-engineer",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/combat-medic",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/lieutenant",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mechanized-heavy-infantry",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/shocktrooper",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/sniper-priest",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-cleric",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/yeoman",
+      "path": "equipmentAccess[itemId=ammo/dum-dum-bullets].maxPerWarband",
+      "upstream": 2,
+      "pdf": 3,
+      "page": 39,
+      "confidence": "high",
+      "note": "Kingdom of Alba Dum-Dum Ammunition: Limit: 3 (upstream says 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/shocktrooper",
+      "path": "upgrades[name=Vanguard]",
+      "upstream": {
+        "bsId": "d47d-8d87-58a5-4c67",
+        "cost": {
+          "ducats": 5,
+          "glory": 0
+        },
+        "group": "upgrades",
+        "limitsText": "max 4 per warband; max 1 per model",
+        "max": 1,
+        "maxPerWarband": 4,
+        "name": "Vanguard",
+        "rules": [
+          {
+            "name": "Vanguard",
+            "text": "Unless the scenario prohibits use of the special deployment of INFILTRATORS, you may deploy the Vanguard on any table edge as long as they are at least 8” away from any enemy model after INFILTRATORS are deployed. Vanguard can also be deployed in your own deployment zone as standard."
+          }
+        ]
+      },
+      "pdf": null,
+      "page": 44,
+      "confidence": "medium",
+      "note": "Vanguard Forces gives the Flanking ability to up to 4 Yeomen only; upstream also offers it to Shock Troopers"
+    },
+    {
+      "file": "equipment.json",
+      "id": "supreme-blessing",
+      "path": "name",
+      "upstream": "Supreme Blessing",
+      "pdf": "Supreme Pontiff's Crucifix",
+      "page": 36,
+      "confidence": "high",
+      "note": "Papal States Armoury name"
+    },
+    {
+      "file": "equipment.json",
+      "id": "supreme-blessing",
+      "path": "cost",
+      "upstream": {
+        "ducats": null,
+        "glory": null
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 3
+      },
+      "page": 36,
+      "confidence": "high",
+      "note": "3 glory, Limit: 1; the one taken at warband creation is free (Supreme Blessing rule, p35)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/castigator",
+      "path": "equipmentAccess[itemId=machine-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Wrath of God",
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "itemId": "machine-gun",
+        "limitsText": "max 2 per warband",
+        "max": null,
+        "maxPerWarband": 2,
+        "onlyWith": [
+          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+        ]
+      },
+      "pdf": {
+        "itemId": "machine-gun",
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "max": null,
+        "conditionNote": "hidden if atLeast Wrath of God"
+      },
+      "page": 49,
+      "confidence": "high",
+      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/communicant",
+      "path": "equipmentAccess[itemId=machine-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Wrath of God",
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "itemId": "machine-gun",
+        "limitsText": "max 2 per warband",
+        "max": null,
+        "maxPerWarband": 2,
+        "onlyWith": [
+          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+        ]
+      },
+      "pdf": {
+        "itemId": "machine-gun",
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "max": null,
+        "conditionNote": "hidden if atLeast Wrath of God"
+      },
+      "page": 49,
+      "confidence": "high",
+      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-pilgrim",
+      "path": "equipmentAccess[itemId=machine-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Wrath of God",
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "itemId": "machine-gun",
+        "limitsText": "max 2 per warband",
+        "max": null,
+        "maxPerWarband": 2,
+        "onlyWith": [
+          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+        ]
+      },
+      "pdf": {
+        "itemId": "machine-gun",
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "max": null,
+        "conditionNote": "hidden if atLeast Wrath of God"
+      },
+      "page": 49,
+      "confidence": "high",
+      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/war-prophet",
+      "path": "equipmentAccess[itemId=machine-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Wrath of God",
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "itemId": "machine-gun",
+        "limitsText": "max 2 per warband",
+        "max": null,
+        "maxPerWarband": 2,
+        "onlyWith": [
+          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+        ]
+      },
+      "pdf": {
+        "itemId": "machine-gun",
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "max": null,
+        "conditionNote": "hidden if atLeast Wrath of God"
+      },
+      "page": 49,
+      "confidence": "high",
+      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/stigmatic-nun",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Wrath of God",
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 50,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/stigmatic-nun",
+      "path": "equipmentAccess[itemId=holy-icon-shield].cost",
+      "upstream": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "pdf": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "page": 61,
+      "confidence": "high",
+      "note": "Procession of the Sacred Affliction 'Reliquary Armoury': Holy Icon Shields cost 20 ducats and lose the ELITE only stipulation (this access entry only exists under that variant)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-pilgrim",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Wrath of God",
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 50,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-pilgrim",
+      "path": "equipmentAccess[itemId=holy-icon-shield].cost",
+      "upstream": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "pdf": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "page": 61,
+      "confidence": "high",
+      "note": "Procession of the Sacred Affliction 'Reliquary Armoury': Holy Icon Shields cost 20 ducats and lose the ELITE only stipulation (this access entry only exists under that variant)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/ecclesiastic-prisoner",
+      "path": "abilities",
+      "upstream": [
+        {
+          "name": "Mad Dash",
+          "text": "Ecclesiastic Prisoner can add +1 DICE to their Dash ACTION"
+        },
+        {
+          "name": "Negate [Keyword]",
+          "sharedRule": true,
+          "text": "A model with the NEGATE Keyword is not affected by the specified Keyword’s Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword."
+        }
+      ],
+      "pdf": [
+        {
+          "name": "Awaited",
+          "text": "An Ecclesiastic Prisoner that is taken Out of Action when their Martyrdom Device is triggered does not count towards the number of models from the Warband taken Out of Action for Morale Checks."
+        },
+        {
+          "name": "Feeble Flailing",
+          "text": "An Ecclesiastic Prisoner can make a Melee Attack even though it doesn't have a melee weapon. If it does so, add -1 DICE to the Success Roll for the attack."
+        },
+        {
+          "name": "Mad Dash",
+          "text": "Add +1 DICE to the Risky Success Roll for an Ecclesiastic Prisoner that is taking a Dash ACTION."
+        },
+        {
+          "name": "Negate [Keyword]",
+          "sharedRule": true,
+          "text": "A model with the NEGATE Keyword is not affected by the specified Keyword’s Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword."
+        }
+      ],
+      "page": 58,
+      "confidence": "high",
+      "note": "Awaited and Feeble Flailing missing upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/anchorite-shrine",
+      "path": "keywords",
+      "upstream": [
+        "Pilgrim",
+        "Troop"
+      ],
+      "pdf": [
+        "Fear",
+        "Negate Shrapnel",
+        "Pilgrim",
+        "Strong",
+        "Tough",
+        "Troop"
+      ],
+      "page": 59,
+      "confidence": "high",
+      "note": "keyword(s) Fear, Negate Shrapnel, Strong, Tough listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/anchorite-shrine",
+      "path": "equipmentAccess[itemId=heavy-flamethrower].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "page": 64,
+      "confidence": "high",
+      "note": "Anchorite Ranged Weapons (45 ducats) are War Pilgrimage of Saint Methodius armoury only"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/anchorite-shrine",
+      "path": "equipmentAccess[itemId=anti-material-rifle].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "page": 64,
+      "confidence": "high",
+      "note": "Anchorite Ranged Weapons (40 ducats) are War Pilgrimage of Saint Methodius armoury only"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/mendelist-ammo-monk",
+      "path": "onlyWith",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 180,
+      "confidence": "high",
+      "note": "Mendelist Ammo Monk can be recruited by any New Antioch or Trench Pilgrim warband; upstream only unhides it for the War Pilgrimage of Saint Methodius, which is the one variant that forbids it (Communicant Heresy, p64)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/mendelist-ammo-monk",
+      "path": "variantIds",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 180,
+      "confidence": "high",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/mendelist-ammo-monk",
+      "path": "onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "page": 64,
+      "confidence": "high",
+      "note": "Communicant Heresy: Ammo Monks, Communicants and Communicant Anti-Tank Hunters cannot be included in a War Pilgrimage of Saint Methodius Warband"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/yuzbasi-captain",
+      "path": "name",
+      "upstream": "Yüzbaşı Captain",
+      "pdf": "Yüzbaşı",
+      "page": 81,
+      "confidence": "medium",
+      "note": "Warband Entry name"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/yuzbasi-captain",
+      "path": "keywords",
+      "upstream": [
+        "Elite",
+        "Leader",
+        "Sultanate",
+        "Tough"
+      ],
+      "pdf": [
+        "Elite",
+        "Leader",
+        "Negate Fear",
+        "Sultanate",
+        "Tough"
+      ],
+      "page": 81,
+      "confidence": "high",
+      "note": "keyword(s) Negate Fear listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "keywords",
+      "upstream": [
+        "Sultanate",
+        "Troop"
+      ],
+      "pdf": [
+        "Negate Mined",
+        "Sultanate",
+        "Troop"
+      ],
+      "page": 85,
+      "confidence": "high",
+      "note": "keyword(s) Negate Mined listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "keywords",
+      "upstream": [
+        "Artificial",
+        "Limited Potential",
+        "Strong",
+        "Sultanate",
+        "Tough",
+        "Troop"
+      ],
+      "pdf": [
+        "Artificial",
+        "Fear",
+        "Limited Potential",
+        "Strong",
+        "Sultanate",
+        "Tough",
+        "Troop"
+      ],
+      "page": 88,
+      "confidence": "high",
+      "note": "keyword(s) Fear listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=halberd-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Shield Training",
+        "cost": {
+          "ducats": 20,
+          "glory": 0
+        },
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "itemId": "halberd-gun",
+        "max": null
+      },
+      "pdf": null,
+      "page": 74,
+      "confidence": "high",
+      "note": "Armoury: Halberd-Gun is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=halberd-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Shield Training",
+        "cost": {
+          "ducats": 20,
+          "glory": 0
+        },
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "itemId": "halberd-gun",
+        "max": null
+      },
+      "pdf": null,
+      "page": 74,
+      "confidence": "high",
+      "note": "Armoury: Halberd-Gun is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=halberd-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Shield Training",
+        "cost": {
+          "ducats": 20,
+          "glory": 0
+        },
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "itemId": "halberd-gun",
+        "max": null
+      },
+      "pdf": null,
+      "page": 74,
+      "confidence": "high",
+      "note": "Armoury: Halberd-Gun is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=halberd-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Shield Training",
+        "cost": {
+          "ducats": 20,
+          "glory": 0
+        },
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "itemId": "halberd-gun",
+        "max": null
+      },
+      "pdf": null,
+      "page": 74,
+      "confidence": "high",
+      "note": "Armoury: Halberd-Gun is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/scripture-guardian",
+      "path": "equipmentAccess[itemId=halberd-gun]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Shield Training",
+        "cost": {
+          "ducats": 20,
+          "glory": 0
+        },
+        "group": "melee-two-handed",
+        "groupPath": "melee-weapons/melee-two-handed",
+        "itemId": "halberd-gun",
+        "max": null
+      },
+      "pdf": null,
+      "page": 74,
+      "confidence": "high",
+      "note": "Armoury: Halberd-Gun is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=alchemist-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "alchemist-armour",
+        "limitsText": "max 1 per warband; max set 2 per warband when atLeast 1 The House of Wisdom (roster)",
+        "max": null,
+        "maxPerWarband": 1,
+        "onlyWithout": [
+          "Nomads of Al-Badia [Iron Sultanate]"
+        ]
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Alchemist Armour is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=alchemist-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "alchemist-armour",
+        "limitsText": "max 1 per warband; max set 2 per warband when atLeast 1 The House of Wisdom (roster)",
+        "max": null,
+        "maxPerWarband": 1,
+        "onlyWithout": [
+          "Nomads of Al-Badia [Iron Sultanate]"
+        ]
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Alchemist Armour is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=alchemist-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "alchemist-armour",
+        "limitsText": "max 1 per warband; max set 2 per warband when atLeast 1 The House of Wisdom (roster)",
+        "max": null,
+        "maxPerWarband": 1,
+        "onlyWithout": [
+          "Nomads of Al-Badia [Iron Sultanate]"
+        ]
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Alchemist Armour is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/lion-of-jabir",
+      "path": "equipmentAccess[itemId=alchemist-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "alchemist-armour",
+        "limitsText": "max 1 per warband; max set 2 per warband when atLeast 1 The House of Wisdom (roster)",
+        "max": null,
+        "maxPerWarband": 1,
+        "onlyWithout": [
+          "Nomads of Al-Badia [Iron Sultanate]"
+        ]
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Alchemist Armour is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=alchemist-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "alchemist-armour",
+        "limitsText": "max 1 per warband; max set 2 per warband when atLeast 1 The House of Wisdom (roster)",
+        "max": null,
+        "maxPerWarband": 1,
+        "onlyWithout": [
+          "Nomads of Al-Badia [Iron Sultanate]"
+        ]
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Alchemist Armour is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/lion-of-jabir",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=reinforced-armour]",
+      "upstream": {
+        "cost": {
+          "ducats": 40,
+          "glory": 0
+        },
+        "group": "armour",
+        "groupPath": "armour",
+        "itemId": "reinforced-armour",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=cloak-of-alamut]",
+      "upstream": {
+        "cost": {
+          "ducats": 25,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "cloak-of-alamut",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Cloak of Alamut is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=takwin-anqa-bird]",
+      "upstream": {
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "takwin-anqa-bird",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Takwin Anqa Bird is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=cloak-of-alamut]",
+      "upstream": {
+        "cost": {
+          "ducats": 25,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "cloak-of-alamut",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Cloak of Alamut is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=takwin-anqa-bird]",
+      "upstream": {
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "takwin-anqa-bird",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Takwin Anqa Bird is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=cloak-of-alamut]",
+      "upstream": {
+        "cost": {
+          "ducats": 25,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "cloak-of-alamut",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Cloak of Alamut is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=takwin-anqa-bird]",
+      "upstream": {
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "takwin-anqa-bird",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Takwin Anqa Bird is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=cloak-of-alamut]",
+      "upstream": {
+        "cost": {
+          "ducats": 25,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "cloak-of-alamut",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Cloak of Alamut is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=takwin-anqa-bird]",
+      "upstream": {
+        "cost": {
+          "ducats": 0,
+          "glory": 2
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "takwin-anqa-bird",
+        "limitsText": "max 1 per warband",
+        "max": null,
+        "maxPerWarband": 1
+      },
+      "pdf": null,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Takwin Anqa Bird is ELITE only, Limit: 1"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=shovel]",
+      "upstream": {
+        "cost": {
+          "ducats": 5,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "shovel",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 88,
+      "confidence": "high",
+      "note": "Brazen Bull may not have a Shovel unless it is a Marid Shovel"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/jabirean-alchemist",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/jabirean-alchemist",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-assassin",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-assassin",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/yuzbasi-captain",
+      "path": "equipmentAccess[itemId=musical-instrument].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Musical Instrument Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/yuzbasi-captain",
+      "path": "equipmentAccess[itemId=troop-flag].maxPerWarband",
+      "upstream": null,
+      "pdf": 1,
+      "page": 75,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag Limit: 1 (upstream only limits it per model)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "equipmentAccess[itemId=anqa-guard]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "anqa-guard",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 100,
+      "confidence": "high",
+      "note": "Anqa Guard is Defenders of the Iron Wall armoury, Sultanate Sappers only (plus the Silahdar, p99)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=anqa-guard]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "anqa-guard",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 100,
+      "confidence": "high",
+      "note": "Anqa Guard is Defenders of the Iron Wall armoury, Sultanate Sappers only (plus the Silahdar, p99)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/jabirean-alchemist",
+      "path": "equipmentAccess[itemId=anqa-guard]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "anqa-guard",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 100,
+      "confidence": "high",
+      "note": "Anqa Guard is Defenders of the Iron Wall armoury, Sultanate Sappers only (plus the Silahdar, p99)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "equipmentAccess[itemId=anqa-guard]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "anqa-guard",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 100,
+      "confidence": "high",
+      "note": "Anqa Guard is Defenders of the Iron Wall armoury, Sultanate Sappers only (plus the Silahdar, p99)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-assassin",
+      "path": "equipmentAccess[itemId=anqa-guard]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "anqa-guard",
+        "limitsText": "max 1 per model",
+        "max": 1
+      },
+      "pdf": null,
+      "page": 100,
+      "confidence": "high",
+      "note": "Anqa Guard is Defenders of the Iron Wall armoury, Sultanate Sappers only (plus the Silahdar, p99)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/sultanate-sapper",
+      "path": "equipmentAccess[itemId=anqa-guard].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "iron-sultanate/defenders-of-the-iron-wall"
+      ],
+      "page": 100,
+      "confidence": "high",
+      "note": "Anqa Guard is Defenders of the Iron Wall armoury, Sultanate Sappers only"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/yuzbasi-captain",
+      "path": "equipmentAccess[itemId=anqa-guard].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "iron-sultanate/defenders-of-the-iron-wall"
+      ],
+      "page": 99,
+      "confidence": "high",
+      "note": "Silahdar (Defenders of the Iron Wall) may take an Anqa Guard"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/jabirean-alchemist",
+      "path": "equipmentAccess[itemId=cloak-of-alamut].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "iron-sultanate/defenders-of-the-iron-wall"
+      ],
+      "page": 99,
+      "confidence": "high",
+      "note": "Far from the Sublime Gate: models in a Defenders of the Iron Wall Warband cannot have a Cloak of Alamut or Wind Amulet"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/yuzbasi-captain",
+      "path": "equipmentAccess[itemId=cloak-of-alamut].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "iron-sultanate/defenders-of-the-iron-wall"
+      ],
+      "page": 99,
+      "confidence": "high",
+      "note": "Far from the Sublime Gate: models in a Defenders of the Iron Wall Warband cannot have a Cloak of Alamut or Wind Amulet"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "upgrades[name=Assassin Acolyte].maxPerWarband",
+      "upstream": null,
+      "pdf": 3,
+      "page": 90,
+      "confidence": "high",
+      "note": "Assassin Acolytes: up to three Azebs"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/takwin-homunculus",
+      "path": "onlyWith",
+      "upstream": [
+        "Book of Golems [Campaign Rules]"
+      ],
+      "pdf": [
+        "iron-sultanate/the-house-of-wisdom"
+      ],
+      "page": 95,
+      "confidence": "medium",
+      "note": "House of Wisdom: one Takwin Homunculus per Jabirean Alchemist (40 ducats). Upstream gates the unit on the campaign 'Book of Golems' item instead"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/takwin-homunculus",
+      "path": "variantIds",
+      "upstream": null,
+      "pdf": [
+        "iron-sultanate/the-house-of-wisdom"
+      ],
+      "page": 95,
+      "confidence": "medium",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/mamluk-faris",
+      "path": "limits.max",
+      "upstream": null,
+      "pdf": 1,
+      "page": 178,
+      "confidence": "high",
+      "note": "0-1 Mamluk Faris; upstream keeps the per-warband maximum on the deprecated fireteam wrapper"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mamluk-faris",
+      "path": "limits.max",
+      "upstream": null,
+      "pdf": 1,
+      "page": 178,
+      "confidence": "high",
+      "note": "0-1 Mamluk Faris; upstream keeps the per-warband maximum on the deprecated fireteam wrapper"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mamluk-faris",
+      "path": "keywords",
+      "upstream": [
+        "Mercenary"
+      ],
+      "pdf": [
+        "Ignore Off-Hand Weapon",
+        "Mercenary"
+      ],
+      "page": 179,
+      "confidence": "high",
+      "note": "keyword(s) Ignore Off-Hand Weapon listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/mamluk-faris",
+      "path": "keywords",
+      "upstream": [
+        "Mercenary"
+      ],
+      "pdf": [
+        "Ignore Off-Hand Weapon",
+        "Mercenary"
+      ],
+      "page": 179,
+      "confidence": "high",
+      "note": "keyword(s) Ignore Off-Hand Weapon listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "equipment.json",
+      "id": "iron-wall-kalkan",
+      "path": "modifiers",
+      "upstream": [
+        {
+          "delta": -1,
+          "stat": "armour"
+        }
+      ],
+      "pdf": [],
+      "page": 101,
+      "confidence": "medium",
+      "note": "profile keywords are COVER only, no -1 INJURY MODIFIER; the delta was derived by vote from a copy-pasted unit-profile modifier"
+    },
+    {
+      "file": "equipment.json",
+      "id": "sultanate-grand-cannon",
+      "path": "keywords",
+      "upstream": [
+        "+2 INJURY DICE",
+        "HEAVY IGNORE ARMOUR",
+        "DEPLOYABLE"
+      ],
+      "pdf": [
+        "+2 INJURY DICE",
+        "DEPLOYABLE",
+        "HEAVY",
+        "IGNORE ARMOUR"
+      ],
+      "page": 102,
+      "confidence": "high",
+      "note": "upstream runs HEAVY and IGNORE ARMOUR into one token"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/anointed-heavy-infantry",
+      "path": "equipmentAccess[itemId=silenced-pistol]",
+      "upstream": {
+        "cost": {
+          "ducats": 15,
+          "glory": 0
+        },
+        "group": "ranged-one-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
+        "itemId": "silenced-pistol",
+        "max": null
+      },
+      "pdf": null,
+      "page": 105,
+      "confidence": "high",
+      "note": "Armoury: Silenced Pistol is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-trooper",
+      "path": "equipmentAccess[itemId=silenced-pistol]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Sarcophagus Mine",
+        "cost": {
+          "ducats": 15,
+          "glory": 0
+        },
+        "group": "ranged-one-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
+        "itemId": "silenced-pistol",
+        "max": null
+      },
+      "pdf": null,
+      "page": 105,
+      "confidence": "high",
+      "note": "Armoury: Silenced Pistol is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/wretched",
+      "path": "equipmentAccess[itemId=silenced-pistol]",
+      "upstream": {
+        "cost": {
+          "ducats": 15,
+          "glory": 0
+        },
+        "group": "ranged-one-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
+        "itemId": "silenced-pistol",
+        "max": null
+      },
+      "pdf": null,
+      "page": 105,
+      "confidence": "high",
+      "note": "Armoury: Silenced Pistol is ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-trooper",
+      "path": "equipmentAccess[itemId=hellbound-soul-contract].onlyWith",
+      "upstream": [
+        "heretic-legion/trench-ghosts"
+      ],
+      "pdf": null,
+      "page": 106,
+      "confidence": "high",
+      "note": "Hellbound Soul Contract is a base-armoury item (Heretic Troopers & Legionnaires only, Limit: 3); upstream only unhides it for Trench Ghosts, the one variant that forbids it (Lost Souls, p118)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-trooper",
+      "path": "equipmentAccess[itemId=hellbound-soul-contract].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "heretic-legion/trench-ghosts"
+      ],
+      "page": 118,
+      "confidence": "high",
+      "note": "Lost Souls: models in a Trench Ghost Warband cannot have Hellbound Soul Contracts or Infernal Brands"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-trooper",
+      "path": "equipmentAccess[itemId=hellbound-soul-contract].maxPerWarband",
+      "upstream": null,
+      "pdf": 3,
+      "page": 106,
+      "confidence": "high",
+      "note": "Armoury: Limit: 3"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/chorister",
+      "path": "equipmentAccess[itemId=blasphemous-staff].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "heretic-legion/knights-of-avarice"
+      ],
+      "page": 120,
+      "confidence": "high",
+      "note": "Preserve the Loot: Knights of Avarice cannot have Battlekit with the FIRE Keyword (Blasphemous Staff: CRITICAL, FIRE)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-priest",
+      "path": "equipmentAccess[itemId=blasphemous-staff].onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "heretic-legion/knights-of-avarice"
+      ],
+      "page": 120,
+      "confidence": "high",
+      "note": "Preserve the Loot: Knights of Avarice cannot have Battlekit with the FIRE Keyword (Blasphemous Staff: CRITICAL, FIRE)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/war-wolf-assault-beast",
+      "path": "abilities",
+      "upstream": [
+        {
+          "name": "Loping Dash",
+          "text": "Add +1 DICE to the Risky Success Roll for a War Wolf that is taking a Dash ACTION. In addition, a War Wolf ignores the penalty for moving through Difficult terrain (other terrain affects it normally)."
+        },
+        {
+          "name": "Appetisers",
+          "onlyWith": [
+            "Cadaver Corps [Heretic Legion]"
+          ],
+          "text": "The War Hyena ignores the effects of barbed wire (both difficult and dangerous)."
+        },
+        {
+          "name": "Risky",
+          "sharedRule": true,
+          "text": "If you must make a Success Roll for a model that is using a piece of Battlekit that has this Keyword, then the Success Roll becomes a Risky Success Roll (the model’s Activation or ACTION will end if the Risky Success Roll is a Failure). For example, the Success Roll for an attack made with a Weapon that has the RISKY Keyword would become a Risky Success Roll. This Effect is ignored if the Success Roll is already a Risky Success Roll."
+        },
+        {
+          "name": "Tough",
+          "onlyWithout": [
+            "Cadaver Corps [Heretic Legion]"
+          ],
+          "sharedRule": true,
+          "text": "The first time a model with this Keyword suffers an Out of Action result on the Injury Table, it is treated as a Down result instead."
+        },
+        {
+          "name": "Fear",
+          "sharedRule": true,
+          "text": "Add -1 DICE to a Melee Attack that targets a model with this\nKeyword. Models that cause FEAR are immune to FEAR themselves."
+        },
+        {
+          "name": "Cumbersome",
+          "sharedRule": true,
+          "text": "Weapons with this Keyword require two hands to use, even if the model has the STRONG Keyword. However, they can still be used alongside a Shield with the Shield Combo stipulation."
+        },
+        {
+          "name": "Ignore Armour",
+          "sharedRule": true,
+          "text": "Ignore -INJURY DICE and -INJURY MODIFIERS for a target’s Armour Characteristic, and for any Armour or Shield pieces of Battlekit that it has, for attacks that have this Keyword."
+        }
+      ],
+      "pdf": [
+        {
+          "name": "Assault Beast",
+          "text": "A War Wolf is armed with two Melee Weapons (its Chainsaw Mouth and Shredding Claws). When it makes a Melee Attack, it can attack once using either its Chainsaw Mouth or Shredding Claws, or twice, first with the Chainsaw Mouth and second with its Shredding Claws (the Off-Hand Weapon modifier applies to the attack made with the Shredding Claws). Both Weapons have the RISKY keyword."
+        },
+        {
+          "name": "Loping Dash",
+          "text": "Add +1 DICE to the Risky Success Roll for a War Wolf that is taking a Dash ACTION. In addition, a War Wolf ignores the penalty for moving through Difficult terrain (other terrain affects it normally)."
+        },
+        {
+          "name": "Appetisers",
+          "onlyWith": [
+            "Cadaver Corps [Heretic Legion]"
+          ],
+          "text": "The War Hyena ignores the effects of barbed wire (both difficult and dangerous)."
+        },
+        {
+          "name": "Risky",
+          "sharedRule": true,
+          "text": "If you must make a Success Roll for a model that is using a piece of Battlekit that has this Keyword, then the Success Roll becomes a Risky Success Roll (the model’s Activation or ACTION will end if the Risky Success Roll is a Failure). For example, the Success Roll for an attack made with a Weapon that has the RISKY Keyword would become a Risky Success Roll. This Effect is ignored if the Success Roll is already a Risky Success Roll."
+        },
+        {
+          "name": "Tough",
+          "onlyWithout": [
+            "Cadaver Corps [Heretic Legion]"
+          ],
+          "sharedRule": true,
+          "text": "The first time a model with this Keyword suffers an Out of Action result on the Injury Table, it is treated as a Down result instead."
+        },
+        {
+          "name": "Fear",
+          "sharedRule": true,
+          "text": "Add -1 DICE to a Melee Attack that targets a model with this\nKeyword. Models that cause FEAR are immune to FEAR themselves."
+        },
+        {
+          "name": "Cumbersome",
+          "sharedRule": true,
+          "text": "Weapons with this Keyword require two hands to use, even if the model has the STRONG Keyword. However, they can still be used alongside a Shield with the Shield Combo stipulation."
+        },
+        {
+          "name": "Ignore Armour",
+          "sharedRule": true,
+          "text": "Ignore -INJURY DICE and -INJURY MODIFIERS for a target’s Armour Characteristic, and for any Armour or Shield pieces of Battlekit that it has, for attacks that have this Keyword."
+        }
+      ],
+      "page": 113,
+      "confidence": "high",
+      "note": "Assault Beast ability missing upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/corpse-guard",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 129,
+      "confidence": "high",
+      "note": "Viscera Cannon is a base-armoury item, ELITE only, Limit: 2; upstream gates it with contradictory Great Hunger conditions"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/corpse-guard",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 129,
+      "confidence": "high",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/corpse-guard",
+      "path": "equipmentAccess[itemId=troop-flag].cost",
+      "upstream": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "page": 130,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/lord-of-tumours",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 129,
+      "confidence": "high",
+      "note": "Viscera Cannon is a base-armoury item, ELITE only, Limit: 2; upstream gates it with contradictory Great Hunger conditions"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/lord-of-tumours",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 129,
+      "confidence": "high",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/lord-of-tumours",
+      "path": "equipmentAccess[itemId=troop-flag].cost",
+      "upstream": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "page": 130,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/plague-knight",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 129,
+      "confidence": "high",
+      "note": "Viscera Cannon is a base-armoury item, ELITE only, Limit: 2; upstream gates it with contradictory Great Hunger conditions"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/plague-knight",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 129,
+      "confidence": "high",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/plague-knight",
+      "path": "equipmentAccess[itemId=troop-flag].cost",
+      "upstream": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "page": 130,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/grail-thrall",
+      "path": "equipmentAccess[itemId=troop-flag].cost",
+      "upstream": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "page": 130,
+      "confidence": "high",
+      "note": "Armoury: Troop Flag 1 glory (Dirge Bereaved may carry one, p142)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/heralds-of-beelzebub",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
+      "upstream": [
+        "black-grail/dirge-of-the-great-hegemon",
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": [
+        "black-grail/dirge-of-the-great-hegemon"
+      ],
+      "page": 142,
+      "confidence": "high",
+      "note": "Hegemon's Last Blessing: Viscera Cannons lose the ELITE only stipulation (Limit: 3) in a Dirge of the Great Hegemon Warband"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/heralds-of-beelzebub",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 142,
+      "confidence": "high",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/grail-thrall",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
+      "upstream": [
+        "black-grail/dirge-of-the-great-hegemon",
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": [
+        "black-grail/dirge-of-the-great-hegemon"
+      ],
+      "page": 142,
+      "confidence": "high",
+      "note": "Bereaved (Dirge) may take Ranged Weapons; Hegemon's Last Blessing lifts ELITE only"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/grail-thrall",
+      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 142,
+      "confidence": "high",
+      "note": "see onlyWith"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/amalgam",
+      "path": "equipmentAccess[itemId=viscera-cannon]",
+      "upstream": {
+        "cost": {
+          "ducats": 50,
+          "glory": 0
+        },
+        "group": "ranged-two-handed",
+        "groupPath": "weapons/ranged/ranged-two-handed",
+        "itemId": "viscera-cannon",
+        "limitsText": "max 2 per warband; max increment 1 per warband when atLeast 1 Entitled To Viscera Cannons (roster); max increment 1 per warband when atLeast 1 Dirge of the Great Hegemon (roster)",
+        "max": null,
+        "maxPerWarband": 2,
+        "onlyWith": [
+          "black-grail/dirge-of-the-great-hegemon",
+          "black-grail/the-great-hunger"
+        ],
+        "onlyWithout": [
+          "black-grail/the-great-hunger"
+        ]
+      },
+      "pdf": null,
+      "page": 140,
+      "confidence": "high",
+      "note": "Viscera Cannon is ELITE only and a Dirge of the Great Hegemon Warband (the only variant that lifts the stipulation) cannot include an Amalgam (The Fallen, p142)"
+    },
+    {
+      "file": "equipment.json",
+      "id": "troop-flag",
+      "path": "cost",
+      "upstream": {
+        "ducats": 10,
+        "glory": 1
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 1
+      },
+      "page": 130,
+      "confidence": "high",
+      "note": "Troop Flag is 1 glory in every Armoury table; the 10-ducat figure is the Black Grail link's error"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/heralds-of-beelzebub",
+      "path": "keywords",
+      "upstream": [
+        "Black Grail",
+        "Fear",
+        "Negate Gas",
+        "Skirmisher",
+        "Troop"
+      ],
+      "pdf": [
+        "Black Grail",
+        "Fear",
+        "Flying",
+        "Negate Gas",
+        "Skirmisher",
+        "Troop"
+      ],
+      "page": 139,
+      "confidence": "high",
+      "note": "keyword(s) Flying listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/corpse-guard",
+      "path": "abilities[name=Parasitic Tick].name",
+      "upstream": "Parasitic Tick",
+      "pdf": "Parasite Host",
+      "page": 136,
+      "confidence": "high",
+      "note": "same text, PDF name"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/hound-of-the-black-grail",
+      "path": "abilities",
+      "upstream": [
+        {
+          "name": "Frightening Speed",
+          "text": "Add +1 DICE to the Risky Success Roll for a Hound of the Cult of the Black Grail that is taking a Dash ACTION. In addition, do not halve the Movement Characteristic of a Hound of the Cult of the Black Grail when it stands up at the start of an Activation."
+        },
+        {
+          "name": "Disease Carrier",
+          "text": "If an enemy model is Activated while it is within 1\" of a Hound of the Cult of the Black Grail, place 1 INFECTION MARKER next to the enemy model before it carries out any Actions."
+        },
+        {
+          "name": "Undead Fortitude",
+          "text": "Add -1 INJURY DICE to Injury Rolls for a Hound of the Cult of the Black Grail unless the attack has the FIRE Keyword."
+        },
+        {
+          "name": "Negate Gas",
+          "text": "A model with the NEGATE Keyword is not affected by the specified Keyword’s Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword."
+        },
+        {
+          "name": "Fear",
+          "sharedRule": true,
+          "text": "Add -1 DICE to a Melee Attack that targets a model with this\nKeyword. Models that cause FEAR are immune to FEAR themselves."
+        }
+      ],
+      "pdf": [
+        {
+          "name": "Frightening Speed",
+          "text": "Add +1 DICE to the Risky Success Roll for a Hound of the Cult of the Black Grail that is taking a Dash ACTION. In addition, do not halve the Movement Characteristic of a Hound of the Cult of the Black Grail when it stands up at the start of an Activation."
+        },
+        {
+          "name": "Disease Carrier",
+          "text": "If an enemy model is Activated while it is within 1\" of a Hound of the Cult of the Black Grail, place 1 INFECTION MARKER next to the enemy model before it carries out any Actions."
+        },
+        {
+          "name": "Undead Fortitude",
+          "text": "Add -1 INJURY DICE to Injury Rolls for a Hound of the Cult of the Black Grail unless the attack has the FIRE Keyword."
+        },
+        {
+          "name": "Negate Gas",
+          "text": "A model with the NEGATE Keyword is not affected by the specified Keyword’s Effect. For example, a model with NEGATE SHRAPNEL ignores the Effect of the SHRAPNEL Keyword."
+        },
+        {
+          "name": "Fear",
+          "sharedRule": true,
+          "text": "Add -1 DICE to a Melee Attack that targets a model with this\nKeyword. Models that cause FEAR are immune to FEAR themselves."
+        },
+        {
+          "name": "Teeth & Claws",
+          "text": "A Hound of the Black Grail can make a Melee Attack even though it does not have a Melee Weapon."
+        }
+      ],
+      "page": 138,
+      "confidence": "high",
+      "note": "Teeth & Claws ability missing upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/grail-thrall",
+      "path": "abilities[name=Gluttonous Horde].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "black-grail/the-great-hunger"
+      ],
+      "page": 137,
+      "confidence": "medium",
+      "note": "Gluttonous Horde belongs to the Great Hunger 'Ravenous' entry; the base Grail Thrall has Overwhelming Horde"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/hell-knight",
+      "path": "equipmentAccess[itemId=serpent-assault-gun].cost",
+      "upstream": {
+        "ducats": 45,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Serpent Assault Gun 50 ducats (upstream 45)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/praetor",
+      "path": "equipmentAccess[itemId=serpent-assault-gun].cost",
+      "upstream": {
+        "ducats": 45,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Serpent Assault Gun 50 ducats (upstream 45)"
+    },
+    {
+      "file": "equipment.json",
+      "id": "serpent-assault-gun",
+      "path": "cost",
+      "upstream": {
+        "ducats": 45,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: 50 ducats (upstream 45)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/desecrated-saint",
+      "path": "equipmentAccess[itemId=malebranche-sword].cost",
+      "upstream": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Malebranche Sword 50 ducats (upstream 35)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/hell-knight",
+      "path": "equipmentAccess[itemId=malebranche-sword].cost",
+      "upstream": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Malebranche Sword 50 ducats (upstream 35)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/praetor",
+      "path": "equipmentAccess[itemId=malebranche-sword].cost",
+      "upstream": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Malebranche Sword 50 ducats (upstream 35)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/sorcerer",
+      "path": "equipmentAccess[itemId=malebranche-sword].cost",
+      "upstream": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Malebranche Sword 50 ducats (upstream 35)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/yoke-fiend",
+      "path": "equipmentAccess[itemId=malebranche-sword].cost",
+      "upstream": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: Malebranche Sword 50 ducats (upstream 35)"
+    },
+    {
+      "file": "equipment.json",
+      "id": "malebranche-sword",
+      "path": "cost",
+      "upstream": {
+        "ducats": 35,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 50,
+        "glory": 0
+      },
+      "page": 148,
+      "confidence": "high",
+      "note": "Armoury: 50 ducats, Limit: 1 (upstream 35)"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/hell-knight",
+      "path": "equipmentAccess[itemId=unholy-relic].cost",
+      "upstream": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "page": 149,
+      "confidence": "high",
+      "note": "Armoury: Unholy Relic 15 ducats for every model; upstream discounts it to 5 for Hell Knights"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/hell-knight",
+      "path": "equipmentAccess[itemId=restraining-muzzle]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "restraining-muzzle",
+        "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
+        "max": 1,
+        "maxPerWarband": 3
+      },
+      "pdf": null,
+      "page": 149,
+      "confidence": "high",
+      "note": "Armoury: Restraining Muzzle is Yoke Fiend only, Limit: 3"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/hunter-of-the-left-hand-path",
+      "path": "equipmentAccess[itemId=restraining-muzzle]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "restraining-muzzle",
+        "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
+        "max": 1,
+        "maxPerWarband": 3
+      },
+      "pdf": null,
+      "page": 149,
+      "confidence": "high",
+      "note": "Armoury: Restraining Muzzle is Yoke Fiend only, Limit: 3"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/praetor",
+      "path": "equipmentAccess[itemId=restraining-muzzle]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "restraining-muzzle",
+        "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
+        "max": 1,
+        "maxPerWarband": 3
+      },
+      "pdf": null,
+      "page": 149,
+      "confidence": "high",
+      "note": "Armoury: Restraining Muzzle is Yoke Fiend only, Limit: 3"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/sorcerer",
+      "path": "equipmentAccess[itemId=restraining-muzzle]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "restraining-muzzle",
+        "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
+        "max": 1,
+        "maxPerWarband": 3
+      },
+      "pdf": null,
+      "page": 149,
+      "confidence": "high",
+      "note": "Armoury: Restraining Muzzle is Yoke Fiend only, Limit: 3"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/wretched",
+      "path": "equipmentAccess[itemId=restraining-muzzle]",
+      "upstream": {
+        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "restraining-muzzle",
+        "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
+        "max": 1,
+        "maxPerWarband": 3
+      },
+      "pdf": null,
+      "page": 149,
+      "confidence": "high",
+      "note": "Armoury: Restraining Muzzle is Yoke Fiend only, Limit: 3"
+    },
+    {
+      "file": "equipment.json",
+      "id": "trench-mortar",
+      "path": "range",
+      "upstream": "48\"",
+      "pdf": "6\"-36\"",
+      "page": 67,
+      "confidence": "high",
+      "note": "profile range is 6\"-36\" (High Trajectory: no target within 6\"); upstream 48\""
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/scripture-guardian",
+      "path": "stats.ranged",
+      "upstream": "+1",
+      "pdf": "n/a",
+      "page": 182,
+      "confidence": "high",
+      "note": "Ranged Characteristic is '-' (cannot make Ranged Attacks); upstream +1 DICE"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/scripture-guardian",
+      "path": "stats.ranged",
+      "upstream": "+1",
+      "pdf": "n/a",
+      "page": 182,
+      "confidence": "high",
+      "note": "Ranged Characteristic is '-' (cannot make Ranged Attacks); upstream +1 DICE"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/scripture-guardian",
+      "path": "stats.ranged",
+      "upstream": "+1",
+      "pdf": "n/a",
+      "page": 182,
+      "confidence": "high",
+      "note": "Ranged Characteristic is '-' (cannot make Ranged Attacks); upstream +1 DICE"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/scripture-guardian",
+      "path": "stats.ranged",
+      "upstream": "+1",
+      "pdf": "n/a",
+      "page": 182,
+      "confidence": "high",
+      "note": "Ranged Characteristic is '-' (cannot make Ranged Attacks); upstream +1 DICE"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/scripture-guardian",
+      "path": "stats.ranged",
+      "upstream": "+1",
+      "pdf": "n/a",
+      "page": 182,
+      "confidence": "high",
+      "note": "Ranged Characteristic is '-' (cannot make Ranged Attacks); upstream +1 DICE"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/scripture-guardian",
+      "path": "stats.ranged",
+      "upstream": "+1",
+      "pdf": "n/a",
+      "page": 182,
+      "confidence": "high",
+      "note": "Ranged Characteristic is '-' (cannot make Ranged Attacks); upstream +1 DICE"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/sin-eater",
+      "path": "keywords",
+      "upstream": [
+        "Fear",
+        "Heretic",
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "pdf": [
+        "Demonic",
+        "Fear",
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "page": 183,
+      "confidence": "high",
+      "note": "Keywords are DEMONIC, FEAR, STRONG, TOUGH; upstream tags it HERETIC instead of DEMONIC"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/sin-eater",
+      "path": "keywords",
+      "upstream": [
+        "Fear",
+        "Heretic",
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "pdf": [
+        "Demonic",
+        "Fear",
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "page": 183,
+      "confidence": "high",
+      "note": "Keywords are DEMONIC, FEAR, STRONG, TOUGH; upstream tags it HERETIC instead of DEMONIC"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/sin-eater",
+      "path": "keywords",
+      "upstream": [
+        "Fear",
+        "Heretic",
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "pdf": [
+        "Demonic",
+        "Fear",
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "page": 183,
+      "confidence": "high",
+      "note": "Keywords are DEMONIC, FEAR, STRONG, TOUGH; upstream tags it HERETIC instead of DEMONIC"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/communicant-anti-tank-hunter",
+      "path": "keywords",
+      "upstream": [
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "pdf": [
+        "Mercenary",
+        "Regenerate 1",
+        "Strong",
+        "Tough"
+      ],
+      "page": 175,
+      "confidence": "high",
+      "note": "keyword(s) Regenerate 1 listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/communicant-anti-tank-hunter",
+      "path": "keywords",
+      "upstream": [
+        "Mercenary",
+        "Strong",
+        "Tough"
+      ],
+      "pdf": [
+        "Mercenary",
+        "Regenerate 1",
+        "Strong",
+        "Tough"
+      ],
+      "page": 175,
+      "confidence": "high",
+      "note": "keyword(s) Regenerate 1 listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/sister-of-saint-cosmas",
+      "path": "keywords",
+      "upstream": [
+        "Mercenary"
+      ],
+      "pdf": [
+        "Mercenary",
+        "Negate Fear"
+      ],
+      "page": 185,
+      "confidence": "high",
+      "note": "keyword(s) Negate Fear listed on the Warband Entry but absent upstream"
+    }
+  ],
+  "unresolved": [
+    {
+      "file": "factions.json",
+      "id": "new-antioch",
+      "issue": "Kingdom of Alba 'Claymore Smiths': Great Sword/Axe costs 7 instead of 12, and 'Cold Steel' halves the first purchase of each Melee Weapon; variant-conditional prices have no slot in the schema",
+      "page": 39
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mechanized-heavy-infantry",
+      "issue": "Kingdom of Alba 'Melee-focused': MHI have Melee +1 DICE and Ranged +0 DICE; upstream encodes it as a compound stat modifier the converter cannot apply",
+      "page": 40
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/fireteam",
+      "issue": "limits.text says Eire Rangers warbands get only 1 Fireteam; the Eire Rangers rules (p37-38) contain no such restriction (base rule: 2, Stosstruppen: 3)",
+      "page": 37
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-pilgrim",
+      "issue": "War Pilgrimage of Saint Methodius armoury replaces the Machine Gun (50 ducats, Limit: 2) and Submachine Gun (30 ducats, Limit: 1) entries; one access entry cannot hold both the base and the variant price",
+      "page": 64
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/communicant",
+      "issue": "Cavalcade of the Tenth Plague 'Stolen Communicants': Communicants cost 3 glory and no ducats; variant-conditional cost has no slot in the schema",
+      "page": 69
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/anchorite-shrine",
+      "issue": "Bonebreaker Mace is recorded as a built-in weapon but the Catherine Wheel is an access entry with no cost; both are built in (p59-60). Methodius lets the Catherine Wheel be replaced by one Anchorite Ranged Weapon",
+      "page": 59
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/mamluk-faris",
+      "issue": "Defenders of the Iron Wall 'Sipahi': up to 1 Mamluk Faris entry at 110 ducats (no glory) in addition to the mercenary; the upstream link that carried it was the only Mamluk link the converter used before, and is now superseded by the plain 4-glory mercenary",
+      "page": 99
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "issue": "Fida'i Dervishes and House of Wisdom Faris reuse the Janissary entry with different keywords; the entry cannot be gated per variant without losing those",
+      "page": 90
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/goetic-warlock",
+      "issue": "Knights of Avarice: up to 2 Goetic Warlocks, the first at 110 ducats instead of 4 glory; variant-conditional cost and limit have no slot in the schema (upstream notes the cost modifier)",
+      "page": 120
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-trooper",
+      "issue": "Heretic Naval Raiders 'Close Assault Weapons': Submachine Guns cost 25 ducats (base: 2 glory); variant-conditional price",
+      "page": 124
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/wretched",
+      "issue": "Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error, not by filtering the access list (glory-priced items remain listed)",
+      "page": 114
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/praetor",
+      "issue": "Unholy Relic (15 ducats, no stipulation) is hidden upstream for models that already have FEAR (Praetor, Sorcerer) and for Wretched; the item only grants FEAR so the omission has no mechanical effect",
+      "page": 149
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/wretched",
+      "issue": "Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error rather than by filtering the access list",
+      "page": 167
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/goetic-warlock",
+      "issue": "Goetic Warlock limits.max is 1 everywhere; Knights of Avarice may include up to 2 (p120)",
+      "page": 120
+    }
+  ],
+  "missingFromUpstream": [
+    {
+      "faction": "trench-pilgrims",
+      "name": "Submachine Gun (Methodius, 30 ducats, Limit: 1)",
+      "page": 64,
+      "kind": "item",
+      "detail": "War Pilgrimage of Saint Methodius armoury replacement for the 2-glory Submachine Gun; upstream only hides the base entry under the variant"
+    },
+    {
+      "faction": "trench-pilgrims",
+      "name": "Holy Icon Armour for Stigmatic Nuns / Trench Pilgrims",
+      "page": 62,
+      "kind": "item",
+      "detail": "Procession armoury lists Holy Icon Armour (30 ducats) with no stipulation; upstream only links it to the Castigator, Communicant and War Prophet (and the non-PDF Chieftain)"
+    },
+    {
+      "faction": "black-grail",
+      "name": "Trench Shield for the Amalgam",
+      "page": 140,
+      "kind": "item",
+      "detail": "'An Amalgam may have up to 1 Trench Shield in place of one of its 1-Handed Weapons'; upstream links no shield to the Amalgam"
+    },
+    {
+      "faction": "new-antioch",
+      "name": "Mendelist Ammo Monk",
+      "page": 180,
+      "kind": "unit",
+      "detail": "2 glory, 0-1, Faithful; New Antioch and Trench Pilgrim warbands may hire it. Upstream hides the entry for every faction except the Trench Pilgrims' War Pilgrimage of Saint Methodius"
+    }
+  ],
+  "missingFromPdf": [
+    {
+      "file": "factions.json",
+      "id": "new-antioch/the-red-brigade",
+      "note": "variant not in Warbands 1.0.2 (homebrew/legacy upstream content)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/crimson-communicant",
+      "note": "Red Brigade only; variant not in the PDF"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-dogs-of-the-red-brigade",
+      "note": "Red Brigade only; variant not in the PDF"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/homunculus",
+      "note": "Book of Golems campaign exploration unit, not a Warband Entry"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/fireteam",
+      "note": "deprecated BattleScribe wrapper; the PDF models Fireteams as the New Antioch Fireteams special rule (p23)"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mamluk-faris-fireteam",
+      "note": "deprecated BattleScribe wrapper for the Mamluk Faris Sworn Brethren rule (p179)"
+    },
+    {
+      "file": "equipment.json",
+      "id": "dane-axe",
+      "note": "Remnants of Byzantium / Red Brigade content; not in Warbands 1.0.2"
+    },
+    {
+      "file": "equipment.json",
+      "id": "greek-fire",
+      "note": "Remnants of Byzantium / Red Brigade content; not in Warbands 1.0.2"
+    },
+    {
+      "file": "equipment.json",
+      "id": "molotov-carrier",
+      "note": "Remnants of Byzantium / Red Brigade content; not in Warbands 1.0.2"
+    },
+    {
+      "file": "equipment.json",
+      "id": "grenade-carrier",
+      "note": "Remnants of Byzantium / Red Brigade content; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/chieftain",
+      "note": "'Children of Yggdrasil' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/huscarl",
+      "note": "'Children of Yggdrasil' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/captive-giant",
+      "note": "'Children of Yggdrasil' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/homunculus",
+      "note": "Book of Golems campaign exploration unit, not a Warband Entry"
+    },
+    {
+      "file": "equipment.json",
+      "id": "geirr",
+      "note": "'Children of Yggdrasil' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "henbrane",
+      "note": "'Children of Yggdrasil' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "blood-eagle-banner",
+      "note": "'Children of Yggdrasil' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "trench-shield-nordic",
+      "note": "'Children of Yggdrasil' upstream variant content"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/archeologist",
+      "note": "'Nomads of Al-Badia' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/bedu-sharpshooter",
+      "note": "'Nomads of Al-Badia' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/zamburak-weapon-platform",
+      "note": "'Nomads of Al-Badia' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/pairika",
+      "note": "'Ghazi of the Golden Path' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/shirdal",
+      "note": "'Ghazi of the Golden Path' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/tegmen",
+      "note": "'Ghazi of the Golden Path' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "equipment.json",
+      "id": "relic-alaybozan",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "heavy-bore-ammunition",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "sparkpowder-ammunition",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "shaytanic-shard-ammunition",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "limpet-mine",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "shield-paired-halberd-gun",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "shield-paired-siege-jezzail",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "chain-kura",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "khyber-knife",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "abus-gun",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "anaza-spear",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "kayanin-mace",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "banner-of-the-eagle",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "marid-pelt",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "scrap-shot",
+      "note": "Nomads of Al-Badia / Ghazi of the Golden Path upstream variant content"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/mamluk-faris-fireteam",
+      "note": "deprecated BattleScribe wrapper for the Mamluk Faris Sworn Brethren rule (p179)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/technomancer",
+      "note": "'Cadaver Corps' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/witch-coven-matriarch",
+      "note": "'Cadaver Corps' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/homunculus",
+      "note": "Book of Golems campaign exploration unit, not a Warband Entry"
+    },
+    {
+      "file": "equipment.json",
+      "id": "thermal-shielding",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "byzantinium-hearth",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "artificial-rebirth",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "enhanced-agility",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "essence-extractor",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "melee-chassis",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "sonomatic-sculpture",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "unstoppable",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "scourge-battle-whip-flail",
+      "note": "'Cadaver Corps' upstream variant content"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/matagot-hag",
+      "note": "'The Great Hunger' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/cradle-thrall",
+      "note": "'The Great Hunger' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/gregori-gula",
+      "note": "'The Great Hunger' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "factions.json",
+      "id": "black-grail/the-great-hunger",
+      "note": "variant not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/takwin-homunculus",
+      "note": "Book of Golems campaign exploration unit, not a Warband Entry"
+    },
+    {
+      "file": "equipment.json",
+      "id": "black-spot-rifle",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "pestilent-fang",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "butcher-bayonet",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "grasping-maw",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "devouring-jaws",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "foetid-palanquin",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "vomitus",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "unending-starvation",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "infected",
+      "note": "'The Great Hunger' upstream variant content"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/faceless",
+      "note": "'Fang of the Seething Black' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/stalker",
+      "note": "'Fang of the Seething Black' upstream variant; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/homunculus",
+      "note": "Book of Golems campaign exploration unit, not a Warband Entry"
+    },
+    {
+      "file": "equipment.json",
+      "id": "beauty-in-suffering",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "coagulation",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "dark-innervation",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "dust-to-dust",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "event-horizon",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "final-frenzy",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "apex-form",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "entropital-dermis",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "herald-of-the-void",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "orphaned-failures",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "unnatural-conduit",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "equipment.json",
+      "id": "living-instrument",
+      "note": "'Fang of the Seething Black' upstream variant content"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/disciple-of-st-roch",
+      "note": "third-party mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/disciple-of-st-roch",
+      "note": "third-party mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/disciple-of-st-roch",
+      "note": "third-party mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-dog",
+      "note": "Dog Food / Trench Dog mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-dog",
+      "note": "Dog Food / Trench Dog mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/trench-dog",
+      "note": "Dog Food / Trench Dog mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/trench-dog",
+      "note": "Dog Food / Trench Dog mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/trench-dog",
+      "note": "Dog Food / Trench Dog mercenary; not in Warbands 1.0.2"
+    },
+    {
+      "file": "units.json",
+      "id": "court-of-the-seven-headed-serpent/trench-dog",
+      "note": "Dog Food / Trench Dog mercenary; not in Warbands 1.0.2"
+    }
+  ]
+}

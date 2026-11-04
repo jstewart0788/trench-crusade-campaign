@@ -18,7 +18,7 @@ export function member(unitId: string, equipmentItemIds: string[] = [], upgradeI
   return m;
 }
 
-/** Legal starting New Antioch warband: 95 + 4 x 42 + 75 = 338 of 700 ducats. */
+/** Legal starting New Antioch warband: 95 + 4 x 37 + 75 = 318 of 700 ducats (a Yeoman's Bolt-Action Rifle is 5, p30). */
 export function newAntioch(overrides: Partial<Warband> = {}): Warband {
   return {
     id: "w1",

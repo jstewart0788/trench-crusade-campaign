@@ -48,8 +48,8 @@ describe("validateWarband: legal warbands", () => {
   });
 
   it("uses the campaign threshold table for later games", () => {
-    const many = Array.from({ length: 14 }, () => member("new-antioch/yeoman", ["reinforced-armour"]));
-    const w = withMembers(many, { gameNumber: 5 }); // 338 + 14 x 70 = 1318 > 1100
+    const many = Array.from({ length: 14 }, () => member("new-antioch/yeoman", ["semi-automatic-rifle", "combat-helmet", "gas-mask", "shovel"]));
+    const w = withMembers(many, { gameNumber: 5 }); // 318 + 14 x 60 = 1158 > 1100
     expect(codes(validate(w))).toContain("over-threshold");
     expect(codes(validate({ ...w, gameNumber: 8 }))).not.toContain("over-threshold"); // 1400
     expect(codes(validateWarband(w, data(), { threshold: 2000 }))).not.toContain("over-threshold");
@@ -99,9 +99,9 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("over-threshold: a starting warband over 700 ducats", () => {
-    const w = withMembers(Array.from({ length: 6 }, () => member("new-antioch/yeoman", ["reinforced-armour"]))); // 338 + 420
+    const w = withMembers(Array.from({ length: 7 }, () => member("new-antioch/yeoman", ["semi-automatic-rifle", "combat-helmet", "gas-mask", "shovel"]))); // 318 + 7 x 60
     const result = expectCode(w, "over-threshold");
-    expect(result.errors[0]?.message).toContain("758");
+    expect(result.errors[0]?.message).toContain("738");
     expect(result.errors[0]?.message).toContain("700");
   });
 
@@ -173,8 +173,8 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("item-variant-locked: an item the armoury only opens for a variant", () => {
-    expectCode(withMembers([member("new-antioch/yeoman", ["holy-smoke"])]), "item-variant-locked");
-    const ok = withMembers([member("new-antioch/yeoman", ["holy-smoke"])], { variantId: "new-antioch/stosstruppen-of-the-free-state-of-prussia" });
+    expectCode(withMembers([member("new-antioch/trench-cleric", ["holy-smoke"])]), "item-variant-locked");
+    const ok = withMembers([member("new-antioch/trench-cleric", ["holy-smoke"])], { variantId: "new-antioch/stosstruppen-of-the-free-state-of-prussia" });
     expect(codes(validate(ok))).not.toContain("item-variant-locked");
     const excluded = withMembers([member("new-antioch/yeoman", ["great-hammer-maul"])], { variantId: "new-antioch/eire-rangers" });
     expectCode(excluded, "item-variant-locked");
@@ -186,11 +186,11 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("item-max-per-warband: Limit X across the whole warband", () => {
-    const w = withMembers([member("new-antioch/yeoman", ["misericordia"]), member("new-antioch/yeoman", ["misericordia"])]);
+    const w = withMembers([member("new-antioch/yeoman", ["automatic-rifle"]), member("new-antioch/yeoman", ["automatic-rifle"])]);
     const result = expectCode(w, "item-max-per-warband");
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0]?.message).toContain("limit 1");
-    expect(validate(withMembers([member("new-antioch/yeoman", ["misericordia"])])).ok).toBe(true);
+    expect(validate(withMembers([member("new-antioch/yeoman", ["automatic-rifle"])])).ok).toBe(true);
   });
 
   it("upgrade-unknown / upgrade-variant-locked", () => {
@@ -219,7 +219,7 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("battlekit-armour: two suits of armour", () => {
-    expectCode(withMembers([member("new-antioch/yeoman", ["standard-armour", "reinforced-armour"])]), "battlekit-armour");
+    expectCode(withMembers([member("new-antioch/sniper-priest", ["standard-armour", "reinforced-armour"])]), "battlekit-armour");
   });
 
   it("battlekit-shield: two shields", () => {

@@ -6,13 +6,13 @@ Game system `Trench Crusade.gst` revision 17; catalogue revisions are in each JS
 ## Counts
 
 - factions: 6
-- units: 101 (one row per unit per faction; mercenaries repeat per faction)
+- units: 105 (one row per unit per faction; mercenaries repeat per faction)
   - Black Grail: 14 units (4 mercenaries), 2 variants
   - Court of the Seven-Headed Serpent: 15 units (4 mercenaries), 0 variants
   - Heretic Legion: 15 units (5 mercenaries), 3 variants
-  - Iron Sultanate: 20 units (6 mercenaries), 3 variants
-  - New Antioch: 19 units (7 mercenaries), 6 variants
-  - Trench Pilgrims: 18 units (8 mercenaries), 3 variants
+  - Iron Sultanate: 21 units (7 mercenaries), 3 variants
+  - New Antioch: 21 units (9 mercenaries), 6 variants
+  - Trench Pilgrims: 19 units (8 mercenaries), 3 variants
 - equipment items: 213
   - ammunition: 5
   - armour: 7
@@ -39,17 +39,18 @@ Game system `Trench Crusade.gst` revision 17; catalogue revisions are in each JS
 
 Counted every time the converter met a construct it could only partially model or had to skip.
 
+- 101 x `modifier / increment / constraint (distinct constraints)`
 - 96 x `modifier / decrement / cost / conditional` (e.g. Reinforced Armour)
-- 96 x `modifier / increment / constraint (distinct constraints)`
 - 64 x `stat-modifier-unresolved-condition / armour` (e.g. black-grail/amalgam: Trench Shield)
-- 52 x `stat-modifier-campaign-condition / melee`
-- 50 x `stat-modifier-campaign-condition / ranged`
-- 45 x `modifier / set / constraint (distinct constraints)`
+- 53 x `stat-modifier-campaign-condition / melee`
+- 51 x `modifier / set / constraint (distinct constraints)`
+- 51 x `stat-modifier-campaign-condition / ranged`
+- 45 x `modifier / set / cost / conditional` (e.g. Submachine Gun)
 - 44 x `modifier / set / name`
 - 33 x `modifier / add / category / conditional`
-- 22 x `modifier / set / cost / conditional` (e.g. Unholy Relic)
 - 19 x `stat-modifier-upgrade-condition / base`
 - 16 x `ammunition-loaded-group-skipped (distinct weapons)` (e.g. Pistol)
+- 14 x `modifier / set / cost / conditional-resolved` (e.g. Unholy Relic)
 - 14 x `stat-modifier-complex-condition / armour` (e.g. black-grail/takwin-homunculus)
 - 11 x `stat-modifier-campaign-condition / armour`
 - 10 x `stat-modifier-upgrade-condition / melee`
@@ -67,6 +68,7 @@ Counted every time the converter met a construct it could only partially model o
 - 2 x `stat-modifier-complex-condition / ranged` (e.g. heretic-legion/heretic-trooper)
 - 2 x `stat-modifier-unresolved-condition / melee` (e.g. black-grail/grail-thrall: The Great Hunger)
 - 2 x `toggle-sub-entry-skipped` (e.g. Include Weapon Profile?)
+- 1 x `modifier / set / cost / unconditional` (e.g. Bolt-Action Rifle)
 - 1 x `stat-modifier-unresolved-condition / base` (e.g. trench-pilgrims/trench-pilgrim: Wrath of God)
 - 1 x `unit-profile-on-sub-option` (e.g. Black Grail: Grail Thrall)
 
@@ -74,6 +76,7 @@ Not attempted at all: roster-level `error` messages (captured as text in `roster
 
 ## Dropped (hidden with no unhide path for that faction)
 
+- Combat Biologist (ee4b-f5d6-afa4-9e50, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Trench Pilgrims
 - Communicant Anti-Tank Hunter (f1b3-1797-9928-0a6f, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate
 - Disciple of St. Roch (ef8a-5dfd-41a0-5b8d, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion
 - Goetic Warlock (e9cd-3848-885f-bdac, Mercenaries): hidden for Black Grail, Iron Sultanate, New Antioch, Trench Pilgrims

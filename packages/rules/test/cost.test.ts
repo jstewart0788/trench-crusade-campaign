@@ -6,9 +6,9 @@ describe("warbandCost", () => {
   it("sums unit cost plus faction armoury prices for every member", () => {
     const cost = warbandCost(newAntioch(), data());
     // Lieutenant 70 + sword-axe 4 + pistol 6 + standard armour 15 = 95
-    // 4 x Yeoman (30 + bolt-action rifle 10 + bayonet 2) = 168
+    // 4 x Yeoman (30 + bolt-action rifle 5 at the Yeoman's reduced price + bayonet 2) = 148
     // Shocktrooper 45 + submachine gun 30 = 75
-    expect(cost.ducats).toBe(338);
+    expect(cost.ducats).toBe(318);
     expect(cost.glory).toBe(0);
     expect(cost.perMember).toHaveLength(6);
     expect(cost.perMember[0]).toMatchObject({ unitId: "new-antioch/lieutenant", ducats: 95, glory: 0 });

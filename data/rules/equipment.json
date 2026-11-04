@@ -2729,12 +2729,7 @@
         "COVER"
       ],
       "limits": "max 1 per warband",
-      "modifiers": [
-        {
-          "delta": -1,
-          "stat": "armour"
-        }
-      ],
+      "modifiers": [],
       "name": "Iron Wall Kalkan",
       "range": null,
       "rules": "Othismos: When a Brazen Bull that has an Iron Wall Kalkan takes a Move ACTION (not a Dash or Charge) and is in contact with 1 enemy model that is mounted on a base of 40mm or less, then the Brazen Bull can use the Iron Wall Kalkan to push the enemy model when it moves. The Brazen Bull must move in a straight line, directly towards the enemy model. The enemy model is pushed in front of the Brazen Bull as the Brazen Bull moves along. The move can also be used to push a model off a terrain piece, so that it Falls (▶ see Comprehensive Rules in the Trench Crusade Digital Rulebook). If the move pushes the enemy model into contact with another model, both the enemy model and the Brazen Bull must stop moving. If it pushes the enemy into contact with a terrain piece that is more than ½\" high, the enemy model and the Brazen Bull must stop moving and an Injury Roll is made for the enemy model.",
@@ -2973,7 +2968,7 @@
       "bsId": "f41a-17c4-1d59-abac",
       "category": "melee",
       "cost": {
-        "ducats": 35,
+        "ducats": 50,
         "glory": 0
       },
       "factionIds": [
@@ -3848,7 +3843,7 @@
       "bsId": "651a-d454-07bf-a7fa",
       "category": "ranged",
       "cost": {
-        "ducats": 45,
+        "ducats": 50,
         "glory": 0
       },
       "factionIds": [
@@ -3900,7 +3895,8 @@
         "glory": null
       },
       "factionIds": [
-        "iron-sultanate"
+        "iron-sultanate",
+        "new-antioch"
       ],
       "hands": null,
       "id": "shield",
@@ -4253,8 +4249,9 @@
       "id": "sultanate-grand-cannon",
       "keywords": [
         "+2 INJURY DICE",
-        "HEAVY IGNORE ARMOUR",
-        "DEPLOYABLE"
+        "DEPLOYABLE",
+        "HEAVY",
+        "IGNORE ARMOUR"
       ],
       "limits": "max 2 per warband",
       "modifiers": [],
@@ -4269,8 +4266,8 @@
       "bsName": "Blessing of the Pontiff",
       "category": "equipment",
       "cost": {
-        "ducats": null,
-        "glory": null
+        "ducats": 0,
+        "glory": 3
       },
       "factionIds": [
         "new-antioch"
@@ -4280,7 +4277,7 @@
       "keywords": [],
       "limits": "max 1 per warband",
       "modifiers": [],
-      "name": "Supreme Blessing",
+      "name": "Supreme Pontiff's Crucifix",
       "range": null,
       "rules": "This model can take further ACTIONS if it fails in an attempted RISKY ACTION. Note that the action fails, but you are allowed to try any other ACTIONS on your profile without losing the Activation.",
       "source": "New Antioch",
@@ -4641,7 +4638,7 @@
       "limits": "max 1 per model",
       "modifiers": [],
       "name": "Trench Mortar",
-      "range": "48\"",
+      "range": "6\"-36\"",
       "rules": "High Trajectory: When a Trench Mortar is used to make a Ranged Attack, the target model (or target point, if targeting a point on the ground) cannot be within 6\" of the attacking model. Note that if the attack Scatters it may end up landing within 6\" of the attacking model.",
       "source": "Trench Pilgrims",
       "type": "2-Handed"
@@ -4701,7 +4698,7 @@
       "bsId": "98cd-8361-8cc4-81ea",
       "category": "equipment",
       "cost": {
-        "ducats": 10,
+        "ducats": 0,
         "glory": 1
       },
       "hands": null,
@@ -5097,6 +5094,11 @@
       "revision": "17"
     },
     "generator": "scripts/convert_newrecruit.py",
+    "pdfOverrides": {
+      "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86",
+      "edition": "1.0.2",
+      "file": "Warbands-of-Trench-Crusade.pdf"
+    },
     "repo": "https://github.com/Fawkstrot11/TrenchCrusade"
   }
 }
