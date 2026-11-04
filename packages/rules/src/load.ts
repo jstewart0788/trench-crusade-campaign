@@ -28,6 +28,7 @@ export type RosterAbility = z.infer<typeof RosterAbility>;
 export const Upgrade = z
   .object({
     bsId: z.string(),
+    bsIds: z.array(z.string()).optional(),
     name: z.string(),
     group: z.string(),
     cost: Cost.optional(),
@@ -187,8 +188,9 @@ export function accessFor(unit: RosterUnit, itemId: string): RosterAccess | unde
   return unit.equipmentAccess.find((a) => a.itemId === itemId);
 }
 
+/** An upgrade merged from several upstream entries (Janissary Veteran) answers to any of its ids. */
 export function upgradeFor(unit: RosterUnit, upgradeId: string): Upgrade | undefined {
-  return unit.upgrades?.find((g) => g.bsId === upgradeId);
+  return unit.upgrades?.find((g) => g.bsId === upgradeId || g.bsIds?.includes(upgradeId));
 }
 
 /**

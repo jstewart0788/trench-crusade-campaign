@@ -155,15 +155,13 @@
         "Cruel Helmet",
         "Curative Fluids",
         "Exploration Upgrades",
-        "Injuries",
         "Knighthood",
         "Koraktor, the Great Tome of Hell",
         "Lock of Samson's Hair",
         "Lordship of this World",
         "Piece of Silver",
         "Rocket-Propelled Grenade",
-        "Saints Reliquary",
-        "Skills"
+        "Saints Reliquary"
       ],
       "configuration": [
         {
@@ -461,7 +459,6 @@
         "iron-sultanate/janissary",
         "iron-sultanate/lion-of-jabir",
         "iron-sultanate/mamluk-faris",
-        "iron-sultanate/mamluk-faris-fireteam",
         "iron-sultanate/pairika",
         "iron-sultanate/scripture-guardian",
         "iron-sultanate/shirdal",
@@ -632,12 +629,11 @@
         "new-antioch/communicant-anti-tank-hunter",
         "new-antioch/crimson-communicant",
         "new-antioch/disciple-of-st-roch",
-        "new-antioch/fireteam",
         "new-antioch/homunculus",
         "new-antioch/lieutenant",
         "new-antioch/mamluk-faris",
-        "new-antioch/mamluk-faris-fireteam",
         "new-antioch/mechanized-heavy-infantry",
+        "new-antioch/mendelist-ammo-monk",
         "new-antioch/observer",
         "new-antioch/scripture-guardian",
         "new-antioch/shocktrooper",

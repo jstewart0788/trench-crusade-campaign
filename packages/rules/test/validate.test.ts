@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { warbandCost } from "../src/cost.js";
 import type { RulesData } from "../src/load.js";
-import type { Warband } from "../src/roster.js";
+import type { Warband, WarbandMember } from "../src/roster.js";
 import { MAX_ELITES, validateWarband, type RosterErrorCode } from "../src/validate.js";
 import { codes, data, member, newAntioch, warband, withMembers } from "./fixtures.js";
 
@@ -254,6 +254,8 @@ describe("validateWarband: one failing case per error code", () => {
     const berserker = data().unitsById.get("new-antioch/lieutenant")!.upgrades!.find((g) => g.name === "Berserker")!;
     const w = newAntioch();
     w.members[0]!.upgradeIds = [berserker.bsId];
+    // "A Berserker cannot have Armour" (p38) is a gate on the armour row, so the Lieutenant goes without
+    w.members[0]!.equipmentItemIds = ["sword-axe", "pistol"];
     expectCode(w, "upgrade-variant-locked");
     expect(validate({ ...w, variantId: "new-antioch/eire-rangers" }).ok).toBe(true);
   });
@@ -268,13 +270,16 @@ describe("validateWarband: one failing case per error code", () => {
     expect(result.errors[0]).toMatchObject({ code: "upgrade-duplicate", memberId: twice.members[0]!.id, unitId: "new-antioch/lieutenant" });
   });
 
-  it("upgrade-duplicate: two entries with one name are one upgrade (Janissary Veteran, p81)", () => {
-    const veteran = data().unitsById.get("iron-sultanate/yuzbasi-captain")!.upgrades!.filter((g) => g.name === "Janissary Veteran").map((g) => g.bsId);
-    expect(veteran).toHaveLength(2);
-    expect(new Set(veteran).size).toBe(2);
-    const captain = (ids: string[]) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"], ids)]);
-    expect(validate(captain([veteran[0]!])).errors).toEqual([]);
-    expectCode(captain(veteran), "upgrade-duplicate");
+  it("upgrade-duplicate: two upstream entries with one name are one upgrade answering to both ids (Janissary Veteran, p81)", () => {
+    const veteran = data().unitsById.get("iron-sultanate/yuzbasi-captain")!.upgrades!.filter((g) => g.name === "Janissary Veteran");
+    expect(veteran).toHaveLength(1);
+    const ids = veteran[0]!.bsIds!;
+    expect(ids).toHaveLength(2);
+    expect(ids[0]).toBe(veteran[0]!.bsId);
+    const captain = (upgradeIds: string[]) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"], upgradeIds)]);
+    expect(validate(captain([ids[0]!])).errors).toEqual([]);
+    expect(validate(captain([ids[1]!])).errors).toEqual([]);
+    expectCode(captain(ids), "upgrade-duplicate");
   });
 
   it("upgrade-max-per-model: an entry that allows repeats caps them at its own max (no real entry does; data patched)", () => {
@@ -333,7 +338,8 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("battlekit-shield: two shields", () => {
-    expectCode(withMembers([member("new-antioch/yeoman", ["trench-shield", "heavy-ballistic-shield"])]), "battlekit-shield");
+    // the Heavy Ballistic Shield needs Machine Armour on the model (p25), which only ELITE and MHI can wear
+    expectCode(warband("new-antioch", [member("new-antioch/lieutenant", ["machine-armour", "trench-shield", "heavy-ballistic-shield"])]), "battlekit-shield");
   });
 
   it("battlekit-headgear: two pieces of headgear", () => {
@@ -390,6 +396,70 @@ describe("validateWarband: unmodelled rules surface as warnings, not errors", ()
     expect(codes(validate(withMembers([member("new-antioch/trench-dog")])))).toContain("mercenary-limit");
     const fed = withMembers([member("new-antioch/trench-dog"), member("new-antioch/yeoman", ["dog-food"])]);
     expect(codes(validate(fed))).not.toContain("mercenary-limit");
+  });
+});
+
+// Rows whose availability depends on something the unit can never select
+// (another unit's upgrade, a profile it lacks, a campaign item) are not in its
+// armoury at all; rows that depend on one of its own selections are gated on it.
+describe("validateWarband: armoury rows resolved from BattleScribe availability conditions", () => {
+  const sultan = (m: WarbandMember, extra: Partial<Warband> = {}) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"]), m], extra);
+  const court = (m: WarbandMember, extra: Partial<Warband> = {}) => warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["sword-axe"]), m], extra);
+  const gone: Array<[string, Warband, string]> = [
+    ["Jabirean Alchemist + Flame Cannon (Brazen Bull only, p74)", sultan(member("iron-sultanate/jabirean-alchemist", ["flame-cannon"])), "flame-cannon"],
+    ["Azeb + M.U.R.A.D. Bombard (Brazen Bull only, p74)", sultan(member("iron-sultanate/azeb", ["murad-bombard"])), "murad-bombard"],
+    ["Yüzbaşı + Titan Zulfiqar (Brazen Bull only, p74)", warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["titan-zulfiqar"])]), "titan-zulfiqar"],
+    ["Court Hell Knight + Misericordia (not in the Court armoury, p148)", court(member("court-of-the-seven-headed-serpent/hell-knight", ["misericordia"])), "misericordia"],
+    ["Court Scripture Guardian + Halberd-Gun (not in the Court armoury, p148)", court(member("court-of-the-seven-headed-serpent/scripture-guardian", ["halberd-gun"]), { glory: 7 }), "halberd-gun"],
+    ["Yeoman + Heavy Ballistic Shield (Models wearing Machine Armour only, p25)", withMembers([member("new-antioch/yeoman", ["heavy-ballistic-shield"])]), "heavy-ballistic-shield"],
+  ];
+  for (const [name, w, itemId] of gone) {
+    it(`item-not-available: ${name}`, () => {
+      expect(expectCode(w, "item-not-available").errors[0]?.itemId).toBe(itemId);
+    });
+  }
+
+  it("the Brazen Bull keeps its own weapons (p74)", () => {
+    expect(validate(sultan(member("iron-sultanate/brazen-bull", ["flame-cannon", "titan-zulfiqar"]))).errors).toEqual([]);
+  });
+
+  it("Heavy Ballistic Shield needs Machine Armour on the same model (p25)", () => {
+    const lieutenant = (kit: string[]) => warband("new-antioch", [member("new-antioch/lieutenant", kit)]);
+    expect(expectCode(lieutenant(["heavy-ballistic-shield"]), "item-variant-locked").errors[0]?.message).toContain("item:machine-armour");
+    expect(validate(lieutenant(["machine-armour", "heavy-ballistic-shield"])).errors).toEqual([]);
+    const elsewhere = warband("new-antioch", [member("new-antioch/lieutenant", ["heavy-ballistic-shield"]), member("new-antioch/sniper-priest", ["machine-armour"])]);
+    expectCode(elsewhere, "item-variant-locked");
+  });
+
+  it("Court Praetor + Misericordia is Envious Eyes loot from the Trench Pilgrims armoury (p156, p50)", () => {
+    const loot = data().unitsById.get("court-of-the-seven-headed-serpent/praetor")!.upgrades!.find((g) => g.name === "Misericordia")!;
+    const praetor = (upgradeIds: string[]) => warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["misericordia"], upgradeIds)]);
+    expect(expectCode(praetor([]), "item-variant-locked").errors[0]?.message).toContain("upgrade:Misericordia");
+    expect(validate(praetor([loot.bsId])).errors).toEqual([]);
+  });
+
+  it("Heretic Trooper + Musket is Knights of Avarice loot (p120), not base armoury (p105)", () => {
+    const legion = (extra: Partial<Warband> = {}) => warband("heretic-legion", [member("heretic-legion/heretic-priest", ["sword-axe"]), member("heretic-legion/heretic-trooper", ["musket"])], extra);
+    expect(expectCode(legion(), "item-variant-locked").errors[0]?.message).toContain("knights-of-avarice");
+    expect(validate(legion({ variantId: "heretic-legion/knights-of-avarice" })).errors).toEqual([]);
+  });
+
+  it("Butcher Bayonet is Great Hunger kit on a Great Hunger rifle, with one gate, not two", () => {
+    const row = data().unitsById.get("black-grail/corpse-guard")!.equipmentAccess.find((a) => a.itemId === "butcher-bayonet")!;
+    expect(row.onlyWith).toEqual(["black-grail/the-great-hunger"]);
+    expect(row.onlyWithout).toBeUndefined();
+    for (const unit of data().units) {
+      for (const a of [...unit.equipmentAccess, ...(unit.upgrades ?? [])]) {
+        const both = (a.onlyWith ?? []).filter((v) => (a.onlyWithout ?? []).includes(v));
+        expect(both, `${unit.id} ${"itemId" in a ? a.itemId : a.name}`).toEqual([]);
+      }
+    }
+  });
+
+  it("deprecated Fireteam wrappers are not units", () => {
+    expectCode(withMembers([member("new-antioch/fireteam")]), "unit-unknown");
+    expectCode(withMembers([member("new-antioch/mamluk-faris-fireteam")]), "unit-unknown");
+    expect(data().units.some((u) => u.kind === "fireteam")).toBe(false);
   });
 });
 

@@ -296,15 +296,37 @@ function buildLimitContext(warband: Warband, data: RulesData, members: ResolvedM
 
 type Gate = { matched: boolean; unresolved: string[] };
 
-/** onlyWith / onlyWithout entries are variant ids or "Name [Catalogue]" strings. Any match satisfies the gate. */
-function evalGate(values: string[] | undefined, warband: Warband, data: RulesData, ctx: LimitContext): Gate {
+interface ModelScope {
+  member: WarbandMember;
+  unit: RosterUnit;
+}
+
+const SAME_MODEL_GATE = /^(item|upgrade):(.+)$/;
+
+function countOnModel(model: ModelScope, kind: string, ref: string): number {
+  if (kind === "item") return model.member.equipmentItemIds.filter((id) => id === ref).length;
+  const key = normaliseName(ref);
+  return (model.member.upgradeIds ?? []).filter((id) => normaliseName(upgradeFor(model.unit, id)?.name ?? "") === key).length;
+}
+
+/**
+ * onlyWith / onlyWithout entries are variant ids, `item:<item-id>` / `upgrade:<name>`
+ * (a selection on the same model, e.g. a Heavy Ballistic Shield's Machine Armour) or
+ * "Name [Catalogue]" strings counted across the roster. Any match satisfies the gate.
+ */
+function evalGate(values: string[] | undefined, warband: Warband, data: RulesData, ctx: LimitContext, model?: ModelScope): Gate {
   const gate: Gate = { matched: false, unresolved: [] };
   for (const v of values ?? []) {
     if (data.variantsById.has(v)) {
       if (warband.variantId === v) gate.matched = true;
       continue;
     }
-    const count = ctx.count(v);
+    const scoped = SAME_MODEL_GATE.exec(v);
+    if (scoped && model) {
+      if (countOnModel(model, scoped[1]!, scoped[2]!) > 0) gate.matched = true;
+      continue;
+    }
+    const count = ctx.count(scoped ? scoped[2]! : v);
     if (count === undefined) gate.unresolved.push(v);
     else if (count > 0) gate.matched = true;
   }
@@ -322,9 +344,10 @@ function checkGates(
   where: { memberId?: string; unitId?: string; itemId?: string },
   fail: (e: RosterError) => void,
   warn: (w: Omit<RosterWarning, "code">) => void,
+  model?: ModelScope,
 ): void {
   if (onlyWith && onlyWith.length > 0) {
-    const gate = evalGate(onlyWith, warband, data, ctx);
+    const gate = evalGate(onlyWith, warband, data, ctx, model);
     if (!gate.matched) {
       if (gate.unresolved.length > 0) {
         warn({ ...where, message: `${subject} requires one of ${gate.unresolved.map((u) => `"${u}"`).join(", ")}, which the data does not model` });
@@ -334,7 +357,7 @@ function checkGates(
     }
   }
   if (onlyWithout && onlyWithout.length > 0) {
-    const gate = evalGate(onlyWithout, warband, data, ctx);
+    const gate = evalGate(onlyWithout, warband, data, ctx, model);
     if (gate.matched) {
       fail({ ...where, code: codes.excluded, message: `${subject} is not available with ${onlyWithout.join(" / ")}` });
     } else if (gate.unresolved.length > 0) {
@@ -423,7 +446,7 @@ function checkMemberItems(
       fail({ code: "item-not-available", ...where, message: `${item.name} is not in the ${unit.name} armoury` });
       continue;
     }
-    checkGates(item.name, access.onlyWith, access.onlyWithout, warband, data, ctx, { locked: "item-variant-locked", excluded: "item-variant-locked" }, where, fail, warn);
+    checkGates(item.name, access.onlyWith, access.onlyWithout, warband, data, ctx, { locked: "item-variant-locked", excluded: "item-variant-locked" }, where, fail, warn, { member, unit });
 
     const perModel = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx, item.name);
     if (perModel.value !== null && count > perModel.value) {
@@ -454,7 +477,7 @@ function checkMemberUpgrades(
       fail({ code: "upgrade-unknown", ...where, message: `Unknown upgrade "${id}" for ${unit.name}` });
       continue;
     }
-    checkGates(upgrade.name, upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, { locked: "upgrade-variant-locked", excluded: "upgrade-variant-locked" }, where, fail, warn);
+    checkGates(upgrade.name, upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, { locked: "upgrade-variant-locked", excluded: "upgrade-variant-locked" }, where, fail, warn, { member, unit });
     const key = normaliseName(upgrade.name);
     const entry = taken.get(key);
     if (entry) entry.count += 1;

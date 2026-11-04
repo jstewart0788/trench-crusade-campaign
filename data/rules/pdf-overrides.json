@@ -263,16 +263,18 @@
       "id": "new-antioch/shocktrooper",
       "path": "equipmentAccess[itemId=reinforced-armour]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Berserker; hidden if atLeast Varangian Warlord",
+        "group": "armour",
+        "groupPath": "armour",
+        "max": 1,
         "cost": {
           "ducats": 40,
           "glory": 0
         },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
         "limitsText": "max 1 per model; max increment 1 per model when repeat per Knowledge of the Machine Armour (roster); repeat per Entitled to Machine Armour (roster)",
-        "max": 1
+        "onlyWithout": [
+          "upgrade:Berserker"
+        ],
+        "itemId": "reinforced-armour"
       },
       "pdf": null,
       "page": 25,
@@ -284,16 +286,15 @@
       "id": "new-antioch/yeoman",
       "path": "equipmentAccess[itemId=reinforced-armour]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Berserker; hidden if atLeast Varangian Warlord",
+        "group": "armour",
+        "groupPath": "armour",
+        "max": 1,
         "cost": {
           "ducats": 40,
           "glory": 0
         },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
         "limitsText": "max 1 per model; max increment 1 per model when repeat per Knowledge of the Machine Armour (roster); repeat per Entitled to Machine Armour (roster)",
-        "max": 1
+        "itemId": "reinforced-armour"
       },
       "pdf": null,
       "page": 25,
@@ -390,25 +391,35 @@
       "file": "units.json",
       "id": "new-antioch/lieutenant",
       "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
-      "upstream": null,
+      "upstream": [
+        "upgrade:Berserker",
+        "upgrade:Varangian Warlord"
+      ],
       "pdf": [
-        "new-antioch/eire-rangers"
+        "new-antioch/eire-rangers",
+        "upgrade:Berserker",
+        "upgrade:Varangian Warlord"
       ],
       "page": 38,
       "confidence": "high",
-      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour"
+      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour; the Berserker exclusion (p38: 'A Berserker cannot have Armour') and the Varangian Warlord one come from upstream and are kept"
     },
     {
       "file": "units.json",
       "id": "new-antioch/lieutenant",
       "path": "equipmentAccess[itemId=machine-armour].onlyWithout",
-      "upstream": null,
+      "upstream": [
+        "upgrade:Berserker",
+        "upgrade:Varangian Warlord"
+      ],
       "pdf": [
-        "new-antioch/eire-rangers"
+        "new-antioch/eire-rangers",
+        "upgrade:Berserker",
+        "upgrade:Varangian Warlord"
       ],
       "page": 38,
       "confidence": "high",
-      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour"
+      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour; the Berserker exclusion (p38: 'A Berserker cannot have Armour') and the Varangian Warlord one come from upstream and are kept"
     },
     {
       "file": "units.json",
@@ -557,159 +568,18 @@
     },
     {
       "file": "units.json",
-      "id": "trench-pilgrims/castigator",
-      "path": "equipmentAccess[itemId=machine-gun]",
-      "upstream": {
-        "conditionNote": "hidden if atLeast Wrath of God",
-        "cost": {
-          "ducats": 50,
-          "glory": 0
-        },
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "itemId": "machine-gun",
-        "limitsText": "max 2 per warband",
-        "max": null,
-        "maxPerWarband": 2,
-        "onlyWith": [
-          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-        ]
-      },
-      "pdf": {
-        "itemId": "machine-gun",
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "cost": {
-          "ducats": 0,
-          "glory": 2
-        },
-        "max": null,
-        "conditionNote": "hidden if atLeast Wrath of God"
-      },
-      "page": 49,
-      "confidence": "high",
-      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/communicant",
-      "path": "equipmentAccess[itemId=machine-gun]",
-      "upstream": {
-        "conditionNote": "hidden if atLeast Wrath of God",
-        "cost": {
-          "ducats": 50,
-          "glory": 0
-        },
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "itemId": "machine-gun",
-        "limitsText": "max 2 per warband",
-        "max": null,
-        "maxPerWarband": 2,
-        "onlyWith": [
-          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-        ]
-      },
-      "pdf": {
-        "itemId": "machine-gun",
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "cost": {
-          "ducats": 0,
-          "glory": 2
-        },
-        "max": null,
-        "conditionNote": "hidden if atLeast Wrath of God"
-      },
-      "page": 49,
-      "confidence": "high",
-      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/trench-pilgrim",
-      "path": "equipmentAccess[itemId=machine-gun]",
-      "upstream": {
-        "conditionNote": "hidden if atLeast Wrath of God",
-        "cost": {
-          "ducats": 50,
-          "glory": 0
-        },
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "itemId": "machine-gun",
-        "limitsText": "max 2 per warband",
-        "max": null,
-        "maxPerWarband": 2,
-        "onlyWith": [
-          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-        ]
-      },
-      "pdf": {
-        "itemId": "machine-gun",
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "cost": {
-          "ducats": 0,
-          "glory": 2
-        },
-        "max": null,
-        "conditionNote": "hidden if atLeast Wrath of God"
-      },
-      "page": 49,
-      "confidence": "high",
-      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/war-prophet",
-      "path": "equipmentAccess[itemId=machine-gun]",
-      "upstream": {
-        "conditionNote": "hidden if atLeast Wrath of God",
-        "cost": {
-          "ducats": 50,
-          "glory": 0
-        },
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "itemId": "machine-gun",
-        "limitsText": "max 2 per warband",
-        "max": null,
-        "maxPerWarband": 2,
-        "onlyWith": [
-          "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-        ]
-      },
-      "pdf": {
-        "itemId": "machine-gun",
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-two-handed",
-        "cost": {
-          "ducats": 0,
-          "glory": 2
-        },
-        "max": null,
-        "conditionNote": "hidden if atLeast Wrath of God"
-      },
-      "page": 49,
-      "confidence": "high",
-      "note": "Trench Pilgrims Armoury: Machine Gun 2 glory, no limit, any model; upstream only has the War Pilgrimage of Saint Methodius replacement (50 ducats, Limit: 2)"
-    },
-    {
-      "file": "units.json",
       "id": "trench-pilgrims/stigmatic-nun",
       "path": "equipmentAccess[itemId=reinforced-armour]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Wrath of God",
+        "group": "armour",
+        "groupPath": "armour",
+        "max": 1,
         "cost": {
           "ducats": 40,
           "glory": 0
         },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
         "limitsText": "max 1 per model",
-        "max": 1
+        "itemId": "reinforced-armour"
       },
       "pdf": null,
       "page": 50,
@@ -737,16 +607,18 @@
       "id": "trench-pilgrims/trench-pilgrim",
       "path": "equipmentAccess[itemId=reinforced-armour]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Wrath of God",
+        "group": "armour",
+        "groupPath": "armour",
+        "max": 1,
         "cost": {
           "ducats": 40,
           "glory": 0
         },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
         "limitsText": "max 1 per model",
-        "max": 1
+        "onlyWithout": [
+          "upgrade:Wrath of God"
+        ],
+        "itemId": "reinforced-armour"
       },
       "pdf": null,
       "page": 50,
@@ -854,30 +726,6 @@
     {
       "file": "units.json",
       "id": "trench-pilgrims/mendelist-ammo-monk",
-      "path": "onlyWith",
-      "upstream": [
-        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-      ],
-      "pdf": null,
-      "page": 180,
-      "confidence": "high",
-      "note": "Mendelist Ammo Monk can be recruited by any New Antioch or Trench Pilgrim warband; upstream only unhides it for the War Pilgrimage of Saint Methodius, which is the one variant that forbids it (Communicant Heresy, p64)"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/mendelist-ammo-monk",
-      "path": "variantIds",
-      "upstream": [
-        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-      ],
-      "pdf": null,
-      "page": 180,
-      "confidence": "high",
-      "note": "see onlyWith"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/mendelist-ammo-monk",
       "path": "onlyWithout",
       "upstream": null,
       "pdf": [
@@ -965,15 +813,14 @@
       "id": "iron-sultanate/azeb",
       "path": "equipmentAccess[itemId=halberd-gun]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Shield Training",
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "max": null,
         "cost": {
           "ducats": 20,
           "glory": 0
         },
-        "group": "melee-two-handed",
-        "groupPath": "weapons/melee-weapons/melee-two-handed",
-        "itemId": "halberd-gun",
-        "max": null
+        "itemId": "halberd-gun"
       },
       "pdf": null,
       "page": 74,
@@ -985,15 +832,14 @@
       "id": "iron-sultanate/brazen-bull",
       "path": "equipmentAccess[itemId=halberd-gun]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Shield Training",
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "max": null,
         "cost": {
           "ducats": 20,
           "glory": 0
         },
-        "group": "melee-two-handed",
-        "groupPath": "weapons/melee-weapons/melee-two-handed",
-        "itemId": "halberd-gun",
-        "max": null
+        "itemId": "halberd-gun"
       },
       "pdf": null,
       "page": 74,
@@ -1005,15 +851,17 @@
       "id": "iron-sultanate/janissary",
       "path": "equipmentAccess[itemId=halberd-gun]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Shield Training",
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "max": null,
         "cost": {
           "ducats": 20,
           "glory": 0
         },
-        "group": "melee-two-handed",
-        "groupPath": "weapons/melee-weapons/melee-two-handed",
-        "itemId": "halberd-gun",
-        "max": null
+        "onlyWithout": [
+          "upgrade:Shield Training"
+        ],
+        "itemId": "halberd-gun"
       },
       "pdf": null,
       "page": 74,
@@ -1025,15 +873,14 @@
       "id": "iron-sultanate/sultanate-sapper",
       "path": "equipmentAccess[itemId=halberd-gun]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Shield Training",
+        "group": "melee-two-handed",
+        "groupPath": "weapons/melee-weapons/melee-two-handed",
+        "max": null,
         "cost": {
           "ducats": 20,
           "glory": 0
         },
-        "group": "melee-two-handed",
-        "groupPath": "weapons/melee-weapons/melee-two-handed",
-        "itemId": "halberd-gun",
-        "max": null
+        "itemId": "halberd-gun"
       },
       "pdf": null,
       "page": 74,
@@ -1045,15 +892,14 @@
       "id": "iron-sultanate/scripture-guardian",
       "path": "equipmentAccess[itemId=halberd-gun]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Shield Training",
+        "group": "melee-two-handed",
+        "groupPath": "melee-weapons/melee-two-handed",
+        "max": null,
         "cost": {
           "ducats": 20,
           "glory": 0
         },
-        "group": "melee-two-handed",
-        "groupPath": "melee-weapons/melee-two-handed",
-        "itemId": "halberd-gun",
-        "max": null
+        "itemId": "halberd-gun"
       },
       "pdf": null,
       "page": 74,
@@ -1880,15 +1726,17 @@
       "id": "heretic-legion/heretic-trooper",
       "path": "equipmentAccess[itemId=silenced-pistol]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Sarcophagus Mine",
+        "group": "ranged-one-handed",
+        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
+        "max": null,
         "cost": {
           "ducats": 15,
           "glory": 0
         },
-        "group": "ranged-one-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
-        "itemId": "silenced-pistol",
-        "max": null
+        "onlyWithout": [
+          "upgrade:Sarcophagus Mine"
+        ],
+        "itemId": "silenced-pistol"
       },
       "pdf": null,
       "page": 105,
@@ -1917,26 +1765,17 @@
     {
       "file": "units.json",
       "id": "heretic-legion/heretic-trooper",
-      "path": "equipmentAccess[itemId=hellbound-soul-contract].onlyWith",
-      "upstream": [
-        "heretic-legion/trench-ghosts"
-      ],
-      "pdf": null,
-      "page": 106,
-      "confidence": "high",
-      "note": "Hellbound Soul Contract is a base-armoury item (Heretic Troopers & Legionnaires only, Limit: 3); upstream only unhides it for Trench Ghosts, the one variant that forbids it (Lost Souls, p118)"
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-legion/heretic-trooper",
       "path": "equipmentAccess[itemId=hellbound-soul-contract].onlyWithout",
-      "upstream": null,
+      "upstream": [
+        "upgrade:Sarcophagus Mine"
+      ],
       "pdf": [
-        "heretic-legion/trench-ghosts"
+        "heretic-legion/trench-ghosts",
+        "upgrade:Sarcophagus Mine"
       ],
       "page": 118,
       "confidence": "high",
-      "note": "Lost Souls: models in a Trench Ghost Warband cannot have Hellbound Soul Contracts or Infernal Brands"
+      "note": "Lost Souls: models in a Trench Ghost Warband cannot have Hellbound Soul Contracts or Infernal Brands; the Sarcophagus Mine exclusion comes from upstream and is kept"
     },
     {
       "file": "units.json",
@@ -2069,30 +1908,6 @@
     {
       "file": "units.json",
       "id": "black-grail/corpse-guard",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 129,
-      "confidence": "high",
-      "note": "Viscera Cannon is a base-armoury item, ELITE only, Limit: 2; upstream gates it with contradictory Great Hunger conditions"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/corpse-guard",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 129,
-      "confidence": "high",
-      "note": "see onlyWith"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/corpse-guard",
       "path": "equipmentAccess[itemId=troop-flag].cost",
       "upstream": {
         "ducats": 10,
@@ -2109,30 +1924,6 @@
     {
       "file": "units.json",
       "id": "black-grail/lord-of-tumours",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 129,
-      "confidence": "high",
-      "note": "Viscera Cannon is a base-armoury item, ELITE only, Limit: 2; upstream gates it with contradictory Great Hunger conditions"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/lord-of-tumours",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 129,
-      "confidence": "high",
-      "note": "see onlyWith"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/lord-of-tumours",
       "path": "equipmentAccess[itemId=troop-flag].cost",
       "upstream": {
         "ducats": 10,
@@ -2145,30 +1936,6 @@
       "page": 130,
       "confidence": "high",
       "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/plague-knight",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 129,
-      "confidence": "high",
-      "note": "Viscera Cannon is a base-armoury item, ELITE only, Limit: 2; upstream gates it with contradictory Great Hunger conditions"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/plague-knight",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 129,
-      "confidence": "high",
-      "note": "see onlyWith"
     },
     {
       "file": "units.json",
@@ -2201,88 +1968,6 @@
       "page": 130,
       "confidence": "high",
       "note": "Armoury: Troop Flag 1 glory (Dirge Bereaved may carry one, p142)"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/heralds-of-beelzebub",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
-      "upstream": [
-        "black-grail/dirge-of-the-great-hegemon",
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": [
-        "black-grail/dirge-of-the-great-hegemon"
-      ],
-      "page": 142,
-      "confidence": "high",
-      "note": "Hegemon's Last Blessing: Viscera Cannons lose the ELITE only stipulation (Limit: 3) in a Dirge of the Great Hegemon Warband"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/heralds-of-beelzebub",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 142,
-      "confidence": "high",
-      "note": "see onlyWith"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/grail-thrall",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWith",
-      "upstream": [
-        "black-grail/dirge-of-the-great-hegemon",
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": [
-        "black-grail/dirge-of-the-great-hegemon"
-      ],
-      "page": 142,
-      "confidence": "high",
-      "note": "Bereaved (Dirge) may take Ranged Weapons; Hegemon's Last Blessing lifts ELITE only"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/grail-thrall",
-      "path": "equipmentAccess[itemId=viscera-cannon].onlyWithout",
-      "upstream": [
-        "black-grail/the-great-hunger"
-      ],
-      "pdf": null,
-      "page": 142,
-      "confidence": "high",
-      "note": "see onlyWith"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/amalgam",
-      "path": "equipmentAccess[itemId=viscera-cannon]",
-      "upstream": {
-        "cost": {
-          "ducats": 50,
-          "glory": 0
-        },
-        "group": "ranged-two-handed",
-        "groupPath": "weapons/ranged/ranged-two-handed",
-        "itemId": "viscera-cannon",
-        "limitsText": "max 2 per warband; max increment 1 per warband when atLeast 1 Entitled To Viscera Cannons (roster); max increment 1 per warband when atLeast 1 Dirge of the Great Hegemon (roster)",
-        "max": null,
-        "maxPerWarband": 2,
-        "onlyWith": [
-          "black-grail/dirge-of-the-great-hegemon",
-          "black-grail/the-great-hunger"
-        ],
-        "onlyWithout": [
-          "black-grail/the-great-hunger"
-        ]
-      },
-      "pdf": null,
-      "page": 140,
-      "confidence": "high",
-      "note": "Viscera Cannon is ELITE only and a Dirge of the Great Hegemon Warband (the only variant that lifts the stipulation) cannot include an Amalgam (The Fallen, p142)"
     },
     {
       "file": "equipment.json",
@@ -2390,18 +2075,6 @@
       "page": 138,
       "confidence": "high",
       "note": "Teeth & Claws ability missing upstream"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/grail-thrall",
-      "path": "abilities[name=Gluttonous Horde].onlyWith",
-      "upstream": null,
-      "pdf": [
-        "black-grail/the-great-hunger"
-      ],
-      "page": 137,
-      "confidence": "medium",
-      "note": "Gluttonous Horde belongs to the Great Hunger 'Ravenous' entry; the base Grail Thrall has Overwhelming Horde"
     },
     {
       "file": "units.json",
@@ -2568,17 +2241,16 @@
       "id": "court-of-the-seven-headed-serpent/hell-knight",
       "path": "equipmentAccess[itemId=restraining-muzzle]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "group": "equipment",
+        "groupPath": "equipment",
+        "max": 1,
         "cost": {
           "ducats": 10,
           "glory": 0
         },
-        "group": "equipment",
-        "groupPath": "equipment",
-        "itemId": "restraining-muzzle",
+        "maxPerWarband": 3,
         "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
-        "max": 1,
-        "maxPerWarband": 3
+        "itemId": "restraining-muzzle"
       },
       "pdf": null,
       "page": 149,
@@ -2590,17 +2262,16 @@
       "id": "court-of-the-seven-headed-serpent/hunter-of-the-left-hand-path",
       "path": "equipmentAccess[itemId=restraining-muzzle]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "group": "equipment",
+        "groupPath": "equipment",
+        "max": 1,
         "cost": {
           "ducats": 10,
           "glory": 0
         },
-        "group": "equipment",
-        "groupPath": "equipment",
-        "itemId": "restraining-muzzle",
+        "maxPerWarband": 3,
         "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
-        "max": 1,
-        "maxPerWarband": 3
+        "itemId": "restraining-muzzle"
       },
       "pdf": null,
       "page": 149,
@@ -2612,17 +2283,16 @@
       "id": "court-of-the-seven-headed-serpent/praetor",
       "path": "equipmentAccess[itemId=restraining-muzzle]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "group": "equipment",
+        "groupPath": "equipment",
+        "max": 1,
         "cost": {
           "ducats": 10,
           "glory": 0
         },
-        "group": "equipment",
-        "groupPath": "equipment",
-        "itemId": "restraining-muzzle",
+        "maxPerWarband": 3,
         "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
-        "max": 1,
-        "maxPerWarband": 3
+        "itemId": "restraining-muzzle"
       },
       "pdf": null,
       "page": 149,
@@ -2634,17 +2304,16 @@
       "id": "court-of-the-seven-headed-serpent/sorcerer",
       "path": "equipmentAccess[itemId=restraining-muzzle]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "group": "equipment",
+        "groupPath": "equipment",
+        "max": 1,
         "cost": {
           "ducats": 10,
           "glory": 0
         },
-        "group": "equipment",
-        "groupPath": "equipment",
-        "itemId": "restraining-muzzle",
+        "maxPerWarband": 3,
         "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
-        "max": 1,
-        "maxPerWarband": 3
+        "itemId": "restraining-muzzle"
       },
       "pdf": null,
       "page": 149,
@@ -2656,17 +2325,16 @@
       "id": "court-of-the-seven-headed-serpent/wretched",
       "path": "equipmentAccess[itemId=restraining-muzzle]",
       "upstream": {
-        "conditionNote": "hidden if atLeast Restraining Muzzle",
+        "group": "equipment",
+        "groupPath": "equipment",
+        "max": 1,
         "cost": {
           "ducats": 10,
           "glory": 0
         },
-        "group": "equipment",
-        "groupPath": "equipment",
-        "itemId": "restraining-muzzle",
+        "maxPerWarband": 3,
         "limitsText": "max 3 per warband; max increment 1 per warband when repeat per Leveraged on Restraining Muzzles (roster); max 1 per model",
-        "max": 1,
-        "maxPerWarband": 3
+        "itemId": "restraining-muzzle"
       },
       "pdf": null,
       "page": 149,
@@ -2767,6 +2435,57 @@
     },
     {
       "file": "units.json",
+      "id": "heretic-legion/chorister",
+      "path": "equipmentAccess[itemId=binoculars].onlyWith",
+      "upstream": [
+        "heretic-legion/knights-of-avarice"
+      ],
+      "pdf": null,
+      "page": 106,
+      "confidence": "high",
+      "note": "Armoury: Binoculars is a base-armoury item, ELITE only; upstream only unhides it through the Knights of Avarice 'Corrupt Merchants' loot, so the Death Commando (ELITE, excluded from that variant) has no row at all (see Missing from upstream)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-priest",
+      "path": "equipmentAccess[itemId=binoculars].onlyWith",
+      "upstream": [
+        "heretic-legion/knights-of-avarice"
+      ],
+      "pdf": null,
+      "page": 106,
+      "confidence": "high",
+      "note": "Armoury: Binoculars is a base-armoury item, ELITE only; upstream only unhides it through the Knights of Avarice 'Corrupt Merchants' loot, so the Death Commando (ELITE, excluded from that variant) has no row at all (see Missing from upstream)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/chorister",
+      "path": "equipmentAccess[itemId=trench-shield].onlyWithout",
+      "upstream": [
+        "item:machine-armour"
+      ],
+      "pdf": null,
+      "page": 106,
+      "confidence": "high",
+      "note": "Armoury: Trench Shield has no stipulation beyond Shield Combo; upstream hides it for a model wearing Knights of Avarice loot Machine Armour"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/heretic-priest",
+      "path": "equipmentAccess[itemId=trench-shield].onlyWithout",
+      "upstream": [
+        "item:machine-armour",
+        "item:tank-palanquin"
+      ],
+      "pdf": [
+        "item:tank-palanquin"
+      ],
+      "page": 106,
+      "confidence": "high",
+      "note": "Armoury: Trench Shield has no stipulation beyond Shield Combo; upstream hides it for a model wearing Knights of Avarice loot Machine Armour. The Tank Palanquin exclusion comes from upstream and is kept"
+    },
+    {
+      "file": "units.json",
       "id": "black-grail/sin-eater",
       "path": "keywords",
       "upstream": [
@@ -2827,6 +2546,54 @@
       "page": 175,
       "confidence": "high",
       "note": "keyword(s) Regenerate 1 listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/lieutenant",
+      "path": "equipmentAccess[itemId=trench-shield].onlyWithout",
+      "upstream": [
+        "item:machine-armour"
+      ],
+      "pdf": null,
+      "page": 25,
+      "confidence": "high",
+      "note": "Armoury: Trench Shield has no stipulation beyond Shield Combo; upstream hides it for models in Machine Armour, which only the Heavy Ballistic Shield row ('Models wearing Machine Armour only') supports"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/mechanized-heavy-infantry",
+      "path": "equipmentAccess[itemId=trench-shield].onlyWithout",
+      "upstream": [
+        "item:machine-armour"
+      ],
+      "pdf": null,
+      "page": 25,
+      "confidence": "high",
+      "note": "Armoury: Trench Shield has no stipulation beyond Shield Combo; upstream hides it for models in Machine Armour, which only the Heavy Ballistic Shield row ('Models wearing Machine Armour only') supports"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/sniper-priest",
+      "path": "equipmentAccess[itemId=trench-shield].onlyWithout",
+      "upstream": [
+        "item:machine-armour"
+      ],
+      "pdf": null,
+      "page": 25,
+      "confidence": "high",
+      "note": "Armoury: Trench Shield has no stipulation beyond Shield Combo; upstream hides it for models in Machine Armour, which only the Heavy Ballistic Shield row ('Models wearing Machine Armour only') supports"
+    },
+    {
+      "file": "units.json",
+      "id": "new-antioch/trench-cleric",
+      "path": "equipmentAccess[itemId=trench-shield].onlyWithout",
+      "upstream": [
+        "item:machine-armour"
+      ],
+      "pdf": null,
+      "page": 25,
+      "confidence": "high",
+      "note": "Armoury: Trench Shield has no stipulation beyond Shield Combo; upstream hides it for models in Machine Armour, which only the Heavy Ballistic Shield row ('Models wearing Machine Armour only') supports"
     },
     {
       "file": "units.json",

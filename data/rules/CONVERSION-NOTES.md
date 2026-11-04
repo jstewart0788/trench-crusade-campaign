@@ -6,12 +6,12 @@ Game system `Trench Crusade.gst` revision 17; catalogue revisions are in each JS
 ## Counts
 
 - factions: 6
-- units: 105 (one row per unit per faction; mercenaries repeat per faction)
+- units: 103 (one row per unit per faction; mercenaries repeat per faction)
   - Black Grail: 14 units (4 mercenaries), 2 variants
   - Court of the Seven-Headed Serpent: 15 units (4 mercenaries), 0 variants
   - Heretic Legion: 15 units (5 mercenaries), 3 variants
-  - Iron Sultanate: 21 units (7 mercenaries), 3 variants
-  - New Antioch: 21 units (9 mercenaries), 6 variants
+  - Iron Sultanate: 20 units (6 mercenaries), 3 variants
+  - New Antioch: 20 units (9 mercenaries), 6 variants
   - Trench Pilgrims: 19 units (8 mercenaries), 3 variants
 - equipment items: 213
   - ammunition: 5
@@ -27,8 +27,13 @@ Game system `Trench Crusade.gst` revision 17; catalogue revisions are in each JS
 
 - Unit availability per faction = faction root `selectionEntries` (type model/unit) + faction root `entryLinks` to models + the Mercenaries catalogue root entries (imported with `importRootEntries="true"`), each filtered through its `hidden` flag and `set hidden` modifiers evaluated with three-valued logic (known: this unit/its categories/the primary catalogue; unknown: roster selections such as variants).
 - Entries that stay hidden with no reachable unhide path are dropped and listed below. Entries whose visibility depends on a roster selection are kept with `onlyWith` / `onlyWithout` (readable names; variant ids where the dependency is a Warband Variant) and `variantIds`.
-- `equipmentAccess` is the flattened walk of every selection group reachable from the unit (shared faction groups such as Weapons/Armour/Equipment/Grenades, plus unit-local groups). `group` is the innermost BS group slug, `groupPath` the full path. The cost on the link wins over the library entry's cost. Items hidden for this unit are omitted; conditionally hidden ones carry `onlyWith`/`onlyWithout`/`conditionNote`.
-- Selections inside those groups that carry no Weapon/Battlekit *item* profile (Battlekit profiles with an empty Type are abilities) are emitted under the unit's `upgrades` extra field instead.
+- `equipmentAccess` is the flattened walk of every selection group reachable from the unit (shared faction groups such as Weapons/Armour/Equipment/Grenades, plus unit-local groups). `group` is the innermost BS group slug, `groupPath` the full path. The cost on the link wins over the library entry's cost. Items hidden for this unit are omitted; conditionally hidden ones carry `onlyWith`/`onlyWithout` (any listed entry satisfies a gate) and, for conditions the engine cannot evaluate, `conditionNote`.
+- Gate entries are a variant id (`new-antioch/eire-rangers`), a selection on the same model (`item:<item-id>` for a Battlekit row, `upgrade:<name>` for one of the unit's own upgrades), or `Name [Catalogue]` for anything counted across the whole roster. An entry nested under a Warband Variant (Knights of Avarice loot) stands for that variant.
+- A hide/unhide condition that names something this unit can never select (another unit's option, a profile the unit lacks such as Gargantuan Size, a campaign-rules item, an entry that only unhides once it is already selected, an orphan entry) is evaluated as 0 selections. An unhide that can never fire drops the row; a hide that can never fire is ignored. The walk repeats until the set of selectable entries stops shrinking. Rows whose gates contradict each other (require and exclude the same variant, or need a variant the unit itself cannot be in) are dropped too. Dropped rows are listed below.
+- The same item reached through two paths (a bayonet under two rifles) is one row, available through either path: a gate survives only when both paths carry it.
+- Selections inside those groups that carry no Weapon/Battlekit *item* profile (Battlekit profiles with an empty Type are abilities) are emitted under the unit's `upgrades` extra field instead. Upgrade entries with the same name on one unit are merged into one (`bsIds` lists every source entry, `bsId` is the first); the engine accepts any of the ids.
+- Deprecated `Fireteam` wrapper entries (type=unit, no Unit profile) are not emitted.
+- Upstream `page` attributes are not carried over: they cite an older document, so the only page numbers in the data are PDF-verified ones from `pdf-overrides.json`.
 - Armour/shield `modifiers` on items are derived from the Unit-profile modifiers (set/decrement/increment on the Armour characteristic conditioned on a selection); the most common delta across units wins and any unit that disagrees says so in its `notes`.
 - Equipment items are merged by name slug across the three libraries, faction catalogues and game-system shared profiles (library entry preferred). Merged ids are listed in `bsIds`; `mergedProfilesDiffer` flags merges whose characteristics differ.
 - Mercenary unit ids are `<faction-id>/<slug>` (unique per faction row) with `mercenary: true` and a shared `mercenaryId` (`mercenary/<slug>`), because the same mercenary appears once per faction with that faction's price.
@@ -39,15 +44,20 @@ Game system `Trench Crusade.gst` revision 17; catalogue revisions are in each JS
 
 Counted every time the converter met a construct it could only partially model or had to skip.
 
+- 1205 x `unavailable-selection / not selectable by this unit`
+- 684 x `dropped-unavailable / item`
+- 457 x `unavailable-selection / not selectable by this faction`
 - 101 x `modifier / increment / constraint (distinct constraints)`
-- 96 x `modifier / decrement / cost / conditional` (e.g. Reinforced Armour)
-- 64 x `stat-modifier-unresolved-condition / armour` (e.g. black-grail/amalgam: Trench Shield)
+- 96 x `modifier / decrement / cost / conditional-resolved` (e.g. Reinforced Armour)
+- 81 x `stat-modifier-unresolved-condition / armour` (e.g. black-grail/amalgam: Trench Shield)
+- 58 x `dropped-unavailable / upgrade`
 - 53 x `stat-modifier-campaign-condition / melee`
-- 51 x `modifier / set / constraint (distinct constraints)`
 - 51 x `stat-modifier-campaign-condition / ranged`
+- 49 x `modifier / set / constraint (distinct constraints)`
 - 45 x `modifier / set / cost / conditional` (e.g. Submachine Gun)
 - 44 x `modifier / set / name`
-- 33 x `modifier / add / category / conditional`
+- 35 x `unavailable-selection / self-reference`
+- 31 x `modifier / add / category / conditional`
 - 19 x `stat-modifier-upgrade-condition / base`
 - 16 x `ammunition-loaded-group-skipped (distinct weapons)` (e.g. Pistol)
 - 14 x `modifier / set / cost / conditional-resolved` (e.g. Unholy Relic)
@@ -55,15 +65,15 @@ Counted every time the converter met a construct it could only partially model o
 - 11 x `stat-modifier-campaign-condition / armour`
 - 10 x `stat-modifier-upgrade-condition / melee`
 - 8 x `fireteam-group-skipped (distinct groups)` (e.g. Fireteams)
-- 8 x `stat-modifier-upgrade-condition / armour`
 - 8 x `stat-modifier-upgrade-condition / ranged`
+- 7 x `stat-modifier-upgrade-condition / armour`
 - 7 x `stat-modifier-upgrade-condition / movement`
 - 5 x `modifier / add / error`
-- 4 x `unit-without-profile` (e.g. Black Grail: Cradle Thrall)
 - 4 x `variant-option-group` (e.g. Heretic Legion: Trench Ghosts)
 - 3 x `library-entry-without-item-profile` (e.g. Incendiary Ammuntion (Loaded))
 - 3 x `stat-modifier-complex-condition / melee` (e.g. heretic-legion/heretic-trooper)
 - 3 x `stat-modifier-unresolved-condition / ranged` (e.g. black-grail/grail-thrall: Dirge of the Great Hegemon)
+- 2 x `dropped-unavailable / group`
 - 2 x `modifier / decrement / constraint (distinct constraints)`
 - 2 x `stat-modifier-complex-condition / ranged` (e.g. heretic-legion/heretic-trooper)
 - 2 x `stat-modifier-unresolved-condition / melee` (e.g. black-grail/grail-thrall: The Great Hunger)
@@ -71,6 +81,7 @@ Counted every time the converter met a construct it could only partially model o
 - 1 x `modifier / set / cost / unconditional` (e.g. Bolt-Action Rifle)
 - 1 x `stat-modifier-unresolved-condition / base` (e.g. trench-pilgrims/trench-pilgrim: Wrath of God)
 - 1 x `unit-profile-on-sub-option` (e.g. Black Grail: Grail Thrall)
+- 1 x `unit-without-profile` (e.g. Black Grail: Cradle Thrall)
 
 Not attempted at all: roster-level `error` messages (captured as text in `rosterErrors`/`notes` only), `repeat` based constraint scaling, conditional cost discounts (variant price changes), name-changing modifiers (captured as notes), category add/remove with conditions, constraint modifiers (captured in `limits.text`), the Campaign Rules catalogue (skills, injuries, glory items, exploration upgrades, patron selection).
 
@@ -80,16 +91,257 @@ Not attempted at all: roster-level `error` messages (captured as text in `roster
 - Communicant Anti-Tank Hunter (f1b3-1797-9928-0a6f, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate
 - Disciple of St. Roch (ef8a-5dfd-41a0-5b8d, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion
 - Goetic Warlock (e9cd-3848-885f-bdac, Mercenaries): hidden for Black Grail, Iron Sultanate, New Antioch, Trench Pilgrims
-- Mendelist Ammo Monk (0923-5700-c9f0-2ef6, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate, New Antioch
+- Mendelist Ammo Monk (0923-5700-c9f0-2ef6, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate
 - Observer (886c-6e17-ab87-8c9c, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate
 - Sin Eater (4703-d968-d52d-46b5, Mercenaries): hidden for Iron Sultanate, New Antioch, Trench Pilgrims
 - Sister of Saint Cosmas (39c2-abb6-fef0-f96e, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate, New Antioch
 - Witchburner (fb45-9c9c-7cf1-6745, Mercenaries): hidden for Black Grail, Court of the Seven-Headed Serpent, Heretic Legion, Iron Sultanate
 
+## Dropped because unavailable (access rows and upgrades no unit can take)
+
+A row is dropped when its unhide condition names something the unit can never select, or when its gates contradict each other. Counts are per faction; each entry lists the units that lost the row and why.
+
+- total: 744
+- Black Grail: 203 (203 item)
+- Court of the Seven-Headed Serpent: 226 (2 group, 215 item, 9 upgrade)
+- Heretic Legion: 45 (35 item, 10 upgrade)
+- Iron Sultanate: 185 (175 item, 10 upgrade)
+- New Antioch: 66 (45 item, 21 upgrade)
+- Trench Pilgrims: 19 (11 item, 8 upgrade)
+
+### Black Grail
+
+- item `Anti-Material Rifle` (needs Anti-Materiel Rifle): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Automatic Pistol` (needs Automatic Pistol): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Automatic Rifle` (needs Automatic Rifle): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Automatic Shotgun` (needs Automatic Shotgun): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Black Grail Shield` (requires and excludes black-grail/dirge-of-the-great-hegemon): cradle-thrall
+- item `Black Spot Rifle` (needs a variant the unit is excluded from: black-grail/the-great-hunger): lord-of-tumours
+- item `Blasphemous Staff` (needs Blasphemous Staff): amalgam, corpse-guard, cradle-thrall, lord-of-tumours, scripture-guardian, takwin-homunculus
+- item `Blunderbuss` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Bolt-Action Rifle` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Broken Crown` (needs a variant the unit is excluded from: black-grail/dirge-of-the-great-hegemon): lord-of-tumours
+- item `Butcher Bayonet` (needs a variant the unit is excluded from: black-grail/the-great-hunger): amalgam, heralds-of-beelzebub, lord-of-tumours
+- item `Butcher Bayonet` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): grail-thrall
+- item `Butcher Bayonet` (requires and excludes black-grail/the-great-hunger): amalgam, corpse-guard, heralds-of-beelzebub, lord-of-tumours, plague-knight
+- item `Corruption Belcher` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Field Shrine` (needs Trench Shrine: Shrine): corpse-guard, lord-of-tumours, plague-knight, takwin-homunculus
+- item `Fire Shield` (needs Jabirean Alchemical Book): corpse-guard, cradle-thrall, lord-of-tumours, plague-knight, takwin-homunculus
+- item `Flamethrower` (needs Flamethrower): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Frag Grenades` (needs Grenades): corpse-guard, cradle-thrall, grail-thrall, lord-of-tumours
+- item `Gas Grenades` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Great Hammer/Maul` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Great Sword/Axe` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Grenade Launcher` (needs Grenade Launcher): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Heavy Flamethrower` (needs Heavy Flamethrower): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Heavy Shotgun` (needs Heavy Shotgun): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Hellblade` (needs Hellblade): amalgam, corpse-guard, cradle-thrall, lord-of-tumours, scripture-guardian, takwin-homunculus
+- item `Incendiary Grenades` (needs Incendiary Grenades): corpse-guard, cradle-thrall, grail-thrall, lord-of-tumours
+- item `Infested Rifle` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Machine Gun` (needs Machine Gun, Machine Gun ): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Musical Instrument` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Musket` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Parasite Grenades` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Pestilent Fang` (needs a variant the unit is excluded from: black-grail/the-great-hunger): lord-of-tumours
+- item `Pistol` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Polearm` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Putrid Shotgun` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Sacrificial Blade` (needs Sacrificial Blade): amalgam, corpse-guard, cradle-thrall, lord-of-tumours, scripture-guardian, takwin-homunculus
+- item `Satchel Charge` (needs Satchel Charge): corpse-guard, cradle-thrall, grail-thrall, lord-of-tumours
+- item `Semi-Automatic Rifle` (needs Semi-Automatic Rifle, Semi-automatic Rifle): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Shotgun` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Silenced Pistol` (needs Silenced Pistol): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Sniper Rifle` (needs Sniper Rifle): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Submachine Gun` (needs Submachine Gun): amalgam, corpse-guard, cradle-thrall, grail-thrall, heralds-of-beelzebub, lord-of-tumours, takwin-homunculus
+- item `Sword/Axe` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Trench Club` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Trench Knife` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Trench Shield` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Troop Flag` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+- item `Unending Starvation` (needs a variant the unit is excluded from: black-grail/the-great-hunger): lord-of-tumours
+- item `Urn of Bitter Ashes` (needs a variant the unit is excluded from: black-grail/dirge-of-the-great-hegemon): lord-of-tumours
+- item `Viscera Cannon` (needs a variant the unit is excluded from: black-grail/dirge-of-the-great-hegemon): amalgam
+- item `Viscera Cannon` (needs black-grail/dirge-of-the-great-hegemon and black-grail/the-great-hunger): cradle-thrall
+
+### Court of the Seven-Headed Serpent
+
+- group `Advancement` (needs Enabled): yoke-fiend
+- group `Goetic Powers` (needs Embraced by the Void): yoke-fiend
+- item `Alchemist Armour` (needs Alchemist Armour): faceless, hunter-of-the-left-hand-path, stalker, yoke-fiend
+- item `Anti-Tank Hammer` (needs Anti-Tank Hammer): desecrated-saint, faceless, hell-knight, homunculus, scripture-guardian, wretched, yoke-fiend
+- item `Apex Form` (needs Enabled, Equipment Only): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Automatic Pistol` (needs Automatic Pistol): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, stalker, wretched, yoke-fiend
+- item `Automatic Rifle` (needs Automatic Rifle): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Automatic Shotgun` (needs Automatic Shotgun): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Bolt-Action Rifle` (needs Bolt Action Rifle): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Entropital Dermis` (needs Enabled, Equipment Only): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Field Shrine` (needs Trench Shrine: Shrine): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Frag Grenades` (needs Frag Grenade, Grenades): faceless, hell-knight, hunter-of-the-left-hand-path, stalker, wretched, yoke-fiend
+- item `Grenade Launcher` (needs Grenade Launcher): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Halberd-Gun` (needs Halberd-Gun): desecrated-saint, faceless, hell-knight, homunculus, scripture-guardian, wretched, yoke-fiend
+- item `Heavy Shotgun` (needs Heavy Shotgun): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Herald of the Void` (needs Enabled, Equipment Only): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Jezzail` (needs Jezzail): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Living Instrument` (needs Enabled): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Machine Armour` (needs Machine Armour): faceless, hunter-of-the-left-hand-path, stalker, yoke-fiend
+- item `Machine Gun` (needs Machine Gun): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Misericordia` (needs Misericordia): desecrated-saint, faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, scripture-guardian, stalker, wretched, yoke-fiend
+- item `Molotov Cocktail` (needs Molotov Cocktail): faceless, hell-knight, hunter-of-the-left-hand-path, stalker, wretched, yoke-fiend
+- item `Musical Instrument` (needs Angelic Instrument): wretched
+- item `Musket` (needs Musket): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Orphaned Failures` (needs Enabled, Equipment Only): desecrated-saint, faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Punt Gun` (needs Punt Gun): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Satchel Charge` (needs Satchel Charge): faceless, hell-knight, hunter-of-the-left-hand-path, stalker, wretched, yoke-fiend
+- item `Semi-Automatic Rifle` (needs Semi-automatic Rifle): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Siege Jezzail` (needs Siege Jezzail): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Sniper Rifle` (needs Sniper Rifle): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Submachine Gun` (needs Submachine Gun): faceless, hell-knight, homunculus, wretched, yoke-fiend
+- item `Unnatural Conduit` (needs Enabled, Equipment Only): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+- item `Warcross` (needs Warcross): faceless, hell-knight, hunter-of-the-left-hand-path, stalker, wretched, yoke-fiend
+- upgrade `Fire Shield` (needs Jabirean Alchemical Book): faceless, hell-knight, homunculus, hunter-of-the-left-hand-path, praetor, sorcerer, stalker, wretched, yoke-fiend
+
+### Heretic Legion
+
+- item `Alchemist Armour` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Artificial Rebirth` (needs Artificial Rebirth): artillery-witch, homunculus, technomancer
+- item `Binoculars` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Cloak of Alamut` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Coin Hammer` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Field Shrine` (needs Trench Shrine: Shrine): anointed-heavy-infantry, artillery-witch, chorister, death-commando, heretic-priest, heretic-trooper, homunculus, technomancer
+- item `Field Shrine` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Golden Calf Altar` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Halberd-Gun` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Holy Relic` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Incendiary Ammunition` (needs Anti-Material Rifle, Automatic Pistol, Automatic Rifle, Automatic Shotgun, Bolt-Action Rifle, Heavy Shotgun, Jezzail, Machine Gun, Musket, Pistol, Semi-Automatic Rifle, Shotgun, Siege Jezzail, Silenced Pistol, Sniper Rifle, Submachine Gun): artillery-witch
+- item `Machine Armour` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Martyrdom Pills` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Medikit` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Musical Instrument` (needs Angelic Instrument, Seal of Solomon): wretched
+- item `Standard of Mammon` (needs Seal of Solomon): wretched
+- item `Standard of Mammon` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- item `Trench Shrine` (needs Trench Shrine: Shrine): anointed-heavy-infantry, artillery-witch, chorister, death-commando, heretic-priest, heretic-trooper, homunculus, technomancer
+- item `Wind Amulet` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+- upgrade `Fire Shield` (needs Jabirean Alchemical Book): anointed-heavy-infantry, artillery-witch, chorister, death-commando, heretic-priest, heretic-trooper, homunculus, technomancer, wretched
+- upgrade `Tarnished Armour` (needs a variant the unit is excluded from: heretic-legion/knights-of-avarice): death-commando
+
+### Iron Sultanate
+
+- item `Alchemical Ammunition` (needs Alaybozan, Halberd-Gun, Jezzail, Shield-Paired Halberd-Gun, Shield-Paired Siege Jezzail, Siege Jezzail): bedu-sharpshooter
+- item `Anti-Tank Hammer` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Automatic Pistol` (needs Automatic Pistol): azeb, brazen-bull, janissary, sultanate-sapper, takwin-homunculus
+- item `Automatic Pistol` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Automatic Rifle` (needs Automatic Rifle): brazen-bull
+- item `Automatic Rifle` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Automatic Shotgun` (needs Automatic Shotgun): brazen-bull
+- item `Automatic Shotgun` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Banner of Desert Wind` (needs a variant the unit is excluded from: iron-sultanate/defenders-of-the-iron-wall): sultanate-assassin
+- item `Bolt-Action Rifle` (needs Bolt Action Rifle): brazen-bull
+- item `Bolt-Action Rifle` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Elixer of Al-Khidr` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Field Shrine` (needs Trench Shrine: Shrine): archeologist, azeb, bedu-sharpshooter, brazen-bull, jabirean-alchemist, janissary, sultanate-assassin, sultanate-sapper, takwin-homunculus, tegmen, yuzbasi-captain, zamburak-weapon-platform
+- item `Field Shrine` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Fire Shield` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Flail/Scourge` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Flame Cannon` (needs Gargantuan Size): archeologist, azeb, jabirean-alchemist, janissary, sultanate-assassin, sultanate-sapper, tegmen, yuzbasi-captain
+- item `Grenade Launcher` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Heavy Flamethrower` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Heavy Shotgun` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Holy Icon Shield` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Incendiary Ammunition` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Incendiary Grenades` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Iron Wall Kalkan` (needs Gargantuan Size): archeologist, azeb, jabirean-alchemist, janissary, sultanate-assassin, sultanate-sapper, tegmen, yuzbasi-captain
+- item `MURAD Bombardment` (needs Gargantuan Size): archeologist, azeb, jabirean-alchemist, janissary, sultanate-assassin, sultanate-sapper, tegmen, yuzbasi-captain
+- item `Machine Armour` (needs Machine Armour): archeologist, azeb, bedu-sharpshooter, brazen-bull, jabirean-alchemist, janissary, lion-of-jabir, sultanate-assassin, sultanate-sapper, tegmen, yuzbasi-captain
+- item `Martyrdom Pills` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Misericordia` (needs Scavengers Arsenal): archeologist, azeb, brazen-bull, jabirean-alchemist, janissary, scripture-guardian, sultanate-assassin, sultanate-sapper, takwin-homunculus, tegmen, yuzbasi-captain, zamburak-weapon-platform
+- item `Misericordia` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Molotov Cocktail` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Punt Gun` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Satchel Charge` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Semi-Automatic Rifle` (needs Semi-automatic Rifle): brazen-bull
+- item `Semi-Automatic Rifle` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Shield-Paired Halberd-Gun` (needs Shield Training): archeologist, azeb, jabirean-alchemist, scripture-guardian, sultanate-assassin, sultanate-sapper, takwin-homunculus, tegmen, zamburak-weapon-platform
+- item `Shield-Paired Siege Jezzail` (needs Shield Training): archeologist, azeb, brazen-bull, jabirean-alchemist, sultanate-assassin, sultanate-sapper, takwin-homunculus, tegmen
+- item `Sparkpowder Ammunition` (needs Alaybozan, Halberd-Gun, Jezzail, Machine Gun, Relic Alaybozan, Shield-Paired Halberd-Gun, Shield-Paired Siege Jezzail, Siege Jezzail): bedu-sharpshooter
+- item `Sparkpowder Ammunition` (needs Alaybozan, Jezzail, Machine Gun, Relic Alaybozan, Shield-Paired Halberd-Gun, Shield-Paired Siege Jezzail, Siege Jezzail): zamburak-weapon-platform
+- item `Sparkpowder Ammunition` (needs Alaybozan, Jezzail, Shield-Paired Halberd-Gun, Shield-Paired Siege Jezzail): brazen-bull
+- item `Sparkpowder Ammunition` (needs Alaybozan, Shield-Paired Halberd-Gun): janissary
+- item `Sparkpowder Ammunition` (needs Alaybozan, Shield-Paired Halberd-Gun, Shield-Paired Siege Jezzail): azeb, takwin-homunculus
+- item `Sparkpowder Ammunition` (needs Shield-Paired Halberd-Gun, Shield-Paired Siege Jezzail): sultanate-sapper
+- item `Submachine Gun` (needs Scavengers Arsenal): archeologist, azeb, brazen-bull, jabirean-alchemist, janissary, sultanate-assassin, sultanate-sapper, takwin-homunculus, tegmen, yuzbasi-captain
+- item `Submachine Gun` (needs Submachine Gun): brazen-bull
+- item `Submachine Gun` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- item `Sultanate Grand Cannon` (needs Gargantuan Size): archeologist, azeb, jabirean-alchemist, janissary, sultanate-assassin, sultanate-sapper, tegmen, yuzbasi-captain
+- item `Titan Zulfiqar` (needs Gargantuan Size): archeologist, azeb, jabirean-alchemist, janissary, scripture-guardian, sultanate-assassin, sultanate-sapper, tegmen, yuzbasi-captain, zamburak-weapon-platform
+- item `Warcross` (needs a variant the unit is excluded from: iron-sultanate/the-house-of-wisdom): sultanate-assassin, yuzbasi-captain
+- upgrade `Hashashin Leaf` (needs a variant the unit is excluded from: iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins): brazen-bull, jabirean-alchemist, yuzbasi-captain
+- upgrade `Sparkpowder Ammuntion (Loaded)` (needs Sparkpowder Ammunition): azeb, brazen-bull, janissary, sultanate-sapper, takwin-homunculus
+
+### New Antioch
+
+- item `Anfarro` (needs Chewa): combat-engineer, combat-medic, homunculus, mechanized-heavy-infantry, yeoman
+- item `Anfarro` (needs a variant the unit is excluded from: new-antioch/expeditionary-forces-of-abyssinia): sniper-priest
+- item `Anfarro` (needs new-antioch/expeditionary-forces-of-abyssinia and new-antioch/the-red-brigade): crimson-communicant
+- item `Armour Piercing Bullets` (needs new-antioch/eire-rangers and new-antioch/the-red-brigade): crimson-communicant
+- item `Dum-Dum Bullets` (needs new-antioch/kingdom-of-alba-assault-detachment and new-antioch/the-red-brigade): crimson-communicant
+- item `Field Shrine` (needs Trench Shrine: Shrine): combat-engineer, combat-medic, crimson-communicant, homunculus, lieutenant, mechanized-heavy-infantry, shocktrooper, sniper-priest, trench-cleric, yeoman
+- item `Heavy Ballistic Shield` (needs Ducal Winged Armour, Machine  Armour, Machine Armour): combat-engineer, combat-medic, homunculus, shocktrooper, yeoman
+- item `Holy Water of Lalibela` (needs a variant the unit is excluded from: new-antioch/expeditionary-forces-of-abyssinia): sniper-priest
+- item `Holy Water of Lalibela` (needs new-antioch/expeditionary-forces-of-abyssinia and new-antioch/the-red-brigade): crimson-communicant
+- item `Lochaber Axe` (needs new-antioch/kingdom-of-alba-assault-detachment and new-antioch/the-red-brigade): crimson-communicant
+- item `Shotel` (needs Chewa): combat-engineer, combat-medic, homunculus, mechanized-heavy-infantry, scripture-guardian, yeoman
+- item `Shotel` (needs a variant the unit is excluded from: new-antioch/expeditionary-forces-of-abyssinia): sniper-priest
+- item `Shotel` (needs new-antioch/expeditionary-forces-of-abyssinia and new-antioch/the-red-brigade): crimson-communicant
+- item `Tabot` (needs Holy Warrior): combat-engineer, combat-medic, crimson-communicant, homunculus, lieutenant, mechanized-heavy-infantry, shocktrooper, sniper-priest, yeoman
+- item `Tank-Splitter Sword` (needs new-antioch/stosstruppen-of-the-free-state-of-prussia and new-antioch/the-red-brigade): crimson-communicant
+- upgrade `Bagpipes` (needs new-antioch/kingdom-of-alba-assault-detachment and new-antioch/the-red-brigade): crimson-communicant
+- upgrade `Carnyx` (needs new-antioch/eire-rangers and new-antioch/the-red-brigade): crimson-communicant
+- upgrade `Fire Shield` (needs Ducal Winged Armour, Jabirean Alchemical Book, Machine  Armour): crimson-communicant, lieutenant, sniper-priest, trench-cleric
+- upgrade `Fire Shield` (needs Ducal Winged Armour, Jabirean Alchemical Book, Machine  Armour, Machine Armour): combat-engineer, combat-medic, homunculus, shocktrooper, yeoman
+- upgrade `Fire Shield` (needs Ducal Winged Armour, Jabirean Alchemical Book, Machine Armour): mechanized-heavy-infantry
+- upgrade `War Horn` (needs Angelic Instrument): homunculus
+- upgrade `War Horn` (needs Angelic Instrument, Seal of Solomon): combat-engineer, combat-medic, crimson-communicant, lieutenant, mechanized-heavy-infantry, sniper-priest, trench-cleric, yeoman
+
+### Trench Pilgrims
+
+- item `Automatic Rifle` (needs a variant the unit is excluded from: trench-pilgrims/war-pilgrimage-of-saint-methodius): communicant
+- item `Field Shrine` (needs Trench Shrine: Shrine): castigator, chieftain, communicant, homunculus, huscarl, stigmatic-nun, trench-pilgrim, war-prophet
+- item `Machine Gun` (needs a variant the unit is excluded from: trench-pilgrims/war-pilgrimage-of-saint-methodius): communicant
+- item `Submachine Gun` (needs a variant the unit is excluded from: trench-pilgrims/war-pilgrimage-of-saint-methodius): communicant
+- upgrade `Fire Shield` (needs Jabirean Alchemical Book): castigator, chieftain, communicant, homunculus, huscarl, stigmatic-nun, trench-pilgrim, war-prophet
+
+## Merged duplicate upgrades that differ
+
+- black-grail/plague-knight: 'Automatic Rifle' (77d4-a2d2-2f40-d20b kept, cd9d-bbf9-725f-e50c merged) differ in rules
+- black-grail/plague-knight: 'Automatic Shotgun' (88d5-06eb-8513-fd0c kept, f7bb-c32a-6e20-01fa merged) differ in rules
+- black-grail/plague-knight: 'Flamethrower' (9a54-32a8-1ab8-7b58 kept, f9b1-e638-9536-7164 merged) differ in rules
+- black-grail/plague-knight: 'Grenade Launcher' (d1d3-dea7-48d7-42fc kept, 3a47-d5a7-a039-3eae merged) differ in rules
+- black-grail/plague-knight: 'Grenades' (84d2-3015-2fb3-2b51 kept, d456-7dbf-4db1-a18c merged) differ in rules
+- black-grail/plague-knight: 'Heavy Flamethrower' (dd8d-f0b1-2c9d-208f kept, f37f-0096-6b13-3881 merged) differ in rules
+- black-grail/plague-knight: 'Incendiary Grenades' (9a90-38c3-7c21-163f kept, 2391-8571-4ce5-d96e merged) differ in rules
+- black-grail/plague-knight: 'Machine Gun' (ba6a-7cfa-20b6-15c4 kept, 7fd2-9f6e-9db5-0a3e merged) differ in rules
+- black-grail/plague-knight: 'Semi-automatic Rifle' (635a-322d-b312-68f5 kept, f541-3b6f-3518-340f merged) differ in rules
+- black-grail/plague-knight: 'Submachine Gun' (9996-c3a6-606f-7855 kept, c0fc-22cd-ad4c-838b merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Automatic Pistol' (7cc0-6381-e059-0234 kept, 3666-52ae-2810-f7c3 merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Bolt Action Rifle' (402e-79d7-4289-cb56 kept, bb3b-a110-4f6d-3712 merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Machine Gun' (06e6-12a3-6697-73ec kept, b707-8628-3af4-04ab merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Musket' (6bf8-8c5b-91cc-9fe5 kept, 9c8b-80f1-a561-8067 merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Semi-automatic Rifle' (59d3-d0f7-6723-cc1a kept, 7035-a343-375e-1a38 merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Sniper Rifle' (cde7-97c2-3420-f771 kept, 44bd-c9c4-f85a-9685 merged) differ in rules
+- court-of-the-seven-headed-serpent/praetor: 'Submachine Gun' (b5ef-3d46-9741-06c8 kept, 0cc0-a81d-4a31-d289 merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Automatic Pistol' (7cc0-6381-e059-0234 kept, 3666-52ae-2810-f7c3 merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Bolt Action Rifle' (402e-79d7-4289-cb56 kept, bb3b-a110-4f6d-3712 merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Machine Gun' (06e6-12a3-6697-73ec kept, b707-8628-3af4-04ab merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Musket' (6bf8-8c5b-91cc-9fe5 kept, 9c8b-80f1-a561-8067 merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Semi-automatic Rifle' (59d3-d0f7-6723-cc1a kept, 7035-a343-375e-1a38 merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Sniper Rifle' (cde7-97c2-3420-f771 kept, 44bd-c9c4-f85a-9685 merged) differ in rules
+- court-of-the-seven-headed-serpent/sorcerer: 'Submachine Gun' (b5ef-3d46-9741-06c8 kept, 0cc0-a81d-4a31-d289 merged) differ in rules
+- iron-sultanate/yuzbasi-captain: 'Janissary Veteran' (3fdd-747a-7297-115a kept, 0f27-f803-965a-e559 merged) differ in rules
+
 ## Campaign Rules links seen on units (out of scope, recorded by name)
 
 - Black Grail: Advancement, Angelic Instrument, Armour of the Fly, Battlefield Title, Beelzebub's Embrace, Blasphemous Banner, Cup of Filth, Curative Fluids, Exploration Upgrades, Knighthood, Lock of Samson's Hair, Locust Spitter, Saints Reliquary
-- Court of the Seven-Headed Serpent: Advancement, Angelic Instrument, Battlefield Title, Bestial Skin Cloak, Blasphemous Banner, Cruel Helmet, Curative Fluids, Exploration Upgrades, Injuries, Knighthood, Koraktor, the Great Tome of Hell, Lock of Samson's Hair, Lordship of this World, Piece of Silver, Rocket-Propelled Grenade, Saints Reliquary, Skills
+- Court of the Seven-Headed Serpent: Advancement, Angelic Instrument, Battlefield Title, Bestial Skin Cloak, Blasphemous Banner, Cruel Helmet, Curative Fluids, Exploration Upgrades, Knighthood, Koraktor, the Great Tome of Hell, Lock of Samson's Hair, Lordship of this World, Piece of Silver, Rocket-Propelled Grenade, Saints Reliquary
 - Heretic Legion: Advancement, Angelic Instrument, Armour of Cobar, Battlefield Title, Blasphemous Banner, Curative Fluids, Demonic Aura Grenade, Executioner's Axe, Exploration Upgrades, Knighthood, Lock of Samson's Hair, Rocket-Propelled Grenade, Saints Reliquary, Sniper Scope, The Mark of Cain, Tormentor Chain
 - Iron Sultanate: Advancement, Angelic Instrument, Blasphemous Banner, Curative Fluids, Damascus Armour, Exploration Upgrades, Field Hospital, Kilij, Knighthood, Lock of Samson's Hair, Masterwork Jezzail, Rocket-Propelled Grenade, Saints Reliquary, Sniper Scope, Sultanate Grand Cannon
 - New Antioch: Advancement, Angelic Instrument, Battlefield Title, Blasphemous Banner, Book of Battle Prayers, Curative Fluids, Ducal Winged Armour, Exploration Upgrades, Field Hospital, Great Banner of New Antioch, Knighthood, Lock of Samson's Hair, Resurrection Engine, Rocket-Propelled Grenade, Saints Reliquary, Salvage Golem, Smoke Screen, Sniper Scope
@@ -111,7 +363,10 @@ Not attempted at all: roster-level `error` messages (captured as text in `roster
 
 ## Known upstream oddities noticed
 
-- The `Fireteam` (type=unit) entries are marked by the author as deprecated ('being phased out') and are hidden unless already on a roster; they carry no Unit profile, so their stats are placeholders (`kind: fireteam`, `members` lists the eligible models).
+- The `Fireteam` (type=unit) entries are marked by the author as deprecated ('being phased out') and are hidden unless already on a roster; they carry no Unit profile and are not emitted (the New Antioch Fireteams rule comes from the PDF via an override).
+- Several links are hidden and only unhide 'if at least 1 of itself is selected' (Court Misericordia/Flail/Halberd-Gun links, Heretic Musket): the author's way of retiring an entry without deleting it. The Court links actually point at the Envious Eyes 'Stolen Loot' upgrades and the Heretic Musket at the Knights of Avarice 'Corrupt Merchants' loot, which is how they are modelled; a genuinely self-referencing unhide is treated as never satisfiable.
+- The Viscera Cannon's unhide carries an `atLeast 0 The Great Hunger` condition (always true) next to a `set hidden=true atLeast 1 The Great Hunger` modifier; read literally it is 'ELITE or Dirge of the Great Hegemon, never under The Great Hunger'.
+- The Yüzbaşı's Janissary Veteran exists twice upstream (a base entry hidden under Nomads of Al-Badia and a 'Nomads version' that only shows there); the Plague Knight's and Court Praetor/Sorcerer's loot upgrades repeat one name per source armoury. Same-named upgrades on a unit are merged.
 - Mercenary availability is gated with `primary-catalogue` conditions; the Sister of Saint Cosmas entry carries the author comment 'impossible because I dont really wanna *delete* them' and only unhides for Trench Pilgrims.
 - Faction catalogues cross-link each other (Heretic Legion imports Iron Sultanate and New Antioch, Court imports Pilgrims and Sultanate, Black Grail imports Heretic Legion) without `importRootEntries`, so only shared groups/entries leak across, not units.
 - The `Weapon` characteristic `Type` is inconsistently cased (`Grenade` vs `GRENADE`), `Range` mixes straight and curly quotes, and keywords contain non-breaking spaces; all normalised here.
@@ -133,5 +388,4 @@ Not attempted at all: roster-level `error` messages (captured as text in `roster
 - Mercenary prices are glory-only in this dataset (Scripture Guardian 7 GP, Mamluk Faris 4 GP, Goetic Warlock 4 GP + 110 ducats modifier); confirm ducat prices and which factions may hire each.
 - Warband limits (`limits.min/max`) come from roster-scope constraints; constraints that are modified by variants are only captured as text in `limits.text` and need the variant tables checked.
 - Starting ducats (700) and the Threshold table are not in the dataset and must come from the rulebook extraction.
-- The `Fireteam` wrapper units are deprecated upstream: decide whether the campaign app keeps them or models fireteams from the rulebook text only.
 - Items merged by name across catalogues with `mergedProfilesDiffer: true` need a human to pick the correct profile.

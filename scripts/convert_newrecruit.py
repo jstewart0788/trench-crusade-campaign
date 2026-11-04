@@ -101,9 +101,9 @@ def first_int(value):
     return int(m.group(0)) if m else None
 
 
-def page_of(el):
-    p = first_int(el.attrib.get("page", ""))
-    return p if p and p > 0 else None
+def gate_key(name):
+    """Name normalisation shared with the roster engine (packages/rules/src/limits.ts normaliseName)."""
+    return re.sub(r"[^a-z0-9]+", "", name.lower())
 
 
 # Dataset model ------------------------------------------------------------------
@@ -217,7 +217,7 @@ CATALOGUE_SCOPES = {"primary-catalogue", "catalogue", "primary-category"}
 
 
 class Ctx:
-    def __init__(self, ds, unit_el, link_el, faction_cat_id, variant_ids):
+    def __init__(self, ds, unit_el, link_el, faction_cat_id, variant_ids, variant_owner=None):
         self.ds = ds
         self.entry_ids = set()
         for el in (unit_el, link_el):
@@ -230,6 +230,42 @@ class Ctx:
                     self.cat_ids.add(cl.attrib.get("targetId"))
         self.faction_cat_id = faction_cat_id
         self.variant_ids = variant_ids
+        # entries nested under a Warband Variant (Knights of Avarice loot) -> that variant's entry id
+        self.variant_owner = variant_owner or {}
+        # ids of the element(s) whose modifiers are being evaluated (set by visibility())
+        self.self_ids = set()
+        # selections this unit can make: id -> gate label (`item:<key>` / `upgrade:<name>`), or None
+        # for a group; None as a whole means "not known yet" (first access walk, unit-level, abilities)
+        self.reachable = None
+        # selections any unit of the faction can make (roster-scope conditions)
+        self.faction_reachable = None
+        # the catalogue's own roster-level entries (variants, configuration, faction upgrades) and
+        # everything under them; a model-scope condition naming one of these means the roster
+        self.roster_ids = set()
+        # gate labels of the row being evaluated (a condition on another link to the same item is self)
+        self.self_labels = set()
+        # names resolved as never selectable during the current visibility() call
+        self.unavailable = []
+
+
+def count_eval(ctype, n, value):
+    """Truth of a selections condition when the referenced entry is taken n times."""
+    v = 1 if value is None else value
+    return {
+        "atLeast": n >= v,
+        "greaterThan": n > v,
+        "equalTo": n == v,
+        "lessThan": n < v,
+        "atMost": n <= v,
+        "notEqualTo": n != v,
+        "instanceOf": False,
+        "notInstanceOf": True,
+    }.get(ctype)
+
+
+def is_unit_target(ds, eid):
+    target = ds.get(ds.resolve_target(eid))
+    return target is not None and tag(target) == "selectionEntry" and target.attrib.get("type") in ("model", "unit")
 
 
 class Tally:
@@ -258,6 +294,9 @@ def eval_condition(c, ctx, deps, tally):
     if child == "any" or child is None:
         tally.add(("condition", ctype, scope, "childId=any"))
         return None
+    # "atLeast 0" holds and "lessThan 0" fails whatever is selected
+    if value is not None and value <= 0 and ctype in ("atLeast", "lessThan"):
+        return ctype == "atLeast"
     if scope in CATALOGUE_SCOPES:
         is_fac = child == ctx.faction_cat_id
         if ctype in POSITIVE:
@@ -266,6 +305,14 @@ def eval_condition(c, ctx, deps, tally):
             return not is_fac
         tally.add(("condition", ctype, scope))
         return None
+    resolved = ctx.ds.resolve_target(child)
+
+    def never_selected(why):
+        # the referenced entry cannot be on the model/roster, so it counts as 0 selections
+        ctx.unavailable.append(ctx.ds.name_of_id(child))
+        tally.add(("unavailable-selection", why))
+        return count_eval(ctype, 0, value)
+
     if scope in LOCAL_SCOPES:
         if child in ctx.entry_ids:
             if ctype in POSITIVE:
@@ -286,21 +333,47 @@ def eval_condition(c, ctx, deps, tally):
             return None
         # a model/unit entry other than this unit can never be the scoped selection
         # (e.g. "instanceOf Lieutenant" evaluated for a Sniper Priest)
-        target = ctx.ds.get(ctx.ds.resolve_target(child))
-        if ctx.entry_ids and target is not None and tag(target) == "selectionEntry" and target.attrib.get("type") in ("model", "unit"):
+        if ctx.entry_ids and is_unit_target(ctx.ds, child):
             if ctype in POSITIVE:
                 return False
             if ctype in NEGATIVE:
                 return True
+        # a model-scope condition naming a roster-level entry (Nomads of Al-Badia on the Yüzbaşı's
+        # upgrades, The Great Hunger on a Grail Thrall ability) means the roster
+        if child in ctx.variant_ids or child in ctx.variant_owner:
+            deps.append(("variant", ctype, ctx.variant_owner.get(child, child)))
+            return None
+        if child in ctx.roster_ids:
+            deps.append(("roster", ctype, child))
+            return None
+        if child in ctx.self_ids:
+            # an entry that only unhides once it is already selected is never reachable from hidden
+            return never_selected("self-reference")
+        if ctx.reachable is not None:
+            label = ctx.reachable.get(child) or ctx.reachable.get(resolved)
+            if label is None and child not in ctx.reachable and resolved not in ctx.reachable:
+                # another unit's option, a campaign-rules item, a hidden entry: never on this model
+                return never_selected("not selectable by this unit")
+            if label is not None and label in ctx.self_labels:
+                # a second link to the same item (Court Restraining Muzzle): counts as this row itself
+                return never_selected("self-reference")
         deps.append(("selection", ctype, child))
         return None
     if scope in ROSTER_SCOPES:
         if child in ctx.variant_ids:
             deps.append(("variant", ctype, child))
             return None
+        if child in ctx.variant_owner:
+            deps.append(("variant", ctype, ctx.variant_owner[child]))
+            return None
+        if child in ctx.self_ids:
+            return never_selected("self-reference")
         if ctx.ds.is_foreign_root_entry(child, ctx.faction_cat_id):
             # a root entry of another faction can never be on this faction's roster
             return False if ctype in POSITIVE else (True if ctype in NEGATIVE else None)
+        if ctx.faction_reachable is not None and not is_unit_target(ctx.ds, child):
+            if child not in ctx.faction_reachable and resolved not in ctx.faction_reachable:
+                return never_selected("not selectable by this faction")
         deps.append(("roster", ctype, child))
         return None
     tally.add(("condition", ctype, scope))
@@ -379,26 +452,32 @@ def visibility(elements, ctx, tally):
         hidden = any(el.attrib.get("hidden") == "true" for el in present)
     state = "hidden" if hidden else "visible"
     deps = []
-    for el in elements:
-        if el is None:
-            continue
-        for m, gres, gdeps in iter_modifiers(el, ctx, tally):
-            if m.attrib.get("field") != "hidden" or m.attrib.get("type") != "set":
+    saved_self = ctx.self_ids
+    ctx.self_ids = {el.attrib.get("id") for el in present} | {el.attrib.get("targetId") for el in present if el.attrib.get("targetId")}
+    ctx.unavailable = []
+    try:
+        for el in elements:
+            if el is None:
                 continue
-            want_hidden = m.attrib.get("value") == "true"
-            local_deps = list(gdeps)
-            res = eval_modifier_conditions(m, ctx, local_deps, tally, extra=[gres])
-            if res is True:
-                state = "hidden" if want_hidden else "visible"
-                deps = []
-            elif res is None:
-                if want_hidden and state != "hidden":
-                    state = "conditional"
-                    deps.extend([(d, "hides") for d in local_deps])
-                elif not want_hidden and state != "visible":
-                    state = "conditional"
-                    deps.extend([(d, "unhides") for d in local_deps])
-            # res False: modifier never applies for this context
+            for m, gres, gdeps in iter_modifiers(el, ctx, tally):
+                if m.attrib.get("field") != "hidden" or m.attrib.get("type") != "set":
+                    continue
+                want_hidden = m.attrib.get("value") == "true"
+                local_deps = list(gdeps)
+                res = eval_modifier_conditions(m, ctx, local_deps, tally, extra=[gres])
+                if res is True:
+                    state = "hidden" if want_hidden else "visible"
+                    deps = []
+                elif res is None:
+                    if want_hidden and state != "hidden":
+                        state = "conditional"
+                        deps.extend([(d, "hides") for d in local_deps])
+                    elif not want_hidden and state != "visible":
+                        state = "conditional"
+                        deps.extend([(d, "unhides") for d in local_deps])
+                # res False: modifier never applies for this context
+    finally:
+        ctx.self_ids = saved_self
     return state, deps
 
 
@@ -516,6 +595,8 @@ def describe_constraints(ds, elements, root_level, tally):
                         why = describe_conditions(ds, m)
                         parts.append(f"{ctype} {m.attrib.get('type')} {m.attrib.get('value')} per {label}{why}")
                         tally.add(("modifier", m.attrib.get("type"), "constraint (distinct constraints)"), distinct=cid)
+    # two conditions on different fields can read identically (Sniper Priest: "lessThan 1200 any")
+    parts = list(dict.fromkeys(parts))
     return parts, (min(mins) if mins else None), (max(maxs) if maxs else None)
 
 
@@ -548,6 +629,8 @@ class Converter:
         self.stat_votes = collections.defaultdict(lambda: collections.defaultdict(collections.Counter))
         self.unit_armour_votes = []  # (unit_id, key, delta)
         self.merged_key = {}  # original item key -> final item id
+        self.dropped_rows = collections.defaultdict(list)  # faction name -> rows no unit can take
+        self.merged_upgrade_notes = []
         self.stat_fields = {}
         for cid, (ptype, cname) in ds.char_ids.items():
             if ptype == "Unit":
@@ -589,7 +672,6 @@ class Converter:
             "library": owner in LIBRARY_NAMES,
             "entry": entry if source == "entry" else None,
             "profile": profile,
-            "page": page_of(profile) or (page_of(entry) if entry is not None else None),
             "hidden": entry.attrib.get("hidden") == "true" if source == "entry" else False,
             "groups": set(),
             "stat_mods": {},
@@ -696,14 +778,24 @@ class Converter:
             out.append(item)
         return out
 
-    def deps_fields(self, deps):
-        """Translate visibility dependencies into onlyWith / onlyWithout / conditionNote."""
+    def deps_fields(self, deps, ctx=None):
+        """Translate visibility dependencies into onlyWith / onlyWithout / conditionNote.
+
+        Gate labels: a variant id, `Name [Catalogue]` for a roster-wide selection, and, once the
+        unit's own selections are known (ctx.reachable), `item:<key>` / `upgrade:<name>` for a
+        selection on the same model. Anything else is a note the engine does not enforce."""
         only_with, only_without, other = set(), set(), set()
         for (kind, ctype, child), effect in deps:
             positive = ctype in POSITIVE
             requires = positive if effect == "unhides" else not positive
             label = self.ref_label(kind, child)
-            if kind in ("variant", "roster"):
+            if kind == "selection":
+                label = None
+                if ctx is not None and ctx.reachable is not None:
+                    label = ctx.reachable.get(child) or ctx.reachable.get(self.ds.resolve_target(child))
+                if label is None:
+                    kind = "note"
+            if kind in ("variant", "roster", "selection"):
                 (only_with if requires else only_without).add(label)
             else:
                 verb = "only if" if effect == "unhides" else "hidden if"
@@ -737,10 +829,15 @@ class Converter:
         variants, configs = self.variant_entries(cat)
         self.variant_id_map = {}
         variant_ids = set()
+        variant_owner = {}
         for v, g in variants:
             vid = f"{fid}/{slug(v.attrib.get('name', ''))}"
             self.variant_id_map[v.attrib["id"]] = vid
             variant_ids.add(v.attrib["id"])
+            for se in v.iter():
+                if se is not v and se.attrib.get("id") and tag(se) in ("selectionEntry", "entryLink", "selectionEntryGroup"):
+                    variant_owner[se.attrib["id"]] = v.attrib["id"]
+        self.variant_owner = variant_owner
         # configuration choices gate things too; name them so deps read well
         for cfg in configs:
             for se in cfg.iter():
@@ -806,19 +903,21 @@ class Converter:
 
         def add_root(root_el):
             for se in kids(root_el, "selectionEntries"):
-                if is_unit_entry(se):
-                    candidates.append((se, None))
-                    if se.attrib.get("type") == "unit":
-                        # a deprecated fireteam wrapper can hold the only link a faction has to a
-                        # mercenary model (Mamluk Faris); the model is still recruitable on its own
-                        for ln in kids(se, "entryLinks"):
-                            target = self.ds.get(ln.attrib.get("targetId"))
-                            if target is not None and target.attrib.get("type") == "model" and self.ds.owner_name(target) == MERCENARY_NAME:
-                                candidates.append((target, None))
+                if not is_unit_entry(se):
+                    continue
+                if se.attrib.get("type") == "unit":
+                    # deprecated fireteam wrappers are not emitted; one holds the only link a faction
+                    # has to a mercenary model (Mamluk Faris), which is still recruitable on its own
+                    for ln in kids(se, "entryLinks"):
+                        target = self.ds.get(ln.attrib.get("targetId"))
+                        if target is not None and target.attrib.get("type") == "model" and self.ds.owner_name(target) == MERCENARY_NAME:
+                            candidates.append((target, None))
+                    continue
+                candidates.append((se, None))
             for el in kids(root_el, "entryLinks"):
                 if el.attrib.get("type") == "selectionEntry":
                     target = self.ds.get(el.attrib.get("targetId"))
-                    if target is not None and is_unit_entry(target):
+                    if target is not None and is_unit_entry(target) and target.attrib.get("type") != "unit":
                         candidates.append((target, el))
 
         add_root(cat["root"])
@@ -830,6 +929,10 @@ class Converter:
         # only used when nothing visible exists
         by_target = {}
         order = []
+        roster_ids = set()
+        for se in kids(cat["root"], "selectionEntries"):
+            if not is_unit_entry(se):
+                roster_ids |= {x.attrib["id"] for x in se.iter() if x.attrib.get("id")}
         for entry, link in candidates:
             name = clean(entry.attrib.get("name", ""))
             if name in SKIP_ENTRY_NAMES:
@@ -838,7 +941,8 @@ class Converter:
             if cats & SKIP_CATEGORIES:
                 continue
             tid = entry.attrib["id"]
-            ctx = Ctx(self.ds, entry, link, cat["id"], variant_ids)
+            ctx = Ctx(self.ds, entry, link, cat["id"], variant_ids, variant_owner)
+            ctx.roster_ids = roster_ids
             state, deps = visibility([entry, link], ctx, self.tally)
             rank = {"visible": 0, "conditional": 1, "hidden": 2}[state]
             if tid not in by_target:
@@ -846,6 +950,18 @@ class Converter:
                 by_target[tid] = (rank, entry, link, ctx, state, deps)
             elif rank < by_target[tid][0]:
                 by_target[tid] = (rank, entry, link, ctx, state, deps)
+        # roster-scope conditions can only be met by selections some unit of the faction can make,
+        # or by the catalogue's own roster-level entries
+        faction_reachable = set(roster_ids)
+        for tid in order:
+            rank, entry, link, ctx, state, deps = by_target[tid]
+            if state == "hidden":
+                continue
+            faction_reachable |= ctx.entry_ids
+            access, upgrades = self.walk_pass(entry, link, ctx, set(), {}, False)
+            faction_reachable |= set(self.reachable_map(access, upgrades))
+        for tid in order:
+            by_target[tid][3].faction_reachable = faction_reachable
         tags_seen = collections.Counter()
         campaign_links = set()
         for tid in order:
@@ -880,10 +996,7 @@ class Converter:
         is_merc = owner in (MERCENARY_NAME, self.ds.gst["name"]) or "Mercenary" in {
             cl.attrib.get("name") for cl in kids(entry, "categoryLinks")
         }
-        kind = "fireteam" if entry.attrib.get("type") == "unit" else "model"
         unit_id = f"{fid}/{slug(name)}"
-        if kind == "fireteam" and not unit_id.endswith("fireteam"):
-            unit_id += "-fireteam"
         notes = []
         keywords = set()
         for el in (entry, link):
@@ -914,7 +1027,7 @@ class Converter:
             if p.attrib.get("typeName") == "Unit":
                 unit_profile = p
                 break
-        if unit_profile is None and kind == "model":
+        if unit_profile is None:
             # some models keep their profile on a mandatory sub-option (e.g. Grail Thrall -> Thrall Type)
             for sub in entry.iter():
                 if sub is entry or tag(sub) != "selectionEntry":
@@ -929,7 +1042,7 @@ class Converter:
                     break
         if unit_profile is None:
             stats = {"movement": {"inches": None, "type": None, "raw": ""}, "ranged": "", "melee": "", "armour": 0, "base": ""}
-            notes.append("no Unit profile in source (fireteam/wrapper entry); stats are placeholders")
+            notes.append("no Unit profile in source; stats are placeholders")
             self.tally.add(("unit-without-profile",), f"{cat['name']}: {name}")
         else:
             ch = chars_of(unit_profile)
@@ -986,17 +1099,17 @@ class Converter:
                 built_in.append({"name": clean(p.attrib.get("name", "")), "type": ch.get("Type", ""), "range": ch.get("Range", ""), "keywords": split_keywords(ch.get("Keywords", "")), "rules": ch.get("Rules", "")})
             elif p.attrib.get("typeName") == "Battlekit" and ch.get("Type"):
                 built_in_kit.append({"name": clean(p.attrib.get("name", "")), "type": ch.get("Type", ""), "keywords": split_keywords(ch.get("Keywords", "")), "rules": ch.get("Rules", "")})
-        # equipment access + upgrades (fireteam wrappers carry none of their own)
-        if kind == "fireteam":
-            access, upgrades = [], []
-        else:
-            access, upgrades = self.walk_access(entry, link, ctx, campaign_links, notes)
+        # equipment access + upgrades; rows that need a variant the unit itself cannot be in are dropped
+        unit_fields = self.deps_fields(deps) if state == "conditional" else {}
+        vids = set(self.variant_id_map.values())
+        unit_gates = {"with": set(unit_fields.get("onlyWith", ())) & vids, "without": set(unit_fields.get("onlyWithout", ())) & vids}
+        access, upgrades = self.walk_access(entry, link, ctx, campaign_links, unit_gates, unit_id)
         unit = {
             "id": unit_id,
             "bsId": entry.attrib["id"],
             "factionId": fid,
             "name": name,
-            "kind": kind,
+            "kind": "model",
             "elite": "Elite" in keywords,
             "keywords": sorted(keywords),
             "stats": stats,
@@ -1014,28 +1127,16 @@ class Converter:
         if is_merc:
             unit["mercenary"] = True
             unit["mercenaryId"] = f"mercenary/{slug(name)}"
-        if page_of(entry):
-            unit["page"] = page_of(entry)
         if built_in:
             unit["builtInWeapons"] = built_in
         if built_in_kit:
             unit["builtInEquipment"] = built_in_kit
         if upgrades:
             unit["upgrades"] = upgrades
-        if kind == "fireteam":
-            members = []
-            for el in entry.iter():
-                if tag(el) == "entryLink" and el.attrib.get("type") == "selectionEntry":
-                    t = self.ds.get(el.attrib.get("targetId"))
-                    if t is not None and t.attrib.get("type") == "model":
-                        members.append(f"{fid}/{slug(clean(t.attrib.get('name', '')))}")
-            unit["members"] = sorted(set(members))
         if state == "conditional":
-            fields = self.deps_fields(deps)
-            unit.update(fields)
-            vids = [v for v in fields.get("onlyWith", []) if v in self.variant_id_map.values()]
-            if vids:
-                unit["variantIds"] = sorted(vids)
+            unit.update(unit_fields)
+            if unit_gates["with"]:
+                unit["variantIds"] = sorted(unit_gates["with"])
         # armour votes from unit profile modifiers
         if unit_profile is not None:
             self.current_upgrades = upgrades
@@ -1134,10 +1235,85 @@ class Converter:
 
     # -- equipment access walk ------------------------------------------------------
 
-    def walk_access(self, entry, link, ctx, campaign_links, notes):
+    @staticmethod
+    def reachable_map(access, upgrades):
+        """Every id a unit's conditions could refer to -> gate label (None for a group)."""
+        out = {}
+        for a in access:
+            for i in (a["_entryId"], a["_linkId"]):
+                if i:
+                    out[i] = f"item:{a['_key']}"
+            for g in a["_groupIds"]:
+                out.setdefault(g, None)
+        for u in upgrades:
+            for i in (u["bsId"], u.get("_linkId"), *u.get("bsIds", ())):
+                if i:
+                    out[i] = f"upgrade:{u['name']}"
+            for g in u.get("_groupIds", ()):
+                out.setdefault(g, None)
+        return out
+
+    @staticmethod
+    def merge_gates(row, other):
+        """Availability through either path: a gate survives only when both paths carry it."""
+        for k, combine in (("onlyWith", set.union), ("onlyWithout", set.intersection)):
+            if k in row and k in other:
+                merged = sorted(combine(set(row[k]), set(other[k])))
+                if merged:
+                    row[k] = merged
+                else:
+                    row.pop(k)
+            elif k in row:
+                row.pop(k)
+        if other.get("conditionNote"):
+            parts = set(row.get("conditionNote", "").split("; ")) | set(other["conditionNote"].split("; "))
+            row["conditionNote"] = "; ".join(sorted(p for p in parts if p))
+
+    def impossible(self, cond, unit_gates):
+        """Why a row can never be shown, or None. A warband has exactly one variant."""
+        vids = set(self.variant_id_map.values())
+        ow, owo = set(cond.get("onlyWith", ())), set(cond.get("onlyWithout", ()))
+        if ow and ow <= owo:
+            return "requires and excludes " + ", ".join(sorted(ow))
+        reqs = [set(r) & vids for r in cond.get("_req", ())] + [unit_gates.get("with", set())]
+        reqs = [r for r in reqs if r]
+        for i, a in enumerate(reqs):
+            for b in reqs[i + 1 :]:
+                if not (a & b):
+                    return f"needs {', '.join(sorted(a))} and {', '.join(sorted(b))}"
+        if ow & vids and (ow & vids) <= unit_gates.get("without", set()):
+            return "needs a variant the unit is excluded from: " + ", ".join(sorted(ow & vids))
+        return None
+
+    def walk_access(self, entry, link, ctx, campaign_links, unit_gates, unit_id):
+        """Walk until the set of selections the unit can make stops shrinking: a row gated on a
+        selection the unit cannot make is unavailable, which can in turn remove further rows."""
+        ctx.reachable = None
+        access, upgrades = self.walk_pass(entry, link, ctx, set(), unit_gates, False)
+        for _ in range(8):
+            ctx.reachable = self.reachable_map(access, upgrades)
+            before = set(ctx.reachable)
+            access, upgrades = self.walk_pass(entry, link, ctx, set(), unit_gates, False)
+            if set(self.reachable_map(access, upgrades)) == before:
+                break
+        else:
+            self.tally.add(("access-walk-not-converged",), unit_id)
+        return self.walk_pass(entry, link, ctx, campaign_links, unit_gates, True, unit_id)
+
+    def walk_pass(self, entry, link, ctx, campaign_links, unit_gates, final, unit_id=""):
         access = []
         upgrades = []
         seen = {}
+        faction_name = self.ds.catalogues[ctx.faction_cat_id]["name"]
+        saved_tally = self.tally
+        if not final:
+            self.tally = Tally()
+
+        def dropped(el, name, why):
+            if final:
+                kind = "group" if tag(el) == "selectionEntryGroup" else ("item" if self.item_refs_for_entry(el) else "upgrade")
+                self.dropped_rows[faction_name].append({"unit": unit_id, "kind": kind, "name": name, "why": why})
+                self.tally.add(("dropped-unavailable", kind))
 
         def visit(el, via, path, group_ids, inherited, depth, parent_item=None):
             if depth > 8:
@@ -1152,17 +1328,25 @@ class Converter:
             if "fireteam" in name.lower() and tag(el) == "selectionEntryGroup":
                 self.tally.add(("fireteam-group-skipped (distinct groups)",), name, distinct=el.attrib.get("id"))
                 return
+            own_refs = self.item_refs_for_entry(el) if tag(el) == "selectionEntry" else []
+            ctx.self_labels = {f"item:{k}" for k, _, _ in own_refs} or ({f"upgrade:{name}"} if tag(el) == "selectionEntry" else set())
             state, deps = visibility([el, via], ctx, self.tally)
+            ctx.self_labels = set()
             if state == "hidden":
+                if ctx.unavailable:
+                    dropped(el, name, "needs " + ", ".join(sorted(set(ctx.unavailable))))
                 return
             cond = dict(inherited)
             if state == "conditional":
-                for k, v in self.deps_fields(deps).items():
+                fields = self.deps_fields(deps, ctx)
+                for k, v in fields.items():
                     if k == "conditionNote":
                         parts = set(cond.get(k, "").split("; ")) | set(v.split("; "))
                         cond[k] = "; ".join(sorted(p for p in parts if p))
                     else:
                         cond[k] = sorted(set(cond.get(k, [])) | set(v))
+                if fields.get("onlyWith"):
+                    cond["_req"] = list(inherited.get("_req", ())) + [tuple(fields["onlyWith"])]
             t = tag(el)
             if t == "selectionEntryGroup":
                 gid = el.attrib.get("id")
@@ -1181,6 +1365,11 @@ class Converter:
                 # toggles such as Shovel -> "Include Weapon Profile?" are part of the parent item
                 self.tally.add(("toggle-sub-entry-skipped",), name, distinct=el.attrib.get("id"))
                 return
+            why = self.impossible(cond, unit_gates)
+            if why:
+                dropped(el, name, why)
+                return
+            public = {k: v for k, v in cond.items() if not k.startswith("_")}
             refs = self.item_refs_for_entry(el)
             if refs:
                 for key, p, source in refs:
@@ -1236,13 +1425,6 @@ class Converter:
                                 fixed = True
                     group_name = path[-1] if path else "direct"
                     dedupe_key = (key, slug(group_name))
-                    if dedupe_key in seen:
-                        if parent_item:
-                            seen[dedupe_key].setdefault("attachesTo", [])
-                            if parent_item not in seen[dedupe_key]["attachesTo"]:
-                                seen[dedupe_key]["attachesTo"].append(parent_item)
-                                seen[dedupe_key]["attachesTo"].sort()
-                        continue
                     acc = {
                         "_key": key,
                         "_linkId": via.attrib.get("id") if via is not None else el.attrib.get("id"),
@@ -1266,11 +1448,34 @@ class Converter:
                         acc["attachesTo"] = [parent_item]
                     if parts:
                         acc["limitsText"] = "; ".join(parts)
-                    for k, v in cond.items():
+                    for k, v in public.items():
                         acc[k] = v
-                    self.item_link_costs[key].append((costs.get(DUCATS), costs.get(GLORY)))
-                    self.item_faction_ids[key].add(ctx.faction_cat_id)
-                    self.item_defs[key]["groups"].add(slug(group_name))
+                    prev = seen.get(dedupe_key)
+                    if prev is not None:
+                        # the same item reached by another path. A bayonet under a second rifle is
+                        # the same offer, available through either path: only gates both paths
+                        # share remain. A second link at another price (Trench Pilgrims Machine
+                        # Gun: 2 glory base, 50 ducats under Methodius) is a different offer and
+                        # the less gated one describes the row.
+                        same_offer = prev.get("cost") == acc.get("cost") and prev.get("maxPerWarband") == acc.get("maxPerWarband")
+                        if same_offer:
+                            self.merge_gates(prev, acc)
+                        elif len(acc.get("onlyWith", ())) < len(prev.get("onlyWith", ())):
+                            if "attachesTo" in prev:
+                                acc["attachesTo"] = sorted(set(prev["attachesTo"]) | set(acc.get("attachesTo", ())))
+                            access[access.index(prev)] = acc
+                            seen[dedupe_key] = acc
+                            prev = acc
+                        if parent_item:
+                            prev.setdefault("attachesTo", [])
+                            if parent_item not in prev["attachesTo"]:
+                                prev["attachesTo"].append(parent_item)
+                                prev["attachesTo"].sort()
+                        continue
+                    if final:
+                        self.item_link_costs[key].append((costs.get(DUCATS), costs.get(GLORY)))
+                        self.item_faction_ids[key].add(ctx.faction_cat_id)
+                        self.item_defs[key]["groups"].add(slug(group_name))
                     seen[dedupe_key] = acc
                     access.append(acc)
             else:
@@ -1279,7 +1484,14 @@ class Converter:
                 if texts or any(costs.values()):
                     if "(Loaded)" in name:
                         return
-                    up = {"name": name, "bsId": el.attrib.get("id"), "group": slug(path[-1]) if path else "direct", "rules": texts}
+                    up = {
+                        "name": name,
+                        "bsId": el.attrib.get("id"),
+                        "_linkId": via.attrib.get("id") if via is not None else None,
+                        "_groupIds": group_ids,
+                        "group": slug(path[-1]) if path else "direct",
+                        "rules": texts,
+                    }
                     if costs:
                         up["cost"] = cost_obj(costs)
                     parts, _, _ = describe_constraints(self.ds, [el, via], False, self.tally)
@@ -1298,7 +1510,7 @@ class Converter:
                                 up["maxPerWarband"] = v if up.get("maxPerWarband") is None else min(up["maxPerWarband"], v)
                     if parts:
                         up["limitsText"] = "; ".join(parts)
-                    for k, v in cond.items():
+                    for k, v in public.items():
                         up[k] = v
                     upgrades.append(up)
             # nested content of an entry (e.g. weapon -> Bayonet group, Shovel -> weapon profile)
@@ -1324,11 +1536,35 @@ class Converter:
                 roots.append((sg, None))
             for se in kids(holder, "selectionEntries"):
                 roots.append((se, None))
-        for el, via in roots:
-            visit(el, via, [], [], {}, 0)
+        try:
+            for el, via in roots:
+                visit(el, via, [], [], {}, 0)
+        finally:
+            self.tally = saved_tally
         access.sort(key=lambda a: (a["group"], a["_key"]))
         upgrades.sort(key=lambda u: (u["group"], u["name"]))
-        return access, upgrades
+        return access, self.merge_duplicate_upgrades(upgrades, unit_id, final)
+
+    def merge_duplicate_upgrades(self, upgrades, unit_id, final):
+        """One upgrade per name on a unit: upstream splits an ability into an entry per variant
+        gate (the Yüzbaşı's Janissary Veteran) or per loot group (Plague Knight 'Claimed' kit)."""
+        merged, order = {}, []
+        for up in upgrades:
+            key = gate_key(up["name"])
+            prev = merged.get(key)
+            if prev is None:
+                merged[key] = up
+                order.append(key)
+                continue
+            differs = [f for f in ("cost", "rules") if prev.get(f) != up.get(f)]
+            prev.setdefault("bsIds", [prev["bsId"]]).append(up["bsId"])
+            self.merge_gates(prev, up)
+            for f in ("cost", "max", "maxPerWarband", "limitsText"):
+                if f not in prev and f in up:
+                    prev[f] = up[f]
+            if differs and final:
+                self.merged_upgrade_notes.append(f"{unit_id}: '{up['name']}' ({prev['bsId']} kept, {up['bsId']} merged) differ in {', '.join(differs)}")
+        return [merged[k] for k in order]
 
     # -- finalisation --------------------------------------------------------------
 
@@ -1402,8 +1638,6 @@ class Converter:
                 "type": ch.get("Type", ""),
                 "source": primary["owner"],
             }
-            if primary["page"]:
-                item["page"] = primary["page"]
             if primary["profileName"] != primary["name"]:
                 item["bsName"] = primary["profileName"]
             if len(defs) > 1:
@@ -1461,11 +1695,20 @@ class Converter:
             best = chosen.get(key)
             if best is not None and best != delta:
                 disagreements[unit_id].append(f"armour with {self.merged_key.get(key, key)} is {delta:+d} here (library item says {best:+d})")
+        def resolve_gate(v):
+            if v.startswith("item:"):
+                return "item:" + self.merged_key.get(v[5:], v[5:])
+            return v
+
         for unit in self.units:
             for a in unit["equipmentAccess"]:
                 a["itemId"] = self.merged_key.get(a["_key"], a["_key"])
-                for k in ("_key", "_linkId", "_entryId", "_groupIds"):
-                    a.pop(k, None)
+            for row in unit["equipmentAccess"] + unit.get("upgrades", []):
+                for k in ("_key", "_linkId", "_entryId", "_groupIds", "_req"):
+                    row.pop(k, None)
+                for k in ("onlyWith", "onlyWithout"):
+                    if k in row:
+                        row[k] = sorted({resolve_gate(v) for v in row[k]})
             unit["equipmentAccess"].sort(key=lambda a: (a["group"], a["itemId"]))
             extra = disagreements.get(unit["id"])
             if extra:
@@ -1525,8 +1768,13 @@ def write_notes(conv, out_dir, commit):
     lines.append("")
     lines.append("- Unit availability per faction = faction root `selectionEntries` (type model/unit) + faction root `entryLinks` to models + the Mercenaries catalogue root entries (imported with `importRootEntries=\"true\"`), each filtered through its `hidden` flag and `set hidden` modifiers evaluated with three-valued logic (known: this unit/its categories/the primary catalogue; unknown: roster selections such as variants).")
     lines.append("- Entries that stay hidden with no reachable unhide path are dropped and listed below. Entries whose visibility depends on a roster selection are kept with `onlyWith` / `onlyWithout` (readable names; variant ids where the dependency is a Warband Variant) and `variantIds`.")
-    lines.append("- `equipmentAccess` is the flattened walk of every selection group reachable from the unit (shared faction groups such as Weapons/Armour/Equipment/Grenades, plus unit-local groups). `group` is the innermost BS group slug, `groupPath` the full path. The cost on the link wins over the library entry's cost. Items hidden for this unit are omitted; conditionally hidden ones carry `onlyWith`/`onlyWithout`/`conditionNote`.")
-    lines.append("- Selections inside those groups that carry no Weapon/Battlekit *item* profile (Battlekit profiles with an empty Type are abilities) are emitted under the unit's `upgrades` extra field instead.")
+    lines.append("- `equipmentAccess` is the flattened walk of every selection group reachable from the unit (shared faction groups such as Weapons/Armour/Equipment/Grenades, plus unit-local groups). `group` is the innermost BS group slug, `groupPath` the full path. The cost on the link wins over the library entry's cost. Items hidden for this unit are omitted; conditionally hidden ones carry `onlyWith`/`onlyWithout` (any listed entry satisfies a gate) and, for conditions the engine cannot evaluate, `conditionNote`.")
+    lines.append("- Gate entries are a variant id (`new-antioch/eire-rangers`), a selection on the same model (`item:<item-id>` for a Battlekit row, `upgrade:<name>` for one of the unit's own upgrades), or `Name [Catalogue]` for anything counted across the whole roster. An entry nested under a Warband Variant (Knights of Avarice loot) stands for that variant.")
+    lines.append("- A hide/unhide condition that names something this unit can never select (another unit's option, a profile the unit lacks such as Gargantuan Size, a campaign-rules item, an entry that only unhides once it is already selected, an orphan entry) is evaluated as 0 selections. An unhide that can never fire drops the row; a hide that can never fire is ignored. The walk repeats until the set of selectable entries stops shrinking. Rows whose gates contradict each other (require and exclude the same variant, or need a variant the unit itself cannot be in) are dropped too. Dropped rows are listed below.")
+    lines.append("- The same item reached through two paths (a bayonet under two rifles) is one row, available through either path: a gate survives only when both paths carry it.")
+    lines.append("- Selections inside those groups that carry no Weapon/Battlekit *item* profile (Battlekit profiles with an empty Type are abilities) are emitted under the unit's `upgrades` extra field instead. Upgrade entries with the same name on one unit are merged into one (`bsIds` lists every source entry, `bsId` is the first); the engine accepts any of the ids.")
+    lines.append("- Deprecated `Fireteam` wrapper entries (type=unit, no Unit profile) are not emitted.")
+    lines.append("- Upstream `page` attributes are not carried over: they cite an older document, so the only page numbers in the data are PDF-verified ones from `pdf-overrides.json`.")
     lines.append("- Armour/shield `modifiers` on items are derived from the Unit-profile modifiers (set/decrement/increment on the Armour characteristic conditioned on a selection); the most common delta across units wins and any unit that disagrees says so in its `notes`.")
     lines.append("- Equipment items are merged by name slug across the three libraries, faction catalogues and game-system shared profiles (library entry preferred). Merged ids are listed in `bsIds`; `mergedProfilesDiffer` flags merges whose characteristics differ.")
     lines.append("- Mercenary unit ids are `<faction-id>/<slug>` (unique per faction row) with `mercenary: true` and a shared `mercenaryId` (`mercenary/<slug>`), because the same mercenary appears once per faction with that faction's price.")
@@ -1547,6 +1795,36 @@ def write_notes(conv, out_dir, commit):
     lines.append("")
     for n, facs in sorted(conv.hidden_units.items()):
         lines.append(f"- {n}: hidden for {', '.join(sorted(set(facs)))}")
+    lines.append("")
+    lines.append("## Dropped because unavailable (access rows and upgrades no unit can take)")
+    lines.append("")
+    lines.append("A row is dropped when its unhide condition names something the unit can never select, or when its gates contradict each other. Counts are per faction; each entry lists the units that lost the row and why.")
+    lines.append("")
+    total = sum(len(rows) for rows in conv.dropped_rows.values())
+    lines.append(f"- total: {total}")
+    for f in conv.factions:
+        rows = conv.dropped_rows.get(f["name"], [])
+        kinds = collections.Counter(r["kind"] for r in rows)
+        lines.append(f"- {f['name']}: {len(rows)} ({', '.join(f'{n} {k}' for k, n in sorted(kinds.items())) or 'none'})")
+    lines.append("")
+    for f in conv.factions:
+        rows = conv.dropped_rows.get(f["name"], [])
+        if not rows:
+            continue
+        lines.append(f"### {f['name']}")
+        lines.append("")
+        grouped = collections.defaultdict(set)
+        for r in rows:
+            grouped[(r["kind"], r["name"], r["why"])].add(r["unit"].split("/", 1)[1])
+        for (kind, name, why), units in sorted(grouped.items()):
+            lines.append(f"- {kind} `{name}` ({why}): {', '.join(sorted(units))}")
+        lines.append("")
+    lines.append("## Merged duplicate upgrades that differ")
+    lines.append("")
+    for n in conv.merged_upgrade_notes:
+        lines.append(f"- {n}")
+    if not conv.merged_upgrade_notes:
+        lines.append("- none")
     lines.append("")
     lines.append("## Campaign Rules links seen on units (out of scope, recorded by name)")
     lines.append("")
@@ -1575,7 +1853,10 @@ def write_notes(conv, out_dir, commit):
 
 
 UPSTREAM_ODDITIES = [
-    "The `Fireteam` (type=unit) entries are marked by the author as deprecated ('being phased out') and are hidden unless already on a roster; they carry no Unit profile, so their stats are placeholders (`kind: fireteam`, `members` lists the eligible models).",
+    "The `Fireteam` (type=unit) entries are marked by the author as deprecated ('being phased out') and are hidden unless already on a roster; they carry no Unit profile and are not emitted (the New Antioch Fireteams rule comes from the PDF via an override).",
+    "Several links are hidden and only unhide 'if at least 1 of itself is selected' (Court Misericordia/Flail/Halberd-Gun links, Heretic Musket): the author's way of retiring an entry without deleting it. The Court links actually point at the Envious Eyes 'Stolen Loot' upgrades and the Heretic Musket at the Knights of Avarice 'Corrupt Merchants' loot, which is how they are modelled; a genuinely self-referencing unhide is treated as never satisfiable.",
+    "The Viscera Cannon's unhide carries an `atLeast 0 The Great Hunger` condition (always true) next to a `set hidden=true atLeast 1 The Great Hunger` modifier; read literally it is 'ELITE or Dirge of the Great Hegemon, never under The Great Hunger'.",
+    "The Yüzbaşı's Janissary Veteran exists twice upstream (a base entry hidden under Nomads of Al-Badia and a 'Nomads version' that only shows there); the Plague Knight's and Court Praetor/Sorcerer's loot upgrades repeat one name per source armoury. Same-named upgrades on a unit are merged.",
     "Mercenary availability is gated with `primary-catalogue` conditions; the Sister of Saint Cosmas entry carries the author comment 'impossible because I dont really wanna *delete* them' and only unhides for Trench Pilgrims.",
     "Faction catalogues cross-link each other (Heretic Legion imports Iron Sultanate and New Antioch, Court imports Pilgrims and Sultanate, Black Grail imports Heretic Legion) without `importRootEntries`, so only shared groups/entries leak across, not units.",
     "The `Weapon` characteristic `Type` is inconsistently cased (`Grenade` vs `GRENADE`), `Range` mixes straight and curly quotes, and keywords contain non-breaking spaces; all normalised here.",
@@ -1597,7 +1878,6 @@ OPEN_QUESTIONS = [
     "Mercenary prices are glory-only in this dataset (Scripture Guardian 7 GP, Mamluk Faris 4 GP, Goetic Warlock 4 GP + 110 ducats modifier); confirm ducat prices and which factions may hire each.",
     "Warband limits (`limits.min/max`) come from roster-scope constraints; constraints that are modified by variants are only captured as text in `limits.text` and need the variant tables checked.",
     "Starting ducats (700) and the Threshold table are not in the dataset and must come from the rulebook extraction.",
-    "The `Fireteam` wrapper units are deprecated upstream: decide whether the campaign app keeps them or models fireteams from the rulebook text only.",
     "Items merged by name across catalogues with `mergedProfilesDiffer: true` need a human to pick the correct profile.",
 ]
 
