@@ -190,6 +190,22 @@ heights from the seated reference mods; **64 TC:Map-only assets need measuring w
 asset overlap at identical scale between TC:Map and the reference mods, so no global offset exists)
 · TC-009 ✅ (67 tests, mutation-checked).
 
+**Follow-ups from the 2026-11-04 adversarial QA pass** (data correctness, not blocking Phase 1 start):
+- TC-003b Converter condition handling: "X only" items leak onto every unit as a `conditionNote`
+  (Brazen Bull-only weapons on all Sultanate units, Heavy Ballistic Shield on Yeomen, Court
+  Misericordia/Halberd-Gun rows, Heretic Trooper Musket); contradictory onlyWith+onlyWithout gates
+  (Butcher Bayonet, Viscera Cannon, Black Grail Shield); deprecated fireteam wrappers should be dropped;
+  duplicate upgrade names (Janissary Veteran ×2 on Yüzbaşı); upstream page cites on 8 Heretic units are
+  from an older document. Fix in the converter, with an override "remove" op for the remainder.
+- TC-003c Per-unit battlekit overrides: Amalgam "up to six weapons" (p140), Mamluk Faris polearm+shield
+  loadout (p179), Mendelist Ammo Monk hire for New Antioch (p180), Holy Icon Armour on Stigmatic Nun /
+  Trench Pilgrim (p62), Knights of Avarice second warlock (p120), Wretched 10-ducat kit cap (p167).
+- Copyright: units/equipment/factions JSON carry ~220K chars of near-verbatim Warbands ability and rule
+  text inherited from upstream. Acceptable while private (decision 5); must be paraphrased or stripped
+  before anything goes public.
+- 22 gate names the engine cannot count (Cadaver Corps, Remnants of Byzantium, Book of Golems, the Goetic
+  sins…) emit `unmodelled` warnings on legal rosters; needs a `campaignSelections` field on the roster.
+
 **Phase 0 (original tickets)**
 - TC-001 Repo scaffold: pnpm workspace, `apps/web`, `packages/rules`, `packages/tts`,
   `data/`, CI lint+test.
