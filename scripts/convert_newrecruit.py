@@ -1705,7 +1705,8 @@ def apply_overrides(overrides_path, outputs):
             continue
         current = container[key] if (isinstance(container, dict) and key in container) or isinstance(container, list) else None
         if "upstream" in ov and current != ov["upstream"]:
-            print(f"  warning: {label} upstream value is {json.dumps(current, ensure_ascii=False)}, override expected {json.dumps(ov['upstream'], ensure_ascii=False)}")
+            failures.append((label, f"upstream value is now {json.dumps(current, ensure_ascii=False)}, override expected {json.dumps(ov['upstream'], ensure_ascii=False)}; re-check against the PDF and update the override"))
+            continue
         if ov.get("pdf", "__missing__") == "__missing__":
             failures.append((label, "override has no 'pdf' value"))
             continue
