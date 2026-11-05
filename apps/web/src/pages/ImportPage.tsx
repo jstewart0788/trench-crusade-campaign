@@ -3,9 +3,8 @@ import { useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Price } from "../components/Price.js";
 import { memberTitle } from "../roster/select.js";
-import { EMPTY_PENDING } from "../roster/staging.js";
 import { useRules } from "../rules.js";
-import { loadDraft, saveDraft, savePending } from "../storage.js";
+import { loadDraft, startDraft } from "../storage.js";
 import { DRAFT_CODE } from "./warbandContext.js";
 import styles from "./ImportPage.module.css";
 
@@ -52,8 +51,7 @@ export function ImportPage() {
   };
 
   function createDraft(result: ImportResult) {
-    saveDraft(result.warband);
-    savePending(DRAFT_CODE, EMPTY_PENDING);
+    startDraft(result.warband);
     navigate(`/w/${DRAFT_CODE}`);
   }
 

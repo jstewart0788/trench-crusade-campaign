@@ -17,6 +17,8 @@ export interface WarbandContext {
   confirmed: Warband;
   /** Server code; undefined while the roster is an unsaved draft. */
   code?: string;
+  /** What this warband's browser-local state (pending purchases, open rows) is kept under: its code, or the draft's own key. */
+  storageKey: string;
   /** URL prefix of the three screens: /w/<code> or /w/draft. */
   base: string;
   dispatch: Dispatch<RosterAction>;

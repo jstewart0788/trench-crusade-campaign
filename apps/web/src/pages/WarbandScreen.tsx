@@ -10,11 +10,11 @@ import { memberDetails, type Details } from "../roster/details.js";
 import type { StagedMemberRow } from "../roster/staging.js";
 import { memberTraits } from "../roster/traits.js";
 import { loadExpanded, saveExpanded } from "../storage.js";
-import { armouryHref, DRAFT_CODE, useWarband } from "./warbandContext.js";
+import { armouryHref, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
-  const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage, ctx, confirmed } = useWarband();
+  const { rules, warband, code, storageKey, base, cost, threshold, validation, dispatch, rows, stage, ctx, confirmed } = useWarband();
   const faction = rules.factionsById.get(warband.factionId);
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
@@ -23,7 +23,6 @@ export function WarbandScreen() {
   const over = cost.ducats > threshold.value;
   const n = warband.members.length;
 
-  const storageKey = code ?? DRAFT_CODE;
   const [expanded, setExpanded] = useState(() => new Set(loadExpanded(storageKey)));
   useEffect(() => saveExpanded(storageKey, [...expanded]), [expanded, storageKey]);
   const toggle = (memberId: string) =>

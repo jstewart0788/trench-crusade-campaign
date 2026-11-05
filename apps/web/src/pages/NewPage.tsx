@@ -1,9 +1,9 @@
 import { patronsForFaction, rosterVariants } from "@tc/rules/browser";
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createWarband } from "../roster/reducer.js";
 import { useRules } from "../rules.js";
-import { saveDraft } from "../storage.js";
+import { loadDraft, startDraft } from "../storage.js";
 import styles from "./NewPage.module.css";
 
 export function NewPage() {
@@ -15,6 +15,7 @@ export function NewPage() {
   const [variantId, setVariantId] = useState("");
   const [patronId, setPatronId] = useState("");
   const [gameNumber, setGameNumber] = useState(1);
+  const hadDraft = useMemo(() => loadDraft() !== undefined, []);
 
   if (error) return <p className="error">Could not load the rules data: {error}</p>;
   if (!rules) return <p className="muted">Loading rules…</p>;
@@ -49,7 +50,7 @@ export function NewPage() {
       patronId: patronId || undefined,
       gameNumber,
     });
-    saveDraft(warband);
+    startDraft(warband);
     navigate("/w/draft/barracks");
   }
 
@@ -111,6 +112,7 @@ export function NewPage() {
         <input type="number" min={1} step={1} value={gameNumber} onChange={(e) => setGameNumber(Math.max(1, Number(e.target.value) || 1))} />
       </label>
       <div className={styles.actions}>
+        {hadDraft && <span className="warning">This replaces the unsaved draft in this browser.</span>}
         <Link to="/import">Import from NewRecruit instead</Link>
         <button type="submit" className="primary" disabled={!faction}>
           Start building

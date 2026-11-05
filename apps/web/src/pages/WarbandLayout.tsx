@@ -11,13 +11,13 @@ import { useRules } from "../rules.js";
 import { applyTheme } from "../theme/apply.js";
 import { FactionBackdrop } from "../theme/Backdrop.js";
 import { themeFor } from "../theme/themes.js";
-import { clearDraft, loadDraft, loadPending, moveExpanded, movePending, rememberSaved, saveDraft, savePending } from "../storage.js";
+import { loadDraft, loadPending, promoteDraft, rememberSaved, saveDraft, savePending } from "../storage.js";
 import { DRAFT_CODE, warbandBase, type WarbandContext } from "./warbandContext.js";
 import styles from "./WarbandLayout.module.css";
 
 type Source =
   | { kind: "loading"; code: string }
-  | { kind: "ready"; code?: string; warband: Warband }
+  | { kind: "ready"; code?: string; draftKey?: string; warband: Warband }
   | { kind: "missing"; code: string }
   | { kind: "error"; message: string };
 
@@ -32,7 +32,7 @@ export function WarbandLayout() {
   useEffect(() => {
     if (param === DRAFT_CODE) {
       const draft = loadDraft();
-      if (draft) setSource({ kind: "ready", warband: draft });
+      if (draft) setSource({ kind: "ready", draftKey: draft.key, warband: draft.warband });
       else navigate("/new", { replace: true });
       return;
     }
@@ -67,10 +67,11 @@ export function WarbandLayout() {
 
   return (
     <Shell
-      key={source.code ?? DRAFT_CODE}
+      key={source.code ?? source.draftKey}
       rules={rules}
       initial={source.warband}
       code={source.code}
+      draftKey={source.draftKey}
       onSaved={(saved) => {
         setSource({ kind: "ready", code: saved.code, warband: saved.warband });
         if (!source.code) {
@@ -85,12 +86,14 @@ export function WarbandLayout() {
 interface ShellProps {
   rules: RulesData;
   initial: Warband;
+  /** The unsaved draft's own key: its pending purchases and open rows are kept under it until it gets a code. */
+  draftKey?: string;
   code?: string;
   onSaved: (saved: SavedWarband) => void;
 }
 
-function Shell({ rules, initial, code, onSaved }: ShellProps) {
-  const storageKey = code ?? DRAFT_CODE;
+function Shell({ rules, initial, code, draftKey, onSaved }: ShellProps) {
+  const storageKey = code ?? draftKey ?? DRAFT_CODE;
   const [confirmed, dispatch] = useReducer(rosterReducer, initial);
   const [pending, setPending] = useState<Pending>(() => loadPending(storageKey));
   const [save, setSave] = useState<{ busy: boolean; error?: string; snapshot?: string }>({ busy: false, snapshot: code ? JSON.stringify(initial) : undefined });
@@ -115,8 +118,8 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
   }, [memberKey]);
 
   useEffect(() => {
-    if (!code) saveDraft(confirmed);
-  }, [confirmed, code]);
+    if (!code) saveDraft({ key: storageKey, warband: confirmed });
+  }, [confirmed, code, storageKey]);
   useEffect(() => {
     savePending(storageKey, pending);
   }, [pending, storageKey]);
@@ -153,11 +156,7 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
         factionName: rules.factionsById.get(saved.warband.factionId)?.name ?? saved.warband.factionId,
         savedAt: saved.updatedAt,
       });
-      if (!code) {
-        clearDraft();
-        movePending(DRAFT_CODE, saved.code);
-        moveExpanded(DRAFT_CODE, saved.code);
-      }
+      if (!code) promoteDraft(storageKey, saved.code);
       setSave({ busy: false, snapshot: JSON.stringify(saved.warband) });
       onSaved(saved);
     } catch (e) {
@@ -171,6 +170,7 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
     warband: staged,
     confirmed,
     code,
+    storageKey,
     base,
     dispatch,
     pending,

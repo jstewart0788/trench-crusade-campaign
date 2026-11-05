@@ -348,6 +348,12 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 - New warband, buy a unit, reload `/w/draft/barracks`: the roster is still there, and
   `/w/draft` and `/w/draft/armoury` show the same roster. Home shows the draft banner with
   "Resume". Save it; the banner is gone.
+- Each draft keeps its own pending purchases and open rows. With a draft holding pending recruits
+  and an open row, **New warband** says "This replaces the unsaved draft in this browser"; start
+  the new list: it has no pending purchases and no open rows, and the old draft's entries are gone
+  from `tc.roster.pending` and `tc.roster.expanded` (DevTools → Application → Local Storage). The
+  draft record carries its own key (`draft-` and twelve hex digits). Stage a purchase and save:
+  the purchase is still pending under the new code. Import from NewRecruit behaves the same.
 
 ## 10. Import from NewRecruit
 

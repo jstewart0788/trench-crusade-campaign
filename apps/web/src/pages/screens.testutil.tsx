@@ -20,6 +20,7 @@ export function contextFor(data: RulesData, confirmed: Warband, pending: Pending
     rules: data,
     warband: staged,
     confirmed,
+    storageKey: "draft",
     base: "/w/draft",
     dispatch: noop,
     pending,

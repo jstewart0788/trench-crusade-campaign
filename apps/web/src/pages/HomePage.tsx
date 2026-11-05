@@ -7,7 +7,7 @@ export function HomePage() {
   const navigate = useNavigate();
   const [saved, setSaved] = useState(listSaved);
   const [code, setCode] = useState("");
-  const draft = loadDraft();
+  const draft = loadDraft()?.warband;
 
   function open(e: FormEvent) {
     e.preventDefault();

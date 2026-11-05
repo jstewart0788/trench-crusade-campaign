@@ -46,19 +46,57 @@ export function forgetSaved(code: string): void {
   write(SAVED_KEY, listSaved().filter((e) => e.code !== code));
 }
 
-export function loadDraft(): Warband | undefined {
-  return read<Warband>(DRAFT_KEY);
+/**
+ * The one unsaved draft, with the key its pending purchases and open rows are
+ * kept under. Every draft gets its own key, so a new list never inherits the
+ * last one's state; the URL stays /w/draft.
+ */
+export interface Draft {
+  key: string;
+  warband: Warband;
 }
 
-export function saveDraft(warband: Warband): void {
-  write(DRAFT_KEY, warband);
+/** Drafts stored before they had keys are bare rosters; their state sits under the old shared key. */
+const LEGACY_DRAFT_KEY = "draft";
+
+export function loadDraft(): Draft | undefined {
+  const stored = read<Partial<Draft> & Partial<Warband>>(DRAFT_KEY);
+  if (!stored || typeof stored !== "object") return undefined;
+  if (typeof stored.key === "string" && stored.warband) return { key: stored.key, warband: stored.warband };
+  return { key: LEGACY_DRAFT_KEY, warband: stored as Warband };
 }
 
-export function clearDraft(): void {
+export function saveDraft(draft: Draft): void {
+  write(DRAFT_KEY, draft);
+}
+
+const newDraftKey = () => `draft-${Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, "0")).join("")}`;
+
+/** Starts a new draft from `warband`, discarding the current one and everything kept under its key. */
+export function startDraft(warband: Warband): Draft {
+  discardDraft();
+  const draft = { key: newDraftKey(), warband };
+  saveDraft(draft);
+  return draft;
+}
+
+/** Throws the draft away, with its pending purchases and open rows. */
+export function discardDraft(): void {
+  const draft = loadDraft();
+  if (!draft) return;
+  savePending(draft.key, EMPTY_PENDING);
+  saveExpanded(draft.key, []);
   write(DRAFT_KEY, undefined);
 }
 
-// Staged (unconfirmed) purchases, keyed by the warband code or "draft", so a
+/** The draft has been saved as `code`: its pending purchases and open rows follow it, and the draft is gone. */
+export function promoteDraft(key: string, code: string): void {
+  movePending(key, code);
+  moveExpanded(key, code);
+  if (loadDraft()?.key === key) write(DRAFT_KEY, undefined);
+}
+
+// Staged (unconfirmed) purchases, keyed by the warband code or the draft's key, so a
 // reload keeps them and the saved roster never carries them.
 
 const PENDING_KEY = "tc.roster.pending";
@@ -94,7 +132,7 @@ export function movePending(from: string, to: string): void {
   write(PENDING_KEY, map);
 }
 
-// Which member rows are expanded on the Warband screen, per warband code or "draft".
+// Which member rows are expanded on the Warband screen, per warband code or draft key.
 
 const EXPANDED_KEY = "tc.roster.expanded";
 
