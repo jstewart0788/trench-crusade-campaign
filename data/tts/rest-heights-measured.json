@@ -1,0 +1,840 @@
+{
+  "$schema": "tc-tts-rest-heights-v1",
+  "measuredAt": "2026-11-04T20:24:06",
+  "method": "spawned in the running TTS via the External Editor API, read position/bounds after physics settled",
+  "surfaceTopY": 0.900002598762512,
+  "assets": {
+    "015b5fe2a162": {
+      "restY": 3.604,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 2.704,
+      "boundsSize": [
+        1.217,
+        0.269,
+        2.202
+      ],
+      "boundsCenterY": 3.534,
+      "settled": true,
+      "loading": false
+    },
+    "0169004f7824": {
+      "restY": 3.491,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 2.591,
+      "boundsSize": [
+        1.03,
+        0.52,
+        2.178
+      ],
+      "boundsCenterY": 3.66,
+      "settled": true,
+      "loading": false
+    },
+    "126a11cdfdcf": {
+      "restY": 1.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        36.144,
+        2.5,
+        12.438
+      ],
+      "boundsCenterY": 2.15,
+      "settled": true,
+      "loading": false
+    },
+    "128b5697a878": {
+      "restY": 0.963,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.063,
+      "boundsSize": [
+        7.277,
+        1.141,
+        6.937
+      ],
+      "boundsCenterY": 1.47,
+      "settled": true,
+      "loading": false
+    },
+    "1518249c7df4": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.406,
+        0.009,
+        2.43
+      ],
+      "boundsCenterY": 0.904,
+      "settled": true,
+      "loading": false
+    },
+    "190e71cef1e2": {
+      "restY": 2.244,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.344,
+      "boundsSize": [
+        400.143,
+        13.981,
+        399.912
+      ],
+      "boundsCenterY": 2.344,
+      "settled": true,
+      "loading": false
+    },
+    "1c254f1b13db": {
+      "restY": 0.887,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.013,
+      "boundsSize": [
+        0.382,
+        0.034,
+        0.355
+      ],
+      "boundsCenterY": 0.917,
+      "settled": true,
+      "loading": false
+    },
+    "23ac82f377e3": {
+      "restY": 2.351,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.451,
+      "boundsSize": [
+        7.631,
+        1.823,
+        3.117
+      ],
+      "boundsCenterY": 3.313,
+      "settled": true,
+      "loading": false
+    },
+    "23d552778cc5": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.838,
+        1.144,
+        1.023
+      ],
+      "boundsCenterY": 1.472,
+      "settled": true,
+      "loading": false
+    },
+    "2f1be9f52091": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.4,
+        0.1,
+        2.4
+      ],
+      "boundsCenterY": 0.95,
+      "settled": true,
+      "loading": false
+    },
+    "34854e76fab5": {
+      "restY": 1.51,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.61,
+      "boundsSize": [
+        6.694,
+        1.22,
+        4.814
+      ],
+      "boundsCenterY": 1.51,
+      "settled": true,
+      "loading": false
+    },
+    "38f97d6f118e": {
+      "restY": 1.078,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.178,
+      "boundsSize": [
+        1.244,
+        0.02,
+        1.856
+      ],
+      "boundsCenterY": 0.91,
+      "settled": true,
+      "loading": false
+    },
+    "3a9d88b510b0": {
+      "restY": 1.217,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.317,
+      "boundsSize": [
+        1.66,
+        4.371,
+        1.592
+      ],
+      "boundsCenterY": 3.086,
+      "settled": true,
+      "loading": false
+    },
+    "3fba0b0297d3": {
+      "restY": 0.906,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.006,
+      "boundsSize": [
+        1.748,
+        3.046,
+        1.22
+      ],
+      "boundsCenterY": 2.423,
+      "settled": true,
+      "loading": false
+    },
+    "4187dd4f7102": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.277,
+        1.281,
+        1.044
+      ],
+      "boundsCenterY": 1.54,
+      "settled": true,
+      "loading": false
+    },
+    "42fbf5f8e9e9": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.448,
+        0.876,
+        3.136
+      ],
+      "boundsCenterY": 1.338,
+      "settled": true,
+      "loading": false
+    },
+    "442da3ffde7a": {
+      "restY": 0.976,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.076,
+      "boundsSize": [
+        3.685,
+        7.029,
+        3.707
+      ],
+      "boundsCenterY": 4.414,
+      "settled": true,
+      "loading": false
+    },
+    "443bb8906a49": {
+      "restY": 1.0,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.1,
+      "boundsSize": [
+        3.332,
+        0.2,
+        3.309
+      ],
+      "boundsCenterY": 1.0,
+      "settled": true,
+      "loading": false
+    },
+    "4555001d1357": {
+      "restY": 1.383,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.483,
+      "boundsSize": [
+        3.8,
+        0.475,
+        3.8
+      ],
+      "boundsCenterY": 1.138,
+      "settled": true,
+      "loading": false
+    },
+    "4cdc39cdf1bb": {
+      "restY": 0.901,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        0.5,
+        0.001,
+        0.5
+      ],
+      "boundsCenterY": 0.901,
+      "settled": true,
+      "loading": false
+    },
+    "5387f66daff1": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.116,
+        0.663,
+        1.213
+      ],
+      "boundsCenterY": 1.231,
+      "settled": true,
+      "loading": false
+    },
+    "5a76f2253f1d": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.117,
+        0.85,
+        1.628
+      ],
+      "boundsCenterY": 1.325,
+      "settled": true,
+      "loading": false
+    },
+    "5bdf92fbb93f": {
+      "restY": 0.963,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.063,
+      "boundsSize": [
+        2.296,
+        0.78,
+        2.665
+      ],
+      "boundsCenterY": 1.29,
+      "settled": true,
+      "loading": false
+    },
+    "5eb9c64ce6d3": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.439,
+        0.858,
+        3.071
+      ],
+      "boundsCenterY": 1.329,
+      "settled": true,
+      "loading": false
+    },
+    "5fafbc0b5252": {
+      "restY": 0.979,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.079,
+      "boundsSize": [
+        1.017,
+        2.198,
+        0.412
+      ],
+      "boundsCenterY": 1.999,
+      "settled": true,
+      "loading": false
+    },
+    "602e6409d095": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.186,
+        0.587,
+        2.454
+      ],
+      "boundsCenterY": 1.194,
+      "settled": true,
+      "loading": false
+    },
+    "6527fdab359e": {
+      "restY": 0.944,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.044,
+      "boundsSize": [
+        10.228,
+        1.652,
+        11.355
+      ],
+      "boundsCenterY": 1.726,
+      "settled": true,
+      "loading": false
+    },
+    "6778d2490a90": {
+      "restY": 0.94,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.04,
+      "boundsSize": [
+        2.716,
+        0.457,
+        3.103
+      ],
+      "boundsCenterY": 1.129,
+      "settled": true,
+      "loading": false
+    },
+    "67cee7bc970a": {
+      "restY": 0.908,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.008,
+      "boundsSize": [
+        0.854,
+        1.456,
+        0.682
+      ],
+      "boundsCenterY": 1.628,
+      "settled": true,
+      "loading": false
+    },
+    "70c4f5a71911": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.88,
+        0.127,
+        0.88
+      ],
+      "boundsCenterY": 0.964,
+      "settled": true,
+      "loading": false
+    },
+    "79198b5dad6a": {
+      "restY": 0.901,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        0.277,
+        0.182,
+        0.976
+      ],
+      "boundsCenterY": 0.991,
+      "settled": true,
+      "loading": false
+    },
+    "7c20c6d877d8": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        1.111,
+        0.789,
+        0.804
+      ],
+      "boundsCenterY": 1.294,
+      "settled": true,
+      "loading": false
+    },
+    "804897c9818f": {
+      "restY": 0.898,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.002,
+      "boundsSize": [
+        2.231,
+        1.339,
+        1.463
+      ],
+      "boundsCenterY": 1.569,
+      "settled": true,
+      "loading": false
+    },
+    "83e6d54bb533": {
+      "restY": 0.802,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.098,
+      "boundsSize": [
+        0.214,
+        0.852,
+        0.758
+      ],
+      "boundsCenterY": 1.326,
+      "settled": true,
+      "loading": false
+    },
+    "8537f4975bb1": {
+      "restY": 0.901,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        2.731,
+        1.146,
+        0.811
+      ],
+      "boundsCenterY": 1.473,
+      "settled": true,
+      "loading": false
+    },
+    "86d19812e50b": {
+      "restY": 1.063,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.163,
+      "boundsSize": [
+        0.85,
+        0.015,
+        1.367
+      ],
+      "boundsCenterY": 0.908,
+      "settled": true,
+      "loading": false
+    },
+    "98ab7f847a79": {
+      "restY": 1.115,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.215,
+      "boundsSize": [
+        0.221,
+        0.43,
+        0.206
+      ],
+      "boundsCenterY": 1.115,
+      "settled": true,
+      "loading": false
+    },
+    "98dcc67622c5": {
+      "restY": 1.0,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.1,
+      "boundsSize": [
+        5.482,
+        0.2,
+        5.418
+      ],
+      "boundsCenterY": 1.0,
+      "settled": true,
+      "loading": false
+    },
+    "a098be22181d": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.452,
+        0.885,
+        3.168
+      ],
+      "boundsCenterY": 1.343,
+      "settled": true,
+      "loading": false
+    },
+    "a101cb74ef4e": {
+      "restY": 1.01,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.11,
+      "boundsSize": [
+        1.04,
+        2.172,
+        0.346
+      ],
+      "boundsCenterY": 1.986,
+      "settled": true,
+      "loading": false
+    },
+    "a2ab36517523": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.536,
+        1.462,
+        0.862
+      ],
+      "boundsCenterY": 1.631,
+      "settled": true,
+      "loading": false
+    },
+    "a2c09f429bb9": {
+      "restY": 1.0,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.1,
+      "boundsSize": [
+        3.683,
+        0.2,
+        3.683
+      ],
+      "boundsCenterY": 1.0,
+      "settled": true,
+      "loading": false
+    },
+    "a362f76e4de4": {
+      "restY": 1.171,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.271,
+      "boundsSize": [
+        1.07,
+        0.831,
+        2.122
+      ],
+      "boundsCenterY": 1.316,
+      "settled": true,
+      "loading": false
+    },
+    "a6aa51572a18": {
+      "restY": 1.349,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.449,
+      "boundsSize": [
+        0.52,
+        1.286,
+        0.316
+      ],
+      "boundsCenterY": 1.543,
+      "settled": true,
+      "loading": false
+    },
+    "a8c92ac2e8bd": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        0.45,
+        0.001,
+        0.45
+      ],
+      "boundsCenterY": 0.9,
+      "settled": true,
+      "loading": false
+    },
+    "accec884d4ed": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.9,
+        1.05,
+        2.5
+      ],
+      "boundsCenterY": 1.425,
+      "settled": true,
+      "loading": false
+    },
+    "b0958c2ba27e": {
+      "restY": 0.948,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.048,
+      "boundsSize": [
+        1.612,
+        0.099,
+        6.056
+      ],
+      "boundsCenterY": 0.95,
+      "settled": true,
+      "loading": false
+    },
+    "b54bb593b47e": {
+      "restY": 0.942,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.042,
+      "boundsSize": [
+        3.002,
+        0.184,
+        3.0
+      ],
+      "boundsCenterY": 0.992,
+      "settled": true,
+      "loading": false
+    },
+    "b7ab8f6a57a5": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3.114,
+        0.577,
+        3.214
+      ],
+      "boundsCenterY": 1.188,
+      "settled": true,
+      "loading": false
+    },
+    "bc167bcd8d13": {
+      "restY": 0.905,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.005,
+      "boundsSize": [
+        2.712,
+        1.199,
+        1.134
+      ],
+      "boundsCenterY": 1.5,
+      "settled": true,
+      "loading": false
+    },
+    "be50d090192f": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        0.3,
+        0.001,
+        0.3
+      ],
+      "boundsCenterY": 0.9,
+      "settled": true,
+      "loading": false
+    },
+    "c3e2ac1d53ba": {
+      "restY": 0.998,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.098,
+      "boundsSize": [
+        2.102,
+        1.1,
+        1.884
+      ],
+      "boundsCenterY": 1.45,
+      "settled": true,
+      "loading": false
+    },
+    "c8230f4947cf": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.1,
+        0.127,
+        1.1
+      ],
+      "boundsCenterY": 0.964,
+      "settled": true,
+      "loading": false
+    },
+    "c853f74c717f": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.781,
+        0.89,
+        0.798
+      ],
+      "boundsCenterY": 1.345,
+      "settled": true,
+      "loading": false
+    },
+    "d1029037f126": {
+      "restY": 6,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 5.1,
+      "boundsSize": [
+        0,
+        0,
+        0
+      ],
+      "boundsCenterY": 6,
+      "settled": true,
+      "loading": false
+    },
+    "e237acb4ac43": {
+      "restY": 0.593,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.307,
+      "boundsSize": [
+        1.8,
+        2.945,
+        1.8
+      ],
+      "boundsCenterY": 2.372,
+      "settled": true,
+      "loading": false
+    },
+    "e7946cdd13ac": {
+      "restY": 0.908,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.008,
+      "boundsSize": [
+        1.683,
+        1.947,
+        0.943
+      ],
+      "boundsCenterY": 1.873,
+      "settled": true,
+      "loading": false
+    },
+    "ea636c44062c": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.715,
+        4.209,
+        1.474
+      ],
+      "boundsCenterY": 3.004,
+      "settled": true,
+      "loading": false
+    },
+    "eaf420b0bba9": {
+      "restY": 0.901,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        0.246,
+        0.166,
+        0.522
+      ],
+      "boundsCenterY": 0.983,
+      "settled": true,
+      "loading": false
+    },
+    "f3a75a65fff3": {
+      "restY": 0.935,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.035,
+      "boundsSize": [
+        2.148,
+        2.534,
+        0.075
+      ],
+      "boundsCenterY": 2.167,
+      "settled": true,
+      "loading": false
+    },
+    "f40e797098b1": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.823,
+        0.01,
+        2.851
+      ],
+      "boundsCenterY": 0.905,
+      "settled": true,
+      "loading": false
+    },
+    "f63e6af9d80d": {
+      "restY": 0.824,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.076,
+      "boundsSize": [
+        1.174,
+        0.366,
+        1.401
+      ],
+      "boundsCenterY": 1.083,
+      "settled": true,
+      "loading": false
+    },
+    "f76860fefd2f": {
+      "restY": 0.901,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        0.901,
+        0.022,
+        4.094
+      ],
+      "boundsCenterY": 0.911,
+      "settled": true,
+      "loading": false
+    },
+    "fa7394f6fab3": {
+      "restY": 1.532,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.632,
+      "boundsSize": [
+        0.771,
+        5.547,
+        1.33
+      ],
+      "boundsCenterY": 3.674,
+      "settled": true,
+      "loading": false
+    }
+  }
+}

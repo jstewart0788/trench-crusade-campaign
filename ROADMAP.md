@@ -185,14 +185,15 @@ Numbering is provisional. One ticket = one commit on `main`.
 TC-001 ✅ · TC-002 ✅ · TC-003 ✅ (174 PDF overrides in `data/rules/pdf-overrides.json`, applied by
 the converter on every regeneration; 14 unresolved variant-conditional prices need a `variantCosts`
 schema slot) · TC-004 ✅ · TC-005 ✅ (Don't Breathe geometry low-confidence) · TC-006 ✅ (archetype
-pages have no diagrams; layout rules come from text) · TC-007 ✅ · TC-008 ◐ (172 assets have rest
-heights from the seated reference mods; **64 TC:Map-only assets need measuring with TTS open**; zero
-asset overlap at identical scale between TC:Map and the reference mods, so no global offset exists)
+pages have no diagrams; layout rules come from text) · TC-007 ✅ · TC-008 ✅ (172 assets have rest heights from the seated reference mods; the 64 TC:Map-only assets
+were measured live in TTS on 2026-11-04 via `scripts/tts_measure_rest.py` → `data/tts/rest-heights-measured.json`,
+stored relative to the surface they settled on; one asset, 190e71cef1e2, is a 400×400 plane and one is
+36 wide — flag before use)
 · TC-009 ✅ (67 tests, mutation-checked).
 
 **Phase 1 progress 2026-11-04:** TC-012 ✅ export contract + TTS description renderer (fixture in
 `mod/fixtures/`) · TC-013 ✅ LCT fork stripped to 2.9 MB with unpack/pack tooling (`pnpm mod:build`,
-`pnpm mod:install`; loaded in TTS and signed off by Jonathan 2026-11-04) · TC-016 ✅ in-mod importer, rebuilt on 3D widgets after Jonathan's first TTS look (unresponsive XML fields, grainy, wrong facing); in-TTS import exercised 2026-11-04: code YPFTBM from the roster tool spawned three full models with tooltips in Jonathan's game; widget height and mat-anchor fixes measured live via scripts/tts_exec.py and being baked in · TC-014 ✅ rules shelf (6 PDFs), TC dice rollers, Points/Turn/Glory counters, HUD phases Initiative/Activation/Morale · TC-017 ✅ 12 token bags (Blood, Blessing, Activated, Down, Tough, Objective ×2 sides) + Turn Tracker; build 1.2 MB. Still to do in Phase 1: TC-010b, TC-011, TC-018 playtest. · TC-015 ✅ model map, 92/102
+`pnpm mod:install`; loaded in TTS and signed off by Jonathan 2026-11-04) · TC-016 ✅ in-mod importer, rebuilt on 3D widgets after Jonathan's first TTS look (unresponsive XML fields, grainy, wrong facing); in-TTS import exercised 2026-11-04: code YPFTBM from the roster tool spawned three full models with tooltips in Jonathan's game; widget height and mat-anchor fixes measured live via scripts/tts_exec.py and being baked in · TC-014 ✅ rules shelf (6 PDFs), TC dice rollers, Points/Turn/Glory counters, HUD phases Initiative/Activation/Morale · TC-017 ✅ 12 token bags (Blood, Blessing, Activated, Down, Tough, Objective ×2 sides) + Turn Tracker; build 1.2 MB. TC-010b ✅ three screens · TC-010c ✅ body-slot Armoury with staged purchases (driven in Chrome: rifle staged, confirmed, saved, present in the TTS export). Still to do in Phase 1: TC-011, TC-018 playtest. · TC-015 ✅ model map, 92/102
 units, defaults only · TC-003b ✅ (744 unavailable rows dropped, overrides 174 → 163; one PDF
 disagreement left: Death Commando Binoculars missing upstream). Next: TC-014, TC-016, TC-017, TC-010.
 
