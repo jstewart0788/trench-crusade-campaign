@@ -70,6 +70,15 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   Barracks is lit.
 - Edit the name in the header: the change shows on every screen (it is the one field that is
   never locked).
+- **Icon actions.** Every action that is not a purchase is a round 32px glyph with no text:
+  crossed swords **Equip**, a door and arrow **Dismiss**, a minus in a circle **Remove**, a
+  curved arrow **Undo** and **Keep**, × **Close**, an open book **Rules**, two sheets **Copy**,
+  a tent **Barracks**, a bag **Shop for kit**. At rest they are quiet (Equip, Barracks and Shop
+  in soft brass; Dismiss and Remove in a muted oxblood); hovered or focused they fill, Dismiss and
+  Remove turning blood red. Hover one, or Tab to it: a small bubble above it shows its name, and
+  Tab draws a brass ring around it. In this script a bold action name means that icon. Chrome
+  DevTools → Accessibility: each one's name is the bubble's word plus what it acts on ("Dismiss
+  Yeoman", "Remove Bolt-Action Rifle", "Rules for Tough"). Price buttons are unchanged.
 
 ## 4. Barracks (recruiting is staged)
 
@@ -89,7 +98,7 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 - Hover the Lieutenant's price (or Tab to it): it lifts a pixel and a small bubble shows the purse
   after buying, "→ 👑 70/700". Press it: the button gives a brief brass pulse and a roster row
   appears with a brass outline and a **PENDING** chip (unit name, Elite tag, empty "Custom name"
-  field, "No equipment", its crown price, **Equip** link, **Copy 👑 70**, **Undo**). The header's
+  field, "No equipment", its crown price, **Equip**, **Copy 👑 70**, **Undo**). The header's
   two coin readouts show **👑 70 / 700** and **☼ 0 / 0**, with a receipt line under them,
   "Pending · 1 line ……… 👑 +70", then **Discard changes** and **Confirm purchases (1)**; the
   badge still reads **Legal**. The Lieutenant's price is now dimmed with a dashed border; hover
@@ -102,8 +111,8 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 - **Undo** one pending Yeoman: the row vanishes, Confirm purchases (5). Buy it back.
 - **Confirm purchases (6)**: outlines and chips vanish, header **235 / 700**, "Unsaved changes",
   Confirm/Discard gone.
-- **Dismiss** a confirmed Yeoman: the row stays, struck, with a red **LEAVING** chip and a
-  **Keep** button; header 👑 205, receipt "Pending · 1 line … 👑 −30", Confirm purchases (1).
+- **Dismiss** a confirmed Yeoman: the row stays, struck, with a red **LEAVING** chip and only
+  **Keep** (no Equip, Copy or Dismiss); header 👑 205, receipt "Pending · 1 line … 👑 −30", Confirm purchases (1).
   **Keep**: back to normal. Dismiss it again and **Discard changes**: back to normal.
 - Over the threshold: keep buying until the purse is within a unit's price of 700. Every price
   that would break 700 dims; hover one: "Over threshold by N" with the exact overshoot; pressing
@@ -120,7 +129,7 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   **figure**: a brass silhouette with eight dashed slots laid over it: Head on top; Ranged /
   Torso / Melee on the first row; Ranged / Off-hand / Melee on the second; Grenades at the
   bottom. Every slot reads "empty". Below it the **Inventory** panel ("Nothing in the pack",
-  "Shop for kit"). Right column: the hint "Click a slot on the figure to equip it…".
+  **Shop for kit** at its top right). Right column: the hint "Click a slot on the figure to equip it…".
 - Click the top **Melee** slot: the right column becomes the picker "Melee · Melee hands" with
   the hint "one 2-Handed or two 1-Handed Melee Weapons" and ledger rows: name and stat line on the
   left, a crown price button on the right. Press **Escape**: it closes. Click it again and press
@@ -129,7 +138,7 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   brass button. The model total reads "👑 70 → 👑 74".
 - Top **Ranged** → **Pistol** (👑 6). **Torso** → **Standard Armour** (👑 15). Receipt +25,
   Confirm purchases (3).
-- Click the filled **Torso** slot: the picker shows "Standard Armour [Undo]" and, under "Swap
+- Click the filled **Torso** slot: the picker shows Standard Armour with **Undo** and, under "Swap
   for", nothing buyable (one suit of armour); Standard Armour itself is not offered. Click
   **Undo**: the slot empties, receipt +10, Confirm (2). Put Standard Armour back.
 - Swaps are priced net: on a Yeoman carrying a Bolt-Action Rifle, open its Ranged slot and hover
@@ -162,7 +171,7 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   Cocktail, Greek Fire… (one kind at a time, so swapping is the only way to a second kind).
   **Head** → **Combat Helmet** (5d); open Head again: "Nothing fits here".
 - **Shop for kit** → press **Medikit**'s price (👑 5): it lists under Inventory with a PENDING
-  chip and "Undo". Confirm purchases.
+  chip and **Undo**. Confirm purchases.
 - Put **Mountaineer Kit** (👑 3) in the inventory of four Yeomen (confirming each; on the fourth
   the row read "3/4 in warband"). On a fifth model it is still listed, dimmed: "4/4 in warband",
   hover "Limit reached 4/4 in the warband", and pressing it does nothing.
@@ -184,12 +193,13 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 
 - With no slot open, the right-hand column shows **Skills & abilities** above the hint. For the
   Lieutenant: **Abilities** Hold Your Fire!, Tough, Leader, each with its rule text on hover and
-  a **Rules** disclosure that expands it. No Remove, Undo or × anywhere in the panel. Open any
+  **Rules** beside its name: press it and the text opens below (the book stays brass while open);
+  press again to close. No Remove or Undo anywhere in the panel. Open any
   slot: the picker replaces the panel; Escape brings it back.
 - Descriptions match the picker: in the Ranged picker the Submachine Gun row reads
   `16" · 2H · ASSAULT` under its name and shows "Quick Bursts…" on hover. Pick it: the slot on the
   figure shows the same name and the same `16" · 2H · ASSAULT` line, with the same hover. Open the
-  filled slot: the current row shows the same lines plus a **Rules** disclosure with the full
+  filled slot: the current row shows the same lines plus **Rules** beside the name for the full
   text. A bayonet under a rifle and anything in the Inventory read the same way.
 - Built-in kit (Black Grail; any Black Grail warband will do): recruit a **Sin Eater** and confirm.
   Its Head reads "Combat Helmet", its Torso "Reinforced Armour", its Melee slot "Tenderizer
@@ -272,9 +282,9 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   "318 of 700", Glory "0 spent of 0", and the note that these are fixed at creation. There are
   **no** selects or number inputs for faction, variant, patron or game.
 - Right "TTS import" panel: "Unsaved draft … Save (top right) to get a code".
-- "Roster · 6 models" with a "Recruit in the Barracks" link; each row has the custom-name
-  field (edit one here; it shows in the Barracks and the Armoury select), its kit in one line,
-  its cost and an **Equip** link that opens the Armoury filtered to it.
+- "Roster · 6 models" with **Recruit in the Barracks** (the tent) at the right; each row has the
+  custom-name field (edit one here; it shows in the Barracks and the Armoury select), its kit in
+  one line, its cost and **Equip**, which opens the Armoury filtered to it.
 - "Rulebook-legal: nothing to fix."
 - Make it illegal to see the list: Barracks → **Dismiss** the Lieutenant → Warband screen lists
   `0 x Lieutenant; at least 1 required` and the badge reads 1 error. **Keep** him.
@@ -284,8 +294,10 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 - **Save and get code** in the header from any screen. Network: `POST /api/warbands` 201. The
   URL becomes `/w/XXXXXX` plus the screen you were on (six characters, no 0/O/1/I); the header
   shows the code in brass and "Saved". The Warband screen's TTS panel shows the code large,
-  **Copy TTS import code**, the URL `http://localhost:5173/api/tts/warband/XXXXXX`, Copy URL.
-- Copy the code: button reads "Copied"; paste somewhere to confirm.
+  **Copy TTS import code** beside it, the URL `http://localhost:5173/api/tts/warband/XXXXXX` and
+  **Copy URL**.
+- Copy the code: the icon turns into a check and the bubble reads "Copied" for a moment; paste
+  somewhere to confirm.
 - Open the TTS URL: JSON with `"version": "tc-warband-export-v1"`, the code, `"valid": true`,
   `"totals": {"ducats": 318, "glory": 0}` and six members whose equipment matches the rows.
 - Change the name; header shows "Unsaved changes"; **Save changes**: `PUT /api/warbands/XXXXXX`

@@ -5,6 +5,7 @@ import { type UpgradeListing } from "../roster/select.js";
 import type { KitEntry } from "../roster/slots.js";
 import type { StagedEntry } from "../roster/staging.js";
 import { isBuiltIn, isPermanentLocked } from "../roster/traits.js";
+import { IconButton, KitAction } from "./IconButton.js";
 import { LockGlyph } from "./LockGlyph.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { PriceButton } from "./PriceButton.js";
@@ -39,9 +40,7 @@ export function Inventory({ entries: all, onAdd, onRemove, onKeep, unit, upgrade
     <div className={`panel ${styles.panel}`}>
       <div className={styles.head}>
         <h2>Inventory</h2>
-        <button className="small" onClick={onAdd}>
-          Shop for kit
-        </button>
+        <IconButton glyph="shop" label="Shop for kit" tone="brass" onClick={onAdd} />
       </div>
       {entries.length === 0 ? (
         <p className="muted">Nothing in the pack.</p>
@@ -55,14 +54,8 @@ export function Inventory({ entries: all, onAdd, onRemove, onKeep, unit, upgrade
                 <span className={styles.permanent} title="Once equipped it cannot be removed or lost">
                   <LockGlyph /> permanent
                 </span>
-              ) : e.pending === "remove" ? (
-                <button className="small" onClick={() => onKeep(e)}>
-                  Keep
-                </button>
               ) : (
-                <button className="small danger" onClick={() => onRemove(e)}>
-                  {e.pending === "add" ? "Undo" : "Remove"}
-                </button>
+                <KitAction pending={e.pending} name={e.item.name} onKeep={() => onKeep(e)} onRemove={() => onRemove(e)} />
               )}
             </li>
           ))}
@@ -80,15 +73,7 @@ export function Inventory({ entries: all, onAdd, onRemove, onKeep, unit, upgrade
                   <li key={`${u.id}-${i}`}>
                     {upgrade ? <ItemDescription desc={describeUpgrade(upgrade)} expandable struck={u.pending === "remove"} /> : <span>{u.id}</span>}
                     {chip(u.pending)}
-                    {u.pending === "remove" ? (
-                      <button className="small" onClick={() => onKeepUpgrade(u)}>
-                        Keep
-                      </button>
-                    ) : (
-                      <button className="small danger" onClick={() => onRemoveUpgrade(u)}>
-                        {u.pending === "add" ? "Undo" : "Remove"}
-                      </button>
-                    )}
+                    <KitAction pending={u.pending} name={upgrade?.name ?? u.id} onKeep={() => onKeepUpgrade(u)} onRemove={() => onRemoveUpgrade(u)} />
                   </li>
                 );
               })}

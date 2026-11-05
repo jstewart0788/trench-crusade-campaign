@@ -4,7 +4,9 @@ import { armouryHref } from "../pages/warbandContext.js";
 import type { Offer, Purse } from "../roster/purse.js";
 import { describeItem, describeUpgrade } from "../roster/describe.js";
 import type { StagedMemberRow } from "../roster/staging.js";
+import { memberTitle } from "../roster/select.js";
 import { isBuiltIn, type MemberTraits } from "../roster/traits.js";
+import { IconButton, IconLink } from "./IconButton.js";
 import { Price } from "./Price.js";
 import { PriceButton } from "./PriceButton.js";
 import { TraitsLine } from "./SkillsPanel.js";
@@ -75,6 +77,7 @@ interface RowProps {
 function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, traitsFor }: RowProps) {
   const { member } = row;
   const leaving = row.pending === "remove";
+  const title = memberTitle(member, unit);
   const traits = unit && traitsFor ? traitsFor(row, unit) : undefined;
   const locked = new Set(traits?.skills.flatMap((t) => (t.upgrade ? [t.upgrade.id] : [])) ?? []);
   const kit = [
@@ -138,21 +141,21 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
       <span className={styles.cost}>{cost ? <Price cost={cost} /> : null}</span>
       <div className={styles.actions}>
         {!leaving && (
-          <Link to={armouryHref(base, member.id)} className={styles.equip}>
-            Equip
-          </Link>
+          <span className={styles.equip}>
+            <IconLink to={armouryHref(base, member.id)} glyph="equip" label="Equip" subject={title} tone="brass" />
+          </span>
         )}
         {manage &&
           (leaving ? (
-            <button className="small" onClick={() => manage.onKeep(row)}>
-              Keep
-            </button>
+            <IconButton glyph="revert" label="Keep" subject={title} onClick={() => manage.onKeep(row)} />
           ) : (
             <>
               <PriceButton offer={manage.duplicateOffer(row)} purse={manage.purse} label={`Recruit another ${unit?.name ?? "model"} with this kit`} verb="Copy" onBuy={() => manage.onDuplicate(row)} />
-              <button className="small danger" onClick={() => manage.onRemove(row)}>
-                {row.pending === "add" ? "Undo" : "Dismiss"}
-              </button>
+              {row.pending === "add" ? (
+                <IconButton glyph="revert" label="Undo" subject={`recruiting ${title}`} onClick={() => manage.onRemove(row)} />
+              ) : (
+                <IconButton glyph="dismiss" label="Dismiss" subject={title} tone="danger" onClick={() => manage.onRemove(row)} />
+              )}
             </>
           ))}
       </div>

@@ -8,6 +8,7 @@ import { defaultKit, gateStatus } from "../roster/select.js";
 import { cardKitEntries, kitEntries, layoutFigure, pickerRows, zoneOf, type KitEntry } from "../roster/slots.js";
 import { memberTraits } from "../roster/traits.js";
 import { Figure } from "./Figure.js";
+import { iconActions, removeControls as removeButtons, withoutIds } from "./iconActions.testutil.js";
 import { Inventory } from "./Inventory.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { SkillsPanel } from "./SkillsPanel.js";
@@ -30,7 +31,6 @@ const recruit = (factionId: string, unitId: string, extra: string[] = []): Warba
 const entries = (w: Warband): KitEntry[] => kitEntries(w.members[0]!, unit(w.members[0]!.unitId), data, undefined);
 const entry = (w: Warband, itemId: string) => entries(w).find((e) => e.itemId === itemId)!;
 const emptyListing = { rows: [], attachments: [], uncheckable: 0, unfit: {} };
-const removeButtons = (html: string) => (html.match(/>(Remove|Undo)<\/button>/g) ?? []).length;
 
 describe("built-in kit has no remove control; purchased kit does", () => {
   it("in the slot picker: a fixed weapon is locked, a bought one can be removed or swapped", () => {
@@ -151,7 +151,8 @@ describe("the Skills & abilities panel", () => {
       expect(html).toContain(a.name.replace("!", "!"));
     }
     const tough = lieutenant.abilities.find((a) => a.name === "Tough")!;
-    expect(html).toContain(renderToStaticMarkup(<p>{tough.text.trim()}</p>));
+    expect(html).toContain(renderToStaticMarkup(<>{tough.text.trim()}</>));
+    expect(iconActions(html).map((a) => a.name)).toContain("Rules for Tough");
     expect(html).not.toContain("Skirmisher");
   });
 });
@@ -174,11 +175,10 @@ describe("one description for kit, wherever it is shown", () => {
     const figure = renderToStaticMarkup(<Figure figure={layoutFigure(entries(armed), yeoman)} onSlot={noop} onRemove={noop} onKeep={noop} />);
     expect(figure).toContain(compact);
 
-    // The expandable form (current row, inventory, panel) carries the same name and detail, then the rules disclosure.
+    // The expandable form (current row, inventory, panel) is the compact one plus the Rules toggle and the rules text it reveals.
     const expandable = renderToStaticMarkup(<ItemDescription desc={describeItem(rifle)} expandable />);
-    const shared = compact.replace(/<\/span>$/, "");
-    expect(expandable.startsWith(shared)).toBe(true);
+    expect(expandable.replace(/<button[\s\S]*?<\/button>/, "").replace(/<p [^>]*>[\s\S]*?<\/p>/, "")).toBe(compact);
     const current = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" current={entry(armed, rifle.id)} listing={emptyListing} purse={PURSE} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
-    expect(current).toContain(expandable);
+    expect(withoutIds(current)).toContain(withoutIds(expandable));
   });
 });

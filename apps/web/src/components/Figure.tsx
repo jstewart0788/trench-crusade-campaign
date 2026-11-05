@@ -1,6 +1,7 @@
 import { describeItem } from "../roster/describe.js";
 import type { FigureView, KitEntry, SlotView } from "../roster/slots.js";
 import { isBuiltIn } from "../roster/traits.js";
+import { IconButton, KitAction } from "./IconButton.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { LockGlyph } from "./LockGlyph.js";
 import styles from "./Figure.module.css";
@@ -40,9 +41,7 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep, replaceable
                 {isBuiltIn(e) && e.pending !== "add" ? (
                   <span className={styles.builtIn}>built in</span>
                 ) : (
-                  <button className="small danger" onClick={() => onRemove(e)}>
-                    {e.pending === "add" ? "Undo" : "Remove"}
-                  </button>
+                  <KitAction pending={e.pending} name={e.item.name} onKeep={() => onKeep(e)} onRemove={() => onRemove(e)} />
                 )}
               </li>
             ))}
@@ -57,9 +56,7 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep, replaceable
               <li key={e.index}>
                 <ItemDescription desc={describeItem(e.item, e.access)} expandable struck />
                 {pendingChip(e)}
-                <button className="small" onClick={() => onKeep(e)}>
-                  Keep
-                </button>
+                <IconButton glyph="revert" label="Keep" subject={e.item.name} onClick={() => onKeep(e)} />
               </li>
             ))}
           </ul>

@@ -81,7 +81,7 @@
 }
 .equip {
   margin-right: auto;
-  font-size: 0.9rem;
+  display: inline-flex;
 }
 .pending {
   font-size: 0.65rem;

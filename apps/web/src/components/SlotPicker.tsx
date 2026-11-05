@@ -4,6 +4,7 @@ import type { Money, Purse } from "../roster/purse.js";
 import { hiddenText } from "../roster/select.js";
 import { unfitLines, ZONE_LABELS, type KitEntry, type PickerListing, type PickerRow, type Zone } from "../roster/slots.js";
 import { isBuiltIn } from "../roster/traits.js";
+import { IconButton, KitAction } from "./IconButton.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { LockGlyph } from "./LockGlyph.js";
 import { PriceButton } from "./PriceButton.js";
@@ -62,9 +63,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
           <h2>{slotLabel}</h2>
           <p className="quiet">{hint}</p>
         </div>
-        <button className="small" onClick={onClose} aria-label="Close picker">
-          Close
-        </button>
+        <IconButton glyph="close" label="Close" subject="picker" onClick={onClose} />
       </div>
 
       {held && (
@@ -75,18 +74,12 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
             {held.pending === "add" && <span className={styles.chipAdd}>pending</span>}
             {held.pending === "remove" && <span className={styles.chipRemove}>removing</span>}
           </span>
-          {held.pending === "remove" ? (
-            <button className="small" onClick={() => onKeep(held)}>
-              Keep
-            </button>
-          ) : locked || replace ? (
+          {held.pending !== "remove" && (locked || replace) ? (
             <span className={styles.builtIn}>
               <LockGlyph /> built in
             </span>
           ) : (
-            <button className="small danger" onClick={() => onRemove(held)}>
-              {held.pending === "add" ? "Undo" : "Remove"}
-            </button>
+            <KitAction pending={held.pending} name={held.item.name} onKeep={() => onKeep(held)} onRemove={() => onRemove(held)} />
           )}
         </div>
       )}

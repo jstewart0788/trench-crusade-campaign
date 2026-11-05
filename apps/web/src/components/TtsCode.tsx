@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ttsUrl } from "../api.js";
+import { IconButton } from "./IconButton.js";
 import styles from "./TtsCode.module.css";
 
 export function TtsCode({ code }: { code: string }) {
@@ -19,15 +20,13 @@ export function TtsCode({ code }: { code: string }) {
     <div className={styles.block}>
       <div className={styles.row}>
         <span className={styles.value}>{code}</span>
-        <button onClick={() => copy(code, "code")}>{copied === "code" ? "Copied" : "Copy TTS import code"}</button>
+        <IconButton glyph={copied === "code" ? "copied" : "copy"} label={copied === "code" ? "Copied" : "Copy TTS import code"} onClick={() => copy(code, "code")} />
       </div>
       <div className={styles.url}>
         <a href={ttsUrl(code)} target="_blank" rel="noreferrer" className="mono">
           {ttsUrl(code)}
         </a>
-        <button className="small" onClick={() => copy(ttsUrl(code), "URL")}>
-          {copied === "URL" ? "Copied" : "Copy URL"}
-        </button>
+        <IconButton glyph={copied === "URL" ? "copied" : "copy"} label={copied === "URL" ? "Copied" : "Copy URL"} onClick={() => copy(ttsUrl(code), "URL")} />
       </div>
       <p className="quiet">Type the code into the mod's importer, or point it at the URL.</p>
     </div>

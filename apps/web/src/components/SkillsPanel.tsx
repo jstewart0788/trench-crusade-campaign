@@ -1,5 +1,6 @@
 import type { MemberTraits, Trait } from "../roster/traits.js";
 import { cx } from "./cx.js";
+import { IconButton } from "./IconButton.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { LockGlyph } from "./LockGlyph.js";
 import styles from "./SkillsPanel.module.css";
@@ -40,16 +41,8 @@ function Group({ title, traits, onUndo, onKeep, locked = false }: { title: strin
               {t.where && <span className={styles.where}>{t.where}</span>}
               {t.pending === "add" && <span className={styles.chipAdd}>pending</span>}
               {t.pending === "remove" && <span className={styles.chipRemove}>removing</span>}
-              {t.pending === "add" && onUndo && (
-                <button className="small" onClick={() => onUndo(t)}>
-                  Undo
-                </button>
-              )}
-              {t.pending === "remove" && onKeep && (
-                <button className="small" onClick={() => onKeep(t)}>
-                  Keep
-                </button>
-              )}
+              {t.pending === "add" && onUndo && <IconButton glyph="revert" label="Undo" subject={`adding ${t.desc.name}`} onClick={() => onUndo(t)} />}
+              {t.pending === "remove" && onKeep && <IconButton glyph="revert" label="Keep" subject={t.desc.name} onClick={() => onKeep(t)} />}
             </span>
           </li>
         ))}

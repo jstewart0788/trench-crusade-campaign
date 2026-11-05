@@ -2,6 +2,7 @@ import { effectiveStats, findUnit, itemCost, type ReplaceableBuiltIn } from "@tc
 import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Figure } from "../components/Figure.js";
+import { IconLink } from "../components/IconButton.js";
 import { Inventory } from "../components/Inventory.js";
 import { Loadout } from "../components/Loadout.js";
 import { SkillsPanel } from "../components/SkillsPanel.js";
@@ -132,7 +133,7 @@ export function ArmouryScreen() {
               ))}
           </select>
         </label>
-        <Link to={`${base}/barracks`}>Barracks</Link>
+        <IconLink to={`${base}/barracks`} glyph="barracks" label="Barracks" tone="brass" />
       </div>
       {unit && figure ? (
         <div className={styles.grid}>

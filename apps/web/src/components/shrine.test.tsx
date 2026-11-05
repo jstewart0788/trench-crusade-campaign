@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { createWarband, rosterReducer } from "../roster/reducer.js";
 import { kitEntries, layoutFigure, pickerRows } from "../roster/slots.js";
 import { Figure } from "./Figure.js";
+import { iconActions, removeControls as removeButtons } from "./iconActions.testutil.js";
 import { Inventory } from "./Inventory.js";
 import { PreGamePanel } from "./PreGamePanel.js";
 import { SlotPicker } from "./SlotPicker.js";
@@ -19,7 +20,6 @@ const PURSE = { ducats: 300, threshold: 700, glory: 0, gloryPool: 0 };
 const SHRINE = "trench-pilgrims/anchorite-shrine";
 const METHODIUS = "trench-pilgrims/war-pilgrimage-of-saint-methodius";
 const REPLACEMENTS = ["anti-materiel-rifle", "autocannon", "gas-censer", "heavy-flamethrower", "punt-gun", "trench-mortar"];
-const removeButtons = (html: string) => (html.match(/>(Remove|Undo)<\/button>/g) ?? []).length;
 const shrineWarband = (variantId: string | undefined, items: string[]): Warband =>
   rosterReducer(createWarband({ name: "p", factionId: "trench-pilgrims", ...(variantId ? { variantId } : {}) }, "w"), { type: "add-member", unitId: SHRINE, equipmentItemIds: items });
 const unit = () => data.unitsById.get(SHRINE)!;
@@ -70,7 +70,7 @@ describe("permanent Anchorite Battlekit in the inventory", () => {
     expect(removeButtons(lockedHtml)).toBe(0);
     const staged = kitEntries(shrineWarband(METHODIUS, ["catherine-wheel"]).members[0]!, unit(), data, { adds: ["gas-filters"], removes: [], upgradeAdds: [], upgradeRemoves: [] }).filter((e) => e.itemId === "gas-filters");
     const stagedHtml = renderToStaticMarkup(<Inventory entries={staged} {...props} />);
-    expect(stagedHtml).toContain(">Undo</button>");
+    expect(iconActions(stagedHtml).map((a) => a.name)).toEqual(["Shop for kit", "Undo adding Gas Filters"]);
     expect(stagedHtml).not.toContain("permanent");
   });
 });

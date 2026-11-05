@@ -4,6 +4,16 @@
   min-width: 0;
   gap: 0.05rem;
 }
+.nameLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 0;
+}
+/* The toggle keeps its 32px target without making every row taller. */
+.nameLine > button {
+  margin-block: -7px;
+}
 .name {
   cursor: help;
 }
@@ -19,16 +29,9 @@
   color: var(--ink-muted);
 }
 .rules {
+  margin: 0.25rem 0 0;
   font-size: 0.8rem;
   color: var(--ink);
-}
-.rules summary {
-  cursor: pointer;
-  color: var(--ink-muted);
-  font-size: 0.75rem;
-}
-.rules p {
-  margin: 0.25rem 0 0;
   white-space: pre-line;
   max-width: 40rem;
 }

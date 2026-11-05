@@ -1,5 +1,5 @@
 import { findSubfaction, rosterVariants } from "@tc/rules/browser";
-import { Link } from "react-router-dom";
+import { IconLink } from "../components/IconButton.js";
 import { MemberList } from "../components/MemberList.js";
 import { PreGamePanel } from "../components/PreGamePanel.js";
 import { TtsCode } from "../components/TtsCode.js";
@@ -65,7 +65,7 @@ export function WarbandScreen() {
           <h2>
             Roster · {n} {n === 1 ? "model" : "models"}
           </h2>
-          <Link to={`${base}/barracks`}>Recruit in the Barracks</Link>
+          <IconLink to={`${base}/barracks`} glyph="barracks" label="Recruit in the Barracks" tone="brass" />
         </div>
         <MemberList
           rows={rows}
