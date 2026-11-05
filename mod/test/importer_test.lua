@@ -355,5 +355,104 @@ do
   near(part.Transform.rotY, 270, "asset bundle part rotation")
 end
 
+---------------------------------------------------------------- widgets --
+
+local function overlaps(a, b)
+  return a.left < b.right and b.left < a.right and a.top < b.bottom and b.top < a.bottom
+end
+
+local function byId(specs)
+  local out = {}
+  for _, spec in ipairs(specs) do out[spec.id] = spec end
+  return out
+end
+
+do
+  local labels = {}
+  for i, member in ipairs(payload.members) do labels[i] = memberRowLabel(i, member) end
+  local view = { colourLabel = "Colour: mine", pending = false, status = "ready", members = labels, selected = 2 }
+  local specs = widgetLayout(view)
+  local ids = byId(specs)
+  check(ids.title and ids.colour and ids.bind and ids.import and ids.status, "idle layout has title, colour, bind, import, status")
+  eq(ids.replace, nil, "idle layout has no Replace")
+  eq(ids.cancel, nil, "idle layout has no Cancel")
+  eq(#specs, 5 + #payload.members, "one row button per member")
+  eq(ids.row1.label, "1. Lieutenant  [default model]", "row label")
+  eq(ids.row2.color, GOLD, "selected row is gold")
+  eq(ids.row1.color, ROW, "unselected row is grey")
+  eq(ids.row1.click_function, "selectMember1", "row click function carries the index")
+  eq(ids.import.click_function, "onImport", "import click function")
+  eq(ids.title.width, 0, "title is a label-only button")
+  eq(ids.title.click_function, "noop", "title does nothing when clicked")
+
+  local nonLabel = {}
+  for _, spec in ipairs(specs) do
+    check(spec.position[2] > 0, spec.id .. " sits above the face")
+    eq(spec.rotation[2], 0, spec.id .. " keeps the tile's orientation")
+    local e = widgetExtent(spec)
+    check(e.left >= -1 and e.right <= 1 and e.top >= -1 and e.bottom <= 1, spec.id .. " stays on the tile")
+    if spec.width > 0 then nonLabel[#nonLabel + 1] = { id = spec.id, extent = e } end
+  end
+  for i = 1, #nonLabel do
+    for j = i + 1, #nonLabel do
+      check(not overlaps(nonLabel[i].extent, nonLabel[j].extent), nonLabel[i].id .. " does not overlap " .. nonLabel[j].id)
+    end
+  end
+  for _, spec in ipairs(inputLayout("http://127.0.0.1:3001", "NA-TEST-01")) do
+    local e = widgetExtent(spec)
+    check(e.left >= -1 and e.right <= 1 and e.top >= -1 and e.bottom <= 1, spec.id .. " input stays on the tile")
+    for _, other in ipairs(nonLabel) do
+      check(not overlaps(e, other.extent), spec.id .. " input does not overlap " .. other.id)
+    end
+    check(spec.height >= spec.font_size + 23, spec.id .. " input is tall enough for its font")
+  end
+  local inputs = inputLayout("http://127.0.0.1:3001", "NA-TEST-01")
+  eq(inputs[1].value, "http://127.0.0.1:3001", "base URL input carries the state")
+  eq(inputs[2].value, "NA-TEST-01", "code input carries the state")
+  eq(inputs[1].input_function, "onBaseUrlInput", "base URL callback")
+  eq(inputs[2].input_function, "onCodeInput", "code callback")
+
+  local pending = widgetLayout({ colourLabel = "Colour: Red", pending = true, status = "confirm?", members = {}, selected = nil })
+  local pids = byId(pending)
+  eq(pids.import, nil, "confirm layout hides Import")
+  check(pids.replace and pids.cancel, "confirm layout shows Replace and Cancel")
+  if pids.replace and pids.cancel then
+    check(not overlaps(widgetExtent(pids.replace), widgetExtent(pids.cancel)), "Replace and Cancel sit side by side")
+    check(pids.replace.position[1] > pids.cancel.position[1], "Replace is to the viewer's left (local +x) of Cancel")
+  end
+  eq(pids.status.label, "confirm?", "status label")
+
+  local many = {}
+  for i = 1, MAX_ROWS + 5 do many[i] = "m" .. i end
+  local big = byId(widgetLayout({ colourLabel = "", pending = false, status = "", members = many }))
+  check(big["row" .. MAX_ROWS] ~= nil, "layout shows MAX_ROWS rows")
+  eq(big["row" .. (MAX_ROWS + 1)], nil, "layout stops at MAX_ROWS")
+  check(widgetExtent(big["row" .. MAX_ROWS]).bottom <= 1, "last row stays on the tile")
+  check(big.row1.position[1] > 0 and big["row" .. LAYOUT.members.perColumn + 1].position[1] < 0, "rows wrap into a second column to the right")
+end
+
+do
+  local pos = screenToLocal(0.3, -0.5)
+  near(pos[1], -0.3, "viewer's right is local -x")
+  near(pos[3], -0.5, "viewer's up is local -z")
+  near(pos[2], WIDGET_Y, "widgets float just above the face")
+
+  local mine, colour = nextColourChoice(true, "Red")
+  eq(mine, false, "cycling from 'mine' picks a seat")
+  eq(colour, "Red", "the first seat is Red")
+  mine, colour = nextColourChoice(false, "Red")
+  eq(colour, "Blue", "Red cycles to Blue")
+  mine, colour = nextColourChoice(false, COLOUR_ORDER[#COLOUR_ORDER])
+  eq(mine, true, "the last seat cycles back to 'mine'")
+  eq(colourButtonLabel(true, "Blue"), "Colour: mine", "label while following the player")
+  eq(colourButtonLabel(false, "Blue"), "Colour: Blue", "label for a fixed seat")
+
+  eq(wrapText("short", 10), "short", "short text is not wrapped")
+  eq(wrapText("one two three four", 9), "one two\nthree\nfour", "words wrap at the limit")
+  eq(wrapText("http://127.0.0.1:3001/api/tts/warband/NA-TEST-01", 20), "http://127.0.0.1:300\n1/api/tts/warband/NA\n-TEST-01", "long words break hard")
+  eq(wrapText("Fetching http://127.0.0.1:3001/api/tts/warband/NA-TEST-01", LAYOUT.status.wrap):find("\n") ~= nil, true, "the fetch status wraps")
+  eq(wrapText(nil, 10), "", "nil wraps to empty")
+end
+
 print(string.format("importer_test: %d checks, %d failed", checks, failures))
 if failures > 0 then os.exit(1) end

@@ -15,7 +15,7 @@ TAG_MEMBER = "tc-member:"
 TAG_SPAWNED = "tc-spawned"
 TAG_BOUND = "tc-bound"
 
-MAX_ROWS = 30
+MAX_ROWS = 20
 
 -- Gannel's 32mm base: the top-level mesh of every Gannel's model (the
 -- Lieutenant 15e05f in 3700111403 among them). Members without a default model
@@ -288,10 +288,175 @@ function memberRowLabel(index, member)
   return string.format("%d. %s  [%s]", index, name, kind)
 end
 
+---------------------------------------------------------------- widgets --
+
+-- The panel is classic 3D widgets (self.createInput / self.createButton) in
+-- the tile's local space, the way ForceOrg's Yellow Machine lays out its
+-- buttons: position in local units, width/height/font_size in 1/500ths of a
+-- local unit (calibrated against the LCT dice mats, whose rows touch at that
+-- ratio). The tile face is 2 local units square (12" at scale 6). Widgets keep
+-- rotation {0,0,0}, which puts a label's top at local -z; the tile's own rotY
+-- of 270 in save.json turns that toward +x, the way every seat faces. Screen
+-- coordinates below: col grows to the viewer's right (local -x), row grows
+-- downward (local +z).
+UNITS_PER_LOCAL = 500
+WIDGET_Y = 0.12
+FULL_WIDTH = 900
+HALF_WIDTH = 435
+HALF_OFFSET = 0.46
+
+LAYOUT = {
+  title = { row = -0.91, font = 90 },
+  baseUrl = { row = -0.74, height = 100, font = 70 },
+  code = { row = -0.49, height = 130, font = 100 },
+  colour = { row = -0.24, height = 90, font = 55 },
+  bind = { row = -0.24, height = 90, font = 60 },
+  import = { row = -0.02, height = 110, font = 80 },
+  status = { row = 0.24, height = 130, font = 34, wrap = 48 },
+  members = { row = 0.44, pitch = 0.055, height = 25, font = 22, perColumn = 10 },
+}
+
+INPUT_BASE_URL = 0
+INPUT_CODE = 1
+
+GOLD = { 0.85, 0.70, 0.32 }
+PANEL = { 0.13, 0.13, 0.13 }
+ROW = { 0.2, 0.2, 0.2 }
+LIGHT = { 0.9, 0.9, 0.9 }
+DARK = { 0, 0, 0 }
+GREEN = { 0.18, 0.49, 0.2 }
+RED = { 0.55, 0.13, 0.13 }
+GREY = { 0.33, 0.33, 0.33 }
+WHITE = { 1, 1, 1 }
+
+function screenToLocal(col, row)
+  return { -col, WIDGET_Y, row }
+end
+
+function widgetExtent(spec)
+  local half = { w = (spec.width or 0) / UNITS_PER_LOCAL / 2, h = (spec.height or 0) / UNITS_PER_LOCAL / 2 }
+  return {
+    left = spec.position[1] - half.w,
+    right = spec.position[1] + half.w,
+    top = spec.position[3] - half.h,
+    bottom = spec.position[3] + half.h,
+  }
+end
+
+function nextColourChoice(useMyColour, colour)
+  if useMyColour then return false, COLOUR_ORDER[1] end
+  for i, name in ipairs(COLOUR_ORDER) do
+    if name == colour then
+      if COLOUR_ORDER[i + 1] then return false, COLOUR_ORDER[i + 1] end
+      return true, colour
+    end
+  end
+  return false, COLOUR_ORDER[1]
+end
+
+function colourButtonLabel(useMyColour, colour)
+  if useMyColour then return "Colour: mine" end
+  return "Colour: " .. tostring(colour or COLOUR_ORDER[1])
+end
+
+function wrapText(text, maxChars)
+  local lines = {}
+  local line = ""
+  for token in tostring(text or ""):gmatch("%S+") do
+    local word = token
+    while #word > maxChars do
+      if line ~= "" then
+        lines[#lines + 1] = line
+        line = ""
+      end
+      lines[#lines + 1] = word:sub(1, maxChars)
+      word = word:sub(maxChars + 1)
+    end
+    if line == "" then
+      line = word
+    elseif #line + 1 + #word <= maxChars then
+      line = line .. " " .. word
+    else
+      lines[#lines + 1] = line
+      line = word
+    end
+  end
+  if line ~= "" then lines[#lines + 1] = line end
+  return table.concat(lines, "\n")
+end
+
+function inputLayout(baseUrl, code)
+  return {
+    {
+      id = "baseUrl", input_function = "onBaseUrlInput", label = "API base URL",
+      tooltip = "Where the roster tool is serving /api/tts/warband/<code>",
+      value = baseUrl or "", alignment = 3,
+      position = screenToLocal(0, LAYOUT.baseUrl.row), rotation = { 0, 0, 0 },
+      width = FULL_WIDTH, height = LAYOUT.baseUrl.height, font_size = LAYOUT.baseUrl.font,
+      color = LIGHT, font_color = DARK,
+    },
+    {
+      id = "code", input_function = "onCodeInput", label = "Warband code",
+      tooltip = "The code the roster tool handed out for your warband",
+      value = code or "", alignment = 3,
+      position = screenToLocal(0, LAYOUT.code.row), rotation = { 0, 0, 0 },
+      width = FULL_WIDTH, height = LAYOUT.code.height, font_size = LAYOUT.code.font,
+      color = WHITE, font_color = DARK,
+    },
+  }
+end
+
+local function button(id, label, click, col, row, width, height, font, colour, fontColour, tooltip)
+  return {
+    id = id, label = label, click_function = click, tooltip = tooltip or "",
+    position = screenToLocal(col, row), rotation = { 0, 0, 0 },
+    width = width, height = height, font_size = font,
+    color = colour, font_color = fontColour,
+  }
+end
+
+-- `view` is what the buttons show: colourLabel, pending (re-import confirm
+-- shown), status, members (row labels, at most MAX_ROWS) and selected.
+function widgetLayout(view)
+  local specs = {}
+  specs[#specs + 1] = button("title", "WARBAND IMPORTER", "noop", 0, LAYOUT.title.row, 0, 0, LAYOUT.title.font, PANEL, GOLD)
+  specs[#specs + 1] = button("colour", view.colourLabel, "onCycleColour", -HALF_OFFSET, LAYOUT.colour.row,
+    HALF_WIDTH, LAYOUT.colour.height, LAYOUT.colour.font, GREY, WHITE,
+    "Which seat the models are placed and tinted for; 'mine' follows whoever presses Import")
+  specs[#specs + 1] = button("bind", "Bind", "onBind", HALF_OFFSET, LAYOUT.bind.row,
+    HALF_WIDTH, LAYOUT.bind.height, LAYOUT.bind.font, GREY, WHITE,
+    "Select a member below, press Bind, then pick up your own model")
+  if view.pending then
+    specs[#specs + 1] = button("replace", "Replace", "onConfirmReplace", -HALF_OFFSET, LAYOUT.import.row,
+      HALF_WIDTH, LAYOUT.import.height, LAYOUT.import.font, RED, WHITE, "Delete the spawned models and import again")
+    specs[#specs + 1] = button("cancel", "Cancel", "onConfirmCancel", HALF_OFFSET, LAYOUT.import.row,
+      HALF_WIDTH, LAYOUT.import.height, LAYOUT.import.font, GREY, WHITE, "Leave the table as it is")
+  else
+    specs[#specs + 1] = button("import", "Import", "onImport", 0, LAYOUT.import.row,
+      FULL_WIDTH, LAYOUT.import.height, LAYOUT.import.font, GREEN, WHITE, "Fetch the warband and spawn its models")
+  end
+  specs[#specs + 1] = button("status", wrapText(view.status, LAYOUT.status.wrap), "noop", 0, LAYOUT.status.row,
+    FULL_WIDTH, LAYOUT.status.height, LAYOUT.status.font, PANEL, LIGHT)
+  local m = LAYOUT.members
+  for i, label in ipairs(view.members or {}) do
+    if i > MAX_ROWS then break end
+    local column = math.floor((i - 1) / m.perColumn)
+    local col = HALF_OFFSET
+    if column == 0 then col = -HALF_OFFSET end
+    local row = m.row + ((i - 1) % m.perColumn) * m.pitch
+    local bg, fg = ROW, LIGHT
+    if view.selected == i then bg, fg = GOLD, DARK end
+    specs[#specs + 1] = button("row" .. i, label, "selectMember" .. i, col, row, HALF_WIDTH, m.height, m.font, bg, fg,
+      "Click to select, then Bind")
+  end
+  return specs
+end
+
 ---------------------------------------------------------------- TTS glue --
 
 state = { baseUrl = DEFAULT_BASE_URL, code = "", colour = "Red", useMyColour = true }
-session = { payload = nil, selected = nil, armed = {}, pending = nil }
+session = { payload = nil, selected = nil, armed = {}, pending = nil, status = "Start the API, type a code, press Import." }
+buttonIndex = {}
 
 function onSave()
   return JSON.encode(state)
@@ -305,49 +470,95 @@ function onLoad(saved)
     end
   end
   if trim(state.baseUrl) == "" then state.baseUrl = DEFAULT_BASE_URL end
-  Wait.frames(refreshUi, 3)
+  for i = 1, MAX_ROWS do
+    _G["selectMember" .. i] = function(obj, colour, alt) onSelectMember(colour, i) end
+  end
+  self.clearInputs()
+  for _, spec in ipairs(inputLayout(state.baseUrl, state.code)) do
+    self.createInput(widgetParams(spec))
+  end
+  renderButtons()
 end
 
-function refreshUi()
-  self.UI.setAttribute("baseUrl", "text", state.baseUrl)
-  self.UI.setAttribute("code", "text", state.code or "")
-  self.UI.setAttribute("useMyColour", "isOn", state.useMyColour and "true" or "false")
-  self.UI.setAttribute("colourBtn", "active", state.useMyColour and "false" or "true")
-  self.UI.setAttribute("colourBtn", "text", "Colour: " .. (state.colour or "Red"))
-  renderMembers()
+function widgetParams(spec)
+  local params = {}
+  for k, v in pairs(spec) do
+    if k ~= "id" then params[k] = v end
+  end
+  params.function_owner = self
+  return params
+end
+
+function noop() end
+
+function currentView()
+  local labels = {}
+  local members = (session.payload and session.payload.members) or {}
+  for i = 1, math.min(#members, MAX_ROWS) do labels[i] = memberRowLabel(i, members[i]) end
+  return {
+    colourLabel = colourButtonLabel(state.useMyColour, state.colour),
+    pending = session.pending ~= nil,
+    status = session.status,
+    members = labels,
+    selected = session.selected,
+  }
+end
+
+function renderButtons()
+  self.clearButtons()
+  buttonIndex = {}
+  for i, spec in ipairs(widgetLayout(currentView())) do
+    self.createButton(widgetParams(spec))
+    buttonIndex[spec.id] = i - 1
+  end
+  local members = (session.payload and session.payload.members) or {}
+  if #members > MAX_ROWS then
+    setStatus(string.format("Showing the first %d of %d members.", MAX_ROWS, #members))
+  end
 end
 
 function setStatus(text)
-  self.UI.setAttribute("status", "text", text)
+  session.status = text
   log("[Warband Importer] " .. text)
-end
-
-function onBaseUrlChanged(player, value)
-  state.baseUrl = trim(value)
-  if state.baseUrl == "" then state.baseUrl = DEFAULT_BASE_URL end
-  self.UI.setAttribute("baseUrl", "text", state.baseUrl)
-end
-
-function onCodeChanged(player, value)
-  state.code = trim(value)
-end
-
-function onUseMyColourChanged(player, value)
-  state.useMyColour = (value == "True" or value == "true")
-  refreshUi()
-end
-
-function onCycleColour(player)
-  local following = COLOUR_ORDER[1]
-  for i, name in ipairs(COLOUR_ORDER) do
-    if name == state.colour then following = COLOUR_ORDER[i + 1] or COLOUR_ORDER[1] end
+  if buttonIndex.status then
+    self.editButton({ index = buttonIndex.status, label = wrapText(text, LAYOUT.status.wrap) })
   end
-  state.colour = following
-  refreshUi()
 end
 
-function targetColour(player)
-  if state.useMyColour then return player.color end
+function onBaseUrlInput(obj, colour, value, stillEditing)
+  state.baseUrl = value or ""
+  if not stillEditing then
+    state.baseUrl = trim(value)
+    if state.baseUrl == "" then state.baseUrl = DEFAULT_BASE_URL end
+    self.editInput({ index = INPUT_BASE_URL, value = state.baseUrl })
+  end
+end
+
+function onCodeInput(obj, colour, value, stillEditing)
+  state.code = value or ""
+  if not stillEditing then state.code = trim(value) end
+end
+
+-- The input callbacks only fire on keystrokes and deselection, so Import also
+-- reads the widgets directly in case a value was typed but never deselected.
+function readInputs()
+  for _, input in ipairs(self.getInputs() or {}) do
+    if input.index == INPUT_BASE_URL then
+      state.baseUrl = trim(input.value)
+    elseif input.index == INPUT_CODE then
+      state.code = trim(input.value)
+    end
+  end
+  if state.baseUrl == "" then state.baseUrl = DEFAULT_BASE_URL end
+end
+
+function onCycleColour(obj, colour)
+  state.useMyColour, state.colour = nextColourChoice(state.useMyColour, state.colour)
+  renderButtons()
+end
+
+function targetColour(playerColour)
+  if state.useMyColour then return playerColour end
   return state.colour or "Red"
 end
 
@@ -363,30 +574,30 @@ function findWarbandObjects(code)
   return found
 end
 
-function onImport(player)
+function onImport(obj, playerColour)
+  readInputs()
   local code = trim(state.code)
   if code == "" then
     setStatus("Type a warband code, then Import.")
     return
   end
-  local colour = targetColour(player)
+  local colour = targetColour(playerColour)
   local existing = findWarbandObjects(code)
   if #existing.spawned + #existing.bound > 0 then
     session.pending = { code = code, colour = colour }
-    self.UI.setAttribute("confirmText", "text", string.format(
+    session.status = string.format(
       "%s is already on the table: replace %d spawned model(s) and re-bind %d of your own?",
-      code, #existing.spawned, #existing.bound))
-    self.UI.setAttribute("confirmRow", "active", "true")
-    setStatus("Confirm the re-import.")
+      code, #existing.spawned, #existing.bound)
+    renderButtons()
     return
   end
   fetchWarband(code, colour)
 end
 
-function onConfirmReplace(player)
+function onConfirmReplace(obj, playerColour)
   local pending = session.pending
   session.pending = nil
-  self.UI.setAttribute("confirmRow", "active", "false")
+  renderButtons()
   if not pending then return end
   local removed = 0
   for _, obj in ipairs(findWarbandObjects(pending.code).spawned) do
@@ -397,10 +608,10 @@ function onConfirmReplace(player)
   fetchWarband(pending.code, pending.colour)
 end
 
-function onConfirmCancel(player)
+function onConfirmCancel(obj, playerColour)
   session.pending = nil
-  self.UI.setAttribute("confirmRow", "active", "false")
-  setStatus("Import cancelled.")
+  session.status = "Import cancelled."
+  renderButtons()
 end
 
 function fetchWarband(code, colour)
@@ -434,7 +645,7 @@ function onWarbandResponse(request, code, colour)
   session.selected = nil
   session.armed = {}
   spawnWarband(payload, colour)
-  renderMembers()
+  renderButtons()
 end
 
 function spawnWarband(payload, colour)
@@ -473,28 +684,26 @@ function applyBinding(object, member, code, origin)
   object.setTags(mergeTags(object.getTags(), memberTags(code, member.id, origin)))
 end
 
-function onSelectMember(player, value, id)
-  local index = tonumber(id:match("^row(%d+)$"))
-  if not index or not session.payload or not session.payload.members[index] then return end
+function onSelectMember(playerColour, index)
+  if not session.payload or not session.payload.members[index] then return end
   session.selected = index
-  renderMembers()
-  setStatus(string.format("Selected %s. Press Bind, then pick up your model.", session.payload.members[index].displayName or "?"))
+  session.status = string.format("Selected %s. Press Bind, then pick up your model.", session.payload.members[index].displayName or "?")
+  renderButtons()
 end
 
-function onBind(player)
+function onBind(obj, playerColour)
   if not session.payload or not session.selected then
     setStatus("Import a warband and select a member first.")
     return
   end
-  local colour = player.color
-  if session.armed[colour] then
-    session.armed[colour] = nil
+  if session.armed[playerColour] then
+    session.armed[playerColour] = nil
     setStatus("Bind cancelled.")
     return
   end
-  session.armed[colour] = session.selected
+  session.armed[playerColour] = session.selected
   local member = session.payload.members[session.selected]
-  setStatus(string.format("%s: pick up the model that becomes %s (Bind again to cancel).", colour, member.displayName or "?"))
+  setStatus(string.format("%s: pick up the model that becomes %s (Bind again to cancel).", playerColour, member.displayName or "?"))
 end
 
 -- Fires in object scripts for any object a player picks up, which is the same
@@ -518,30 +727,7 @@ function onObjectPickUp(colour, object)
   if wasCalled == "" then wasCalled = "your model" end
   local suffix = ""
   if removed > 0 then suffix = " (default model removed)" end
-  setStatus(string.format("Bound %s to %s%s.", member.displayName or "?", wasCalled, suffix))
-  renderMembers()
-end
-
-function renderMembers()
-  local members = (session.payload and session.payload.members) or {}
-  for i = 1, MAX_ROWS do
-    local id = "row" .. i
-    local member = members[i]
-    if member then
-      self.UI.setAttribute(id, "active", "true")
-      self.UI.setAttribute(id, "text", memberRowLabel(i, member))
-      if session.selected == i then
-        self.UI.setAttribute(id, "color", "#d9b352")
-        self.UI.setAttribute(id, "textColor", "#000000")
-      else
-        self.UI.setAttribute(id, "color", "#333333")
-        self.UI.setAttribute(id, "textColor", "#e6e6e6")
-      end
-    else
-      self.UI.setAttribute(id, "active", "false")
-    end
-  end
-  if #members > MAX_ROWS then
-    setStatus(string.format("Showing the first %d of %d members.", MAX_ROWS, #members))
-  end
+  session.status = string.format("Bound %s to %s%s.", member.displayName or "?", wasCalled, suffix)
+  log("[Warband Importer] " .. session.status)
+  renderButtons()
 end

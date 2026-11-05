@@ -246,7 +246,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP | Tournament Companion 1.0 | `5ac9e2` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
 | STRIP | TwistSlot | `d1e006` | ScriptingTrigger | 0 | 0 | scripting zone for a primary / deployment / twist mission card slot |
 | STRIP | Warhammer Open FAQ | `47587b` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
-| ADDED | Warband Importer | `b91983` | Custom_Tile | 17,742 | 0 | TC-016: code entry, `WebRequest` fetch of `/api/tts/warband/{code}`, spawn of bound models, Bind mode, re-import; see below |
+| ADDED | Warband Importer | `b91983` | Custom_Tile | 24,786 | 0 | TC-016: code entry, `WebRequest` fetch of `/api/tts/warband/{code}`, spawn of bound models, Bind mode, re-import; see below |
 
 
 ## global.lua (128,527 bytes, 151 functions) by system
@@ -318,11 +318,33 @@ changelog constants (KEEP).
 
 ## Added: Warband Importer `b91983` (TC-016)
 
-A locked 12"x12" Custom_Tile at (-22, 1, 0), left of the mat between the two hand zones,
-with a flat XML panel (`mod/ui/b91983.xml`): API base URL and code fields, a "Use my
-colour" toggle with a colour cycle button, Import and Bind buttons, a status line and a
-30-row member list. `mod/state/b91983.json` persists the base URL, code and colour choice
-through `onSave`/`onLoad`.
+A locked 12"x12" Custom_Tile at (-22, 1, 0), 20" in front of the host camera between the
+two hand zones, turned to `rotY: 270` so its widgets read upright from the seats (every seat
+faces +x: the hand zones sit at x=-42 with rotY 270 and `CameraStates[0]` loads looking
+along +x; the LCT Start Menu at x=52 uses the same rotY 270). The face is the Scripted
+Table's plain charcoal board image (3603166284, Custom_Boards `199749` / `f1195f`, 2272x1704)
+at ColorDiffuse white, replacing the 832px Lethal-Hit-Zone square that stretched grainy over
+the tile. The panel is classic 3D widgets created from the script (`self.createInput` for
+the API base URL and the warband code, `self.createButton` for everything else: title and
+status as width-0 / full-width label buttons with a no-op click, Colour cycle, Bind, Import
+or the Replace / Cancel pair while a re-import is pending, and one thin button per member in
+two columns of ten) - the pattern ForceOrg's Yellow Machine uses for its on-block buttons,
+and the same `rotation {0,0,0}` / label-top-at-local-`-z` convention the LCT's own scripted
+objects rely on. Widgets are rebuilt with `clearButtons` on every state change; the inputs
+are created once and read through their `input_function` callback (stored on every call,
+trimmed when `stillEditing` is false) and again via `self.getInputs()` when Import is
+pressed. There is no XML UI on the object. `mod/state/b91983.json` persists the base URL,
+code and colour choice through `onSave`/`onLoad`.
+
+Geometry (`LAYOUT`, local units; the face spans -1..1, 1 local unit = 6"; width / height /
+font_size are 1/500ths of a local unit, calibrated against the LCT dice mats whose rows
+touch at that ratio; `UNITS_PER_LOCAL` is the one number to change if everything renders
+uniformly wrong): title label at row -0.91 font 90; API input row -0.74, 900 x 100, font
+70; code input row -0.49, 900 x 130, font 100; Colour / Bind row -0.24, 435 x 90 each at
++-0.46, font 55 / 60; Import row -0.02, 900 x 110, font 80 (Replace / Cancel: 435 wide at
++-0.46); status row 0.24, 900 x 130, font 34, text wrapped at 48 characters; member rows
+from row 0.44, pitch 0.055, 435 x 25, font 22, ten per column. Everything floats at local
+y = 0.12. Screen right is local -x, screen down is local +z (`screenToLocal`).
 
 `mod/scripts/b91983.lua` is split in two. Above the `TTS glue` line nothing touches a TTS
 global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`):
@@ -342,14 +364,19 @@ global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`
   null` gets Gannel's bare 32mm base with the same binding.
 - `mergeTags` / `memberTags` / `memberIdFromTags` keep foreign tags and replace the
   importer's own.
+- `widgetLayout` / `inputLayout` / `widgetExtent` / `screenToLocal` build the button and
+  input parameter tables from a view of the state; `nextColourChoice` / `colourButtonLabel`
+  drive the Colour cycle and `wrapText` folds the status text. The test checks every widget
+  stays on the tile without overlapping.
 
-The glue: `onImport` checks `getObjectsWithTag("tc-warband:<code>")`; if the code is already
-on the table it shows a confirm row, and Replace deletes the `tc-spawned` objects while
-`tc-bound` ones (the player's own models) are kept and re-bound from the fresh payload. The
+The glue: `onImport` reads the inputs, then checks `getObjectsWithTag("tc-warband:<code>")`;
+if the code is already on the table it swaps Import for Replace / Cancel, and Replace deletes
+the `tc-spawned` objects while `tc-bound` ones (the player's own models) are kept and
+re-bound from the fresh payload. The
 fetch is `WebRequest.get(base .. "/api/tts/warband/" .. code)`, decoded with `JSON.decode`
 and spawned with `spawnObjectData`. Bind mode arms the clicking player's colour on the
 selected member; `onObjectPickUp(colour, object)`, which fires in object scripts for any
 object a player grabs (the moment ForceOrg's importer also binds on, via `onPlayerAction`),
 copies the member's name, description, GM notes and tags onto that object and deletes the
-member's spawned default. Nothing in the glue has been run in TTS yet (`mod/TESTING.md`
-step 8).
+member's spawned default. The 3D-widget panel has not been run in TTS yet (`mod/TESTING.md`
+step 8 lists the orientation and sizing knobs).
