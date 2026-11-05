@@ -1,4 +1,4 @@
-import { findUnit, unitLimits } from "@tc/rules/browser";
+import { findUnit, memberCost, unitLimits } from "@tc/rules/browser";
 import { MemberList } from "../components/MemberList.js";
 import { RecruitList } from "../components/RecruitList.js";
 import { nextMemberId } from "../roster/reducer.js";
@@ -31,10 +31,11 @@ export function BarracksScreen() {
             purse,
             duplicateOffer: (row) => {
               const unit = findUnit(rules, warband, row.member.unitId);
-              const each = cost.perMember.find((c) => c.memberId === row.member.id);
+              // Priced as the next recruit: a variant can price only the first one (Knights of Avarice Goetic Warlock).
+              const each = memberCost(rules, warband, { ...row.member, id: freshId() });
               const max = unit ? unitLimits(unit, ctx).max : null;
               const count = unit ? warband.members.filter((m) => findUnit(rules, warband, m.unitId)?.id === unit.id).length : 0;
-              return { cost: { ducats: each?.ducats ?? 0, glory: each?.glory ?? 0 }, ...(max !== null ? { cap: { count, max } } : {}) };
+              return { cost: { ducats: each.ducats, glory: each.glory }, ...(max !== null ? { cap: { count, max } } : {}) };
             },
             onDuplicate: (row) => {
               const copy = { id: freshId(), unitId: row.member.unitId, equipmentItemIds: [...row.member.equipmentItemIds], ...(row.member.upgradeIds?.length ? { upgradeIds: [...row.member.upgradeIds] } : {}) };

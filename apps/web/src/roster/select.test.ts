@@ -208,3 +208,44 @@ describe("labels", () => {
     expect(hiddenText(3)).toBe("3 options hidden by campaign rules we can't check yet");
   });
 });
+
+// unit-rules.json variant prices and grants reach the shelf (TC-003d).
+describe("variant prices and grants on the shelf", () => {
+  const recruit = (w: Warband, unitId: string) => unitRows(w, data, ctxFor(w)).rows.find((r) => r.unit.id === unitId);
+
+  it("prices a recruit as the variant does: a Cavalcade Communicant in glory, the Knights' second Goetic Warlock in glory", () => {
+    const pilgrims = (variantId?: string) => createWarband({ name: "t", factionId: "trench-pilgrims", ...(variantId ? { variantId } : {}) }, "w");
+    expect(recruit(pilgrims("trench-pilgrims/cavalcade-of-the-tenth-plague"), "trench-pilgrims/communicant")?.cost).toMatchObject({ ducats: 0, glory: 3 });
+    expect(recruit(pilgrims(), "trench-pilgrims/communicant")?.cost).toMatchObject({ ducats: 100, glory: 0 });
+    const koa = createWarband({ name: "t", factionId: "heretic-legion", variantId: "heretic-legion/knights-of-avarice" }, "w");
+    expect(recruit(koa, "heretic-legion/goetic-warlock")?.cost).toMatchObject({ ducats: 110, glory: 0 });
+    const one = rosterReducer(koa, { type: "add-member", unitId: "heretic-legion/goetic-warlock" });
+    expect(recruit(one, "heretic-legion/goetic-warlock")?.cost).toMatchObject({ ducats: 0, glory: 4 });
+  });
+
+  it("lists the Sipahi as its own Defenders row next to the Mamluk Faris", () => {
+    const defenders = createWarband({ name: "t", factionId: "iron-sultanate", variantId: "iron-sultanate/defenders-of-the-iron-wall" }, "w");
+    expect(recruit(defenders, "iron-sultanate/sipahi-automaton-cavalry")).toMatchObject({ unit: { name: "Sipahi Automaton Cavalry", mercenary: true }, cost: { ducats: 110, glory: 0 }, max: 1 });
+    expect(recruit(defenders, "iron-sultanate/mamluk-faris")?.cost).toMatchObject({ ducats: 0, glory: 4 });
+  });
+
+  it("prices an Alba Great Sword at 7 and caps Swiss Guard at 4 besides the Lieutenant", () => {
+    const alba = withYeoman(antioch("new-antioch/kingdom-of-alba-assault-detachment"));
+    const sword = armouryGroups(alba.members[0]!, yeomanUnit(), alba, data, ctxFor(alba)).groups.flatMap((g) => g.rows).find((r) => r.item.id === "great-sword-axe");
+    expect(sword?.cost).toMatchObject({ ducats: 7, glory: 0 });
+
+    // The Lieutenant's Swiss Guard does not use up one of the 4 others (p35).
+    let papal = rosterReducer(antioch("new-antioch/papal-states-intervention-force"), { type: "add-member", unitId: "new-antioch/lieutenant" });
+    const lt = data.unitsById.get("new-antioch/lieutenant")!;
+    const swissOf = (unit: typeof lt) => unit.upgrades!.find((g) => g.name === "Swiss Guard")!;
+    expect(swissOf(yeomanUnit()).grant).toBe("swiss-guard");
+    papal = rosterReducer(papal, { type: "add-upgrade", memberId: papal.members[0]!.id, upgradeId: swissOf(lt).bsId });
+    for (let i = 0; i < 5; i++) papal = withYeoman(papal);
+    for (const m of papal.members.slice(1, 4)) papal = rosterReducer(papal, { type: "add-upgrade", memberId: m.id, upgradeId: swissOf(yeomanUnit()).bsId });
+    const row = (i: number) => upgradeRows(papal.members[i]!, yeomanUnit(), papal, data, ctxFor(papal)).rows.find((r) => r.upgrade.name === "Swiss Guard")!;
+    expect(row(4).cost).toMatchObject({ ducats: 0, glory: 0 });
+    expect(row(4).cap).toBeUndefined();
+    papal = rosterReducer(papal, { type: "add-upgrade", memberId: papal.members[4]!.id, upgradeId: swissOf(yeomanUnit()).bsId });
+    expect(row(5).cap).toEqual({ count: 4, max: 4, scope: "warband" });
+  });
+});

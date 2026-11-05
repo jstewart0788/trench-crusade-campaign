@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { applyUnitRules, UnitRulesFile, type UnitRulesIndex } from "./unit-rules.js";
+import { applyUnitRules, substituteUnits, UnitRulesFile, type ListResolver, type UnitRulesIndex } from "./unit-rules.js";
 import {
   CampaignFile,
   Cost,
@@ -41,6 +41,8 @@ export const Upgrade = z
     onlyWithout: Gate,
     conditionNote: z.string().optional(),
     rules: z.array(RuleText).optional(),
+    /** Set from unit-rules.json freeKeywordGrants: this upgrade is that grant's toggle. */
+    grant: z.string().optional(),
   })
   .passthrough();
 export type Upgrade = z.infer<typeof Upgrade>;
@@ -102,6 +104,8 @@ export const RosterUnit = Unit.extend({
   maxPerWarband: z.number().int().nullable().optional(),
   mercenary: z.boolean().optional(),
   mercenaryId: z.string().optional(),
+  /** Set on entries built from unit-rules.json variantSubstituteUnits: the unit whose profile and kit it uses. */
+  substituteOf: z.string().optional(),
 }).passthrough();
 export type RosterUnit = z.infer<typeof RosterUnit>;
 
@@ -303,17 +307,7 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
   }
 
   const factions = factionsFile.factions;
-  const units = unitsFile.units;
   const equipment = equipmentFile.items;
-
-  const unitsByFaction = new Map<string, RosterUnit[]>();
-  const unitsBySubfaction = new Map<string, RosterUnit[]>();
-  for (const unit of units) {
-    const [map, key] = unit.subfactionId ? [unitsBySubfaction, unit.subfactionId] : [unitsByFaction, unit.factionId];
-    const list = map.get(key) ?? [];
-    list.push(unit);
-    map.set(key, list);
-  }
 
   const subfactionsById = new Map<string, { faction: RosterFaction; subfaction: RosterSubfaction }>();
   const variantsById = new Map<string, { factionId: string; subfactionId?: string; id: string; name: string }>();
@@ -325,7 +319,32 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
     }
   }
 
-  const applied = applyUnitRules(unitRulesFile, new Map(units.map((u) => [u.id, u])));
+  const factionIds = new Set(factions.map((f) => f.id));
+  const resolver = (all: RosterUnit[]): ListResolver => ({
+    isVariant: (id) => variantsById.has(id),
+    unitsUnder(id) {
+      const v = variantsById.get(id);
+      if (v) return all.filter((u) => u.factionId === v.factionId && u.subfactionId === v.subfactionId);
+      if (subfactionsById.has(id)) return all.filter((u) => u.subfactionId === id);
+      if (factionIds.has(id)) return all.filter((u) => u.factionId === id && u.subfactionId === undefined);
+      return undefined;
+    },
+  });
+
+  const substitutes = substituteUnits(unitRulesFile, new Map(unitsFile.units.map((u) => [u.id, u])), resolver(unitsFile.units));
+  if (substitutes.problems.length) throw new RulesDataError(RULES_FILES.unitRules, substitutes.problems.slice(0, 10));
+  const units = [...unitsFile.units, ...substitutes.units];
+
+  const unitsByFaction = new Map<string, RosterUnit[]>();
+  const unitsBySubfaction = new Map<string, RosterUnit[]>();
+  for (const unit of units) {
+    const [map, key] = unit.subfactionId ? [unitsBySubfaction, unit.subfactionId] : [unitsByFaction, unit.factionId];
+    const list = map.get(key) ?? [];
+    list.push(unit);
+    map.set(key, list);
+  }
+
+  const applied = applyUnitRules(unitRulesFile, new Map(units.map((u) => [u.id, u])), resolver(units));
   if (applied.problems.length) throw new RulesDataError(RULES_FILES.unitRules, applied.problems.slice(0, 10));
   const unitRules = applied.index;
 

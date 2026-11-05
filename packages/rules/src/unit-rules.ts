@@ -49,6 +49,8 @@ export const StatOverride = z.object({
   onlyWithout: Gate,
   stats: z.object({ ranged: z.string().optional(), melee: z.string().optional(), armour: z.number().int().optional() }),
   page: Page,
+  /** The book the page is in, when it is not the file's. */
+  source: z.string().optional(),
   text: z.string(),
 });
 export type StatOverride = z.infer<typeof StatOverride>;
@@ -70,6 +72,96 @@ export const PreGameChoice = z.object({
 });
 export type PreGameChoice = z.infer<typeof PreGameChoice>;
 
+// The variant and grant rules below name the lists they apply under: a variant
+// id, a subfaction id, or a faction id for that faction's core list. Each one
+// cites the book it comes from, since two books are in play.
+const Under = Ids;
+const Book = z.enum(["Warbands-of-Trench-Crusade.pdf", "Heretic-Naval-Raiders-Warband.pdf"]);
+const Price = z.object({ ducats: z.number().int().nonnegative(), glory: z.number().int().nonnegative() });
+
+/** A price that changes under a list: a unit's, an armoury item's (optionally on some units only) or an upgrade's, in either currency. */
+export const VariantPrice = z.object({
+  id: z.string(),
+  under: Under,
+  kind: z.enum(["unit", "item", "upgrade"]),
+  /** Unit ids, item ids or upgrade names. */
+  targets: Ids,
+  /** Items and upgrades: only on these units. */
+  unitIds: Ids.optional(),
+  cost: Price,
+  /** Only the first N in the warband, in roster order (Knights of Avarice: the first Goetic Warlock). */
+  first: z.number().int().positive().optional(),
+  /** Items: the warband-wide Limit under the list, replacing the row's own (Methodius Machine Gun: Limit 2). */
+  limit: z.number().int().positive().optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type VariantPrice = z.infer<typeof VariantPrice>;
+
+/** A new Warband Entry built from another's profile and kit, with its own name, price and limit (Defenders' Sipahi). */
+export const VariantSubstituteUnit = z.object({
+  id: z.string(),
+  /** Id of the entry this adds; it must not already exist. */
+  unitId: z.string().regex(/^[a-z0-9-]+\/[a-z0-9-]+$/),
+  name: z.string(),
+  /** Variant ids of the profile unit's own list. */
+  under: Under,
+  profileOf: z.string(),
+  cost: Price,
+  max: z.number().int().positive(),
+  /** "You cannot change their Battlekit in any way": the kit chosen at recruitment is permanent. */
+  lockedKit: z.boolean(),
+  /** Keywords the entry adds to the profile's (Noble Guardians: ELITE at no additional cost). */
+  keywords: z.array(z.string()).optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type VariantSubstituteUnit = z.infer<typeof VariantSubstituteUnit>;
+
+/** Up to N models may take a keyword for free. Each pool caps the models drawn from it; a pool without unitIds takes any model in the list. */
+export const FreeKeywordGrant = z.object({
+  id: z.string(),
+  name: z.string(),
+  keyword: z.string(),
+  under: Under,
+  /** The per-model toggle: the list's own upgrade of this name where the data has one, otherwise one is added to each eligible unit. */
+  upgrade: z.string(),
+  pools: z.array(z.object({ unitIds: Ids.optional(), max: z.number().int().positive() })).min(1),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type FreeKeywordGrant = z.infer<typeof FreeKeywordGrant>;
+
+/** An item that is free when the warband is created (game 1), and must then be taken when `required`. */
+export const FreeAtCreation = z.object({
+  id: z.string(),
+  name: z.string(),
+  under: Under,
+  itemId: z.string(),
+  required: z.boolean(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type FreeAtCreation = z.infer<typeof FreeAtCreation>;
+
+/** Ducats or glory a list gains at a campaign event, beyond its starting purse. */
+export const PurseAdjustment = z.object({
+  id: z.string(),
+  name: z.string(),
+  under: Under,
+  event: z.enum(["reinforcements"]),
+  ducats: z.number().int().optional(),
+  glory: z.number().int().optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type PurseAdjustment = z.infer<typeof PurseAdjustment>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -78,6 +170,11 @@ export const UnitRulesFile = z.object({
   permanentItems: z.array(PermanentItems),
   statOverrides: z.array(StatOverride),
   preGameChoices: z.array(PreGameChoice),
+  variantPrices: z.array(VariantPrice),
+  variantSubstituteUnits: z.array(VariantSubstituteUnit),
+  freeKeywordGrants: z.array(FreeKeywordGrant),
+  freeAtCreation: z.array(FreeAtCreation),
+  purseAdjustments: z.array(PurseAdjustment),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -91,6 +188,71 @@ export interface UnitRulesFor {
 export interface UnitRulesIndex {
   file: UnitRules;
   byUnit: Map<string, UnitRulesFor>;
+  grantsById: Map<string, FreeKeywordGrant>;
+}
+
+/** Which lists an `under` id names: a variant, a subfaction, or a faction's core list. */
+export interface ListResolver {
+  /** The units of the list the id names, or undefined when it names none. */
+  unitsUnder(id: string): RosterUnit[] | undefined;
+  isVariant(id: string): boolean;
+}
+
+/** True when a rule's `under` names this roster's variant, subfaction, or (for a core list) faction. */
+export function appliesUnder(under: readonly string[], scope: { factionId: string; subfactionId?: string | undefined; variantId?: string | undefined }): boolean {
+  if (scope.variantId !== undefined && under.includes(scope.variantId)) return true;
+  if (scope.subfactionId !== undefined) return under.includes(scope.subfactionId);
+  return under.includes(scope.factionId);
+}
+
+const titleCase = (keyword: string) => keyword.toLowerCase().replace(/(^|[\s-])(\w)/g, (_, sep: string, c: string) => sep + c.toUpperCase());
+
+/** A keyword in the data's spelling ("NEGATE FEAR" → "Negate Fear"), which is how units.json lists them. */
+export function dataKeyword(keyword: string): string {
+  return titleCase(keyword.trim());
+}
+
+/**
+ * Builds the variantSubstituteUnits entries as units of their own, from a copy
+ * of the profile unit, so the list, the limits, the validator and the export
+ * treat them like any other entry. Called before the unit indexes are built.
+ */
+export function substituteUnits(file: UnitRules, unitsById: Map<string, RosterUnit>, lists: ListResolver): { units: RosterUnit[]; problems: string[] } {
+  const problems: string[] = [];
+  const units: RosterUnit[] = [];
+  for (const rule of file.variantSubstituteUnits) {
+    const where = `variantSubstituteUnits.${rule.id}`;
+    const source = unitsById.get(rule.profileOf);
+    if (!source) {
+      problems.push(`${where}: unknown unit "${rule.profileOf}"`);
+      continue;
+    }
+    if (unitsById.has(rule.unitId)) problems.push(`${where}: "${rule.unitId}" already exists`);
+    for (const id of rule.under) {
+      if (!lists.isVariant(id) || !lists.unitsUnder(id)?.includes(source)) problems.push(`${where}: "${id}" is not a variant of ${rule.profileOf}'s list`);
+    }
+    const copy = structuredClone(source) as RosterUnit & Record<string, unknown>;
+    delete copy.mercenaryId;
+    delete copy.bsId;
+    delete copy.notes;
+    const keywords = [...copy.keywords];
+    for (const k of rule.keywords ?? []) if (!keywords.some((have) => have.toLowerCase() === k.toLowerCase())) keywords.push(dataKeyword(k));
+    const unit: RosterUnit = {
+      ...copy,
+      id: rule.unitId,
+      name: rule.name,
+      cost: { ...rule.cost },
+      limits: { max: rule.max, min: null },
+      maxPerWarband: rule.max,
+      onlyWith: [...rule.under],
+      keywords,
+      elite: copy.elite || keywords.some((k) => k.toLowerCase() === "elite"),
+      substituteOf: source.id,
+      equipmentAccess: copy.equipmentAccess.map((a) => (rule.lockedKit ? { ...a, permanent: true } : a)),
+    };
+    units.push(unit);
+  }
+  return { units, problems };
 }
 
 /**
@@ -98,7 +260,7 @@ export interface UnitRulesIndex {
  * the default `replaceableDefault`, each replacement `replaces` (and `hands`),
  * each permanent item `permanent`. Returns the problems found; empty means ok.
  */
-export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUnit>): { index: UnitRulesIndex; problems: string[] } {
+export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUnit>, lists: ListResolver): { index: UnitRulesIndex; problems: string[] } {
   const problems: string[] = [];
   const byUnit = new Map<string, UnitRulesFor>();
   const entry = (unitId: string) => {
@@ -156,5 +318,64 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
   for (const rule of file.preGameChoices) {
     for (const unitId of rule.unitIds) if (unitOf(`preGameChoices.${rule.key}`, unitId)) entry(unitId).preGame.push(rule);
   }
-  return { index: { file, byUnit }, problems };
+
+  const listUnits = (where: string, under: readonly string[]) => {
+    const units = new Set<RosterUnit>();
+    for (const id of under) {
+      const list = lists.unitsUnder(id);
+      if (!list) problems.push(`${where}: "${id}" is not a variant, subfaction or faction`);
+      for (const u of list ?? []) units.add(u);
+    }
+    return [...units];
+  };
+
+  for (const rule of file.variantPrices) {
+    const where = `variantPrices.${rule.id}`;
+    const units = listUnits(where, rule.under);
+    for (const unitId of rule.unitIds ?? []) unitOf(where, unitId);
+    if (rule.kind !== "item" && rule.limit !== undefined) problems.push(`${where}: only an item price can carry a limit`);
+    for (const target of rule.targets) {
+      const offered =
+        rule.kind === "unit"
+          ? units.some((u) => u.id === target)
+          : units.some((u) => (!rule.unitIds || rule.unitIds.includes(u.id)) && (rule.kind === "item" ? u.equipmentAccess.some((a) => a.itemId === target) : (u.upgrades ?? []).some((g) => g.name === target)));
+      if (!offered) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers ${rule.kind} "${target}"`);
+    }
+  }
+
+  for (const rule of file.freeAtCreation) {
+    const where = `freeAtCreation.${rule.id}`;
+    if (!listUnits(where, rule.under).some((u) => u.equipmentAccess.some((a) => a.itemId === rule.itemId))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers "${rule.itemId}"`);
+  }
+  for (const rule of file.purseAdjustments) listUnits(`purseAdjustments.${rule.id}`, rule.under);
+
+  // A grant's toggle is an upgrade: the list's own where upstream already
+  // offers one (Swiss Guard), otherwise a free one added here. Either way it
+  // carries `grant`, and the pools, not the upgrade's own limit text, cap it.
+  const grantsById = new Map<string, FreeKeywordGrant>();
+  for (const rule of file.freeKeywordGrants) {
+    const where = `freeKeywordGrants.${rule.id}`;
+    grantsById.set(rule.id, rule);
+    const units = listUnits(where, rule.under);
+    const variants = rule.under.filter((id) => lists.isVariant(id));
+    const gate = variants.length ? { onlyWith: variants } : {};
+    const restricted = rule.pools.every((p) => p.unitIds);
+    const eligible = restricted ? new Set(rule.pools.flatMap((p) => p.unitIds ?? [])) : undefined;
+    for (const unitId of eligible ?? []) {
+      const unit = unitOf(where, unitId);
+      if (unit && !units.includes(unit)) problems.push(`${where}: ${unitId} is not in the ${rule.under.join(" / ")} list`);
+    }
+    for (const unit of units) {
+      if (unit.kind === "fireteam" || (eligible && !eligible.has(unit.id))) continue;
+      const own = (unit.upgrades ?? []).filter((g) => g.name === rule.upgrade);
+      if (own.length) for (const g of own) g.grant = rule.id;
+      else {
+        unit.upgrades = [
+          ...(unit.upgrades ?? []),
+          { bsId: `grant/${rule.id}`, name: rule.upgrade, group: "upgrades", cost: { ducats: 0, glory: 0 }, max: 1, rules: [{ name: rule.name, text: rule.text }], grant: rule.id, ...gate },
+        ];
+      }
+    }
+  }
+  return { index: { file, byUnit, grantsById }, problems };
 }

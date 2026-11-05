@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { itemCost, warbandCost } from "./cost.js";
+import { memberCost, warbandCost } from "./cost.js";
+import { isEliteMember, memberKeywords } from "./grants.js";
 import { normaliseName } from "./limits.js";
 import { modelFor, accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
 import { profileAbilities, profileKit } from "./profile.js";
@@ -191,9 +192,11 @@ interface ExportExtras {
 
 function exportMember(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined, models: ModelMap | undefined, extras: ExportExtras): ExportMember {
   const core = exportMemberCore(member, warband, data, variantName, extras);
+  // An entry built from another's profile (the Sipahi) spawns that unit's model until it has one of its own.
+  const profileOf = data.unitsById.get(core.unit.id)?.substituteOf;
   return {
     ...core,
-    model: exportModel(modelFor(models, core.unit.id, member.equipmentItemIds)),
+    model: exportModel(modelFor(models, core.unit.id, member.equipmentItemIds) ?? (profileOf ? modelFor(models, profileOf, member.equipmentItemIds) : undefined)),
     ttsDescription: renderTtsDescription(core),
     ttsGmNotes: renderTtsGmNotes(core),
   };
@@ -229,11 +232,12 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
   const unit = findUnit(data, warband, member.unitId);
   if (!unit) throw new WarbandExportError(`Unknown unit "${member.unitId}" on member ${member.id}`);
   const card = effectiveStats(unit, warband, data);
+  const priced = memberCost(data, warband, member);
 
-  const equipment: ExportEquipment[] = member.equipmentItemIds.map((itemId) => {
+  const equipment: ExportEquipment[] = member.equipmentItemIds.map((itemId, i) => {
     const item = data.equipmentById.get(itemId);
     if (!item) throw new WarbandExportError(`Unknown item "${itemId}" on member ${member.id}`);
-    const { ducats, glory } = itemCost(data, warband, member.unitId, itemId);
+    const { ducats, glory } = priced.items[i]!;
     const row = accessFor(unit, itemId);
     const entry: ExportEquipment = {
       id: item.id,
@@ -266,20 +270,21 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
   // Card kit comes after the armour breakdown: the profile's Armour value already includes it.
   for (const k of profileKit(unit)) equipment.push({ ...k, cost: { ducats: 0, glory: 0 }, builtIn: true });
 
-  const upgrades = (member.upgradeIds ?? []).map((id) => {
+  const upgrades = (member.upgradeIds ?? []).map((id, i) => {
     const upgrade = upgradeFor(unit, id);
     if (!upgrade) throw new WarbandExportError(`Unknown upgrade "${id}" for ${unit.name} on member ${member.id}`);
+    const { ducats, glory } = priced.upgrades[i]!;
     return {
       name: upgrade.name,
       text: (upgrade.rules ?? []).map((r) => `${r.name}: ${r.text}`).join("\n"),
-      cost: { ducats: upgrade.cost?.ducats ?? 0, glory: upgrade.cost?.glory ?? 0 },
+      cost: { ducats, glory },
     };
   });
 
   return {
     id: member.id,
     displayName: member.name ?? unit.name,
-    unit: { id: unit.id, name: unit.name, kind: unit.kind, elite: unit.elite, keywords: unit.keywords },
+    unit: { id: unit.id, name: unit.name, kind: unit.kind, elite: isEliteMember(member, unit, data), keywords: memberKeywords(member, unit, data) },
     stats: {
       movement: unit.stats.movement,
       ranged: card.ranged,

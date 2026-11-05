@@ -6,6 +6,7 @@ export * from "./limits.js";
 export * from "./battlekit.js";
 export * from "./profile.js";
 export * from "./unit-rules.js";
+export * from "./grants.js";
 export * from "./validate.js";
 export * from "./export.js";
 export * from "./import/index.js";

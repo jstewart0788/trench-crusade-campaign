@@ -1,4 +1,4 @@
-import { accessFor, findUnit, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
+import { accessFor, findUnit, isEliteMember, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
 import { useId, type MouseEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
@@ -119,7 +119,7 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
     >
       <div className={styles.title}>
         <span className={`${styles.unit} ${leaving ? styles.struck : ""}`}>{unit?.name ?? member.unitId}</span>
-        {unit?.elite && <span className={styles.tag}>Elite</span>}
+        {unit && isEliteMember(member, unit, rules) && <span className={styles.tag}>Elite</span>}
         {unit?.mercenary && <span className={styles.tag}>Mercenary</span>}
         {row.pending === "add" && <span className={styles.pending}>pending</span>}
         {leaving && <span className={styles.leaving}>leaving</span>}

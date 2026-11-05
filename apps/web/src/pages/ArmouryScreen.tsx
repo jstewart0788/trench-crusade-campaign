@@ -1,4 +1,4 @@
-import { effectiveStats, findUnit, itemCost, type ReplaceableBuiltIn } from "@tc/rules/browser";
+import { effectiveStats, findUnit, itemCost, memberKeywords, type ReplaceableBuiltIn } from "@tc/rules/browser";
 import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Figure } from "../components/Figure.js";
@@ -140,6 +140,7 @@ export function ArmouryScreen() {
           <div className={styles.column}>
             <Loadout
               stats={effectiveStats(unit, warband, rules, ctx)}
+              keywords={memberKeywords(member, unit, rules)}
               member={member}
               unit={unit}
               before={delta.before.perMember.find((c) => c.memberId === member.id)}

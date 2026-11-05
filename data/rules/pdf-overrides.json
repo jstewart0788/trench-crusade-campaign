@@ -2481,13 +2481,209 @@
       "page": 11,
       "confidence": "high",
       "note": "Warband Creation: 'You have 700 ducats to recruit a Heretic Naval Raiders Warband'"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-legion/goetic-warlock",
+      "path": "cost",
+      "upstream": {
+        "ducats": 110,
+        "glory": 0
+      },
+      "pdf": {
+        "ducats": 0,
+        "glory": 4
+      },
+      "page": 176,
+      "confidence": "high",
+      "note": "Mercenary entry: '0-1 Goetic Warlock - Cost: 4 glory'. Upstream applies the Knights of Avarice discount (p120: the first Goetic Warlock costs 110 ducats instead) to every Warlock; the 110 is now unit-rules.json variantPrices koa-first-goetic-warlock (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/castigator",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/castigator",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/chieftain",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/chieftain",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/communicant",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/communicant",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/homunculus",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/homunculus",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/huscarl",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/huscarl",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-pilgrim",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/trench-pilgrim",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/war-prophet",
+      "path": "equipmentAccess[itemId=machine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Machine Gun (Limit: 2, 50 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "trench-pilgrims/war-prophet",
+      "path": "equipmentAccess[itemId=submachine-gun].onlyWithout",
+      "upstream": [
+        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
+      ],
+      "pdf": null,
+      "page": 64,
+      "confidence": "high",
+      "note": "War Pilgrimage of Saint Methodius Armoury: its Submachine Gun (Limit: 1, 30 ducats) entry replaces the standard one rather than removing it; upstream hides the base row under the variant. The Methodius price and Limit are unit-rules.json variantPrices (TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/janissary",
+      "path": "onlyWithout",
+      "upstream": null,
+      "pdf": [
+        "iron-sultanate/the-house-of-wisdom"
+      ],
+      "page": 94,
+      "confidence": "high",
+      "note": "Private Venture: 'A House of Wisdom Warband cannot include a Yuzbasi, Janissaries, or Sultanate Assassins'. Upstream left the Janissary open as the stand-in for the Noble Guardians Faris, which is now its own entry (unit-rules.json variantSubstituteUnits house-of-wisdom-faris, TC-003d)"
     }
   ],
   "unresolved": [
     {
       "file": "factions.json",
       "id": "new-antioch",
-      "issue": "Kingdom of Alba 'Claymore Smiths': Great Sword/Axe costs 7 instead of 12, and 'Cold Steel' halves the first purchase of each Melee Weapon; variant-conditional prices have no slot in the schema",
+      "issue": "Kingdom of Alba 'Cold Steel': halve the cost of a Melee Weapon the first time it is purchased for the Warband; needs the warband's purchase history, which the roster does not keep ('Claymore Smiths', Great Sword/Axe 7 instead of 12, is unit-rules.json variantPrices alba-claymore-smiths since TC-003d)",
       "page": 39
     },
     {
@@ -2504,39 +2700,15 @@
     },
     {
       "file": "units.json",
-      "id": "trench-pilgrims/trench-pilgrim",
-      "issue": "War Pilgrimage of Saint Methodius armoury replaces the Machine Gun (50 ducats, Limit: 2) and Submachine Gun (30 ducats, Limit: 1) entries; one access entry cannot hold both the base and the variant price",
-      "page": 64
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/communicant",
-      "issue": "Cavalcade of the Tenth Plague 'Stolen Communicants': Communicants cost 3 glory and no ducats; variant-conditional cost has no slot in the schema",
-      "page": 69
-    },
-    {
-      "file": "units.json",
       "id": "trench-pilgrims/anchorite-shrine",
       "issue": "Bonebreaker Mace is recorded as a built-in weapon but the Catherine Wheel is an access entry with no cost; both are built in (p59-60). Methodius lets the Catherine Wheel be replaced by one Anchorite Ranged Weapon",
       "page": 59
     },
     {
       "file": "units.json",
-      "id": "iron-sultanate/mamluk-faris",
-      "issue": "Defenders of the Iron Wall 'Sipahi': up to 1 Mamluk Faris entry at 110 ducats (no glory) in addition to the mercenary; the upstream link that carried it was the only Mamluk link the converter used before, and is now superseded by the plain 4-glory mercenary",
-      "page": 99
-    },
-    {
-      "file": "units.json",
       "id": "iron-sultanate/janissary",
-      "issue": "Fida'i Dervishes and House of Wisdom Faris reuse the Janissary entry with different keywords; the entry cannot be gated per variant without losing those",
+      "issue": "Fida'i Dervishes reuse the Janissary entry with different keywords (IGNORE OFF-HAND WEAPON and Whirling Dervish instead of STRONG) and no Reinforced Armour; the entry cannot be gated per variant without losing those. The House of Wisdom Faris is its own entry since TC-003d (unit-rules.json variantSubstituteUnits house-of-wisdom-faris)",
       "page": 90
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-legion/goetic-warlock",
-      "issue": "Knights of Avarice: up to 2 Goetic Warlocks, the first at 110 ducats instead of 4 glory; variant-conditional cost and limit have no slot in the schema (upstream notes the cost modifier)",
-      "page": 120
     },
     {
       "file": "units.json",
@@ -2558,23 +2730,10 @@
     },
     {
       "file": "units.json",
-      "id": "heretic-legion/goetic-warlock",
-      "issue": "Goetic Warlock limits.max is 1 everywhere; Knights of Avarice may include up to 2 (p120)",
-      "page": 120
-    },
-    {
-      "file": "units.json",
       "id": "heretic-naval-raiders/wretched",
       "source": "Heretic-Naval-Raiders-Warband.pdf",
       "page": 30,
       "issue": "Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error rather than by filtering the access list (as for the Heretic Legion and Court Wretched)"
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-naval-raiders/wretched",
-      "source": "Heretic-Naval-Raiders-Warband.pdf",
-      "page": 37,
-      "issue": "Drowned Choir 'A Wretched Chorus': Wretched cost 30 ducats and have Melee +0 DICE (+1 within 8\" of a Chorister); variant-conditional price and profile have no slot in the schema (recorded in the unit notes)"
     },
     {
       "file": "units.json",

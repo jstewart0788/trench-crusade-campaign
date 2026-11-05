@@ -7,7 +7,8 @@ describe("loadRulesData", () => {
   it("loads and indexes the six data files", () => {
     const d = data();
     expect(d.factions).toHaveLength(6);
-    expect(d.units).toHaveLength(130);
+    // 130 converted units plus the two unit-rules.json substitutes (Sipahi, Fāris).
+    expect(d.units).toHaveLength(132);
     expect(d.equipment).toHaveLength(225);
     expect(d.factionsById.get("new-antioch")?.name).toBe("New Antioch");
     expect(d.unitsByFaction.get("new-antioch")).toHaveLength(20);
@@ -129,7 +130,8 @@ describe("model map covers the rules data", () => {
   const KNOWN_WITHOUT_MODEL = new Set(["black-grail/cradle-thrall", "iron-sultanate/archeologist", "iron-sultanate/bedu-sharpshooter", "iron-sultanate/disciple-of-st-roch", "iron-sultanate/pairika", "iron-sultanate/shirdal", "iron-sultanate/tegmen", "iron-sultanate/zamburak-weapon-platform", "new-antioch/disciple-of-st-roch", "trench-pilgrims/disciple-of-st-roch"]);
   it("maps every unit except the known ones without a model", () => {
     const d = data();
-    const missing = d.units.filter((u) => !d.models?.byUnitId.has(u.id) && !KNOWN_WITHOUT_MODEL.has(u.id)).map((u) => u.id);
+    // A substitute entry spawns its profile unit's model (export.ts).
+    const missing = d.units.filter((u) => !d.models?.byUnitId.has(u.substituteOf ?? u.id) && !KNOWN_WITHOUT_MODEL.has(u.id)).map((u) => u.id);
     expect(missing).toEqual([]);
   });
 });

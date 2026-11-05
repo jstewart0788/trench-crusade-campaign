@@ -30,7 +30,8 @@ describe("GET /api/rules", () => {
     expect(res.headers["cache-control"]).toBe("public, max-age=300");
     expect(res.headers["etag"]).toMatch(/^"[0-9a-f]{32}"$/);
     expect(Object.keys(res.body).sort()).toEqual(["campaign", "equipment", "factions", "scenarios", "terrain", "unitRules", "units"]);
-    expect(res.body.units.units).toHaveLength(rules.data.units.length);
+    // The file as written; substitute entries (unit-rules.json) are built from it by buildRulesData.
+    expect(res.body.units.units).toHaveLength(rules.data.units.filter((u) => !u.substituteOf).length);
   });
 
   it("answers 304 to a matching If-None-Match and gzips when accepted", async () => {

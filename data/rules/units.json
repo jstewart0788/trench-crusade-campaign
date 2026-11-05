@@ -15694,8 +15694,8 @@
       "bsId": "e9cd-3848-885f-bdac",
       "bsLinkId": "f49e-3c4d-2a1b-0e75",
       "cost": {
-        "ducats": 110,
-        "glory": 0
+        "ducats": 0,
+        "glory": 4
       },
       "elite": false,
       "equipmentAccess": [
@@ -30922,6 +30922,9 @@
       },
       "name": "Janissary",
       "notes": "armour set -2 when Damascus Armour; armour set -3 when Machine Armour",
+      "onlyWithout": [
+        "iron-sultanate/the-house-of-wisdom"
+      ],
       "stats": {
         "armour": 0,
         "base": "32mm",
@@ -52925,10 +52928,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "machine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -53023,10 +53023,7 @@
           "group": "shield-combos",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed/shield-combos",
           "itemId": "submachine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -53741,10 +53738,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "machine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -53839,10 +53833,7 @@
           "group": "shield-combos",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed/shield-combos",
           "itemId": "submachine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -54506,10 +54497,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "machine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -54604,10 +54592,7 @@
           "group": "shield-combos",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed/shield-combos",
           "itemId": "submachine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -55865,9 +55850,6 @@
           "max": null,
           "onlyWith": [
             "upgrade:Human Hands"
-          ],
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
           ]
         },
         {
@@ -55988,9 +55970,6 @@
           "max": null,
           "onlyWith": [
             "upgrade:Human Hands"
-          ],
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
           ]
         },
         {
@@ -56762,10 +56741,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "machine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -56860,10 +56836,7 @@
           "group": "shield-combos",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed/shield-combos",
           "itemId": "submachine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -58667,10 +58640,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "machine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -58765,10 +58735,7 @@
           "group": "shield-combos",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed/shield-combos",
           "itemId": "submachine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -59504,10 +59471,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "machine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {
@@ -59602,10 +59566,7 @@
           "group": "shield-combos",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed/shield-combos",
           "itemId": "submachine-gun",
-          "max": null,
-          "onlyWithout": [
-            "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-          ]
+          "max": null
         },
         {
           "cost": {

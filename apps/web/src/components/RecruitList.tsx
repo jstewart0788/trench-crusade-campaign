@@ -43,7 +43,7 @@ export function RecruitList({ warband, rules, ctx, purse, onAdd }: Props) {
                   </span>
                 </div>
                 <PriceButton
-                  offer={{ cost: { ducats: row.unit.cost.ducats ?? 0, glory: row.unit.cost.glory ?? 0 }, cap: row.max !== null ? { count: row.count, max: row.max } : undefined }}
+                  offer={{ cost: { ducats: row.cost.ducats, glory: row.cost.glory }, cap: row.max !== null ? { count: row.count, max: row.max } : undefined }}
                   purse={purse}
                   label={`Recruit ${row.unit.name}`}
                   onBuy={() => onAdd(row.unit)}

@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "59, 61, 63-64",
+    "pages": "35, 39, 59, 61, 63-64, 69, 90, 94, 99, 120, 142; Heretic-Naval-Raiders-Warband.pdf 37, 39",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -50,6 +50,23 @@
       "stats": { "ranged": "+0" },
       "page": 63,
       "text": "Anchorite Shrines in a War Pilgrimage of Saint Methodius Warband have a Ranged Characteristic of +0 DICE instead of -."
+    },
+    {
+      "id": "dirge-bereaved",
+      "unitIds": ["black-grail/grail-thrall"],
+      "onlyWith": ["black-grail/dirge-of-the-great-hegemon"],
+      "stats": { "ranged": "+0" },
+      "page": 142,
+      "text": "The Bereaved: The Grail Thralls or Fly Thralls in a Dirge of the Great Hegemon Warband are called the Bereaved. They have a Ranged Characteristic of +0 DICE and a cost of 30 ducats."
+    },
+    {
+      "id": "drowned-choir-wretched",
+      "unitIds": ["heretic-naval-raiders/wretched"],
+      "onlyWith": ["heretic-naval-raiders/the-drowned-choir"],
+      "stats": { "melee": "+0" },
+      "page": 37,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "A Wretched Chorus: Wretched models in a Drowned Choir cost 30 ducats and have a Melee Characteristic of +0 DICE. Wretched models within 8\" of any number of Drowned Chorister or Leviathal Chorus models have a Melee Characteristic of +1 DICE instead of +0 DICE."
     }
   ],
   "preGameChoices": [
@@ -67,6 +84,183 @@
       },
       "summary": "Arm 0, no NEGATE SHRAPNEL or TOUGH, Down counts as a Minor Hit, until its first Out of Action",
       "effect": "Until the Anchorite Shrine first suffers an Out of Action result: it has an Armour Characteristic of 0 and does not have the NEGATE SHRAPNEL and TOUGH Keywords, and it treats Down results as Minor Hit results. The first Out of Action result is treated as No Effect; its BLOOD MARKERS are removed and these rules end: Armour -3, NEGATE SHRAPNEL and TOUGH return (TOUGH applies from the next Out of Action). The victim is permanently removed from the warband."
+    }
+  ],
+  "variantPrices": [
+    {
+      "id": "alba-claymore-smiths",
+      "under": ["new-antioch/kingdom-of-alba-assault-detachment"],
+      "kind": "item",
+      "targets": ["great-sword-axe"],
+      "cost": { "ducats": 7, "glory": 0 },
+      "page": 39,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Claymore Smiths: Great Swords/Axes cost 7 ducats instead of 12 for models from a Kingdom of Alba Assault Detachment Warband."
+    },
+    {
+      "id": "methodius-machine-gun",
+      "under": ["trench-pilgrims/war-pilgrimage-of-saint-methodius"],
+      "kind": "item",
+      "targets": ["machine-gun"],
+      "cost": { "ducats": 50, "glory": 0 },
+      "limit": 2,
+      "page": 64,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Machine Gun and Submachine Gun entries in the War Pilgrimage of Saint Methodius Armoury replace those in the standard Trench Pilgrim Armoury. Machine Gun | Limit: 2 | 50 ducats."
+    },
+    {
+      "id": "methodius-submachine-gun",
+      "under": ["trench-pilgrims/war-pilgrimage-of-saint-methodius"],
+      "kind": "item",
+      "targets": ["submachine-gun"],
+      "cost": { "ducats": 30, "glory": 0 },
+      "limit": 1,
+      "page": 64,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Machine Gun and Submachine Gun entries in the War Pilgrimage of Saint Methodius Armoury replace those in the standard Trench Pilgrim Armoury. Submachine Gun | Bayonet Lug, Shield Combo, Limit: 1 | 30 ducats."
+    },
+    {
+      "id": "cavalcade-stolen-communicants",
+      "under": ["trench-pilgrims/cavalcade-of-the-tenth-plague"],
+      "kind": "unit",
+      "targets": ["trench-pilgrims/communicant"],
+      "cost": { "ducats": 0, "glory": 3 },
+      "page": 69,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Stolen Communicants: Communicants cost 3 glory to recruit for a Cavalcade of the Tenth Plague Warband (they do not cost any ducats)."
+    },
+    {
+      "id": "koa-first-goetic-warlock",
+      "under": ["heretic-legion/knights-of-avarice"],
+      "kind": "unit",
+      "targets": ["heretic-legion/goetic-warlock"],
+      "cost": { "ducats": 110, "glory": 0 },
+      "first": 1,
+      "page": 120,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Goetic Warlocks: A Knights of Avarice Warband can include up to 2 Goetic Warlocks as Mercenaries. In addition, the first Goetic Warlock to be recruited in a Knights of Avarice Warband costs 110 ducats instead of its normal cost in glory."
+    },
+    {
+      "id": "dirge-bereaved",
+      "under": ["black-grail/dirge-of-the-great-hegemon"],
+      "kind": "unit",
+      "targets": ["black-grail/grail-thrall"],
+      "cost": { "ducats": 30, "glory": 0 },
+      "page": 142,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Bereaved: The Grail Thralls or Fly Thralls in a Dirge of the Great Hegemon Warband are called the Bereaved. They have a Ranged Characteristic of +0 DICE and a cost of 30 ducats."
+    },
+    {
+      "id": "drowned-choir-wretched",
+      "under": ["heretic-naval-raiders/the-drowned-choir"],
+      "kind": "unit",
+      "targets": ["heretic-naval-raiders/wretched"],
+      "cost": { "ducats": 30, "glory": 0 },
+      "page": 37,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "A Wretched Chorus: Wretched models in a Drowned Choir cost 30 ducats and have a Melee Characteristic of +0 DICE."
+    }
+  ],
+  "variantSubstituteUnits": [
+    {
+      "id": "defenders-sipahi",
+      "unitId": "iron-sultanate/sipahi-automaton-cavalry",
+      "name": "Sipahi Automaton Cavalry",
+      "under": ["iron-sultanate/defenders-of-the-iron-wall"],
+      "profileOf": "iron-sultanate/mamluk-faris",
+      "cost": { "ducats": 110, "glory": 0 },
+      "max": 1,
+      "lockedKit": true,
+      "page": 99,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Sipahi: A Defenders of the Iron Wall Warband can include up to 1 Sipahi Automaton Cavalry at a cost of 110 ducats. They use the Mercenary Entry for a Mamluk Faris but you cannot change their Battlekit in any way. Note that this does not stop you from recruiting a Mamluk Faris as a Mercenary as well."
+    },
+    {
+      "id": "house-of-wisdom-faris",
+      "unitId": "iron-sultanate/faris",
+      "name": "Fāris",
+      "under": ["iron-sultanate/the-house-of-wisdom"],
+      "profileOf": "iron-sultanate/janissary",
+      "cost": { "ducats": 55, "glory": 0 },
+      "max": 2,
+      "lockedKit": false,
+      "keywords": ["ELITE"],
+      "page": 94,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Noble Guardians: A House of Wisdom can include 0-2 Fāris. The Fāris use the Janissary Warband Entry, but have the ELITE Keyword at no additional cost in ducats."
+    }
+  ],
+  "freeKeywordGrants": [
+    {
+      "id": "swiss-guard",
+      "name": "Swiss Guard",
+      "keyword": "NEGATE FEAR",
+      "under": ["new-antioch/papal-states-intervention-force"],
+      "upgrade": "Swiss Guard",
+      "pools": [
+        { "unitIds": ["new-antioch/lieutenant"], "max": 1 },
+        { "unitIds": ["new-antioch/combat-engineer", "new-antioch/combat-medic", "new-antioch/mechanized-heavy-infantry", "new-antioch/shocktrooper", "new-antioch/sniper-priest", "new-antioch/trench-cleric", "new-antioch/yeoman"], "max": 4 }
+      ],
+      "page": 35,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Swiss Guard: The Lieutenant and up to 4 models in a Papal States Intervention Force Warband can have the NEGATE FEAR Keyword at no additional cost in ducats."
+    },
+    {
+      "id": "janissary-officers",
+      "name": "Janissary Officers",
+      "keyword": "ELITE",
+      "under": ["iron-sultanate/defenders-of-the-iron-wall"],
+      "upgrade": "Janissary Officer",
+      "pools": [{ "unitIds": ["iron-sultanate/janissary"], "max": 2 }],
+      "page": 99,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Janissary Officers: A Defenders of the Iron Wall Warband can have 0-2 Janissaries, which have the ELITE Keyword at no additional cost in ducats."
+    },
+    {
+      "id": "fidai-killing-squad",
+      "name": "Killing Squad",
+      "keyword": "FIRETEAM",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "upgrade": "Killing Squad",
+      "pools": [{ "max": 2 }],
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Killing Squad: A Fida'i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
+    },
+    {
+      "id": "leviathan-only-the-strong-survive",
+      "name": "Only the Strong Survive",
+      "keyword": "ELITE",
+      "under": ["heretic-naval-raiders/the-leviathan-shoal"],
+      "upgrade": "Leviathan Elite",
+      "pools": [{ "unitIds": ["heretic-naval-raiders/anointed-heretic-raider"], "max": 1 }],
+      "page": 39,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "Only the Strong Survive: Leviathan Shoal Warbands can include 0-4 Anointed Heretic Raiders, and up to 1 can be recruited with the ELITE Keyword at no extra cost."
+    }
+  ],
+  "freeAtCreation": [
+    {
+      "id": "papal-supreme-blessing",
+      "name": "Supreme Blessing",
+      "under": ["new-antioch/papal-states-intervention-force"],
+      "itemId": "supreme-blessing",
+      "required": true,
+      "page": 35,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Supreme Blessing: When you recruit a Papal States Intervention Force Warband, you must give the Supreme Pontiff's Crucifix to one model in the Warband. The Supreme Pontiff's Crucifix taken when the Warband is created is free and does not cost any glory (if it is lost then the replacement must be paid for normally)."
+    }
+  ],
+  "purseAdjustments": [
+    {
+      "id": "papal-reinforcement-glory",
+      "name": "Specialist Force",
+      "under": ["new-antioch/papal-states-intervention-force"],
+      "event": "reinforcements",
+      "glory": 4,
+      "page": 35,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Specialist Force: A Papal States Intervention Force gains 4 glory each time it calls for Reinforcements."
     }
   ]
 }

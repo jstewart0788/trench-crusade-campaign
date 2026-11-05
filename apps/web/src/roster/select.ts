@@ -1,10 +1,14 @@
 import {
   evaluateGates,
   findUnit,
+  grantRoom,
+  grantStates,
   itemCost,
   resolveLimit,
   rosterUnits,
+  unitCost,
   unitLimits,
+  upgradeCost,
   upgradeFor,
   type EquipmentItem,
   type GateResult,
@@ -41,6 +45,8 @@ export function gateStatus(result: GateResult): GateStatus {
 
 export interface UnitRow {
   unit: RosterUnit;
+  /** The next one's price under this roster (a variant may reprice it, or only its first). */
+  cost: LineCost;
   count: number;
   min: number | null;
   max: number | null;
@@ -70,7 +76,7 @@ export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): 
     // A limit that resolves to 0 for this roster (the Sea Hag under the Leviathan Shoal) bars the unit as surely as a gate does.
     if (max === 0) continue;
     const count = counts.get(unit.id) ?? 0;
-    rows.push({ unit, count, min, max, atMax: max !== null && count >= max });
+    rows.push({ unit, cost: unitCost(data, warband, unit), count, min, max, atMax: max !== null && count >= max });
   }
   return { rows, uncheckable };
 }
@@ -204,6 +210,7 @@ export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Wa
   const model = { member, unit };
   const rows: UpgradeRow[] = [];
   let uncheckable = 0;
+  const grants = grantStates(warband, data);
   for (const upgrade of unit.upgrades ?? []) {
     const status = gateStatus(evaluateGates(upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, model));
     if (status === "uncheckable") uncheckable += 1;
@@ -215,12 +222,15 @@ export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Wa
     const warbandCount = ctx.count(upgrade.name) ?? 0;
     const row: UpgradeRow = {
       upgrade,
-      cost: { id: upgrade.bsId, ducats: upgrade.cost?.ducats ?? 0, glory: upgrade.cost?.glory ?? 0 },
+      cost: upgradeCost(data, warband, unit, upgrade),
       count,
       max,
       atMax: count >= max,
     };
-    if (count < max && warbandMax !== null && warbandCount >= warbandMax) row.cap = { count: warbandCount, max: warbandMax, scope: "warband" };
+    // A free-keyword grant is capped by its pools for this unit (Swiss Guard: the Lieutenant, then 4 others), not the upgrade's own text.
+    const grant = upgrade.grant ? grants.find((g) => g.rule.id === upgrade.grant) : undefined;
+    const room = grant ? grantRoom(grant, unit.id) : { count: warbandCount, max: warbandMax };
+    if (count < max && room.max !== null && room.count >= room.max) row.cap = { count: room.count, max: room.max, scope: "warband" };
     rows.push(row);
   }
   return { rows, uncheckable };

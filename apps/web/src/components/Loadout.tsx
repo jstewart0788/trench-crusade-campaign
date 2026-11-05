@@ -15,10 +15,12 @@ interface Props {
   dispatch: Dispatch<RosterAction>;
   /** The profile under this roster (variant stat overrides applied); the unit's own when omitted. */
   stats?: Stats;
+  /** The model's keywords with any granted ones (Swiss Guard); the unit's own when omitted. */
+  keywords?: string[];
 }
 
 /** The selected member's name, stat line and running cost. */
-export function Loadout({ member, unit, before, after, issues, dispatch, stats }: Props) {
+export function Loadout({ member, unit, before, after, issues, dispatch, stats, keywords = unit.keywords }: Props) {
   const s = stats ?? unit.stats;
   const changed = before && after && (before.ducats !== after.ducats || before.glory !== after.glory);
   return (
@@ -41,7 +43,7 @@ export function Loadout({ member, unit, before, after, issues, dispatch, stats }
       />
       <p className={styles.stats}>
         Mov {s.movement.raw} · Rng {s.ranged} · Mel {s.melee} · Arm {s.armour} · {s.base}
-        {unit.keywords.length > 0 && <span className="muted"> · {unit.keywords.join(", ")}</span>}
+        {keywords.length > 0 && <span className="muted"> · {keywords.join(", ")}</span>}
       </p>
       <div className={styles.total}>
         <span className="muted">Model total</span>

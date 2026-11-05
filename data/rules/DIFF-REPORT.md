@@ -459,25 +459,42 @@ Homunculus, the Trench Dog and the Disciple of St. Roch.
 
 | entry | issue | p. |
 |---|---|---|
-| `new-antioch` | Kingdom of Alba 'Claymore Smiths': Great Sword/Axe costs 7 instead of 12, and 'Cold Steel' halves the first purchase of each Melee Weapon; variant-conditional prices have no slot in the schema | 39 |
+| `new-antioch` | Kingdom of Alba 'Cold Steel': halve the first purchase of each Melee Weapon; needs purchase history the roster does not keep (Claymore Smiths is resolved, TC-003d) | 39 |
 | `new-antioch/mechanized-heavy-infantry` | Kingdom of Alba 'Melee-focused': MHI have Melee +1 DICE and Ranged +0 DICE; upstream encodes it as a compound stat modifier the converter cannot apply | 40 |
-| `trench-pilgrims/trench-pilgrim` | War Pilgrimage of Saint Methodius armoury replaces the Machine Gun (50 ducats, Limit: 2) and Submachine Gun (30 ducats, Limit: 1) entries; one access entry cannot hold both the base and the variant price | 64 |
-| `trench-pilgrims/communicant` | Cavalcade of the Tenth Plague 'Stolen Communicants': Communicants cost 3 glory and no ducats; variant-conditional cost has no slot in the schema | 69 |
 | `trench-pilgrims/anchorite-shrine` | Bonebreaker Mace is recorded as a built-in weapon but the Catherine Wheel is an access entry with no cost; both are built in (p59-60). Methodius lets the Catherine Wheel be replaced by one Anchorite Ranged Weapon | 59 |
-| `iron-sultanate/mamluk-faris` | Defenders of the Iron Wall 'Sipahi': up to 1 Mamluk Faris entry at 110 ducats (no glory) in addition to the mercenary; the upstream link that carried it was the only Mamluk link the converter used before, and is now superseded by the plain 4-glory mercenary | 99 |
-| `iron-sultanate/janissary` | Fida'i Dervishes and House of Wisdom Faris reuse the Janissary entry with different keywords; the entry cannot be gated per variant without losing those | 90 |
-| `heretic-legion/goetic-warlock` | Knights of Avarice: up to 2 Goetic Warlocks, the first at 110 ducats instead of 4 glory; variant-conditional cost and limit have no slot in the schema (upstream notes the cost modifier) | 120 |
+| `iron-sultanate/janissary` | Fida'i Dervishes reuse the Janissary entry with different keywords and no Reinforced Armour; the entry cannot be gated per variant without losing those (the House of Wisdom Fāris is its own entry since TC-003d) | 90 |
 | `heretic-legion/wretched` | Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error, not by filtering the access list (glory-priced items remain listed) | 114 |
 | `court-of-the-seven-headed-serpent/praetor` | Unholy Relic (15 ducats, no stipulation) is hidden upstream for models that already have FEAR (Praetor, Sorcerer) and for Wretched; the item only grants FEAR so the omission has no mechanical effect | 149 |
 | `court-of-the-seven-headed-serpent/wretched` | Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error rather than by filtering the access list | 167 |
-| `heretic-legion/goetic-warlock` | Goetic Warlock limits.max is 1 everywhere; Knights of Avarice may include up to 2 (p120) | 120 |
 | `heretic-naval-raiders/wretched` | Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error rather than by filtering the access list | NR 30 |
-| `heretic-naval-raiders/wretched` | Drowned Choir 'A Wretched Chorus': Wretched cost 30 ducats and have Melee +0 DICE; variant-conditional price and profile | NR 37 |
 | `heretic-naval-raiders/heretic-raider` | Legionnaires may never outnumber Heretic Raiders; upstream's `repeat value=2` (one per two Raiders) reads as one per Raider in `limitsText` | NR 28 |
 | `heretic-naval-raiders/abyssal-commando` | Tormentor Chains are allowed by the entry but not priced in the Naval Raiders armoury; upstream uses 3 glory | NR 23 |
 | `heretic-legion` (Naval Raiders) | Leviathan Shoal 'Charge and Rend' (no more Ranged than Melee Weapons, no HEAVY Ranged Weapons) is not modelled | NR 39 |
 
-### Missing from upstream
+### TC-003d: variant costs and grants
+
+`unit-rules.json` gained five hand-authored sections, each entry page-cited with its source book:
+`variantPrices`, `variantSubstituteUnits`, `freeKeywordGrants`, `freeAtCreation` and
+`purseAdjustments` (engine: `packages/rules/src/{unit-rules,cost,grants,validate,export}.ts`).
+They resolve six of the unresolved entries above, which are removed:
+
+- Methodius Machine Gun / Submachine Gun (p64): `variantPrices` 50 ducats Limit 2 and 30 ducats
+  Limit 1; 14 overrides drop upstream's `onlyWithout` Methodius gate from the Trench Pilgrim rows,
+  since the Methodius entries replace the base ones rather than remove them.
+- Stolen Communicants (p69): `variantPrices` 3 glory, no ducats.
+- Sipahi (p99): `variantSubstituteUnits` adds `iron-sultanate/sipahi-automaton-cavalry`, the Mamluk
+  Faris profile and loadout at 110 ducats, 0-1, kit permanent, alongside the mercenary.
+- Knights of Avarice Goetic Warlock (p120): an override restores the 4-glory mercenary price
+  (p176) on `heretic-legion/goetic-warlock`; `variantPrices` prices the first one at 110 ducats.
+  The 0-2 limit already resolves from the converted limit text under the variant (tested), so the
+  "limits.max is 1 everywhere" entry is removed too.
+- A Wretched Chorus (NR p37): `variantPrices` 30 ducats plus a `statOverrides` Melee +0.
+
+Narrowed: Kingdom of Alba (Claymore Smiths resolved; Cold Steel needs purchase history) and the
+Janissary entry (House of Wisdom Fāris is its own `variantSubstituteUnits` entry; one override
+bars Janissaries from a House of Wisdom, p94; Fida'i Dervishes remain). Overrides: 16 added
+(170 total); unresolved: 12.
+
 
 | faction | name | kind | p. | detail |
 |---|---|---|---|---|

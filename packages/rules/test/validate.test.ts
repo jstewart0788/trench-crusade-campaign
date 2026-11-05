@@ -147,7 +147,8 @@ describe("validateWarband: one failing case per error code", () => {
 
   it("over-threshold / over-glory: a variant with its own purse (Papal States: 500 ducats and 11 glory, p35)", () => {
     const papal = { variantId: "new-antioch/papal-states-intervention-force" };
-    const cleric = member("new-antioch/trench-cleric", ["sword-axe"]);
+    // Supreme Blessing (p35): the Crucifix is given to one model at creation, free.
+    const cleric = member("new-antioch/trench-cleric", ["sword-axe", "supreme-blessing"]);
     const yeomen = (n: number) => Array.from({ length: n }, () => member("new-antioch/yeoman", ["bolt-action-rifle", "standard-armour", "combat-helmet"]));
     const w = warband("new-antioch", [cleric, ...yeomen(9)], papal); // 64 + 9 x 55 = 559
     expect(warbandCost(w, data()).ducats).toBe(559);
@@ -536,7 +537,7 @@ describe("validateWarband: a legal starting warband for every faction", () => {
   }
 
   it("New Antioch, Papal States Intervention Force (p35): a Trench Cleric leads, no Lieutenant, within 500 ducats", () => {
-    const w = warband("new-antioch", [member("new-antioch/trench-cleric", ["sword-axe", "pistol", "standard-armour"]), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman")], {
+    const w = warband("new-antioch", [member("new-antioch/trench-cleric", ["sword-axe", "pistol", "standard-armour", "supreme-blessing"]), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman"), rifleman("new-antioch/yeoman")], {
       variantId: "new-antioch/papal-states-intervention-force",
     });
     const result = validate(w);

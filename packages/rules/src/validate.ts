@@ -1,6 +1,8 @@
 import { checkBattlekit, type CarriedItem } from "./battlekit.js";
 import type { GroupLimit, PreGameChoice, ReplaceableBuiltIn } from "./unit-rules.js";
-import { warbandCost } from "./cost.js";
+import { variantItemLimit, warbandCost } from "./cost.js";
+import { grantStates, isEliteMember } from "./grants.js";
+import { appliesUnder } from "./unit-rules.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
   accessFor,
@@ -38,6 +40,8 @@ export const ROSTER_ERROR_CODES = [
   "variant-locked",
   "variant-excluded",
   "elite-cap",
+  "grant-cap",
+  "free-at-creation-missing",
   "item-unknown",
   "item-not-available",
   "item-fixed-missing",
@@ -91,7 +95,11 @@ export interface ValidationResult {
 }
 
 export interface ValidateOptions {
-  /** Overrides the Threshold Value looked up from gameNumber. */
+  /**
+   * The agreed size of a one-off game (or a latecomer's purse), in place of the
+   * Threshold Value looked up from gameNumber. A variant with a smaller purse
+   * still has its shortfall taken off (Papal States: 200 less, p35).
+   */
   threshold?: number;
 }
 
@@ -179,12 +187,9 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   // starts with a smaller purse keeps the same shortfall in later games
   // (Papal States: "Threshold Value is reduced by 200", Warbands p35).
   const cost = warbandCost(warband, data);
-  let threshold = opts.threshold;
-  if (threshold === undefined) {
-    const t = warbandThreshold(warband, data);
-    threshold = t.value;
-    if (t.clamped) warn({ message: `Threshold table ends at game ${t.row.game}; using ${t.row.threshold} for game ${warband.gameNumber}` });
-  }
+  const t = warbandThreshold(warband, data, opts.threshold);
+  const threshold = t.value;
+  if (t.clamped && opts.threshold === undefined) warn({ message: `Threshold table ends at game ${t.row.game}; using ${t.row.threshold} for game ${warband.gameNumber}` });
   if (cost.ducats > threshold) {
     fail({ code: "over-threshold", message: `Warband costs ${cost.ducats} ducats; Threshold Value is ${threshold}` });
   }
@@ -200,10 +205,13 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
 
   checkUnitCounts(warband, data, members, ctx, fail, warn);
 
-  const elites = members.filter((m) => m.unit.elite).length;
+  // Warbands p10: "more than 6 models with the ELITE Keyword", however they got it.
+  const elites = members.filter((m) => isEliteMember(m.member, m.unit, data)).length;
   if (elites > MAX_ELITES) {
     fail({ code: "elite-cap", message: `${elites} ELITE models; a warband can never include more than ${MAX_ELITES}` });
   }
+  checkGrants(warband, data, fail);
+  checkFreeAtCreation(warband, data, fail);
 
   const carriedByItem = new Map<string, { total: number; sample: CarriedItem; memberId: string }>();
   const takenByUpgrade = new Map<string, { total: number; rows: TakenUpgrade[] }>();
@@ -230,10 +238,13 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   }
 
   // Warbands of Trench Crusade p11, "Limit X": a warband-wide cap on a piece of Battlekit.
-  for (const [itemId, { total, sample }] of carriedByItem) {
-    const limit = resolveLimit(sample.access.limitsText ?? sample.item.limits ?? undefined, "max", "warband", sample.access.maxPerWarband ?? null, ctx, sample.item.name);
+  // A variant's own armoury entry replaces the row's Limit (Methodius Machine Gun: Limit 2, p64).
+  for (const [itemId, { total, sample, memberId }] of carriedByItem) {
+    const unitId = members.find((m) => m.member.id === memberId)!.unit.id;
+    const own = variantItemLimit(data, warband, unitId, itemId);
+    const limit = own ? { value: own.limit!, unresolved: [] } : resolveLimit(sample.access.limitsText ?? sample.item.limits ?? undefined, "max", "warband", sample.access.maxPerWarband ?? null, ctx, sample.item.name);
     if (limit.value !== null && total > limit.value) {
-      fail({ code: "item-max-per-warband", itemId, message: `${sample.item.name}: ${total} in the warband, limit ${limit.value}` });
+      fail({ code: "item-max-per-warband", itemId, message: `${sample.item.name}: ${total} in the warband, limit ${limit.value}${own ? ` (p${own.page})` : ""}` });
       warnUnresolved(warn, limit.unresolved, { itemId }, sample.item.name);
     }
   }
@@ -241,8 +252,10 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   // Upgrades capped per warband ("Up to 2 Yeomen can be upgraded to Trench
   // Moles", p30; Forward Positions p41) count across every unit that offers
   // the same-named entry, which is how BattleScribe shares the constraint.
+  // A grant's toggle is capped by its pools (checkGrants), not its own text.
   for (const { total, rows } of takenByUpgrade.values()) {
     for (const { upgrade, unit } of rows) {
+      if (upgrade.grant) continue;
       const where = { unitId: unit.id };
       const limit = resolveLimit(upgrade.limitsText, "max", "warband", upgrade.maxPerWarband ?? null, ctx, upgrade.name);
       if (limit.value !== null && total > limit.value) {
@@ -279,13 +292,14 @@ export interface WarbandThreshold {
 }
 
 /**
- * Threshold Value for this roster: the table row for its game number, less
- * the shortfall of a variant that starts with a smaller purse (Papal States:
- * "Threshold Value is reduced by 200", Warbands p35).
+ * Threshold Value for this roster: the table row for its game number (or the
+ * agreed size of a one-off game), less the shortfall of a variant that starts
+ * with a smaller purse (Papal States: "Threshold Value is reduced by 200";
+ * for a one-off game, "reduce the amount of ducats ... by 200", Warbands p35).
  */
-export function warbandThreshold(warband: Pick<Warband, "factionId" | "subfactionId" | "variantId" | "gameNumber">, data: RulesData): WarbandThreshold {
+export function warbandThreshold(warband: Pick<Warband, "factionId" | "subfactionId" | "variantId" | "gameNumber">, data: RulesData, agreed?: number): WarbandThreshold {
   const t = thresholdFor(data, warband.gameNumber);
-  let value = t.row.threshold;
+  let value = agreed ?? t.row.threshold;
   const variant = rosterVariants(data, warband).find((v) => v.id === warband.variantId);
   if (variant?.startingDucats !== undefined) value -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
   return { value, row: t.row, clamped: t.clamped };
@@ -621,6 +635,27 @@ export function preGameChoices(warband: Warband, data: RulesData, ctx: LimitCont
         });
     return { rule, available, candidates, chosen: warband.preGame?.[rule.key] ?? null };
   });
+}
+
+function checkGrants(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
+  for (const state of grantStates(warband, data)) {
+    if (!state.over.length) continue;
+    const { rule } = state;
+    const cap = rule.pools.map((p) => `${p.unitIds ? `${p.max} of ${p.unitIds.map((id) => data.unitsById.get(id)?.name ?? id).join("/")}` : `${p.max} more`}`).join(" + ");
+    for (const memberId of state.over) {
+      fail({ code: "grant-cap", memberId, message: `${rule.name}: ${rule.keyword} at no cost for ${cap} only; this model is one too many (p${rule.page})` });
+    }
+  }
+}
+
+function checkFreeAtCreation(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
+  if (warband.gameNumber !== 1) return;
+  for (const rule of data.unitRules.file.freeAtCreation) {
+    if (!rule.required || !appliesUnder(rule.under, warband)) continue;
+    if (warband.members.some((m) => m.equipmentItemIds.includes(rule.itemId))) continue;
+    const item = data.equipmentById.get(rule.itemId)?.name ?? rule.itemId;
+    fail({ code: "free-at-creation-missing", itemId: rule.itemId, message: `${rule.name}: give the ${item} to one model when the warband is created; it is free (p${rule.page})` });
+  }
 }
 
 function checkPreGame(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
