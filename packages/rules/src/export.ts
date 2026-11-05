@@ -124,6 +124,12 @@ export const WarbandExport = z.object({
     totals: ExportCost,
     valid: z.boolean(),
     errorCount: z.number().int().nonnegative(),
+    /**
+     * Battlekit the warband holds rather than a model (a Grand Cannon gun battery,
+     * p99): a terrain piece on the table, not kit on a figure, so it is listed here
+     * and not under any member. Absent when the warband holds nothing.
+     */
+    armoury: z.array(ExportEquipment).optional(),
   }),
   members: z.array(ExportMember),
 });
@@ -181,9 +187,16 @@ export function toWarbandExport(warband: Warband, data: RulesData, opts: ExportO
       totals: { ducats: cost.ducats, glory: cost.glory },
       valid: validation.ok,
       errorCount: validation.errors.length,
+      ...(warband.armoury?.length ? { armoury: warband.armoury.map((id, i) => heldEquipment(data, id, cost.armoury[i]!)) } : {}),
     },
     members: warband.members.map((m) => exportMember(m, warband, data, variant?.name, opts.models ?? data.models, extras)),
   };
+}
+
+function heldEquipment(data: RulesData, itemId: string, cost: { ducats: number; glory: number }): ExportEquipment {
+  const item = data.equipmentById.get(itemId);
+  if (!item) throw new WarbandExportError(`Unknown item "${itemId}" in the warband's Armoury`);
+  return { id: item.id, name: item.name, category: item.category, hands: item.hands, range: item.range, keywords: item.keywords, rules: item.rules, cost: { ducats: cost.ducats, glory: cost.glory } };
 }
 
 interface ExportExtras {

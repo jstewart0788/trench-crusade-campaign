@@ -2677,6 +2677,64 @@
       "page": 94,
       "confidence": "high",
       "note": "Private Venture: 'A House of Wisdom Warband cannot include a Yuzbasi, Janissaries, or Sultanate Assassins'. Upstream left the Janissary open as the stand-in for the Noble Guardians Faris, which is now its own entry (unit-rules.json variantSubstituteUnits house-of-wisdom-faris, TC-003d)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/brazen-bull",
+      "path": "equipmentAccess[itemId=sultanate-grand-cannon].max",
+      "upstream": null,
+      "pdf": 1,
+      "page": 99,
+      "confidence": "high",
+      "note": "Grand Cannons: 'No more than 1 Grand Cannon can be given to a Brazen Bull model'; upstream caps it only per warband (TC-003f)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/plague-knight",
+      "path": "upgrades[name=Second Grail Devotee].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "upgrade:Grail Devotee"
+      ],
+      "page": 131,
+      "confidence": "high",
+      "note": "Jealous Obsession: 'The cost of the second Grail Devotee taken for a model is paid in glory'; the second needs a first on the same model. The first may itself be paid in glory (unit-rules.json currencyChoices, TC-003f)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/corpse-guard",
+      "path": "upgrades[name=Second Grail Devotee].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "upgrade:Grail Devotee"
+      ],
+      "page": 131,
+      "confidence": "high",
+      "note": "Jealous Obsession: 'The cost of the second Grail Devotee taken for a model is paid in glory'; the second needs a first on the same model. The first may itself be paid in glory (unit-rules.json currencyChoices, TC-003f)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/lord-of-tumours",
+      "path": "upgrades[name=Second Grail Devotee].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "upgrade:Grail Devotee"
+      ],
+      "page": 131,
+      "confidence": "high",
+      "note": "Jealous Obsession: 'The cost of the second Grail Devotee taken for a model is paid in glory'; the second needs a first on the same model. The first may itself be paid in glory (unit-rules.json currencyChoices, TC-003f)"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/matagot-hag",
+      "path": "upgrades[name=Second Grail Devotee].onlyWith",
+      "upstream": null,
+      "pdf": [
+        "upgrade:Grail Devotee"
+      ],
+      "page": 131,
+      "confidence": "high",
+      "note": "Jealous Obsession: 'The cost of the second Grail Devotee taken for a model is paid in glory'; the second needs a first on the same model. The first may itself be paid in glory (unit-rules.json currencyChoices, TC-003f)"
     }
   ],
   "unresolved": [

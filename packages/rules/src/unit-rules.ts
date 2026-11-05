@@ -191,6 +191,70 @@ export const VariantKeywords = z.object({
 });
 export type VariantKeywords = z.infer<typeof VariantKeywords>;
 
+/** The first purchase of each item of these categories costs less (Cold Steel: halved, rounded up per the Digital Rulebook p30). */
+export const FirstPurchaseDiscount = z.object({
+  id: z.string(),
+  name: z.string(),
+  under: Under,
+  categories: z.array(z.enum(["ranged", "melee", "grenade", "shield", "armour", "equipment", "ammunition"])).min(1),
+  divideBy: z.number().int().min(2),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type FirstPurchaseDiscount = z.infer<typeof FirstPurchaseDiscount>;
+
+/** Battlekit from another faction's armoury, bought while the warband is created (game 1) and only repurchased after. */
+export const CrossFactionArmoury = z.object({
+  id: z.string(),
+  name: z.string(),
+  under: Under,
+  /** The faction whose core armoury is opened. */
+  from: z.string(),
+  max: z.number().int().positive(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type CrossFactionArmoury = z.infer<typeof CrossFactionArmoury>;
+
+/** An item the warband may hold in its own Armoury rather than give to a model (a Grand Cannon gun battery). */
+export const WarbandHeldItem = z.object({
+  id: z.string(),
+  name: z.string(),
+  under: Under,
+  itemId: z.string(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type WarbandHeldItem = z.infer<typeof WarbandHeldItem>;
+
+/** An upgrade the player may pay for in another currency: each alternative is offered as the same upgrade at that price. */
+export const CurrencyChoice = z.object({
+  id: z.string(),
+  under: Under,
+  upgrade: z.string(),
+  alternatives: z.array(Price).min(1),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type CurrencyChoice = z.infer<typeof CurrencyChoice>;
+
+/** No model whose ducat cost with its kit is under the floor, except the listed units (Mammon's Chosen). */
+export const MinimumModelCost = z.object({
+  id: z.string(),
+  name: z.string(),
+  under: Under,
+  ducats: z.number().int().positive(),
+  exceptUnitIds: Ids.optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type MinimumModelCost = z.infer<typeof MinimumModelCost>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -206,6 +270,11 @@ export const UnitRulesFile = z.object({
   purseAdjustments: z.array(PurseAdjustment),
   variantRenames: z.array(VariantRename),
   variantKeywords: z.array(VariantKeywords),
+  firstPurchaseDiscounts: z.array(FirstPurchaseDiscount),
+  crossFactionArmoury: z.array(CrossFactionArmoury),
+  warbandHeldItems: z.array(WarbandHeldItem),
+  currencyChoices: z.array(CurrencyChoice),
+  minimumModelCosts: z.array(MinimumModelCost),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -389,6 +458,56 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
       if (unit && "withUpgrade" in rule && rule.withUpgrade && !(unit.upgrades ?? []).some((g) => g.name === rule.withUpgrade)) problems.push(`${where}: ${unitId} has no upgrade "${rule.withUpgrade}"`);
     }
     if (!("name" in rule) && !rule.add?.length && !rule.remove?.length) problems.push(`${where}: adds and removes nothing`);
+  }
+
+  for (const rule of file.firstPurchaseDiscounts) listUnits(`firstPurchaseDiscounts.${rule.id}`, rule.under);
+  // Lent Battlekit: rows the converted data gates on the variant whose item is in
+  // the other faction's core armoury are that faction's, bought under this rule.
+  for (const rule of file.crossFactionArmoury) {
+    const where = `crossFactionArmoury.${rule.id}`;
+    const home = listUnits(where, rule.under);
+    const from = lists.unitsUnder(rule.from);
+    if (!from?.length || lists.isVariant(rule.from)) {
+      problems.push(`${where}: "${rule.from}" is not a faction with a core list`);
+      continue;
+    }
+    const theirs = new Set(
+      from
+        .filter((u) => u.kind === "model" && !u.mercenary && !u.onlyWith?.length)
+        .flatMap((u) => u.equipmentAccess.filter((a) => !a.onlyWith?.length && !a.fixed && a.group !== "loadout" && a.group !== "direct").map((a) => a.itemId)),
+    );
+    let lent = 0;
+    for (const unit of home) {
+      for (const row of unit.equipmentAccess) {
+        if (row.foreign || !theirs.has(row.itemId) || !row.onlyWith?.some((g) => rule.under.includes(g))) continue;
+        row.foreign = rule.id;
+        lent++;
+      }
+    }
+    if (!lent) problems.push(`${where}: no row under ${rule.under.join(" / ")} lends Battlekit from ${rule.from}`);
+  }
+  for (const rule of file.warbandHeldItems) {
+    const where = `warbandHeldItems.${rule.id}`;
+    if (!listUnits(where, rule.under).some((u) => u.equipmentAccess.some((a) => a.itemId === rule.itemId))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers "${rule.itemId}"`);
+  }
+  for (const rule of file.minimumModelCosts) {
+    const where = `minimumModelCosts.${rule.id}`;
+    const units = listUnits(where, rule.under);
+    for (const unitId of rule.exceptUnitIds ?? []) if (!units.some((u) => u.id === unitId)) problems.push(`${where}: ${unitId} is not in the ${rule.under.join(" / ")} list`);
+  }
+  // A currency choice is the same upgrade again at the other price, so the
+  // per-model "once" and the per-warband limit (both counted by name) cover both.
+  for (const rule of file.currencyChoices) {
+    const where = `currencyChoices.${rule.id}`;
+    let found = 0;
+    for (const unit of listUnits(where, rule.under)) {
+      const own = (unit.upgrades ?? []).find((g) => g.name === rule.upgrade && !g.paysFor);
+      if (!own) continue;
+      found++;
+      const at = unit.upgrades!.indexOf(own) + 1;
+      unit.upgrades = [...unit.upgrades!.slice(0, at), ...rule.alternatives.map((cost, i) => ({ ...own, bsId: `choice/${rule.id}/${i + 1}`, cost: { ...cost }, paysFor: own.bsId })), ...unit.upgrades!.slice(at)];
+    }
+    if (!found) problems.push(`${where}: no unit under ${rule.under.join(" / ")} has the upgrade "${rule.upgrade}"`);
   }
 
   // A grant's toggle is an upgrade: the list's own where upstream already

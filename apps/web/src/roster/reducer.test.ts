@@ -110,3 +110,22 @@ describe("rosterReducer", () => {
     expect(rosterReducer(base(), { type: "load", warband: other })).toBe(other);
   });
 });
+
+// TC-003f: what was bought when, and kit the warband holds itself.
+describe("purchase record and warband armoury", () => {
+  it("records each item bought with the game it was bought for, and holds a Grand Cannon battery", () => {
+    let w = rosterReducer(createWarband({ name: "t", factionId: "iron-sultanate", variantId: "iron-sultanate/defenders-of-the-iron-wall" }, "w"), { type: "add-member", unitId: "iron-sultanate/janissary", equipmentItemIds: ["sword-axe"] });
+    w = rosterReducer(w, { type: "set-game-number", gameNumber: 2 });
+    w = rosterReducer(w, { type: "add-item", memberId: "m1", itemId: "jezzail" });
+    expect(w.purchases).toEqual([
+      { itemId: "sword-axe", memberId: "m1", game: 1 },
+      { itemId: "jezzail", memberId: "m1", game: 2 },
+    ]);
+    w = rosterReducer(w, { type: "add-armoury-item", itemId: "sultanate-grand-cannon" });
+    w = rosterReducer(w, { type: "add-armoury-item", itemId: "sultanate-grand-cannon" });
+    expect(w.armoury).toEqual(["sultanate-grand-cannon", "sultanate-grand-cannon"]);
+    w = rosterReducer(w, { type: "remove-armoury-item", itemId: "sultanate-grand-cannon" });
+    w = rosterReducer(w, { type: "remove-armoury-item", itemId: "sultanate-grand-cannon" });
+    expect("armoury" in w).toBe(false);
+  });
+});

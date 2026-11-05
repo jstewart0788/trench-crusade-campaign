@@ -11,6 +11,8 @@ export * from "./profile.js";
 export * from "./unit-rules.js";
 export * from "./grants.js";
 export * from "./presentation.js";
+export * from "./history.js";
+export * from "./armoury.js";
 export * from "./validate.js";
 export * from "./export.js";
 export * from "./import/index.js";

@@ -144,6 +144,11 @@ describe("applyPending", () => {
     expect("upgradeIds" in staged.members[0]!).toBe(false);
     expect(staged.members[1]).toEqual({ id: "m3", unitId: "new-antioch/shocktrooper", equipmentItemIds: ["submachine-gun", "frag-grenades"] });
     expect(recruit.equipmentItemIds).toEqual(["submachine-gun"]);
+    // TC-003f: the kit bought now is recorded for this game; dismissals and removals record nothing.
+    expect(staged.purchases!.slice((w.purchases ?? []).length)).toEqual([
+      { itemId: "submachine-gun", memberId: "m3", game: 1 },
+      { itemId: "frag-grenades", memberId: "m3", game: 1 },
+    ]);
   });
 });
 

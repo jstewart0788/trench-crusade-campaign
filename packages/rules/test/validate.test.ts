@@ -488,7 +488,8 @@ describe("validateWarband: armoury rows resolved from BattleScribe availability 
   it("Heretic Trooper + Musket is Knights of Avarice loot (p120), not base armoury (p105)", () => {
     const legion = (extra: Partial<Warband> = {}) => warband("heretic-legion", [member("heretic-legion/heretic-priest", ["sword-axe"]), member("heretic-legion/heretic-trooper", ["musket"])], extra);
     expect(expectCode(legion(), "item-variant-locked").errors[0]?.message).toContain("knights-of-avarice");
-    expect(validate(legion({ variantId: "heretic-legion/knights-of-avarice" })).errors).toEqual([]);
+    // The Musket is legal there; the Trooper with it is under Mammon's Chosen's 80 ducats (p120, TC-003f).
+    expect(codes(validate(legion({ variantId: "heretic-legion/knights-of-avarice" })))).toEqual(["model-under-minimum"]);
   });
 
   it("Butcher Bayonet is Great Hunger kit on a Great Hunger rifle, with one gate, not two", () => {

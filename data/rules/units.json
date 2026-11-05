@@ -947,6 +947,9 @@
           "limitsText": "max 1 per model",
           "max": 1,
           "name": "Second Grail Devotee",
+          "onlyWith": [
+            "upgrade:Grail Devotee"
+          ],
           "rules": [
             {
               "name": "Grail Devotee",
@@ -2544,6 +2547,9 @@
           "limitsText": "max 1 per model",
           "max": 1,
           "name": "Second Grail Devotee",
+          "onlyWith": [
+            "upgrade:Grail Devotee"
+          ],
           "rules": [
             {
               "name": "Grail Devotee",
@@ -2731,6 +2737,9 @@
           "limitsText": "max 1 per model",
           "max": 1,
           "name": "Second Grail Devotee",
+          "onlyWith": [
+            "upgrade:Grail Devotee"
+          ],
           "rules": [
             {
               "name": "Grail Devotee",
@@ -3702,6 +3711,9 @@
           "limitsText": "max 1 per model",
           "max": 1,
           "name": "Second Grail Devotee",
+          "onlyWith": [
+            "upgrade:Grail Devotee"
+          ],
           "rules": [
             {
               "name": "Grail Devotee",
@@ -28178,7 +28190,7 @@
           "groupPath": "weapons/ranged-weapons/ranged-one-handed",
           "itemId": "sultanate-grand-cannon",
           "limitsText": "max 2 per warband",
-          "max": null,
+          "max": 1,
           "maxPerWarband": 2,
           "onlyWith": [
             "iron-sultanate/defenders-of-the-iron-wall"

@@ -1,5 +1,7 @@
 import {
   evaluateGates,
+  foreignBuyable,
+  lentBy,
   findUnit,
   grantRoom,
   grantStates,
@@ -176,6 +178,9 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
     if (status === "uncheckable") uncheckableRows.push({ access, item });
     if (status !== "open") continue;
     const count = member.equipmentItemIds.filter((id) => id === access.itemId).length;
+    // Lent Battlekit (Corrupt Merchants, Weapon Collections) is on the shelf only while it may be bought: at creation, or to replace.
+    const lender = lentBy(data, access);
+    if (lender && count === 0 && !foreignBuyable(data, warband, lender, access.itemId).ok) continue;
     const max = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx, item.name).value;
     const row: AccessRow = {
       access,

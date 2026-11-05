@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "35, 38-40, 43, 59, 61, 63-64, 69, 90, 94, 99, 118, 120, 142; Heretic-Naval-Raiders-Warband.pdf 37, 39",
+    "pages": "35, 38-40, 43, 59, 61, 63-64, 69, 90, 94-95, 99, 118, 120, 131, 142; Heretic-Naval-Raiders-Warband.pdf 37, 39",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -423,6 +423,94 @@
       "page": 39,
       "source": "Heretic-Naval-Raiders-Warband.pdf",
       "text": "Only the Strong Survive: In addition, Heretic Captains in this Warband have the STRONG Keyword."
+    }
+  ],
+  "firstPurchaseDiscounts": [
+    {
+      "id": "alba-cold-steel",
+      "name": "Cold Steel",
+      "under": ["new-antioch/kingdom-of-alba-assault-detachment"],
+      "categories": ["melee"],
+      "divideBy": 2,
+      "page": 39,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Cold Steel: Halve the cost of a Melee Weapon the first time that is purchased for a Kingdom of Alba Assault Detachment Warband. For example, the first Sword/Axe purchased for a Warband would cost 2 ducats while any further Swords/Axes would cost 4 ducats each."
+    }
+  ],
+  "crossFactionArmoury": [
+    {
+      "id": "koa-corrupt-merchants-new-antioch",
+      "name": "Corrupt Merchants",
+      "under": ["heretic-legion/knights-of-avarice"],
+      "from": "new-antioch",
+      "max": 1,
+      "page": 120,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Corrupt Merchants: When you create your starting Warband, you can purchase 1 piece of Battlekit from the New Antioch Armoury, and 1 piece of Battlekit from the Iron Sultanate Armoury. Any stipulations that apply to it must still be followed. You can repurchase the Battlekit later during the campaign if it is lost for any reason."
+    },
+    {
+      "id": "koa-corrupt-merchants-iron-sultanate",
+      "name": "Corrupt Merchants",
+      "under": ["heretic-legion/knights-of-avarice"],
+      "from": "iron-sultanate",
+      "max": 1,
+      "page": 120,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Corrupt Merchants: When you create your starting Warband, you can purchase 1 piece of Battlekit from the New Antioch Armoury, and 1 piece of Battlekit from the Iron Sultanate Armoury. Any stipulations that apply to it must still be followed. You can repurchase the Battlekit later during the campaign if it is lost for any reason."
+    },
+    {
+      "id": "wisdom-weapon-collections-new-antioch",
+      "name": "Weapon Collections",
+      "under": ["iron-sultanate/the-house-of-wisdom"],
+      "from": "new-antioch",
+      "max": 1,
+      "page": 95,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Weapon Collections: When you create your starting Warband, you can purchase 1 piece of Battlekit from the New Antioch Armoury, and 1 piece of Battlekit from the Trench Pilgrims Armoury. Any stipulations that apply to it are followed. You can repurchase the Battlekit later during the campaign if it is lost for any reason."
+    },
+    {
+      "id": "wisdom-weapon-collections-trench-pilgrims",
+      "name": "Weapon Collections",
+      "under": ["iron-sultanate/the-house-of-wisdom"],
+      "from": "trench-pilgrims",
+      "max": 1,
+      "page": 95,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Weapon Collections: When you create your starting Warband, you can purchase 1 piece of Battlekit from the New Antioch Armoury, and 1 piece of Battlekit from the Trench Pilgrims Armoury. Any stipulations that apply to it are followed. You can repurchase the Battlekit later during the campaign if it is lost for any reason."
+    }
+  ],
+  "warbandHeldItems": [
+    {
+      "id": "defenders-grand-cannon-battery",
+      "name": "Grand Cannon gun battery",
+      "under": ["iron-sultanate/defenders-of-the-iron-wall"],
+      "itemId": "sultanate-grand-cannon",
+      "page": 99,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Grand Cannons: A Defenders of the Iron Wall Warband can include 0-2 Sultanate Grand Cannons at a cost of 60 ducats each. When a Grand Cannon is added to a Defender of the Iron Wall Warband it must either be given to a Brazen Bull that is already part of the Warband, or added to the Armoury on the Warband's roster sheet as a Grand Cannon gun battery. No more than 1 Grand Cannon can be given to a Brazen Bull model, and a Warband cannot have more than 2 Grand Cannons in total."
+    }
+  ],
+  "currencyChoices": [
+    {
+      "id": "grail-devotee-in-glory",
+      "under": ["black-grail"],
+      "upgrade": "Grail Devotee",
+      "alternatives": [{"ducats": 0, "glory": 2}],
+      "page": 131,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Grail Devotee | 15 ducats or 2 glory | ELITE only, Limit: 2. Jealous Obsession: The Limit of 2 is the number of models that can have Grail Devotees; each model can have up to 2 Grail Devotees. The cost of the second Grail Devotee taken for a model is paid in glory instead of ducats."
+    }
+  ],
+  "minimumModelCosts": [
+    {
+      "id": "koa-mammons-chosen",
+      "name": "Mammon's Chosen",
+      "under": ["heretic-legion/knights-of-avarice"],
+      "ducats": 80,
+      "exceptUnitIds": ["heretic-legion/wretched"],
+      "page": 120,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Mammon's Chosen: A Knights of Avarice Warband cannot include a model if the cost of the model and its Battlekit is less than 80 ducats, unless the model is a Wretched."
     }
   ]
 }

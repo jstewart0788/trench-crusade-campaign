@@ -1,4 +1,4 @@
-import { warbandCost, type RulesData, type Warband, type WarbandCost, type WarbandMember } from "@tc/rules/browser";
+import { purchasesFor, warbandCost, type RulesData, type Warband, type WarbandCost, type WarbandMember } from "@tc/rules/browser";
 
 // Purchases are staged and only written to the roster by "Confirm purchases":
 // kit and upgrade changes per member, recruits, and dismissals. The confirmed
@@ -202,11 +202,13 @@ export function prunePreGame(warband: Warband): Warband {
 /** The roster as it will be once every pending change is confirmed. Pure; the input is untouched. */
 export function applyPending(warband: Warband, pending: Pending): Warband {
   if (!hasPending(pending)) return warband;
+  const rows = stagedMembers(warband, pending).filter((r) => r.pending !== "remove");
+  // Kit bought now is recorded as bought for this game (Warband.purchases): a recruit's kit, and a member's additions.
+  const bought = rows.flatMap((r) => purchasesFor(r.member.id, r.pending === "add" ? r.member.equipmentItemIds : (pending.members[r.member.id]?.adds ?? []), warband.gameNumber));
   return prunePreGame({
     ...warband,
-    members: stagedMembers(warband, pending)
-      .filter((r) => r.pending !== "remove")
-      .map((r) => r.member),
+    members: rows.map((r) => r.member),
+    ...(bought.length ? { purchases: [...(warband.purchases ?? []), ...bought] } : {}),
   });
 }
 

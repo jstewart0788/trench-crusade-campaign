@@ -43,6 +43,8 @@ export const Upgrade = z
     rules: z.array(RuleText).optional(),
     /** Set from unit-rules.json freeKeywordGrants: this upgrade is that grant's toggle. */
     grant: z.string().optional(),
+    /** Set from unit-rules.json currencyChoices: this is that upgrade (bsId) paid for in another currency. */
+    paysFor: z.string().optional(),
   })
   .passthrough();
 export type Upgrade = z.infer<typeof Upgrade>;
@@ -92,6 +94,8 @@ export const RosterAccess = EquipmentAccess.extend({
   hands: z.union([z.literal(1), z.literal(2)]).optional(),
   /** Once bought, it cannot be removed. */
   permanent: z.boolean().optional(),
+  /** A row lent from another faction's armoury by unit-rules.json crossFactionArmoury (that rule's id); never in units.json. */
+  foreign: z.string().optional(),
 }).passthrough();
 export type RosterAccess = z.infer<typeof RosterAccess>;
 

@@ -1,4 +1,4 @@
-import type { Warband, WarbandMember } from "@tc/rules/browser";
+import { purchasesFor, type Warband, type WarbandMember } from "@tc/rules/browser";
 import { applyPending, prunePreGame, type Pending } from "./staging.js";
 
 // The builder's state is the Warband itself: every action returns a new
@@ -22,6 +22,9 @@ export type RosterAction =
   | { type: "remove-upgrade"; memberId: string; upgradeId: string }
   /** Confirm purchases: every member's staged changes written to the roster at once. */
   | { type: "apply-purchases"; pending: Pending }
+  /** Battlekit the warband holds itself (a Grand Cannon gun battery). Bought outright, not staged. */
+  | { type: "add-armoury-item"; itemId: string }
+  | { type: "remove-armoury-item"; itemId: string }
   /** A choice made before the game (Broken on the Wheel's victim); not a purchase, never staged. */
   | { type: "set-pre-game"; key: string; memberId: string | null };
 
@@ -63,6 +66,11 @@ function updateMember(state: Warband, memberId: string, fn: (m: WarbandMember) =
   return { ...state, members: state.members.map((m) => (m.id === memberId ? fn(m) : m)) };
 }
 
+/** The roster with these items recorded as bought for the game being played. */
+function bought(state: Warband, memberId: string, itemIds: readonly string[]): Warband {
+  return itemIds.length ? { ...state, purchases: [...(state.purchases ?? []), ...purchasesFor(memberId, itemIds, state.gameNumber)] } : state;
+}
+
 function removeLast(ids: string[], id: string): string[] {
   const at = ids.lastIndexOf(id);
   return at === -1 ? ids : [...ids.slice(0, at), ...ids.slice(at + 1)];
@@ -85,7 +93,7 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
     case "add-member": {
       const member: WarbandMember = { id: nextMemberId(state.members), unitId: action.unitId, equipmentItemIds: [...(action.equipmentItemIds ?? [])] };
       if (action.upgradeIds?.length) member.upgradeIds = [...action.upgradeIds];
-      return { ...state, members: [...state.members, member] };
+      return bought({ ...state, members: [...state.members, member] }, member.id, member.equipmentItemIds);
     }
     case "duplicate-member": {
       const at = state.members.findIndex((m) => m.id === action.memberId);
@@ -94,14 +102,15 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
       const copy: WarbandMember = { ...source, id: nextMemberId(state.members), equipmentItemIds: [...source.equipmentItemIds] };
       if (source.upgradeIds) copy.upgradeIds = [...source.upgradeIds];
       delete copy.name;
-      return { ...state, members: [...state.members.slice(0, at + 1), copy, ...state.members.slice(at + 1)] };
+      return bought({ ...state, members: [...state.members.slice(0, at + 1), copy, ...state.members.slice(at + 1)] }, copy.id, copy.equipmentItemIds);
     }
     case "remove-member":
       return prunePreGame({ ...state, members: state.members.filter((m) => m.id !== action.memberId) });
     case "rename-member":
       return updateMember(state, action.memberId, (m) => withOptional(m, "name", action.name.trim() === "" ? undefined : action.name));
     case "add-item":
-      return updateMember(state, action.memberId, (m) => ({ ...m, equipmentItemIds: [...m.equipmentItemIds, action.itemId] }));
+      if (!state.members.some((m) => m.id === action.memberId)) return state;
+      return bought(updateMember(state, action.memberId, (m) => ({ ...m, equipmentItemIds: [...m.equipmentItemIds, action.itemId] })), action.memberId, [action.itemId]);
     case "remove-item":
       return updateMember(state, action.memberId, (m) => ({ ...m, equipmentItemIds: removeLast(m.equipmentItemIds, action.itemId) }));
     case "add-upgrade":
@@ -113,6 +122,12 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
       });
     case "apply-purchases":
       return applyPending(state, action.pending);
+    case "add-armoury-item":
+      return { ...state, armoury: [...(state.armoury ?? []), action.itemId] };
+    case "remove-armoury-item": {
+      const armoury = removeLast(state.armoury ?? [], action.itemId);
+      return withOptional({ ...state, armoury }, "armoury", armoury.length ? armoury : undefined);
+    }
     case "set-pre-game":
       return { ...state, preGame: { ...state.preGame, [action.key]: action.memberId } };
   }

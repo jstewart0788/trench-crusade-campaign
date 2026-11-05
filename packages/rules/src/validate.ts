@@ -1,6 +1,7 @@
 import { checkBattlekit, type CarriedItem } from "./battlekit.js";
 import type { GroupLimit, PreGameChoice, ReplaceableBuiltIn } from "./unit-rules.js";
-import { variantItemLimit, warbandCost } from "./cost.js";
+import { foreignHoldings, heldItemRule } from "./armoury.js";
+import { memberCost, variantItemLimit, warbandCost } from "./cost.js";
 import { grantStates, isEliteMember, memberKeywords } from "./grants.js";
 import { unitDisplayName } from "./presentation.js";
 import { appliesUnder } from "./unit-rules.js";
@@ -43,6 +44,10 @@ export const ROSTER_ERROR_CODES = [
   "elite-cap",
   "grant-cap",
   "free-at-creation-missing",
+  "foreign-armoury-limit",
+  "foreign-armoury-after-creation",
+  "armoury-item-not-allowed",
+  "model-under-minimum",
   "item-unknown",
   "item-not-available",
   "item-fixed-missing",
@@ -212,6 +217,8 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     fail({ code: "elite-cap", message: `${elites} ELITE models; a warband can never include more than ${MAX_ELITES}` });
   }
   checkGrants(warband, data, fail);
+  checkForeign(warband, data, fail);
+  checkMinimumCosts(warband, data, members, fail);
   checkFreeAtCreation(warband, data, fail);
 
   const carriedByItem = new Map<string, { total: number; sample: CarriedItem; memberId: string }>();
@@ -242,7 +249,19 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
 
   // Warbands of Trench Crusade p11, "Limit X": a warband-wide cap on a piece of Battlekit.
   // A variant's own armoury entry replaces the row's Limit (Methodius Machine Gun: Limit 2, p64).
+  // Kit the warband holds itself counts toward the same Limit ("a Warband cannot have more than 2 Grand Cannons in total", p99).
+  const held = checkWarbandArmoury(warband, data, fail);
+  for (const [itemId, n] of held) {
+    const carried = carriedByItem.get(itemId);
+    const item = data.equipmentById.get(itemId)!;
+    const total = (carried?.total ?? 0) + n;
+    const limit = carried
+      ? resolveLimit(carried.sample.access.limitsText ?? item.limits ?? undefined, "max", "warband", carried.sample.access.maxPerWarband ?? null, ctx, item.name)
+      : resolveLimit(item.limits ?? undefined, "max", "warband", null, ctx, item.name);
+    if (limit.value !== null && total > limit.value) fail({ code: "item-max-per-warband", itemId, message: `${item.name}: ${total} in the warband (${n} held by the warband), limit ${limit.value}` });
+  }
   for (const [itemId, { total, sample, memberId }] of carriedByItem) {
+    if (held.has(itemId)) continue;
     const unitId = members.find((m) => m.member.id === memberId)!.unit.id;
     const own = variantItemLimit(data, warband, unitId, itemId);
     const limit = own ? { value: own.limit!, unresolved: [] } : resolveLimit(sample.access.limitsText ?? sample.item.limits ?? undefined, "max", "warband", sample.access.maxPerWarband ?? null, ctx, sample.item.name);
@@ -656,6 +675,60 @@ function checkGrants(warband: Warband, data: RulesData, fail: (e: RosterError) =
     const cap = rule.pools.map((p) => `${p.unitIds ? `${p.max} of ${p.unitIds.map((id) => data.unitsById.get(id)?.name ?? id).join("/")}` : `${p.max} more`}`).join(" + ");
     for (const memberId of state.over) {
       fail({ code: "grant-cap", memberId, message: `${rule.name}: ${rule.keyword} at no cost for ${cap} only; this model is one too many (p${rule.page})` });
+    }
+  }
+}
+
+/** Lent Battlekit (Corrupt Merchants p120, Weapon Collections p95): the allowance per armoury, and only bought at creation or bought again to replace that. */
+function checkForeign(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
+  const holdings = foreignHoldings(data, warband);
+  const byRule = new Map<string, typeof holdings>();
+  for (const h of holdings) byRule.set(h.rule.id, [...(byRule.get(h.rule.id) ?? []), h]);
+  for (const list of byRule.values()) {
+    const rule = list[0]!.rule;
+    for (const h of list.slice(rule.max)) {
+      fail({ code: "foreign-armoury-limit", memberId: h.memberId, itemId: h.itemId, message: `${rule.name}: ${rule.max} piece of Battlekit from the ${data.factionsById.get(rule.from)?.name ?? rule.from} Armoury, not ${list.length} (p${rule.page})` });
+    }
+    for (const h of list) {
+      if (h.game === 1 || (warband.purchases ?? []).some((p) => p.itemId === h.itemId && p.game === 1)) continue;
+      const item = data.equipmentById.get(h.itemId)?.name ?? h.itemId;
+      fail({ code: "foreign-armoury-after-creation", memberId: h.memberId, itemId: h.itemId, message: `${rule.name}: ${item} from the ${data.factionsById.get(rule.from)?.name ?? rule.from} Armoury can only be bought when the warband is created, or again to replace one bought then (p${rule.page})` });
+    }
+  }
+}
+
+/** Battlekit the warband holds itself: each must be one its list may hold. Returns how many of each it holds. */
+function checkWarbandArmoury(warband: Warband, data: RulesData, fail: (e: RosterError) => void): Map<string, number> {
+  const held = new Map<string, number>();
+  for (const itemId of warband.armoury ?? []) {
+    const item = data.equipmentById.get(itemId);
+    if (!item) {
+      fail({ code: "item-unknown", itemId, message: `Unknown item "${itemId}" in the warband's Armoury` });
+      continue;
+    }
+    if (!heldItemRule(data, warband, itemId)) {
+      fail({ code: "armoury-item-not-allowed", itemId, message: `${item.name} must be given to a model; this warband cannot hold it in its Armoury` });
+      continue;
+    }
+    held.set(itemId, (held.get(itemId) ?? 0) + 1);
+  }
+  return held;
+}
+
+/**
+ * Mammon's Chosen (p120): no model under 80 ducats with its kit, Wretched aside.
+ * The floor is in ducats; a model whose entry is priced in glory (a Mercenary)
+ * has no ducat cost to measure and is not held to it, since the same page lets
+ * the second Goetic Warlock be bought for glory.
+ */
+function checkMinimumCosts(warband: Warband, data: RulesData, members: ResolvedMember[], fail: (e: RosterError) => void): void {
+  for (const rule of data.unitRules.file.minimumModelCosts) {
+    if (!appliesUnder(rule.under, warband)) continue;
+    for (const { member, unit } of members) {
+      if (rule.exceptUnitIds?.includes(unit.id)) continue;
+      const cost = memberCost(data, warband, member);
+      if (cost.unit.glory > 0 || cost.ducats >= rule.ducats) continue;
+      fail({ code: "model-under-minimum", memberId: member.id, unitId: unit.id, message: `${rule.name}: ${unitDisplayName(data, warband, unit, member)} with its kit costs ${cost.ducats} ducats; every model but a Wretched must cost at least ${rule.ducats} (p${rule.page})` });
     }
   }
 }

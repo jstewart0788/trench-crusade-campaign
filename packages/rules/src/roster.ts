@@ -13,6 +13,14 @@ export const WarbandMember = z.object({
 });
 export type WarbandMember = z.infer<typeof WarbandMember>;
 
+/** One piece of Battlekit bought for a member, and the game it was bought for (game 1: when the warband was created). */
+export const Purchase = z.object({
+  itemId: z.string().min(1),
+  memberId: z.string().min(1),
+  game: z.number().int().positive(),
+});
+export type Purchase = z.infer<typeof Purchase>;
+
 export const Warband = z.object({
   id: z.string().min(1),
   name: z.string(),
@@ -29,6 +37,15 @@ export const Warband = z.object({
   glory: z.number().int().nonnegative().optional(),
   /** Choices made before each game, keyed as in unit-rules.json preGameChoices (brokenOnTheWheel: the victim's member id). */
   preGame: z.record(z.string(), z.string().nullable()).optional(),
+  /**
+   * Battlekit purchases in the order they were made. Rules that depend on what
+   * was bought when (Cold Steel, Supreme Blessing, Corrupt Merchants) read it.
+   * Kit with no entry here was bought before this was kept and counts as bought
+   * when the warband was created.
+   */
+  purchases: z.array(Purchase).optional(),
+  /** Battlekit the warband holds rather than a model (a Grand Cannon gun battery, Warbands p99), by item id. */
+  armoury: z.array(z.string().min(1)).optional(),
 });
 export type Warband = z.infer<typeof Warband>;
 

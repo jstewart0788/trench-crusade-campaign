@@ -1,8 +1,10 @@
-import { findSubfaction, rosterVariants } from "@tc/rules/browser";
+import { appliesUnder, findSubfaction, heldItemCost, resolveLimit, rosterVariants } from "@tc/rules/browser";
 import { useEffect, useMemo, useState } from "react";
 import { IconLink } from "../components/IconButton.js";
 import { MemberDetails } from "../components/MemberDetails.js";
 import { MemberList } from "../components/MemberList.js";
+import { Price } from "../components/Price.js";
+import { PriceButton } from "../components/PriceButton.js";
 import { PreGamePanel } from "../components/PreGamePanel.js";
 import { TtsCode } from "../components/TtsCode.js";
 import { ValidationPanel } from "../components/ValidationPanel.js";
@@ -14,7 +16,9 @@ import { armouryHref, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
-  const { rules, warband, code, storageKey, base, cost, threshold, validation, dispatch, rows, stage, ctx, confirmed } = useWarband();
+  const { rules, warband, code, storageKey, base, cost, threshold, validation, dispatch, rows, stage, ctx, confirmed, purse } = useWarband();
+  // Battlekit the warband may hold itself (warbandHeldItems: the Defenders' Grand Cannon gun battery, p99).
+  const holdable = rules.unitRules.file.warbandHeldItems.filter((r) => appliesUnder(r.under, warband));
   const faction = rules.factionsById.get(warband.factionId);
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
@@ -105,6 +109,35 @@ export function WarbandScreen() {
           expand={{ isOpen: (id) => expanded.has(id), onToggle: toggle, details: detailsOf }}
         />
       </section>
+
+      {holdable.length > 0 && (
+        <section className="panel" aria-label="Warband armoury">
+          <h2>Warband armoury</h2>
+          <ul>
+            {holdable.map((r) => {
+              const item = rules.equipmentById.get(r.itemId);
+              if (!item) return null;
+              const held = (warband.armoury ?? []).filter((id) => id === r.itemId).length;
+              const carried = warband.members.reduce((n, m) => n + m.equipmentItemIds.filter((id) => id === r.itemId).length, 0);
+              const max = resolveLimit(item.limits ?? undefined, "max", "warband", null, ctx, item.name).value;
+              return (
+                <li key={r.id}>
+                  <span>
+                    {r.name}: {held} held{carried ? `, ${carried} carried by models` : ""}
+                  </span>{" "}
+                  <PriceButton offer={{ cost: heldItemCost(rules, r.itemId), cap: { count: held + carried, max, scope: "warband" } }} purse={purse} label={`Add a ${r.name}`} onBuy={() => dispatch({ type: "add-armoury-item", itemId: r.itemId })} />
+                  {held > 0 && (
+                    <button type="button" onClick={() => dispatch({ type: "remove-armoury-item", itemId: r.itemId })}>
+                      Remove one (<Price cost={heldItemCost(rules, r.itemId)} />)
+                    </button>
+                  )}
+                  <p className="quiet">{r.text} (p{r.page})</p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <PreGamePanel warband={confirmed} rules={rules} dispatch={dispatch} />
 

@@ -35,9 +35,10 @@ describe("variantPrices: a price that changes under a variant", () => {
     const alba = warband("new-antioch", [trooper], { variantId: ALBA });
     expect(money(itemCost(data(), alba, "new-antioch/shocktrooper", "great-sword-axe"))).toEqual({ ducats: 7, glory: 0 });
     expect(money(itemCost(data(), { ...alba, variantId: undefined }, "new-antioch/shocktrooper", "great-sword-axe"))).toEqual({ ducats: 12, glory: 0 });
-    expect(warbandCost(alba, data()).ducats).toBe(45 + 7);
+    // The first one bought is also halved by Cold Steel (p39, TC-003f): 7 -> 4, rounded up.
+    expect(warbandCost(alba, data()).ducats).toBe(45 + 4);
     expect(warbandCost({ ...alba, variantId: undefined }, data()).ducats).toBe(45 + 12);
-    expect(toWarbandExport(alba, data(), { code: "T" }).members[0]!.equipment.find((e) => e.id === "great-sword-axe")!.cost).toEqual({ ducats: 7, glory: 0 });
+    expect(toWarbandExport(alba, data(), { code: "T" }).members[0]!.equipment.find((e) => e.id === "great-sword-axe")!.cost).toEqual({ ducats: 4, glory: 0 });
   });
 
   it("Knights of Avarice (p120): the first Goetic Warlock is 110 ducats, the second its normal 4 glory (p176), up to 2", () => {
@@ -231,11 +232,16 @@ describe("freeAtCreation: Supreme Blessing (p35)", () => {
   const crucifix = (n: number, extra: Partial<Warband> = {}) =>
     warband("new-antioch", [member("new-antioch/trench-cleric", ["supreme-blessing"]), ...Array.from({ length: n - 1 }, () => member("new-antioch/yeoman", ["supreme-blessing"]))], { variantId: PAPAL, ...extra });
 
-  it("the Crucifix taken at creation is free; at game 2 it is priced at 3 glory", () => {
+  it("the Crucifix taken at creation is free; one bought later is 3 glory", () => {
     expect(money(warbandCost(crucifix(1), data()))).toEqual({ ducats: 60, glory: 0 });
     expect(money(itemCost(data(), warband("new-antioch", [], { variantId: PAPAL }), "new-antioch/trench-cleric", "supreme-blessing"))).toEqual({ ducats: 0, glory: 0 });
     expect(money(itemCost(data(), crucifix(1), "new-antioch/trench-cleric", "supreme-blessing"))).toEqual({ ducats: 0, glory: 3 });
-    expect(money(warbandCost(crucifix(1, { gameNumber: 2 }), data()))).toEqual({ ducats: 60, glory: 3 });
+    // Kit with no purchase record was bought at creation, so it stays free at game 2 (TC-003f);
+    // a replacement recorded as bought for game 2 is paid for normally.
+    expect(money(warbandCost(crucifix(1, { gameNumber: 2 }), data()))).toEqual({ ducats: 60, glory: 0 });
+    const lost = crucifix(1, { gameNumber: 2 });
+    lost.purchases = [{ itemId: "supreme-blessing", memberId: lost.members[0]!.id, game: 1 }, { itemId: "supreme-blessing", memberId: lost.members[0]!.id, game: 2 }];
+    expect(money(warbandCost(lost, data()))).toEqual({ ducats: 60, glory: 3 });
     expect(toWarbandExport(crucifix(1), data(), { code: "T" }).members[0]!.equipment.find((e) => e.id === "supreme-blessing")!.cost).toEqual({ ducats: 0, glory: 0 });
   });
 

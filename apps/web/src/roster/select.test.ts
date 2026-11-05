@@ -229,10 +229,13 @@ describe("variant prices and grants on the shelf", () => {
     expect(recruit(defenders, "iron-sultanate/mamluk-faris")?.cost).toMatchObject({ ducats: 0, glory: 4 });
   });
 
-  it("prices an Alba Great Sword at 7 and caps Swiss Guard at 4 besides the Lieutenant", () => {
+  it("prices an Alba Great Sword at 7 (4 for the first, Cold Steel) and caps Swiss Guard at 4 besides the Lieutenant", () => {
     const alba = withYeoman(antioch("new-antioch/kingdom-of-alba-assault-detachment"));
-    const sword = armouryGroups(alba.members[0]!, yeomanUnit(), alba, data, ctxFor(alba)).groups.flatMap((g) => g.rows).find((r) => r.item.id === "great-sword-axe");
-    expect(sword?.cost).toMatchObject({ ducats: 7, glory: 0 });
+    const sword = (w: Warband) => armouryGroups(w.members[0]!, yeomanUnit(), w, data, ctxFor(w)).groups.flatMap((g) => g.rows).find((r) => r.item.id === "great-sword-axe");
+    expect(sword(alba)?.cost).toMatchObject({ ducats: 4, glory: 0 });
+    const one = rosterReducer(alba, { type: "add-item", memberId: alba.members[0]!.id, itemId: "great-sword-axe" });
+    expect(one.purchases).toEqual([{ itemId: "great-sword-axe", memberId: alba.members[0]!.id, game: 1 }]);
+    expect(sword(one)?.cost).toMatchObject({ ducats: 7, glory: 0 });
 
     // The Lieutenant's Swiss Guard does not use up one of the 4 others (p35).
     let papal = rosterReducer(antioch("new-antioch/papal-states-intervention-force"), { type: "add-member", unitId: "new-antioch/lieutenant" });
@@ -263,5 +266,26 @@ describe("variant names on the lists", () => {
     expect(memberTitle(w.members[0]!, yuz, data, w)).toBe("Silahdar");
     expect(memberTitle({ ...w.members[0]!, name: "Kara" }, yuz, data, w)).toBe("Kara (Silahdar)");
     expect(memberTitle(w.members[0]!, yuz)).toBe("Yüzbaşı");
+  });
+});
+
+// TC-003f: lent Battlekit is on the shelf only while it may be bought.
+describe("lent Battlekit on the shelf", () => {
+  it("offers a Knights of Avarice Trooper one Sultanate piece at creation, none after the allowance, none later unless replacing", () => {
+    const TROOPER = "heretic-legion/heretic-trooper";
+    const trooper = data.unitsById.get(TROOPER)!;
+    let koa = createWarband({ name: "t", factionId: "heretic-legion", variantId: "heretic-legion/knights-of-avarice" }, "w");
+    koa = rosterReducer(koa, { type: "add-member", unitId: TROOPER });
+    koa = rosterReducer(koa, { type: "add-member", unitId: TROOPER });
+    const shelf = (w: Warband, i: number) => armouryGroups(w.members[i]!, trooper, w, data, ctxFor(w)).groups.flatMap((g) => g.rows.map((r) => r.item.id));
+    expect(shelf(koa, 1)).toEqual(expect.arrayContaining(["musket", "jezzail", "heavy-shotgun"]));
+    const armed = rosterReducer(koa, { type: "add-item", memberId: koa.members[0]!.id, itemId: "musket" });
+    expect(shelf(armed, 1)).not.toContain("jezzail");
+    expect(shelf(armed, 1)).toContain("heavy-shotgun");
+    expect(shelf(armed, 0)).toContain("musket");
+    const later = rosterReducer(koa, { type: "set-game-number", gameNumber: 3 });
+    expect(shelf(later, 1)).not.toContain("musket");
+    const replacing = { ...later, purchases: [{ itemId: "musket", memberId: "gone", game: 1 }] };
+    expect(shelf(replacing, 1)).toContain("musket");
   });
 });

@@ -505,6 +505,18 @@ the converted data. The Silahdar's extra armoury (Alaybozan 9, Anqā Guard 10, E
 p99-101) was already converted as Defenders-gated rows on the Yüzbaşı entry; nothing to add.
 Unresolved: 11. (This also restores the "Missing from upstream" heading the TC-003d section dropped.)
 
+### TC-003f: purchase history, lent Battlekit, the gun battery, a currency choice, a cost floor
+
+Five more `unit-rules.json` sections: `firstPurchaseDiscounts` (Cold Steel, p39, halved and rounded up
+per the Digital Rulebook p30), `crossFactionArmoury` (Corrupt Merchants p120, Weapon Collections p95),
+`warbandHeldItems` (the Grand Cannon gun battery, p99), `currencyChoices` (Grail Devotee 15 ducats or
+2 glory, p131) and `minimumModelCosts` (Mammon's Chosen, p120). The converted data already offered the
+lent Battlekit as rows gated on Knights of Avarice / House of Wisdom; those rows are now marked as lent
+from New Antioch, the Iron Sultanate or the Trench Pilgrims, which is what the creation-only and
+one-per-armoury rules read. Five overrides added (175 total): the Brazen Bull carries at most 1 Grand
+Cannon (p99), and a Second Grail Devotee needs a first on the same model (p131) on the four Black Grail
+entries that have one (the Takwin Homunculus row already carries a Seal of Solomon gate and is left).
+
 ### Missing from upstream
 
 | faction | name | kind | p. | detail |
