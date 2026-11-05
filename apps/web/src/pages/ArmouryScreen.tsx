@@ -141,7 +141,7 @@ export function ArmouryScreen() {
         <div className={styles.grid}>
           <div className={styles.column}>
             <Loadout
-              stats={effectiveStats(unit, warband, rules, ctx)}
+              stats={effectiveStats(unit, warband, rules, ctx, member)}
               keywords={memberKeywords(member, unit, rules, warband)}
               member={member}
               unit={unit}

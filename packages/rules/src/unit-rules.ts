@@ -185,6 +185,8 @@ export const VariantKeywords = z.object({
   unitIds: Ids.optional(),
   add: z.array(z.string()).optional(),
   remove: z.array(z.string()).optional(),
+  /** Only a model that has this upgrade (the Executor's LEADER and TOUGH, p142); unitIds are then required. */
+  withUpgrade: z.string().optional(),
   page: Page,
   source: Book,
   text: z.string(),
@@ -280,6 +282,28 @@ export const UpgradeRequirement = z.object({
 });
 export type UpgradeRequirement = z.infer<typeof UpgradeRequirement>;
 
+const StatName = z.enum(["movement", "ranged", "melee", "armour", "base"]);
+/** One change to a characteristic: set it ("+1", "8\"/Flying", "32mm", -2) or add to it (1, -1). */
+export const StatChange = z.object({ stat: StatName, op: z.enum(["set", "add"]), value: z.union([z.string(), z.number().int()]) });
+export type StatChange = z.infer<typeof StatChange>;
+
+/**
+ * Characteristics an upgrade changes on the model that takes it, where the
+ * converted data does not already say so (the converter records upstream's own
+ * upgrade modifiers in each unit's notes, which buildRulesData reads too).
+ */
+export const UpgradeEffect = z.object({
+  id: z.string(),
+  name: z.string(),
+  unitIds: Ids,
+  upgrade: z.string(),
+  changes: z.array(StatChange).min(1),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type UpgradeEffect = z.infer<typeof UpgradeEffect>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -301,6 +325,7 @@ export const UnitRulesFile = z.object({
   currencyChoices: z.array(CurrencyChoice),
   minimumModelCosts: z.array(MinimumModelCost),
   upgradeRequirements: z.array(UpgradeRequirement),
+  upgradeEffects: z.array(UpgradeEffect),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -311,10 +336,55 @@ export interface UnitRulesFor {
   preGame: PreGameChoice[];
 }
 
+/** What taking an upgrade (or carrying an item) does to a model's characteristics and keywords. */
+export interface ModelEffect {
+  upgrade?: string;
+  item?: string;
+  changes: StatChange[];
+  keywords: string[];
+  /** The unit-rules.json entry it comes from; absent for one read from the converted data. */
+  rule?: UpgradeEffect;
+}
+
 export interface UnitRulesIndex {
   file: UnitRules;
   byUnit: Map<string, UnitRulesFor>;
   grantsById: Map<string, FreeKeywordGrant>;
+  /** Per unit: upstream's upgrade and item modifiers (from the converted notes), then unit-rules.json upgradeEffects. */
+  effectsByUnit: Map<string, ModelEffect[]>;
+}
+
+const NOTE_STAT = /^(movement|ranged|melee|armour|base) (set|increment|decrement) (.+?) with upgrade '(.+)'$/;
+const NOTE_KEYWORD = /^gains keyword (.+) when atLeast 1 (.+) \(self\)$/;
+
+/**
+ * Upstream's own per-model modifiers, as the converter writes them into a unit's
+ * notes ("ranged increment 1 with upgrade 'The Executor'", "gains keyword Strong
+ * when atLeast 1 Inhuman Strength (self)"). Only triggers that are one of the
+ * unit's upgrades or armoury items are kept; anything else is a roster-wide or
+ * campaign condition this does not model.
+ */
+export function effectsFromNotes(unit: RosterUnit, itemName: (id: string) => string | undefined): ModelEffect[] {
+  const upgrades = new Set((unit.upgrades ?? []).map((g) => g.name));
+  const items = new Map(unit.equipmentAccess.map((a) => [itemName(a.itemId), a.itemId] as const));
+  const out: ModelEffect[] = [];
+  for (const part of (unit.notes ?? "").split("; ")) {
+    const stat = NOTE_STAT.exec(part);
+    if (stat && upgrades.has(stat[4]!)) {
+      const [, name, op, raw] = stat;
+      const amount = op === "set" ? undefined : Number(raw) * (op === "decrement" ? -1 : 1);
+      const value = op === "set" ? (name === "armour" ? Number(raw) : raw!.replace(/\s*dice$/i, "")) : amount!;
+      if (typeof value === "number" && Number.isNaN(value)) continue;
+      out.push({ upgrade: stat[4]!, changes: [{ stat: name as StatChange["stat"], op: op === "set" ? "set" : "add", value }], keywords: [] });
+      continue;
+    }
+    const kw = NOTE_KEYWORD.exec(part);
+    if (kw) {
+      if (upgrades.has(kw[2]!)) out.push({ upgrade: kw[2]!, changes: [], keywords: [kw[1]!] });
+      else if (items.has(kw[2]!)) out.push({ item: items.get(kw[2]!)!, changes: [], keywords: [kw[1]!] });
+    }
+  }
+  return out;
 }
 
 /** Which lists an `under` id names: a variant, a subfaction, or a faction's core list. */
@@ -386,7 +456,7 @@ export function substituteUnits(file: UnitRules, unitsById: Map<string, RosterUn
  * the default `replaceableDefault`, each replacement `replaces` (and `hands`),
  * each permanent item `permanent`. Returns the problems found; empty means ok.
  */
-export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUnit>, lists: ListResolver): { index: UnitRulesIndex; problems: string[] } {
+export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUnit>, lists: ListResolver, itemNames?: (itemId: string) => string | undefined): { index: UnitRulesIndex; problems: string[] } {
   const problems: string[] = [];
   const byUnit = new Map<string, UnitRulesFor>();
   const entry = (unitId: string) => {
@@ -577,5 +647,20 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
       }
     }
   }
-  return { index: { file, byUnit, grantsById }, problems };
+  const effectsByUnit = new Map<string, ModelEffect[]>();
+  for (const unit of unitsById.values()) {
+    const fromNotes = effectsFromNotes(unit, (id) => itemNames?.(id));
+    if (fromNotes.length) effectsByUnit.set(unit.id, fromNotes);
+  }
+  for (const rule of file.upgradeEffects) {
+    const where = `upgradeEffects.${rule.id}`;
+    for (const unitId of rule.unitIds) {
+      const unit = unitOf(where, unitId);
+      if (!unit) continue;
+      if (!(unit.upgrades ?? []).some((g) => g.name === rule.upgrade)) problems.push(`${where}: ${unitId} has no upgrade "${rule.upgrade}"`);
+      effectsByUnit.set(unitId, [...(effectsByUnit.get(unitId) ?? []), { upgrade: rule.upgrade, changes: rule.changes, keywords: [], rule }]);
+    }
+  }
+  for (const rule of file.variantKeywords) if (rule.withUpgrade && !rule.unitIds) problems.push(`variantKeywords.${rule.id}: withUpgrade needs unitIds`);
+  return { index: { file, byUnit, grantsById, effectsByUnit }, problems };
 }

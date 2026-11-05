@@ -460,7 +460,6 @@ Homunculus, the Trench Dog and the Disciple of St. Roch.
 | entry | issue | p. |
 |---|---|---|
 | `new-antioch` | Kingdom of Alba 'Cold Steel': halve the first purchase of each Melee Weapon; needs purchase history the roster does not keep (Claymore Smiths is resolved, TC-003d) | 39 |
-| `new-antioch/mechanized-heavy-infantry` | Kingdom of Alba 'Melee-focused': MHI have Melee +1 DICE and Ranged +0 DICE; upstream encodes it as a compound stat modifier the converter cannot apply | 40 |
 | `trench-pilgrims/anchorite-shrine` | Bonebreaker Mace is recorded as a built-in weapon but the Catherine Wheel is an access entry with no cost; both are built in (p59-60). Methodius lets the Catherine Wheel be replaced by one Anchorite Ranged Weapon | 59 |
 | `heretic-legion/wretched` | Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error, not by filtering the access list (glory-priced items remain listed) | 114 |
 | `court-of-the-seven-headed-serpent/praetor` | Unholy Relic (15 ducats, no stipulation) is hidden upstream for models that already have FEAR (Praetor, Sorcerer) and for Wretched; the item only grants FEAR so the omission has no mechanical effect | 149 |
@@ -528,6 +527,19 @@ taken together (p96-97); a Shock Trooper Berserker must be one of the Fianna (p3
 Blade and Light Skirmisher exclude each other (p94); Medicine rules out a Medi-kit (p94); Unseen
 Advance is for models without ELITE (NR p12). One override (176 total) drops upstream's bar on Light
 Skirmisher for every House of Wisdom Azeb: only the Kavasses lose it.
+
+### TC-003h: what upgrades and variants do to a model's characteristics and keywords
+
+`effectiveStats` and the model's keywords now apply upgrade effects: upstream's own modifiers, which the
+converter records in each unit's notes ("ranged increment 1 with upgrade 'The Executor'", "gains keyword
+Strong when atLeast 1 Inhuman Strength (self)"), read when the data is built; `unit-rules.json`
+`upgradeEffects` for what upstream leaves out (the Legionnaires' +1, p112 / NR p28; Knight Companion of
+the Fly, p128; the Fly Thrall's 6"/Flying, p137; Wrath of God's 32mm base on the Lazarist Castigator,
+p61); and `variantKeywords` with `withUpgrade` (Executor and Master Assassin LEADER/TOUGH, Berserker
+NEGATE FEAR, Fianna, Forward Positions, Assassin Acolytes, Unseen Advance, Wrath of God, Takwin Wings /
+Regenerative Tissue / Elemental Resistance, Philosophy, the Fly Thrall's FLYING). The Kingdom of Alba
+Mechanized Heavy Infantry entry above is resolved by a `statOverrides` entry (Melee +1, Ranged +0, p40)
+and removed. Unresolved: 10.
 
 ### Missing from upstream
 

@@ -1,5 +1,6 @@
 import { findUnit, upgradeFor, type RosterUnit, type RulesData } from "./data.js";
 import type { Warband, WarbandMember } from "./roster.js";
+import { effectKeywords } from "./effects.js";
 import { listKeywords, type ListScope } from "./presentation.js";
 import { appliesUnder, dataKeyword, type FreeKeywordGrant, type PurseAdjustment } from "./unit-rules.js";
 
@@ -14,9 +15,9 @@ export function memberGrants(member: WarbandMember, unit: RosterUnit, data: Rule
 
 /** The member's keywords: the unit's under the list (variantKeywords, when a scope is given), then any granted, in the data's spelling. */
 export function memberKeywords(member: WarbandMember, unit: RosterUnit, data: RulesData, scope?: ListScope): string[] {
-  const keywords = scope ? listKeywords(data, scope, unit) : [...unit.keywords];
-  for (const g of memberGrants(member, unit, data)) {
-    const k = dataKeyword(g.keyword);
+  const keywords = scope ? listKeywords(data, scope, unit, member) : [...unit.keywords];
+  for (const kw of [...effectKeywords(data, unit, member), ...memberGrants(member, unit, data).map((g) => g.keyword)]) {
+    const k = dataKeyword(kw);
     if (!keywords.some((have) => have.toLowerCase() === k.toLowerCase())) keywords.push(k);
   }
   return keywords;

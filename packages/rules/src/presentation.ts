@@ -29,11 +29,12 @@ export function unitDisplayName(data: RulesData, scope: ListScope, unit: RosterU
   return name;
 }
 
-/** The unit's keywords under this list: its own, less any a variant removes, plus any it adds, in the data's spelling. */
-export function listKeywords(data: RulesData, scope: ListScope, unit: RosterUnit): string[] {
+/** The unit's keywords under this list: its own, less any a variant removes, plus any it adds (some only with an upgrade the member has), in the data's spelling. */
+export function listKeywords(data: RulesData, scope: ListScope, unit: RosterUnit, member?: WarbandMember): string[] {
   let keywords = [...unit.keywords];
   for (const rule of data.unitRules.file.variantKeywords) {
     if (!appliesUnder(rule.under, scope)) continue;
+    if (rule.withUpgrade && !hasUpgrade(unit, member, rule.withUpgrade)) continue;
     if (rule.unitIds ? !rule.unitIds.includes(unit.id) : unit.mercenary || unit.kind === "fireteam") continue;
     const drop = new Set((rule.remove ?? []).map((k) => k.trim().toLowerCase()));
     keywords = keywords.filter((k) => !drop.has(k.toLowerCase()));
@@ -44,7 +45,7 @@ export function listKeywords(data: RulesData, scope: ListScope, unit: RosterUnit
 
 /** The unit as this list presents it: its name there and its keywords there (for screens and for battlekit checks such as STRONG). */
 export function presentedUnit(data: RulesData, scope: ListScope, unit: RosterUnit, member?: WarbandMember): RosterUnit {
-  return { ...unit, name: unitDisplayName(data, scope, unit, member), keywords: listKeywords(data, scope, unit) };
+  return { ...unit, name: unitDisplayName(data, scope, unit, member), keywords: listKeywords(data, scope, unit, member) };
 }
 
 /** Names a roster selection may use for a unit of this list: its own and every name a variant of the list gives it. */

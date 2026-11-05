@@ -245,7 +245,7 @@ function exportModel(chosen: { candidate: ModelCandidate; picked: boolean } | un
 function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined, extras: ExportExtras = { removed: new Set(), preGame: [] }): ExportMemberCore {
   const unit = findUnit(data, warband, member.unitId);
   if (!unit) throw new WarbandExportError(`Unknown unit "${member.unitId}" on member ${member.id}`);
-  const card = effectiveStats(unit, warband, data);
+  const card = effectiveStats(unit, warband, data, undefined, member);
   const shownName = unitDisplayName(data, warband, unit, member);
   const priced = memberCost(data, warband, member);
 
@@ -301,12 +301,12 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
     displayName: member.name ?? shownName,
     unit: { id: unit.id, name: shownName, kind: unit.kind, elite: isEliteMember(member, unit, data, warband), keywords: memberKeywords(member, unit, data, warband) },
     stats: {
-      movement: unit.stats.movement,
+      movement: card.movement,
       ranged: card.ranged,
       melee: card.melee,
       armour: card.armour + armourBreakdown.reduce((n, b) => n + b.delta, 0),
       armourBreakdown,
-      base: unit.stats.base,
+      base: card.base,
     },
     abilities: [...unit.abilities.filter((a) => abilityApplies(a, warband.variantId, variantName)).map((a) => ({ name: a.name, text: a.text })), ...profileAbilities(unit)],
     equipment,

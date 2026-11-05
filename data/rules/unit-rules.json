@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "35, 37-40, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 142; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39",
+    "pages": "35, 37-41, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 137, 142; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -67,6 +67,14 @@
       "page": 37,
       "source": "Heretic-Naval-Raiders-Warband.pdf",
       "text": "A Wretched Chorus: Wretched models in a Drowned Choir cost 30 ducats and have a Melee Characteristic of +0 DICE. Wretched models within 8\" of any number of Drowned Chorister or Leviathal Chorus models have a Melee Characteristic of +1 DICE instead of +0 DICE."
+    },
+    {
+      "id": "alba-melee-focused",
+      "unitIds": ["new-antioch/mechanized-heavy-infantry"],
+      "onlyWith": ["new-antioch/kingdom-of-alba-assault-detachment"],
+      "stats": {"melee": "+1", "ranged": "+0"},
+      "page": 40,
+      "text": "Melee-focused: Mechanized Heavy Infantry in a Kingdom of Alba Assault Detachment Warband have a Melee Characteristic of +1 DICE and a Ranged Characteristic of +0 DICE."
     }
   ],
   "preGameChoices": [
@@ -423,6 +431,136 @@
       "page": 39,
       "source": "Heretic-Naval-Raiders-Warband.pdf",
       "text": "Only the Strong Survive: In addition, Heretic Captains in this Warband have the STRONG Keyword."
+    },
+    {
+      "id": "dirge-executor-keywords",
+      "under": ["black-grail/dirge-of-the-great-hegemon"],
+      "unitIds": ["black-grail/plague-knight"],
+      "withUpgrade": "The Executor",
+      "add": ["LEADER", "TOUGH"],
+      "page": 142,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Executor uses the Plague Knight Warband Entry, except that it has a Ranged Characteristic of +1 DICE and the LEADER and TOUGH Keywords."
+    },
+    {
+      "id": "fidai-master-assassin-keywords",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "unitIds": ["iron-sultanate/sultanate-assassin"],
+      "withUpgrade": "Master Assassin",
+      "add": ["LEADER", "TOUGH"],
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Master Assassin uses the Sultanate Assassin Warband Entry, except that it has the LEADER and TOUGH Keywords and has a cost of 95 ducats."
+    },
+    {
+      "id": "eire-berserker",
+      "under": ["new-antioch/eire-rangers"],
+      "unitIds": ["new-antioch/lieutenant", "new-antioch/shocktrooper"],
+      "withUpgrade": "Berserker",
+      "add": ["NEGATE FEAR"],
+      "page": 37,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Berserker: In addition, a Berserker has the NEGATE FEAR Keyword, and BLOOD MARKERS are never placed on them under any circumstances."
+    },
+    {
+      "id": "eire-fianna",
+      "under": ["new-antioch/eire-rangers"],
+      "unitIds": ["new-antioch/shocktrooper"],
+      "withUpgrade": "Fianna",
+      "add": ["INFILTRATOR", "SKIRMISHER"],
+      "page": 37,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Fianna: Shock Troopers in an Éire Rangers Warband can have the INFILTRATOR and SKIRMISHER Keywords for +10 ducats per model."
+    },
+    {
+      "id": "stosstruppen-forward-positions",
+      "under": ["new-antioch/stosstruppen-of-the-free-state-of-prussia"],
+      "unitIds": ["new-antioch/shocktrooper"],
+      "withUpgrade": "Forward Positions",
+      "add": ["INFILTRATOR"],
+      "page": 41,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Forward Positions: Up to 2 Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the INFILTRATOR Keyword at a cost of +10 ducats each."
+    },
+    {
+      "id": "fidai-assassin-acolytes",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "unitIds": ["iron-sultanate/azeb"],
+      "withUpgrade": "Assassin Acolyte",
+      "add": ["INFILTRATOR"],
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Assassin Acolytes: Up to three Azeb models in a Fida'i of Alamut Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
+    },
+    {
+      "id": "naval-raiders-unseen-advance",
+      "under": ["heretic-naval-raiders"],
+      "unitIds": ["heretic-naval-raiders/heretic-raider", "heretic-naval-raiders/anointed-heretic-raider", "heretic-naval-raiders/sea-hag"],
+      "withUpgrade": "Unseen Infiltrator",
+      "add": ["INFILTRATOR"],
+      "page": 12,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "Unseen Advance: Up to 3 models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
+    },
+    {
+      "id": "procession-wrath-of-god",
+      "under": ["procession-of-the-sacred-affliction"],
+      "unitIds": ["procession-of-the-sacred-affliction/lazarist-castigator", "procession-of-the-sacred-affliction/leper-pilgrim"],
+      "withUpgrade": "Wrath of God",
+      "add": ["NEGATE FEAR"],
+      "page": 61,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Wrath of God: BLOOD MARKERS are never placed next to a model with the Wrath of God special rule, and it has the NEGATE FEAR Keyword."
+    },
+    {
+      "id": "takwin-wings",
+      "under": ["iron-sultanate"],
+      "unitIds": ["iron-sultanate/takwin-homunculus"],
+      "withUpgrade": "Wings",
+      "add": ["FLYING"],
+      "page": 97,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Wings (30 ducats): Change this Takwin Homunculus's Movement Characteristic to 8\"/Flying and give it the FLYING Keyword."
+    },
+    {
+      "id": "takwin-regenerative-tissue",
+      "under": ["iron-sultanate"],
+      "unitIds": ["iron-sultanate/takwin-homunculus"],
+      "withUpgrade": "Regenerative Tissue",
+      "add": ["REGENERATE 1"],
+      "page": 97,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Regenerative Tissue (25 ducats): This Takwin Homunculus gains the REGENERATE 1 Keyword."
+    },
+    {
+      "id": "takwin-elemental-resistance",
+      "under": ["iron-sultanate"],
+      "unitIds": ["iron-sultanate/takwin-homunculus"],
+      "withUpgrade": "Elemental Resistance",
+      "add": ["NEGATE FIRE", "NEGATE GAS"],
+      "page": 96,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Elemental Resistance (40 ducats): Give this Takwin Homunculus the NEGATE FIRE and NEGATE GAS Keywords."
+    },
+    {
+      "id": "wisdom-philosophy",
+      "under": ["iron-sultanate/the-house-of-wisdom"],
+      "unitIds": ["iron-sultanate/jabirean-alchemist"],
+      "withUpgrade": "Philosophy, Poetry and Theology",
+      "add": ["NEGATE FEAR"],
+      "page": 95,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Philosophy, Poetry and Theology (20 ducats): The Alchemist has the NEGATE FEAR Keyword."
+    },
+    {
+      "id": "fly-thrall",
+      "under": ["black-grail"],
+      "unitIds": ["black-grail/grail-thrall"],
+      "withUpgrade": "Winged",
+      "add": ["FLYING"],
+      "page": 137,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Keywords: BLACK GRAIL, FEAR, FLYING (Fly Thralls only), NEGATE GAS."
     }
   ],
   "firstPurchaseDiscounts": [
@@ -649,6 +787,88 @@
       "page": 12,
       "source": "Heretic-Naval-Raiders-Warband.pdf",
       "text": "Unseen Advance: Up to 3 models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
+    }
+  ],
+  "upgradeEffects": [
+    {
+      "id": "heretic-legionnaire-ranged",
+      "name": "Heretic Legionnaires",
+      "unitIds": ["heretic-legion/heretic-trooper"],
+      "upgrade": "Ranged",
+      "changes": [{"stat": "ranged", "op": "set", "value": "+1"}],
+      "page": 112,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "When you upgrade a Heretic Trooper to a Heretic Legionnaire, you can change either their Ranged Characteristic or their Melee Characteristic from 0 to +1."
+    },
+    {
+      "id": "heretic-legionnaire-melee",
+      "name": "Heretic Legionnaires",
+      "unitIds": ["heretic-legion/heretic-trooper"],
+      "upgrade": "Melee",
+      "changes": [{"stat": "melee", "op": "set", "value": "+1"}],
+      "page": 112,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "When you upgrade a Heretic Trooper to a Heretic Legionnaire, you can change either their Ranged Characteristic or their Melee Characteristic from 0 to +1."
+    },
+    {
+      "id": "raider-legionnaire-ranged",
+      "name": "Heretic Raider Legionnaires",
+      "unitIds": ["heretic-naval-raiders/heretic-raider"],
+      "upgrade": "Ranged",
+      "changes": [{"stat": "ranged", "op": "set", "value": "+1"}],
+      "page": 28,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "When you upgrade a Heretic Raider to a Heretic Raider Legionnaire, you can change either their Ranged Characteristic or their Melee Characteristic from 0 to +1."
+    },
+    {
+      "id": "raider-legionnaire-melee",
+      "name": "Heretic Raider Legionnaires",
+      "unitIds": ["heretic-naval-raiders/heretic-raider"],
+      "upgrade": "Melee",
+      "changes": [{"stat": "melee", "op": "set", "value": "+1"}],
+      "page": 28,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "When you upgrade a Heretic Raider to a Heretic Raider Legionnaire, you can change either their Ranged Characteristic or their Melee Characteristic from 0 to +1."
+    },
+    {
+      "id": "knight-companion-ranged",
+      "name": "Knight Companion of the Fly",
+      "unitIds": ["black-grail/plague-knight"],
+      "upgrade": "Ranged",
+      "changes": [{"stat": "ranged", "op": "add", "value": 1}],
+      "page": 128,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Knight Companion of the Fly (5 ducats): Add +1 DICE to either the Ranged or the Melee Characteristic of this Plague Knight (you can choose which of the Characteristics to increase)."
+    },
+    {
+      "id": "knight-companion-melee",
+      "name": "Knight Companion of the Fly",
+      "unitIds": ["black-grail/plague-knight"],
+      "upgrade": "Melee",
+      "changes": [{"stat": "melee", "op": "add", "value": 1}],
+      "page": 128,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Knight Companion of the Fly (5 ducats): Add +1 DICE to either the Ranged or the Melee Characteristic of this Plague Knight (you can choose which of the Characteristics to increase)."
+    },
+    {
+      "id": "fly-thrall",
+      "name": "Fly Thrall",
+      "unitIds": ["black-grail/grail-thrall"],
+      "upgrade": "Winged",
+      "changes": [{"stat": "movement", "op": "set", "value": "6\"/Flying"}],
+      "page": 137,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Fly Thrall Profile: Movement 6\"/Flying, Ranged -, Melee -1 DICE, Armour 0, Base 25mm. Keywords: BLACK GRAIL, FEAR, FLYING (Fly Thralls only), NEGATE GAS."
+    },
+    {
+      "id": "wrath-of-god-base",
+      "name": "Wrath of God",
+      "unitIds": ["procession-of-the-sacred-affliction/lazarist-castigator"],
+      "upgrade": "Wrath of God",
+      "changes": [{"stat": "base", "op": "set", "value": "32mm"}],
+      "page": 61,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Wrath of God: In addition, change the base size of the model to 32mm."
     }
   ]
 }

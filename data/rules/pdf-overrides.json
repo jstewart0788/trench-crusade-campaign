@@ -2758,12 +2758,6 @@
     },
     {
       "file": "units.json",
-      "id": "new-antioch/mechanized-heavy-infantry",
-      "issue": "Kingdom of Alba 'Melee-focused': MHI have Melee +1 DICE and Ranged +0 DICE; upstream encodes it as a compound stat modifier the converter cannot apply",
-      "page": 40
-    },
-    {
-      "file": "units.json",
       "id": "new-antioch/fireteam",
       "issue": "limits.text says Eire Rangers warbands get only 1 Fireteam; the Eire Rangers rules (p37-38) contain no such restriction (base rule: 2, Stosstruppen: 3)",
       "page": 37

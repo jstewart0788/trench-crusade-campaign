@@ -332,3 +332,21 @@ describe("upgrade prerequisites on the shelf", () => {
     expect(items(w)).not.toContain("medikit");
   });
 });
+
+// TC-003h: a staged upgrade's effect shows on the stat line before Confirm (the Armoury passes the staged member).
+describe("staged upgrade effects", () => {
+  it("a Raider's staged Legionnaire + Ranged reads Ranged +1 on the staged roster, +0 on the confirmed one", async () => {
+    const { applyPending, EMPTY_PENDING, stagingReducer } = await import("./staging.js");
+    const { effectiveStats } = await import("@tc/rules");
+    const RAIDER = "heretic-naval-raiders/heretic-raider";
+    const raider = data.unitsById.get(RAIDER)!;
+    const up = (name: string) => raider.upgrades!.find((g) => g.name === name)!.bsId;
+    let w = createWarband({ name: "t", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" }, "w");
+    w = rosterReducer(w, { type: "add-member", unitId: RAIDER });
+    let pending = stagingReducer(EMPTY_PENDING, { type: "stage-add-upgrade", memberId: "m1", upgradeId: up("Heretic Raider Legionnaire") });
+    pending = stagingReducer(pending, { type: "stage-add-upgrade", memberId: "m1", upgradeId: up("Ranged") });
+    const staged = applyPending(w, pending);
+    expect(effectiveStats(raider, staged, data, ctxFor(staged), staged.members[0]).ranged).toBe("+1");
+    expect(effectiveStats(raider, w, data, ctxFor(w), w.members[0]).ranged).toBe("+0");
+  });
+});

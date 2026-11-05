@@ -348,7 +348,8 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
     map.set(key, list);
   }
 
-  const applied = applyUnitRules(unitRulesFile, new Map(units.map((u) => [u.id, u])), resolver(units));
+  const itemNames = new Map(equipment.map((e) => [e.id, e.name]));
+  const applied = applyUnitRules(unitRulesFile, new Map(units.map((u) => [u.id, u])), resolver(units), (id) => itemNames.get(id));
   if (applied.problems.length) throw new RulesDataError(RULES_FILES.unitRules, applied.problems.slice(0, 10));
   const unitRules = applied.index;
 

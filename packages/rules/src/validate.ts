@@ -4,6 +4,7 @@ import { foreignHoldings, heldItemRule } from "./armoury.js";
 import { memberCost, variantItemLimit, warbandCost } from "./cost.js";
 import { grantStates, isEliteMember, memberKeywords } from "./grants.js";
 import { unitDisplayName } from "./presentation.js";
+import { applyChanges, memberEffects } from "./effects.js";
 import { appliesUnder } from "./unit-rules.js";
 import { requirementProblems } from "./requirements.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
@@ -587,13 +588,18 @@ function gateHolds(onlyWith: string[] | undefined, onlyWithout: string[] | undef
   return g.open && !g.unresolved.some((r) => r.list === "onlyWith");
 }
 
-/** The unit's profile under this roster: its card stats with any unit-rules override whose gate holds (Anchorite Armoury, p63). */
-export function effectiveStats(unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext = limitContext(warband, data)): RosterUnit["stats"] {
+/**
+ * The model's profile under this roster: its card stats with any unit-rules
+ * override whose gate holds (Anchorite Armoury, p63), then what the member's
+ * upgrades and items change (a Legionnaire's +1, NR p28; the Executor's Ranged +1,
+ * p142). Without a member, the entry's profile under the list.
+ */
+export function effectiveStats(unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext = limitContext(warband, data), member?: WarbandMember): RosterUnit["stats"] {
   let stats = unit.stats;
   for (const o of data.unitRules.byUnit.get(unit.id)?.statOverrides ?? []) {
     if (gateHolds(o.onlyWith, o.onlyWithout, warband, data, ctx)) stats = { ...stats, ...o.stats };
   }
-  return stats;
+  return applyChanges(stats, memberEffects(data, unit, member).flatMap((e) => e.changes));
 }
 
 export interface ReplaceableState {
