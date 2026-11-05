@@ -105,8 +105,12 @@ export function rectPointDistance(r: Rect, x: number, y: number): number {
 /** Cells whose rectangle intersects (or merely touches, when `touching`) the rectangle. */
 export function cellsInRect(g: Grid, r: Rect, touching = false): Cell[] {
   const out: Cell[] = [];
-  for (let c = 0; c < g.cols; c++) {
-    for (let row = 0; row < g.rows; row++) {
+  const c0 = Math.max(0, Math.floor(r.x0 / g.cellIn) - 1);
+  const c1 = Math.min(g.cols - 1, Math.floor(r.x1 / g.cellIn) + 1);
+  const r0 = Math.max(0, Math.floor(r.y0 / g.cellIn) - 1);
+  const r1 = Math.min(g.rows - 1, Math.floor(r.y1 / g.cellIn) + 1);
+  for (let c = c0; c <= c1; c++) {
+    for (let row = r0; row <= r1; row++) {
       const cr = cellRect(g, c, row);
       if (touching ? rectDistance(cr, r) === 0 : rectsOverlap(cr, r)) out.push({ c, r: row });
     }

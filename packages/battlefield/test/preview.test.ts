@@ -33,13 +33,18 @@ function assertWellFormedXml(xml: string): void {
 describe("renderPlanSvg", () => {
   const env = fixtureEnv();
 
-  it("writes well-formed XML with one trench rect per trench cell and the legend", () => {
+  it("writes well-formed XML with one trench rect per trench cell, every lined wall, the height marks and the legend", () => {
+    const heights = Object.fromEntries(env.palette.pieces.map((p) => [p.id, p.heightIn]));
     for (const seed of [1, 7, 42]) {
       const layout = generateBattlefield({ scenarioId: "claim-no-mans-land", archetype: "trench-lines", seed }, env);
-      const svg = renderPlanSvg(layout);
+      const svg = renderPlanSvg(layout, { heights });
       expect(svg.startsWith('<?xml version="1.0"')).toBe(true);
       expect(() => assertWellFormedXml(svg)).not.toThrow();
       expect((svg.match(/<title>t-\d+-\d+ /g) ?? []).length).toBe(layout.stats.trenchCells);
+      const walls = layout.cells.reduce((n, c) => n + (c.walls?.length ?? 0), 0);
+      expect((svg.match(/<title>[NESW] wall: /g) ?? []).length).toBe(walls);
+      expect((svg.match(/<title>ramp, climbs [NESW]<\/title>/g) ?? []).length).toBe(layout.plateau?.ramps.length ?? 0);
+      expect((svg.match(/<title>plateau, top /g) ?? []).length).toBe(layout.plateau?.cells.length ?? 0);
       expect(svg).toContain(`seed ${seed}`);
       expect(svg).toContain("claim-no-mans-land");
       expect((svg.match(/<circle[^>]*fill="#ffffff" fill-opacity/g) ?? []).length).toBe(layout.objectives.length);

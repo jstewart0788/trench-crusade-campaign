@@ -1,17 +1,25 @@
 {
-  "$schema": "tc-tts-palette-v1",
+  "$schema": "tc-tts-palette-v2",
   "name": "trench-lines",
   "cellIn": 4,
   "groundTopIn": 2.5,
-  "coordinates": "Board inches, origin bottom-left as data/rules/scenarios.json. Board +x is world +x (E), board +y is world +z (N). Footprints and pivot offsets are at rotY 0. restHeightIn is the pivot height above the surface the piece sits on: the mat for layer \"ground\", the top of the ground tiles (groundTopIn) for layer \"surface\".",
+  "coordinates": "Board inches, origin bottom-left as data/rules/scenarios.json. Board +x is world +x (E), board +y is world +z (N). footprintIn, heightIn and pivotOffsetIn (visual bounds centre minus pivot) are the mesh's visual bounds at rotY 0. restHeightIn is the pivot height above whatever the piece rests on, measured by letting it settle; topIn is the height of a piece's top above its own support, for pieces others stand on. A piece's support height (baseIn) is worked out by the generator from the stack under it.",
   "rotation": {
     "rotYSense": "cw",
     "verified": true,
     "note": "Verified live 2026-11-04: Landscape 1x2 at rotY 0 has its bounds centre 2in toward -z of the pivot; at rotY 90 it is 2in toward -x. So +rotY turns -z into -x, i.e. +z into +x: clockwise from above."
   },
+  "revetment": {
+    "pieceId": "log-fence",
+    "insetIn": 1.35,
+    "bottomAboveTrenchBaseIn": 0.2,
+    "minFaceLengthIn": 3,
+    "source": "Placed live 2026-11-04 against the bare -x wall of the plain straight: body centre 1.35 in from the cell centre, bottom 0.20 above the trench's base, rotY 0 for a -x wall (90 for +z, 180 for +x, 270 for -z); visually confirmed to read like the built-in Double Logs. The inner wall faces of the plain, ledge, logs, corner and T pieces measure within 0.06in of each other by collider raycast, so the same inset serves them all."
+  },
   "sources": {
-    "footprints": "data/tts/palette-measured.json and data/tts/rest-heights-measured.json (live TTS, 2026-11-04)",
+    "footprints": "data/tts/palette-measured-v2.json (live TTS 2026-11-04: collider and visual bounds, rest heights, stacked rest heights); earlier values in palette-measured.json and rest-heights-measured.json",
     "openings": "Measured and visually verified in the live game, top-down capture with a +z marker, 2026-11-04 (coordinator message to TC-021)",
+    "verticality": "data/tts/VERTICALITY.md: how the reference maps stack pieces",
     "catalog": "data/tts/catalog.json supplies kind, urls, scale and colour at build time"
   },
   "pieces": [
@@ -26,15 +34,16 @@
         1
       ],
       "footprintIn": [
-        4,
-        4
+        4.0,
+        4.0
       ],
       "heightIn": 2.5,
       "restHeightIn": 1.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
+      "topIn": 2.5,
       "enabled": true,
       "verified": true
     },
@@ -49,15 +58,16 @@
         2
       ],
       "footprintIn": [
-        4,
-        8
+        4.0,
+        8.0
       ],
       "heightIn": 2.5,
       "restHeightIn": 1.0,
       "pivotOffsetIn": [
-        0,
-        -2
+        0.0,
+        -2.0
       ],
+      "topIn": 2.5,
       "enabled": true,
       "verified": true
     },
@@ -72,18 +82,19 @@
         2
       ],
       "footprintIn": [
-        8,
-        8
+        8.0,
+        8.0
       ],
       "heightIn": 2.5,
-      "restHeightIn": 1.06,
+      "restHeightIn": 1.0,
       "pivotOffsetIn": [
-        -2,
-        -2
+        -2.0,
+        -2.0
       ],
+      "topIn": 2.58,
       "enabled": true,
       "verified": true,
-      "note": "Named 1x4 in the source mods but measures 8x8 and was confirmed as a 2x2 block in the live game."
+      "note": "Named 1x4 in the source mods; an 8x8 (2x2 cell) block. Collider top 2.58 above its support (0.08 above the 1x1)."
     },
     {
       "id": "crater-2x2",
@@ -96,84 +107,19 @@
         2
       ],
       "footprintIn": [
-        8,
-        8
+        8.0,
+        8.0
       ],
       "heightIn": 2.5,
       "restHeightIn": 1.0,
       "pivotOffsetIn": [
-        -2,
-        -2
+        -2.0,
+        -2.0
       ],
+      "topIn": 2.5,
       "enabled": true,
       "verified": true,
       "note": "Ground tile with the crater centred on the 2x2 block; counts as one difficult-terrain piece."
-    },
-    {
-      "id": "hill-ramp",
-      "assetId": "3d6f0479de02",
-      "name": "Landscape Hill Ramp",
-      "role": "hill",
-      "layer": "ground",
-      "cells": [
-        1,
-        1
-      ],
-      "footprintIn": [
-        3.96,
-        4.04
-      ],
-      "heightIn": 2.56,
-      "restHeightIn": 1.28,
-      "pivotOffsetIn": [
-        0.99,
-        0.98
-      ],
-      "enabled": true,
-      "verified": true,
-      "note": "Not on the Trench Lines list; carried for the No Man's Land archetype."
-    },
-    {
-      "id": "h4x4",
-      "assetId": "f58a16b08b7e",
-      "name": "H4x4",
-      "role": "hill",
-      "layer": "surface",
-      "cells": null,
-      "footprintIn": [
-        4,
-        4
-      ],
-      "heightIn": 2.1,
-      "restHeightIn": 0,
-      "pivotOffsetIn": [
-        0,
-        0
-      ],
-      "enabled": true,
-      "verified": true,
-      "note": "Sits directly on whatever surface it is dropped on. Not on the Trench Lines list."
-    },
-    {
-      "id": "plank-floor",
-      "assetId": "1e7b291cb6a5",
-      "name": "Plank Floor",
-      "role": "ground",
-      "layer": "surface",
-      "cells": null,
-      "footprintIn": [
-        0.82,
-        3.72
-      ],
-      "heightIn": 0.02,
-      "restHeightIn": 0,
-      "pivotOffsetIn": [
-        0,
-        0
-      ],
-      "enabled": false,
-      "verified": true,
-      "note": "Duckboard decor; the generator does not place it in v1."
     },
     {
       "id": "trench-straight-ledge",
@@ -186,14 +132,14 @@
         1
       ],
       "footprintIn": [
-        4,
-        4
+        4.0,
+        4.0
       ],
       "heightIn": 2.59,
       "restHeightIn": 1.5,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "openings": {
         "rotY0": [
@@ -204,7 +150,16 @@
       },
       "enabled": true,
       "verified": true,
-      "note": "Channel runs along z at rotY 0, walls on the x sides; the raised ledge is on the +x side."
+      "note": "Channel along z at rotY 0, walls on the x sides. Channel floor 0.5 above the bottom; the ledge occupies x -1.6..-0.4 at 1.5 high.",
+      "decoratedWalls": {
+        "rotY0": [
+          "W"
+        ],
+        "kind": "ledge",
+        "source": "collider",
+        "note": "The 1.5in fire step sits on -x at rotY 0 in the collider (collider raycast of the piece spawned locked in the live game, 2026-11-04 (data/tts/VERTICALITY.md)), and Trenches Square Off's ledge straights only face no-man's-land on both lines that way. The 2026-11-04 visual note said +x; one look settles it, and flipping this field is the whole fix."
+      },
+      "channelFloorIn": 0.5
     },
     {
       "id": "trench-straight-logs",
@@ -217,14 +172,14 @@
         1
       ],
       "footprintIn": [
-        4,
-        4
+        4.0,
+        4.08
       ],
-      "heightIn": 2.67,
-      "restHeightIn": 1.55,
+      "heightIn": 2.59,
+      "restHeightIn": 1.5,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "openings": {
         "rotY0": [
@@ -233,9 +188,50 @@
         ],
         "verified": true
       },
+      "channelFloorIn": 0.5,
       "enabled": true,
       "verified": true,
-      "note": "Channel runs along z at rotY 0, walls on the x sides."
+      "note": "Channel along z at rotY 0. Channel floor 0.5 above the piece's bottom (barrel dropped in, live 2026-11-04).",
+      "decoratedWalls": {
+        "rotY0": [
+          "E"
+        ],
+        "kind": "logs",
+        "source": "assumed",
+        "note": "Logs on one wall only (live 2026-11-04), but the collider is symmetric, so which wall is not known. Not used while the source is assumed: plain straights with log fences stand in."
+      }
+    },
+    {
+      "id": "trench-straight-plain",
+      "assetId": "c7eb57216d74",
+      "name": "Trench Straight",
+      "role": "trench-straight",
+      "layer": "ground",
+      "cells": [
+        1,
+        1
+      ],
+      "footprintIn": [
+        4.0,
+        4.0
+      ],
+      "heightIn": 2.59,
+      "restHeightIn": 1.5,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "openings": {
+        "rotY0": [
+          "N",
+          "S"
+        ],
+        "verified": true
+      },
+      "channelFloorIn": 0.5,
+      "enabled": true,
+      "verified": true,
+      "note": "Bare earth on both walls (live 2026-11-04). Same collider family as the ledge and logs straights: pivot 1.5 above the bottom, channel floor 0.5, wall faces 1.13-1.37 from the centre."
     },
     {
       "id": "trench-corner",
@@ -248,14 +244,14 @@
         1
       ],
       "footprintIn": [
-        4,
-        4
+        4.0,
+        4.0
       ],
       "heightIn": 2.59,
       "restHeightIn": 1.5,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "openings": {
         "rotY0": [
@@ -266,7 +262,8 @@
       },
       "enabled": true,
       "verified": true,
-      "note": "At rotY 0 the walls are on the +z and -x edges, openings on -z and +x."
+      "note": "At rotY 0 the walls are on the +z and -x edges, openings on -z and +x. Both walls are bare earth (live 2026-11-04).",
+      "channelFloorIn": 0.5
     },
     {
       "id": "trench-t",
@@ -279,14 +276,14 @@
         1
       ],
       "footprintIn": [
-        4,
-        4
+        4.0,
+        4.04
       ],
-      "heightIn": 2.67,
-      "restHeightIn": 1.55,
+      "heightIn": 2.59,
+      "restHeightIn": 1.5,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        -0.02
       ],
       "openings": {
         "rotY0": [
@@ -298,7 +295,16 @@
       },
       "enabled": true,
       "verified": true,
-      "note": "At rotY 0 the log wall is on the +x edge; openings on +z, -z and -x."
+      "note": "At rotY 0 the log wall is on the +x edge; openings on +z, -z and -x.",
+      "decoratedWalls": {
+        "rotY0": [
+          "E"
+        ],
+        "kind": "logs",
+        "source": "visual",
+        "note": "Logs on the through wall, +x at rotY 0 (live 2026-11-04)."
+      },
+      "channelFloorIn": 0.5
     },
     {
       "id": "trench-entrance",
@@ -311,14 +317,14 @@
         1
       ],
       "footprintIn": [
-        4,
-        4
+        4.0,
+        4.01
       ],
       "heightIn": 2.59,
       "restHeightIn": 1.5,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "openings": {
         "rotY0": [
@@ -328,7 +334,81 @@
       },
       "enabled": false,
       "verified": true,
-      "note": "A ramp piece with a wall on the -x edge; which end is the trench opening could not be read from above. Unused in v1: trench runs end at a board edge or rejoin the network instead of dead-ending. Flip enabled once the opening side is confirmed."
+      "note": "A ramp piece with a wall on the -x edge. Trenches Square Off places all four at the ends of its two N-S lines, rotY 0 at the south end and 180 at the north end, which puts the trench opening on +z at rotY 0 (4/4 consistent, see VERTICALITY.md). Not visually confirmed, so still unused: runs end at a board edge or a junction."
+    },
+    {
+      "id": "hill-ramp",
+      "assetId": "3d6f0479de02",
+      "name": "Landscape Hill Ramp",
+      "role": "ramp",
+      "layer": "surface",
+      "cells": [
+        1,
+        1
+      ],
+      "footprintIn": [
+        3.96,
+        4.04
+      ],
+      "heightIn": 2.56,
+      "restHeightIn": 1.28,
+      "pivotOffsetIn": [
+        -0.99,
+        -0.98
+      ],
+      "uphill": {
+        "rotY0": "E",
+        "verified": false
+      },
+      "enabled": true,
+      "verified": true,
+      "note": "Sits on a Landscape tile (1.28 above it, live) and climbs one tile height, 2.5in. Uphill is +x at rotY 0: all 20 Hill Ramps in Trenches Square Off climb toward their raised trench line that way (VERTICALITY.md). Not visually confirmed."
+    },
+    {
+      "id": "h4x4",
+      "assetId": "f58a16b08b7e",
+      "name": "H4x4",
+      "role": "hill",
+      "layer": "surface",
+      "cells": [
+        1,
+        1
+      ],
+      "footprintIn": [
+        4.0,
+        4.0
+      ],
+      "heightIn": 2.1,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "topIn": 2.1,
+      "enabled": true,
+      "verified": true,
+      "note": "2.1in block that sits directly on what it is dropped on (0.00 above a Landscape tile or another H4x4, live). Stacked two high as stepped hills in Armoured Train #1."
+    },
+    {
+      "id": "plank-floor",
+      "assetId": "1e7b291cb6a5",
+      "name": "Plank Floor",
+      "role": "decor",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.82,
+        3.72
+      ],
+      "heightIn": 0.02,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.9,
+        0.05
+      ],
+      "enabled": true,
+      "verified": true,
+      "note": "Duckboard laid along a Double Logs trench channel; scattered terrain (p64), ignored by spacing."
     },
     {
       "id": "ruins-corner",
@@ -338,86 +418,628 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        2.4,
-        2.4
+        3.19,
+        3.18
       ],
-      "heightIn": 0.1,
-      "restHeightIn": 0,
+      "heightIn": 4.7,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        -1.42,
+        -1.41
       ],
-      "enabled": false,
-      "verified": false,
-      "note": "Measured only 0.1 tall, so it is probably a floor plate whose Brick Wall companions (630a887fadde, c1ff472b6f54, 72c6b611156e, b9eb19d606cc) never loaded in the measurement run. Enable after a look in TTS."
+      "enabled": true,
+      "verified": true,
+      "note": "A complete corner ruin: 3.19 x 3.18 x 4.70 visually; only its collider is a 2.4in floor plate, which is what made it read as a floor."
     },
     {
-      "id": "sandbags-corner",
-      "assetId": "602e6409d095",
-      "name": "Sandbags Corner",
+      "id": "ruins-wall",
+      "assetId": "c3cc6423c66b",
+      "name": "Ruins Wall",
       "role": "ruin",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        2.19,
-        2.45
+        6.1,
+        1.88
       ],
-      "heightIn": 0.59,
-      "restHeightIn": 0,
+      "heightIn": 4.68,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        -0.02,
+        -0.8
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-defendable",
+      "assetId": "6557fa863ef6",
+      "name": "Ruins Defendable",
+      "role": "ruin",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.08,
+        0.61
+      ],
+      "heightIn": 2.06,
+      "restHeightIn": 0.08,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wrecked-brick-wall-l",
+      "assetId": "1da0b564cf53",
+      "name": "Wrecked Brick Wall",
+      "role": "ruin",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        6.64,
+        4.96
+      ],
+      "heightIn": 2.75,
+      "restHeightIn": -0.44,
+      "pivotOffsetIn": [
+        -0.54,
+        0.07
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-small-a",
+      "assetId": "67e376e90648",
+      "name": "Ruins Small",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        6.05,
+        3.92
+      ],
+      "heightIn": 9.71,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        1.5,
+        1.22
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-small-b",
+      "assetId": "556a105de9ef",
+      "name": "Ruins Small",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        7.49,
+        3.76
+      ],
+      "heightIn": 6.81,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.07,
+        1.27
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-medium-a",
+      "assetId": "c6781ed0494f",
+      "name": "Ruins Medium",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        5.16,
+        5.16
+      ],
+      "heightIn": 9.88,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        1.05,
+        1.05
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-medium-b",
+      "assetId": "b4e3d7f81bb7",
+      "name": "Ruins Medium",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        6.79,
+        6.79
+      ],
+      "heightIn": 6.82,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.22,
+        -0.22
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-medium-c",
+      "assetId": "b96fb2c4c431",
+      "name": "Ruins Medium",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        6.92,
+        6.92
+      ],
+      "heightIn": 6.81,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.28,
+        -0.28
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-medium-d",
+      "assetId": "feebe78ae6ed",
+      "name": "Ruins Medium",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        5.4,
+        8.52
+      ],
+      "heightIn": 9.7,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -1.12,
+        -0.21
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-medium-e",
+      "assetId": "3bf65f8ba45d",
+      "name": "Ruins Medium",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        8.18,
+        7.26
+      ],
+      "heightIn": 9.88,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.46,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-medium-f",
+      "assetId": "0f9003d125d0",
+      "name": "Ruins Medium",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        9.92,
+        6.92
+      ],
+      "heightIn": 6.81,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -1.78,
+        -0.28
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-large-a",
+      "assetId": "6a10e5672b47",
+      "name": "Ruins Large",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        9.35,
+        9.35
+      ],
+      "heightIn": 9.81,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -1.5,
+        -1.5
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-large-b",
+      "assetId": "b8157fe58f88",
+      "name": "Ruins Large",
+      "role": "building",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        10.92,
+        11.33
+      ],
+      "heightIn": 10.74,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        1.59,
+        -1.8
+      ],
+      "enabled": false,
+      "verified": true,
+      "note": "10.9 x 11.3in: too big for a 36in board."
+    },
+    {
+      "id": "outpost-tower",
+      "assetId": "442da3ffde7a",
+      "name": "Tower",
+      "role": "tower",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.96,
+        4.01
+      ],
+      "heightIn": 9.4,
+      "restHeightIn": 0.08,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true,
-      "note": "Low L-shaped cover; stands in for a corner ruin."
+      "note": "Visual 3.96 x 4.01, 9.4 tall (collider only 3.69 x 3.71 x 7.03)."
     },
     {
       "id": "tower-small",
       "assetId": "3a9d88b510b0",
       "name": "Tower Small",
-      "role": "ruin",
+      "role": "tower",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        1.66,
-        1.59
+        4.41,
+        2.65
       ],
-      "heightIn": 4.37,
-      "restHeightIn": 0.317,
+      "heightIn": 6.87,
+      "restHeightIn": 0.32,
       "pivotOffsetIn": [
-        0,
-        0
+        -1.18,
+        0.0
       ],
-      "enabled": false,
+      "enabled": true,
+      "verified": true,
+      "note": "Visual 4.41 x 2.65, 6.87 tall; the collider is 1.66 x 1.59, which is why it looked far too big as an objective cover."
+    },
+    {
+      "id": "tower-tall",
+      "assetId": "fe67d72ef012",
+      "name": "Tower",
+      "role": "tower",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        4.74,
+        4.74
+      ],
+      "heightIn": 9.49,
+      "restHeightIn": -0.39,
+      "pivotOffsetIn": [
+        0.41,
+        0.04
+      ],
+      "enabled": true,
       "verified": true
     },
     {
-      "id": "tower",
-      "assetId": "442da3ffde7a",
-      "name": "Tower",
-      "role": "ruin",
+      "id": "water-tower",
+      "assetId": "859f77538985",
+      "name": "Water Tower",
+      "role": "tower",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        3.69,
-        3.71
+        2.12,
+        2.12
       ],
-      "heightIn": 7.03,
-      "restHeightIn": 0.076,
+      "heightIn": 8.36,
+      "restHeightIn": 0.41,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
-      "enabled": false,
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "watchtower",
+      "assetId": "5556771354e7",
+      "name": "Watchtower",
+      "role": "tower",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        9.11,
+        9.36
+      ],
+      "heightIn": 9.04,
+      "restHeightIn": -4.28,
+      "pivotOffsetIn": [
+        0.23,
+        -0.52
+      ],
+      "enabled": true,
       "verified": true,
-      "note": "The tallest piece in the palette; the natural pick for a tallest-piece objective."
+      "note": "9.1 x 9.4in; its collider bottom is 4.2in above the mesh bottom, so it physics-rests with the pivot 4.28 below the surface and the legs on it."
+    },
+    {
+      "id": "brick-wall",
+      "assetId": "615f2af1b3fb",
+      "name": "Brick Wall",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.02,
+        4.8
+      ],
+      "heightIn": 3.17,
+      "restHeightIn": -0.44,
+      "pivotOffsetIn": [
+        -0.06,
+        -0.04
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "brick-wall-gate",
+      "assetId": "b650fbe2ca15",
+      "name": "Brick Wall Gate",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        5.7,
+        1.59
+      ],
+      "heightIn": 3.17,
+      "restHeightIn": -0.18,
+      "pivotOffsetIn": [
+        -0.07,
+        0.09
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wrecked-brick-wall-a",
+      "assetId": "5d6746bc93a5",
+      "name": "Wrecked Brick Wall",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.61,
+        4.87
+      ],
+      "heightIn": 2.79,
+      "restHeightIn": -0.21,
+      "pivotOffsetIn": [
+        -0.19,
+        0.53
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wrecked-brick-wall-b",
+      "assetId": "e82fb928ece5",
+      "name": "Wrecked Brick Wall",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        6.56,
+        2.27
+      ],
+      "heightIn": 2.87,
+      "restHeightIn": -0.22,
+      "pivotOffsetIn": [
+        -0.04,
+        -0.5
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tall-fence",
+      "assetId": "8463eea1747e",
+      "name": "Tall Fence",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.35,
+        3.75
+      ],
+      "heightIn": 2.32,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wood-fence",
+      "assetId": "21f1fcb0adfd",
+      "name": "Wood Fence",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.04,
+        0.37
+      ],
+      "heightIn": 1.87,
+      "restHeightIn": -0.01,
+      "pivotOffsetIn": [
+        -0.05,
+        0.1
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tall-crates",
+      "assetId": "4136a2cf668f",
+      "name": "Tall Crates",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.24,
+        2.26
+      ],
+      "heightIn": 1.66,
+      "restHeightIn": 0.09,
+      "pivotOffsetIn": [
+        -0.18,
+        0.73
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "concrete-slabs",
+      "assetId": "e759191a26c7",
+      "name": "Concrete Slabs",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.02,
+        2.6
+      ],
+      "heightIn": 2.17,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "stacked-tanks",
+      "assetId": "8fcfae8d6ad0",
+      "name": "Stacked Tanks",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.91,
+        2.09
+      ],
+      "heightIn": 3.88,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.03,
+        1.05
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "shipping-crate",
+      "assetId": "1cca68d3202d",
+      "name": "Shipping Crate",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.78,
+        8.39
+      ],
+      "heightIn": 3.2,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wooden-platform-a",
+      "assetId": "2bd1b4168339",
+      "name": "Wooden Platform",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.2,
+        2.45
+      ],
+      "heightIn": 1.96,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.63
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wooden-platform-b",
+      "assetId": "6cfbd5ca3073",
+      "name": "Wooden Platform",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.53,
+        1.14
+      ],
+      "heightIn": 2.81,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.02
+      ],
+      "enabled": true,
+      "verified": true
     },
     {
       "id": "makeshift-defense-tall",
       "assetId": "e7946cdd13ac",
       "name": "Makeshift Defense Tall",
-      "role": "ruin",
+      "role": "cover",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -425,10 +1047,10 @@
         0.94
       ],
       "heightIn": 1.95,
-      "restHeightIn": 0.008,
+      "restHeightIn": 0.01,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        -0.06
       ],
       "enabled": true,
       "verified": true
@@ -437,7 +1059,7 @@
       "id": "concrete-cover",
       "assetId": "accec884d4ed",
       "name": "Concrete Cover",
-      "role": "ruin",
+      "role": "cover",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -445,13 +1067,136 @@
         2.5
       ],
       "heightIn": 1.05,
-      "restHeightIn": 0,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
+    },
+    {
+      "id": "sandbags-corner",
+      "assetId": "602e6409d095",
+      "name": "Sandbags Corner",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.3,
+        3.74
+      ],
+      "heightIn": 0.84,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.53,
+        -1.11
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "rock-cover",
+      "assetId": "5dcefe99c78f",
+      "name": "Rock Cover",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.72,
+        1.54
+      ],
+      "heightIn": 1.36,
+      "restHeightIn": 0.01,
+      "pivotOffsetIn": [
+        0.17,
+        0.05
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tall-rock",
+      "assetId": "88a536e9b879",
+      "name": "Tall Rock",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        4.55,
+        2.08
+      ],
+      "heightIn": 2.19,
+      "restHeightIn": 0.17,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "barrel",
+      "assetId": "f78860d44825",
+      "name": "Barrel",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.91,
+        0.92
+      ],
+      "heightIn": 1.16,
+      "restHeightIn": -0.01,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": false,
+      "verified": true,
+      "note": "Group member only."
+    },
+    {
+      "id": "supplies",
+      "assetId": "373d49b1cb6d",
+      "name": "Supplies",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.41,
+        2.07
+      ],
+      "heightIn": 0.98,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": false,
+      "verified": true,
+      "note": "Group member only."
+    },
+    {
+      "id": "tire-pile",
+      "assetId": "56a3f7ec5da5",
+      "name": "Tire Pile",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.21,
+        1.22
+      ],
+      "heightIn": 1.43,
+      "restHeightIn": 0.01,
+      "pivotOffsetIn": [
+        -0.06,
+        0.01
+      ],
+      "enabled": false,
+      "verified": true,
+      "note": "Group member only."
     },
     {
       "id": "barbed-wire",
@@ -461,18 +1206,38 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        2.41,
-        2.43
+        3.71,
+        1.77
       ],
-      "heightIn": 0.01,
-      "restHeightIn": 0,
+      "heightIn": 1.65,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        -0.01
       ],
       "enabled": true,
       "verified": true,
-      "note": "Measures 0.01 tall, so it is a flat decal-style patch; reads correctly from above."
+      "note": "Visual 3.71 x 1.77 x 1.65 coils; the collider is a 0.01in flat plate."
+    },
+    {
+      "id": "barbed-wall",
+      "assetId": "b737bd667792",
+      "name": "Barbed Wall",
+      "role": "wire",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.7,
+        3.73
+      ],
+      "heightIn": 2.96,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
     },
     {
       "id": "difficult-dangerous",
@@ -486,10 +1251,10 @@
         0.98
       ],
       "heightIn": 1.25,
-      "restHeightIn": 0.019,
+      "restHeightIn": 0.02,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -502,14 +1267,14 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        4.19,
-        2.68
+        4.53,
+        2.79
       ],
-      "heightIn": 0.27,
-      "restHeightIn": 0.134,
+      "heightIn": 0.87,
+      "restHeightIn": 0.13,
       "pivotOffsetIn": [
-        0.39,
-        -0.23
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -523,13 +1288,13 @@
       "cells": null,
       "footprintIn": [
         2.38,
-        3.74
+        3.73
       ],
       "heightIn": 1.55,
       "restHeightIn": -0.03,
       "pivotOffsetIn": [
-        0.09,
-        -0.07
+        -0.09,
+        0.07
       ],
       "enabled": true,
       "verified": true
@@ -542,14 +1307,14 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        4,
-        3
+        4.0,
+        3.0
       ],
       "heightIn": 2.1,
-      "restHeightIn": 0,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -562,14 +1327,14 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        3,
-        3
+        3.2,
+        3.14
       ],
-      "heightIn": 0.18,
-      "restHeightIn": 0.042,
+      "heightIn": 0.1,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -582,14 +1347,54 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        2.1,
+        2.06,
         1.88
       ],
-      "heightIn": 1.1,
-      "restHeightIn": 0.098,
+      "heightIn": 1.02,
+      "restHeightIn": 0.06,
       "pivotOffsetIn": [
-        0,
-        0
+        0.12,
+        -0.08
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tall-rock-b",
+      "assetId": "4e83593fc438",
+      "name": "Tall Rock",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.94,
+        2.65
+      ],
+      "heightIn": 1.81,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.38,
+        -0.45
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "lumber-pile",
+      "assetId": "83dcfc5eea7f",
+      "name": "Lumber Pile",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.21,
+        7.3
+      ],
+      "heightIn": 1.19,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -603,13 +1408,13 @@
       "cells": null,
       "footprintIn": [
         7.28,
-        6.94
+        6.93
       ],
-      "heightIn": 1.14,
-      "restHeightIn": 0.063,
+      "heightIn": 1.06,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.14,
+        -0.12
       ],
       "enabled": true,
       "verified": true
@@ -622,14 +1427,14 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        1.75,
+        1.72,
         1.22
       ],
       "heightIn": 3.05,
-      "restHeightIn": 0.006,
+      "restHeightIn": 0.01,
       "pivotOffsetIn": [
-        0,
-        0
+        0.31,
+        -0.25
       ],
       "enabled": true,
       "verified": true
@@ -646,10 +1451,10 @@
         0.41
       ],
       "heightIn": 2.2,
-      "restHeightIn": 0.079,
+      "restHeightIn": 0.08,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -662,14 +1467,14 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        2.71,
-        1.47
+        2.8,
+        1.99
       ],
-      "heightIn": 4.21,
-      "restHeightIn": 0,
+      "heightIn": 4.2,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
@@ -686,10 +1491,10 @@
         1.46
       ],
       "heightIn": 1.34,
-      "restHeightIn": 0,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.21,
+        -0.03
       ],
       "enabled": true,
       "verified": true
@@ -702,17 +1507,18 @@
       "layer": "surface",
       "cells": null,
       "footprintIn": [
-        1.12,
-        1.63
+        5.25,
+        4.36
       ],
-      "heightIn": 0.85,
-      "restHeightIn": 0,
+      "heightIn": 1.91,
+      "restHeightIn": 0.0,
       "pivotOffsetIn": [
-        0,
-        0
+        0.18,
+        0.0
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "note": "Visual 5.25 x 4.36 with the barrel; the collider is only 1.12 x 1.63."
     },
     {
       "id": "pillar",
@@ -726,13 +1532,191 @@
         1.33
       ],
       "heightIn": 5.55,
-      "restHeightIn": 0.632,
+      "restHeightIn": 0.63,
       "pivotOffsetIn": [
-        0,
-        0
+        0.0,
+        0.0
       ],
       "enabled": true,
       "verified": true
+    },
+    {
+      "id": "bunker",
+      "assetId": "61e9880c44bb",
+      "name": "Bunker",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        6.52,
+        6.52
+      ],
+      "heightIn": 3.21,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "log-fence",
+      "assetId": "44a0aae22d66",
+      "name": "Log Fence",
+      "role": "revetment",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.65,
+        3.91
+      ],
+      "heightIn": 2.5,
+      "restHeightIn": 1.2,
+      "pivotOffsetIn": [
+        1.22,
+        -0.08
+      ],
+      "enabled": true,
+      "verified": true,
+      "note": "Upright at rotation 0 with its length along z; topples if unlocked, so it is always spawned Locked. Body centre 1.22 to +x of the pivot (collider and visual bounds agree), pivot 1.20 above its bottom."
+    }
+  ],
+  "groups": [
+    {
+      "id": "wire-line",
+      "role": "dangerous",
+      "members": [
+        {
+          "piece": "difficult-dangerous",
+          "at": [
+            -2.3,
+            0
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "difficult-dangerous",
+          "at": [
+            0,
+            0
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "difficult-dangerous",
+          "at": [
+            2.3,
+            0
+          ],
+          "rotY": 0
+        }
+      ],
+      "note": "Three wire segments end to end: how Trenches Square Off lays its 32 Difficult + Dangerous models, in rows."
+    },
+    {
+      "id": "wire-pair",
+      "role": "dangerous",
+      "members": [
+        {
+          "piece": "difficult-dangerous",
+          "at": [
+            -1.15,
+            0
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "difficult-dangerous",
+          "at": [
+            1.15,
+            0
+          ],
+          "rotY": 0
+        }
+      ]
+    },
+    {
+      "id": "wire-coils",
+      "role": "wire",
+      "members": [
+        {
+          "piece": "barbed-wire",
+          "at": [
+            -1.9,
+            0
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "barbed-wire",
+          "at": [
+            1.9,
+            0
+          ],
+          "rotY": 0
+        }
+      ]
+    },
+    {
+      "id": "crate-stack",
+      "role": "cover",
+      "members": [
+        {
+          "piece": "tall-crates",
+          "at": [
+            0,
+            0
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "barrel",
+          "at": [
+            1.2,
+            -0.6
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "supplies",
+          "at": [
+            -1.4,
+            0.1
+          ],
+          "rotY": 0
+        }
+      ]
+    },
+    {
+      "id": "supply-dump",
+      "role": "cover",
+      "members": [
+        {
+          "piece": "concrete-slabs",
+          "at": [
+            0,
+            0
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "tire-pile",
+          "at": [
+            1.75,
+            -0.6
+          ],
+          "rotY": 0
+        },
+        {
+          "piece": "barrel",
+          "at": [
+            1.7,
+            0.75
+          ],
+          "rotY": 0
+        }
+      ]
     }
   ]
 }

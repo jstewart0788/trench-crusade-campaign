@@ -1,9 +1,10 @@
 import type { Layout, LayoutPiece } from "./layout.js";
-import { PaletteError, quarterTurns, resolvePalette, type Catalog, type CatalogAsset, type Palette, type ResolvedPalette } from "./palette.js";
+import { PaletteError, resolvePalette, rotateVector, type Catalog, type CatalogAsset, type Palette, type ResolvedPalette } from "./palette.js";
 
 // Turns a layout into the object-state tables spawnObjectData accepts, the
 // same shape scripts/tts_measure_rest.py spawns with. Board inches become
 // world units 1:1; the board sits centred on the mat with its north along +z.
+// Every piece is Locked, so it stays exactly where its stack puts it.
 
 export interface TtsEmitOptions {
   /** World y of the mat's top surface. */
@@ -42,13 +43,11 @@ export interface TtsObjectState {
 export const battlefieldTag = (seed: number): string => `tc-battlefield:${seed}`;
 export const TERRAIN_TAG = "tc-terrain";
 
-const round = (n: number): number => Math.round(n * 1000) / 1000;
+const round = (n: number): number => Math.round(n * 1000) / 1000 + 0;
 
 /** Rotates a local (x, z) offset by the piece's rotY under the palette's sense. */
 export function rotateOffset(offset: readonly [number, number], rotY: number, sense: "cw" | "ccw"): [number, number] {
-  let [x, z] = offset;
-  for (let i = 0; i < quarterTurns(rotY, sense); i++) [x, z] = [z, -x];
-  return [x + 0, z + 0];
+  return rotateVector(offset, rotY, sense);
 }
 
 function customBlock(asset: CatalogAsset): Pick<TtsObjectState, "Name" | "CustomAssetbundle" | "CustomMesh" | "CustomImage"> {
@@ -76,7 +75,6 @@ export function pieceToObjectState(piece: LayoutPiece, layout: Layout, palette: 
   const asset = entry.asset;
   const [offX, offZ] = rotateOffset(entry.pivotOffsetIn, piece.rotY, palette.rotation.rotYSense);
   const half = layout.boardIn / 2;
-  const surfaceY = opts.matTopY + (entry.layer === "ground" ? 0 : palette.groundTopIn);
   const [sx, sy, sz] = asset.scale;
   const [cr = 1, cg = 1, cb = 1] = asset.colorDiffuse;
   return {
@@ -85,7 +83,7 @@ export function pieceToObjectState(piece: LayoutPiece, layout: Layout, palette: 
     Description: `${piece.role} ${piece.id} (${entry.id})${piece.objectiveId ? ` covers ${piece.objectiveId}` : ""}`,
     Transform: {
       posX: round(opts.matCenter[0] + (piece.position[0] - half) - offX),
-      posY: round(surfaceY + entry.restHeightIn),
+      posY: round(opts.matTopY + piece.baseIn + entry.restHeightIn),
       posZ: round(opts.matCenter[1] + (piece.position[1] - half) - offZ),
       rotX: 0,
       rotY: piece.rotY,
@@ -100,7 +98,7 @@ export function pieceToObjectState(piece: LayoutPiece, layout: Layout, palette: 
   };
 }
 
-/** Ground layer first, then surface pieces, so TTS settles tiles before dressing lands on them. */
+/** Spawn order follows the stack: what rests on the mat first, then what rests on that. */
 export function layoutToObjectStates(layout: Layout, palette: Palette, catalog: Catalog, options: Partial<TtsEmitOptions> = {}): TtsObjectState[] {
   const opts = { ...DEFAULT_TTS_OPTIONS, ...options };
   const resolved = resolvePalette(palette, catalog);

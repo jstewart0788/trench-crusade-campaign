@@ -1,0 +1,3344 @@
+{
+  "$schema": "tc-tts-rest-heights-v2",
+  "measuredAt": "2026-11-04T21:35:45",
+  "method": "scripts/tts_measure_rest.py in the running TTS, spawned at x 46-78 z -48/-64 (clear of the mat), settled, read, destroyed. boundsSize/boundsCenterOffset are collider bounds; visualNormalized* are getVisualBoundsNormalized (mesh). Visual centre minus pivot = -visualNormalizedOffset (same sign rule as the live Landscape 1x2 check).",
+  "surfaceTopY": 0.900002598762512,
+  "assets": {
+    "031559734221": {
+      "restY": 2.4,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4,
+        2.586,
+        4.0
+      ],
+      "boundsCenterOffset": [
+        0,
+        -0.207,
+        0
+      ],
+      "visualNormalizedSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0.207,
+        0
+      ],
+      "settled": true
+    },
+    "068cc3a95195": {
+      "restY": 0.915,
+      "restHeightAboveSurface": 0.015,
+      "boundsSize": [
+        5.349,
+        1.322,
+        2.347
+      ],
+      "boundsCenterOffset": [
+        -0.116,
+        0.646,
+        -0.353
+      ],
+      "visualNormalizedSize": [
+        5.349,
+        1.322,
+        2.347
+      ],
+      "visualNormalizedOffset": [
+        0.116,
+        -0.646,
+        0.353
+      ],
+      "settled": true
+    },
+    "0f9003d125d0": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        9.3,
+        3.1,
+        6.3
+      ],
+      "boundsCenterOffset": [
+        -1.7,
+        1.55,
+        -0.15
+      ],
+      "visualNormalizedSize": [
+        9.921,
+        6.809,
+        6.921
+      ],
+      "visualNormalizedOffset": [
+        1.784,
+        -3.405,
+        0.284
+      ],
+      "settled": true
+    },
+    "1240cadeffc2": {
+      "restY": 0.369,
+      "restHeightAboveSurface": -0.531,
+      "boundsSize": [
+        0.795,
+        3.167,
+        3.676
+      ],
+      "boundsCenterOffset": [
+        -0.03,
+        2.114,
+        0.07
+      ],
+      "visualNormalizedSize": [
+        1.024,
+        3.168,
+        3.68
+      ],
+      "visualNormalizedOffset": [
+        0.029,
+        -2.113,
+        -0.076
+      ],
+      "settled": true
+    },
+    "128b5697a878": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        7.281,
+        1.06,
+        6.929
+      ],
+      "boundsCenterOffset": [
+        0.14,
+        0.53,
+        -0.122
+      ],
+      "visualNormalizedSize": [
+        7.281,
+        1.06,
+        6.929
+      ],
+      "visualNormalizedOffset": [
+        -0.14,
+        -0.53,
+        0.122
+      ],
+      "settled": true
+    },
+    "145f3a6b9b95": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.5,
+        0.1,
+        0.4
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.05,
+        -0.025
+      ],
+      "visualNormalizedSize": [
+        1.5,
+        0.976,
+        0.41
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.488,
+        0.028
+      ],
+      "settled": true
+    },
+    "1518249c7df4": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.406,
+        0.009,
+        2.429
+      ],
+      "boundsCenterOffset": [
+        -0.014,
+        0.005,
+        -0.005
+      ],
+      "visualNormalizedSize": [
+        3.715,
+        1.653,
+        1.767
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.631,
+        0.015
+      ],
+      "settled": true
+    },
+    "1cca68d3202d": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.781,
+        3.2,
+        8.388
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        1.6,
+        0
+      ],
+      "visualNormalizedSize": [
+        2.781,
+        3.2,
+        8.388
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.6,
+        0
+      ],
+      "settled": true
+    },
+    "1da0b564cf53": {
+      "restY": 0.46,
+      "restHeightAboveSurface": -0.44,
+      "boundsSize": [
+        6.188,
+        2.293,
+        4.776
+      ],
+      "boundsCenterOffset": [
+        -0.62,
+        1.586,
+        0.043
+      ],
+      "visualNormalizedSize": [
+        6.637,
+        2.748,
+        4.962
+      ],
+      "visualNormalizedOffset": [
+        0.538,
+        -1.583,
+        -0.066
+      ],
+      "settled": true
+    },
+    "1e7b291cb6a5": {
+      "restY": 0.9,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        0.819,
+        0.019,
+        3.722
+      ],
+      "boundsCenterOffset": [
+        -0.899,
+        0.009,
+        0.046
+      ],
+      "visualNormalizedSize": [
+        0.819,
+        0.019,
+        3.722
+      ],
+      "visualNormalizedOffset": [
+        0.899,
+        -0.01,
+        -0.046
+      ],
+      "settled": true
+    },
+    "1f3b59a4693c": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4,
+        2.1,
+        3
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.05,
+        0
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.1,
+        3.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "settled": true
+    },
+    "21f1fcb0adfd": {
+      "restY": 0.894,
+      "restHeightAboveSurface": -0.006,
+      "boundsSize": [
+        3.038,
+        1.871,
+        0.373
+      ],
+      "boundsCenterOffset": [
+        -0.047,
+        0.942,
+        0.101
+      ],
+      "visualNormalizedSize": [
+        3.038,
+        1.871,
+        0.373
+      ],
+      "visualNormalizedOffset": [
+        0.047,
+        -0.942,
+        -0.101
+      ],
+      "settled": true
+    },
+    "2317e9390c9f": {
+      "restY": 1.9,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        8,
+        2.5,
+        8
+      ],
+      "boundsCenterOffset": [
+        -2,
+        0.25,
+        -2
+      ],
+      "visualNormalizedSize": [
+        8,
+        2.5,
+        8.0
+      ],
+      "visualNormalizedOffset": [
+        2,
+        -0.25,
+        2
+      ],
+      "settled": true
+    },
+    "2382640b6cc8": {
+      "restY": 1.034,
+      "restHeightAboveSurface": 0.134,
+      "boundsSize": [
+        4.192,
+        0.268,
+        2.679
+      ],
+      "boundsCenterOffset": [
+        -0.393,
+        0.0,
+        0.232
+      ],
+      "visualNormalizedSize": [
+        4.525,
+        0.867,
+        2.787
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "settled": true
+    },
+    "23dfd3284680": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.365,
+        1.941,
+        1.182
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.97,
+        0.02
+      ],
+      "visualNormalizedSize": [
+        2.365,
+        1.941,
+        1.182
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.97,
+        -0.02
+      ],
+      "settled": true
+    },
+    "2a650a647efa": {
+      "restY": 0.919,
+      "restHeightAboveSurface": 0.019,
+      "boundsSize": [
+        2.278,
+        1.245,
+        0.976
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.604,
+        0
+      ],
+      "visualNormalizedSize": [
+        2.278,
+        1.245,
+        0.976
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.604,
+        0
+      ],
+      "settled": true
+    },
+    "2bd1b4168339": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3.197,
+        1.961,
+        1.155
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.98,
+        -0.012
+      ],
+      "visualNormalizedSize": [
+        3.197,
+        1.961,
+        2.447
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.98,
+        -0.634
+      ],
+      "settled": true
+    },
+    "2f1be9f52091": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.4,
+        0.1,
+        2.4
+      ],
+      "boundsCenterOffset": [
+        -1.2,
+        0.05,
+        -1.2
+      ],
+      "visualNormalizedSize": [
+        3.192,
+        4.702,
+        3.179
+      ],
+      "visualNormalizedOffset": [
+        1.419,
+        -2.351,
+        1.413
+      ],
+      "settled": true
+    },
+    "300ef4483c89": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.781,
+        3.2,
+        8.388
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.6,
+        0
+      ],
+      "visualNormalizedSize": [
+        2.781,
+        3.2,
+        8.388
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.6,
+        0
+      ],
+      "settled": true
+    },
+    "373d49b1cb6d": {
+      "restY": 0.903,
+      "restHeightAboveSurface": 0.003,
+      "boundsSize": [
+        1.41,
+        0.985,
+        2.067
+      ],
+      "boundsCenterOffset": [
+        -0.0,
+        0.49,
+        -0.001
+      ],
+      "visualNormalizedSize": [
+        1.41,
+        0.985,
+        2.067
+      ],
+      "visualNormalizedOffset": [
+        0.0,
+        -0.49,
+        0.001
+      ],
+      "settled": true
+    },
+    "3a9d88b510b0": {
+      "restY": 1.217,
+      "restHeightAboveSurface": 0.317,
+      "boundsSize": [
+        1.66,
+        4.371,
+        1.592
+      ],
+      "boundsCenterOffset": [
+        -0.027,
+        1.869,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        4.408,
+        6.874,
+        2.645
+      ],
+      "visualNormalizedOffset": [
+        1.179,
+        -3.12,
+        0.003
+      ],
+      "settled": true
+    },
+    "3bf65f8ba45d": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        7.4,
+        6.1,
+        6
+      ],
+      "boundsCenterOffset": [
+        -0.7,
+        3.05,
+        0
+      ],
+      "visualNormalizedSize": [
+        8.183,
+        9.875,
+        7.256
+      ],
+      "visualNormalizedOffset": [
+        0.464,
+        -4.922,
+        0
+      ],
+      "settled": true
+    },
+    "3d6f0479de02": {
+      "restY": 2.18,
+      "restHeightAboveSurface": 1.28,
+      "boundsSize": [
+        3.96,
+        2.56,
+        4.036
+      ],
+      "boundsCenterOffset": [
+        -0.99,
+        0.0,
+        -0.982
+      ],
+      "visualNormalizedSize": [
+        3.96,
+        2.56,
+        4.036
+      ],
+      "visualNormalizedOffset": [
+        0.99,
+        0.0,
+        0.982
+      ],
+      "settled": true
+    },
+    "3fba0b0297d3": {
+      "restY": 0.906,
+      "restHeightAboveSurface": 0.006,
+      "boundsSize": [
+        1.748,
+        3.046,
+        1.22
+      ],
+      "boundsCenterOffset": [
+        0.292,
+        1.517,
+        -0.25
+      ],
+      "visualNormalizedSize": [
+        1.717,
+        3.052,
+        1.219
+      ],
+      "visualNormalizedOffset": [
+        -0.307,
+        -1.513,
+        0.251
+      ],
+      "settled": true
+    },
+    "4136a2cf668f": {
+      "restY": 0.987,
+      "restHeightAboveSurface": 0.087,
+      "boundsSize": [
+        1.243,
+        1.663,
+        2.256
+      ],
+      "boundsCenterOffset": [
+        -0.176,
+        0.744,
+        0.727
+      ],
+      "visualNormalizedSize": [
+        1.242,
+        1.663,
+        2.256
+      ],
+      "visualNormalizedOffset": [
+        0.176,
+        -0.743,
+        -0.728
+      ],
+      "settled": true
+    },
+    "442da3ffde7a": {
+      "restY": 0.976,
+      "restHeightAboveSurface": 0.076,
+      "boundsSize": [
+        3.685,
+        7.029,
+        3.707
+      ],
+      "boundsCenterOffset": [
+        0.006,
+        3.438,
+        -0.028
+      ],
+      "visualNormalizedSize": [
+        3.96,
+        9.403,
+        4.014
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -4.459,
+        0
+      ],
+      "settled": true
+    },
+    "4757609fc9ec": {
+      "restY": 2.805,
+      "restHeightAboveSurface": 1.905,
+      "boundsSize": [
+        11.161,
+        0.665,
+        10.552
+      ],
+      "boundsCenterOffset": [
+        -0.26,
+        -1.572,
+        -0.006
+      ],
+      "visualNormalizedSize": [
+        17.916,
+        8.194,
+        17.826
+      ],
+      "visualNormalizedOffset": [
+        0.264,
+        -1.649,
+        -0.291
+      ],
+      "settled": true
+    },
+    "4e83593fc438": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3.94,
+        1.811,
+        2.655
+      ],
+      "boundsCenterOffset": [
+        0.376,
+        0.905,
+        -0.452
+      ],
+      "visualNormalizedSize": [
+        3.94,
+        1.811,
+        2.655
+      ],
+      "visualNormalizedOffset": [
+        -0.376,
+        -0.905,
+        0.452
+      ],
+      "settled": true
+    },
+    "5556771354e7": {
+      "restY": -3.381,
+      "restHeightAboveSurface": -4.281,
+      "boundsSize": [
+        8.915,
+        8.8,
+        8.594
+      ],
+      "boundsCenterOffset": [
+        0.228,
+        8.681,
+        -0.757
+      ],
+      "visualNormalizedSize": [
+        9.113,
+        9.04,
+        9.362
+      ],
+      "visualNormalizedOffset": [
+        -0.231,
+        -8.747,
+        0.523
+      ],
+      "settled": true
+    },
+    "556a105de9ef": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        6.6,
+        3.1,
+        3.32
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.55,
+        1.31
+      ],
+      "visualNormalizedSize": [
+        7.488,
+        6.809,
+        3.756
+      ],
+      "visualNormalizedOffset": [
+        0.075,
+        -3.405,
+        -1.268
+      ],
+      "settled": true
+    },
+    "56a3f7ec5da5": {
+      "restY": 0.905,
+      "restHeightAboveSurface": 0.005,
+      "boundsSize": [
+        1.208,
+        1.429,
+        1.22
+      ],
+      "boundsCenterOffset": [
+        -0.058,
+        0.709,
+        0.01
+      ],
+      "visualNormalizedSize": [
+        1.208,
+        1.429,
+        1.22
+      ],
+      "visualNormalizedOffset": [
+        0.058,
+        -0.709,
+        -0.01
+      ],
+      "settled": true
+    },
+    "585b630e3cd6": {
+      "restY": 1.9,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        4.0,
+        2.5,
+        8
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.25,
+        -2
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.5,
+        8.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.25,
+        2
+      ],
+      "settled": true
+    },
+    "5a76f2253f1d": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.117,
+        0.85,
+        1.628
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.425,
+        0
+      ],
+      "visualNormalizedSize": [
+        5.245,
+        1.91,
+        4.359
+      ],
+      "visualNormalizedOffset": [
+        -0.18,
+        -0.696,
+        -0.001
+      ],
+      "settled": true
+    },
+    "5a7d021c6537": {
+      "restY": 2.4,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.038
+      ],
+      "boundsCenterOffset": [
+        -0.0,
+        -0.207,
+        -0.019
+      ],
+      "visualNormalizedSize": [
+        4.0,
+        2.586,
+        4.038
+      ],
+      "visualNormalizedOffset": [
+        0.0,
+        0.207,
+        0.019
+      ],
+      "settled": true
+    },
+    "5d6746bc93a5": {
+      "restY": 0.694,
+      "restHeightAboveSurface": -0.206,
+      "boundsSize": [
+        3.263,
+        2.299,
+        0.324
+      ],
+      "boundsCenterOffset": [
+        -0.299,
+        1.356,
+        -0.083
+      ],
+      "visualNormalizedSize": [
+        3.614,
+        2.792,
+        4.87
+      ],
+      "visualNormalizedOffset": [
+        0.194,
+        -1.374,
+        -0.529
+      ],
+      "settled": true
+    },
+    "5dcefe99c78f": {
+      "restY": 0.915,
+      "restHeightAboveSurface": 0.015,
+      "boundsSize": [
+        3.716,
+        1.356,
+        1.537
+      ],
+      "boundsCenterOffset": [
+        0.166,
+        0.663,
+        0.052
+      ],
+      "visualNormalizedSize": [
+        3.716,
+        1.356,
+        1.537
+      ],
+      "visualNormalizedOffset": [
+        -0.166,
+        -0.663,
+        -0.052
+      ],
+      "settled": true
+    },
+    "5fafbc0b5252": {
+      "restY": 0.979,
+      "restHeightAboveSurface": 0.079,
+      "boundsSize": [
+        1.017,
+        2.198,
+        0.412
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.02,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        1.017,
+        2.198,
+        0.412
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.02,
+        0
+      ],
+      "settled": true
+    },
+    "602e6409d095": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.186,
+        0.587,
+        2.454
+      ],
+      "boundsCenterOffset": [
+        -0.377,
+        0.294,
+        -1.036
+      ],
+      "visualNormalizedSize": [
+        3.296,
+        0.842,
+        3.737
+      ],
+      "visualNormalizedOffset": [
+        0.531,
+        -0.323,
+        1.107
+      ],
+      "settled": true
+    },
+    "615f2af1b3fb": {
+      "restY": 0.461,
+      "restHeightAboveSurface": -0.439,
+      "boundsSize": [
+        0.802,
+        3.17,
+        4.807
+      ],
+      "boundsCenterOffset": [
+        -0.061,
+        2.024,
+        -0.037
+      ],
+      "visualNormalizedSize": [
+        1.024,
+        3.168,
+        4.8
+      ],
+      "visualNormalizedOffset": [
+        0.06,
+        -2.023,
+        0.041
+      ],
+      "settled": true
+    },
+    "61e9880c44bb": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        6.2,
+        3.1,
+        6.2
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.55,
+        0
+      ],
+      "visualNormalizedSize": [
+        6.524,
+        3.21,
+        6.52
+      ],
+      "visualNormalizedOffset": [
+        0.002,
+        -1.581,
+        0.0
+      ],
+      "settled": true
+    },
+    "6557fa863ef6": {
+      "restY": 0.976,
+      "restHeightAboveSurface": 0.076,
+      "boundsSize": [
+        3.084,
+        2.059,
+        0.607
+      ],
+      "boundsCenterOffset": [
+        0.001,
+        0.954,
+        -0.001
+      ],
+      "visualNormalizedSize": [
+        3.085,
+        2.06,
+        0.607
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.953,
+        0
+      ],
+      "settled": true
+    },
+    "657190865d68": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        8.917,
+        3.738,
+        3.371
+      ],
+      "boundsCenterOffset": [
+        1.186,
+        1.869,
+        0.023
+      ],
+      "visualNormalizedSize": [
+        10.431,
+        4.259,
+        3.908
+      ],
+      "visualNormalizedOffset": [
+        -0.429,
+        -2.13,
+        -0.291
+      ],
+      "settled": true
+    },
+    "67e376e90648": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        5.6,
+        3.1,
+        3.4
+      ],
+      "boundsCenterOffset": [
+        1.5,
+        1.55,
+        1.3
+      ],
+      "visualNormalizedSize": [
+        6.053,
+        9.715,
+        3.92
+      ],
+      "visualNormalizedOffset": [
+        -1.5,
+        -4.842,
+        -1.217
+      ],
+      "settled": true
+    },
+    "6a10e5672b47": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        9,
+        9.1,
+        9
+      ],
+      "boundsCenterOffset": [
+        -1.5,
+        4.55,
+        -1.5
+      ],
+      "visualNormalizedSize": [
+        9.35,
+        9.809,
+        9.351
+      ],
+      "visualNormalizedOffset": [
+        1.5,
+        -4.905,
+        1.5
+      ],
+      "settled": true
+    },
+    "6cfbd5ca3073": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.533,
+        2.814,
+        1.142
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.407,
+        0.02
+      ],
+      "visualNormalizedSize": [
+        2.533,
+        2.814,
+        1.142
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.407,
+        -0.02
+      ],
+      "settled": true
+    },
+    "7f808a16a2c2": {
+      "restY": 2.4,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.006
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        -0.207,
+        -0.003
+      ],
+      "visualNormalizedSize": [
+        4.0,
+        2.586,
+        4.006
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0.207,
+        0.003
+      ],
+      "settled": true
+    },
+    "7f92bd131f22": {
+      "restY": 0.899,
+      "restHeightAboveSurface": -0.001,
+      "boundsSize": [
+        2.441,
+        2.899,
+        2.358
+      ],
+      "boundsCenterOffset": [
+        -1.37,
+        1.451,
+        -0.005
+      ],
+      "visualNormalizedSize": [
+        2.819,
+        2.916,
+        2.678
+      ],
+      "visualNormalizedOffset": [
+        1.306,
+        -1.458,
+        0
+      ],
+      "settled": true
+    },
+    "804897c9818f": {
+      "restY": 0.898,
+      "restHeightAboveSurface": -0.002,
+      "boundsSize": [
+        2.231,
+        1.339,
+        1.463
+      ],
+      "boundsCenterOffset": [
+        0.208,
+        0.672,
+        -0.025
+      ],
+      "visualNormalizedSize": [
+        2.231,
+        1.339,
+        1.463
+      ],
+      "visualNormalizedOffset": [
+        -0.208,
+        -0.672,
+        0.025
+      ],
+      "settled": true
+    },
+    "83dcfc5eea7f": {
+      "restY": 0.9,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        2.208,
+        1.192,
+        7.301
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.596,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        2.208,
+        1.192,
+        7.301
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.596,
+        0.0
+      ],
+      "settled": true
+    },
+    "8463eea1747e": {
+      "restY": 0.899,
+      "restHeightAboveSurface": -0.001,
+      "boundsSize": [
+        0.348,
+        2.323,
+        3.748
+      ],
+      "boundsCenterOffset": [
+        0.001,
+        1.162,
+        0.003
+      ],
+      "visualNormalizedSize": [
+        0.348,
+        2.323,
+        3.748
+      ],
+      "visualNormalizedOffset": [
+        -0.001,
+        -1.162,
+        -0.003
+      ],
+      "settled": true
+    },
+    "859f77538985": {
+      "restY": 1.305,
+      "restHeightAboveSurface": 0.405,
+      "boundsSize": [
+        2.119,
+        8.356,
+        2.12
+      ],
+      "boundsCenterOffset": [
+        0,
+        3.773,
+        0.001
+      ],
+      "visualNormalizedSize": [
+        2.119,
+        8.356,
+        2.12
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -3.773,
+        -0.001
+      ],
+      "settled": true
+    },
+    "88a536e9b879": {
+      "restY": 1.074,
+      "restHeightAboveSurface": 0.174,
+      "boundsSize": [
+        4.548,
+        2.193,
+        2.081
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.923,
+        0
+      ],
+      "visualNormalizedSize": [
+        4.548,
+        2.193,
+        2.081
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.923,
+        0
+      ],
+      "settled": true
+    },
+    "8ab76a135246": {
+      "restY": 0.899,
+      "restHeightAboveSurface": -0.001,
+      "boundsSize": [
+        2.856,
+        3.445,
+        2.858
+      ],
+      "boundsCenterOffset": [
+        -0.005,
+        1.723,
+        0.001
+      ],
+      "visualNormalizedSize": [
+        2.871,
+        3.528,
+        3.093
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.76,
+        -0.111
+      ],
+      "settled": true
+    },
+    "8fcfae8d6ad0": {
+      "restY": 0.897,
+      "restHeightAboveSurface": -0.003,
+      "boundsSize": [
+        3.912,
+        3.875,
+        2.094
+      ],
+      "boundsCenterOffset": [
+        0.032,
+        1.94,
+        1.048
+      ],
+      "visualNormalizedSize": [
+        3.912,
+        3.875,
+        2.094
+      ],
+      "visualNormalizedOffset": [
+        -0.032,
+        -1.94,
+        -1.048
+      ],
+      "settled": true
+    },
+    "9767669a9c7f": {
+      "restY": 2.4,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        -0.207,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        4.001,
+        2.586,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        -0.0,
+        0.207,
+        -0.0
+      ],
+      "settled": true
+    },
+    "9ac11b011fa9": {
+      "restY": 0.872,
+      "restHeightAboveSurface": -0.028,
+      "boundsSize": [
+        2.38,
+        1.549,
+        3.738
+      ],
+      "boundsCenterOffset": [
+        -0.096,
+        0.803,
+        0.076
+      ],
+      "visualNormalizedSize": [
+        2.383,
+        1.546,
+        3.731
+      ],
+      "visualNormalizedOffset": [
+        0.092,
+        -0.789,
+        -0.069
+      ],
+      "settled": true
+    },
+    "accec884d4ed": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.9,
+        1.05,
+        2.5
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.525,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        0.9,
+        1.05,
+        2.5
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.525,
+        0
+      ],
+      "settled": true
+    },
+    "b189be267d6e": {
+      "restY": 1.9,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        8,
+        2.5,
+        8
+      ],
+      "boundsCenterOffset": [
+        -2,
+        0.25,
+        -2
+      ],
+      "visualNormalizedSize": [
+        8,
+        2.5,
+        8.0
+      ],
+      "visualNormalizedOffset": [
+        2,
+        -0.25,
+        2
+      ],
+      "settled": true
+    },
+    "b4e3d7f81bb7": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        6,
+        0.1,
+        6
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.05,
+        0
+      ],
+      "visualNormalizedSize": [
+        6.787,
+        6.817,
+        6.786
+      ],
+      "visualNormalizedOffset": [
+        0.217,
+        -3.401,
+        0.217
+      ],
+      "settled": true
+    },
+    "b54bb593b47e": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3,
+        0.1,
+        3
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.05,
+        0
+      ],
+      "visualNormalizedSize": [
+        3.196,
+        0.1,
+        3.139
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.05,
+        0
+      ],
+      "settled": true
+    },
+    "b650fbe2ca15": {
+      "restY": 0.715,
+      "restHeightAboveSurface": -0.185,
+      "boundsSize": [
+        5.705,
+        3.169,
+        0.78
+      ],
+      "boundsCenterOffset": [
+        -0.077,
+        1.769,
+        -0.049
+      ],
+      "visualNormalizedSize": [
+        5.702,
+        3.168,
+        1.588
+      ],
+      "visualNormalizedOffset": [
+        0.075,
+        -1.768,
+        -0.09
+      ],
+      "settled": true
+    },
+    "b737bd667792": {
+      "restY": 0.9,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        0.364,
+        2.5,
+        3.2
+      ],
+      "boundsCenterOffset": [
+        -0.049,
+        1.25,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        0.698,
+        2.955,
+        3.732
+      ],
+      "visualNormalizedOffset": [
+        0.0,
+        -1.477,
+        0
+      ],
+      "settled": true
+    },
+    "b8157fe58f88": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        10.25,
+        10.5,
+        10.25
+      ],
+      "boundsCenterOffset": [
+        1.375,
+        5.25,
+        -1.375
+      ],
+      "visualNormalizedSize": [
+        10.922,
+        10.738,
+        11.333
+      ],
+      "visualNormalizedOffset": [
+        -1.592,
+        -5.338,
+        1.797
+      ],
+      "settled": true
+    },
+    "b96fb2c4c431": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        6,
+        6.1,
+        6
+      ],
+      "boundsCenterOffset": [
+        0,
+        3.05,
+        0
+      ],
+      "visualNormalizedSize": [
+        6.921,
+        6.809,
+        6.921
+      ],
+      "visualNormalizedOffset": [
+        0.284,
+        -3.405,
+        0.284
+      ],
+      "settled": true
+    },
+    "c3cc6423c66b": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        6,
+        0.1,
+        1.7
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.05,
+        -0.8
+      ],
+      "visualNormalizedSize": [
+        6.098,
+        4.677,
+        1.881
+      ],
+      "visualNormalizedOffset": [
+        0.019,
+        -2.306,
+        0.8
+      ],
+      "settled": true
+    },
+    "c3e2ac1d53ba": {
+      "restY": 0.964,
+      "restHeightAboveSurface": 0.064,
+      "boundsSize": [
+        2.065,
+        1.024,
+        1.884
+      ],
+      "boundsCenterOffset": [
+        0.125,
+        0.448,
+        -0.078
+      ],
+      "visualNormalizedSize": [
+        2.065,
+        1.024,
+        1.884
+      ],
+      "visualNormalizedOffset": [
+        -0.125,
+        -0.448,
+        0.078
+      ],
+      "settled": true
+    },
+    "c6781ed0494f": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4,
+        6.1,
+        4
+      ],
+      "boundsCenterOffset": [
+        1,
+        3.05,
+        1
+      ],
+      "visualNormalizedSize": [
+        5.155,
+        9.875,
+        5.155
+      ],
+      "visualNormalizedOffset": [
+        -1.051,
+        -4.922,
+        -1.051
+      ],
+      "settled": true
+    },
+    "ce942ce6fedc": {
+      "restY": 0.901,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        4.03,
+        3.102,
+        3.366
+      ],
+      "boundsCenterOffset": [
+        0.005,
+        1.55,
+        0.004
+      ],
+      "visualNormalizedSize": [
+        4.032,
+        3.2,
+        3.53
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.6,
+        0.085
+      ],
+      "settled": true
+    },
+    "d56a5b5c8869": {
+      "restY": 0.9,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        2.736,
+        3.151,
+        2.782
+      ],
+      "boundsCenterOffset": [
+        0.002,
+        1.575,
+        -0.009
+      ],
+      "visualNormalizedSize": [
+        2.79,
+        4.613,
+        2.79
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -2.306,
+        0
+      ],
+      "settled": true
+    },
+    "d654d331ecd3": {
+      "restY": 2.4,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.075
+      ],
+      "boundsCenterOffset": [
+        -0.0,
+        -0.207,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        4.0,
+        2.586,
+        4.076
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0.207,
+        -0.0
+      ],
+      "settled": true
+    },
+    "de291f3dc364": {
+      "restY": 0.902,
+      "restHeightAboveSurface": 0.002,
+      "boundsSize": [
+        10.178,
+        0.196,
+        10.017
+      ],
+      "boundsCenterOffset": [
+        -0.286,
+        0.096,
+        1.899
+      ],
+      "visualNormalizedSize": [
+        10.172,
+        2.7,
+        12.092
+      ],
+      "visualNormalizedOffset": [
+        0.302,
+        -1.036,
+        -0.856
+      ],
+      "settled": true
+    },
+    "e759191a26c7": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.016,
+        2.174,
+        2.597
+      ],
+      "boundsCenterOffset": [
+        -0.004,
+        1.087,
+        -0.002
+      ],
+      "visualNormalizedSize": [
+        2.016,
+        2.174,
+        2.597
+      ],
+      "visualNormalizedOffset": [
+        0.004,
+        -1.087,
+        0.002
+      ],
+      "settled": true
+    },
+    "e7946cdd13ac": {
+      "restY": 0.908,
+      "restHeightAboveSurface": 0.008,
+      "boundsSize": [
+        1.683,
+        1.947,
+        0.943
+      ],
+      "boundsCenterOffset": [
+        0.003,
+        0.965,
+        -0.063
+      ],
+      "visualNormalizedSize": [
+        1.683,
+        1.947,
+        0.943
+      ],
+      "visualNormalizedOffset": [
+        -0.003,
+        -0.965,
+        0.063
+      ],
+      "settled": true
+    },
+    "e82fb928ece5": {
+      "restY": 0.676,
+      "restHeightAboveSurface": -0.224,
+      "boundsSize": [
+        6.433,
+        2.365,
+        0.466
+      ],
+      "boundsCenterOffset": [
+        -0.017,
+        1.407,
+        0.169
+      ],
+      "visualNormalizedSize": [
+        6.559,
+        2.874,
+        2.267
+      ],
+      "visualNormalizedOffset": [
+        0.041,
+        -1.374,
+        0.503
+      ],
+      "settled": true
+    },
+    "e9023347a7a8": {
+      "restY": 1.9,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        4,
+        2.5,
+        4
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.25,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.5,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.25,
+        0
+      ],
+      "settled": true
+    },
+    "ea636c44062c": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.715,
+        4.209,
+        1.474
+      ],
+      "boundsCenterOffset": [
+        0.004,
+        2.104,
+        -0.22
+      ],
+      "visualNormalizedSize": [
+        2.802,
+        4.196,
+        1.994
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -2.098,
+        0
+      ],
+      "settled": true
+    },
+    "f58a16b08b7e": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4,
+        2.1,
+        4
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.05,
+        0
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.1,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "settled": true
+    },
+    "f78860d44825": {
+      "restY": 0.89,
+      "restHeightAboveSurface": -0.01,
+      "boundsSize": [
+        0.904,
+        1.16,
+        0.916
+      ],
+      "boundsCenterOffset": [
+        -0.004,
+        0.59,
+        -0.003
+      ],
+      "visualNormalizedSize": [
+        0.909,
+        1.16,
+        0.916
+      ],
+      "visualNormalizedOffset": [
+        -0.001,
+        -0.589,
+        0.003
+      ],
+      "settled": true
+    },
+    "f89179d823f5": {
+      "restY": 1.642,
+      "restHeightAboveSurface": 0.742,
+      "boundsSize": [
+        9.143,
+        0.311,
+        11.481
+      ],
+      "boundsCenterOffset": [
+        -0.085,
+        -0.586,
+        0.433
+      ],
+      "visualNormalizedSize": [
+        14.47,
+        5.845,
+        16.548
+      ],
+      "visualNormalizedOffset": [
+        -0.149,
+        -1.632,
+        -0.397
+      ],
+      "settled": true
+    },
+    "fa7394f6fab3": {
+      "restY": 1.532,
+      "restHeightAboveSurface": 0.632,
+      "boundsSize": [
+        0.771,
+        5.547,
+        1.33
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        2.141,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        0.771,
+        5.547,
+        1.33
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -2.141,
+        0
+      ],
+      "settled": true
+    },
+    "fe67d72ef012": {
+      "restY": 0.51,
+      "restHeightAboveSurface": -0.39,
+      "boundsSize": [
+        4.542,
+        9.488,
+        4.562
+      ],
+      "boundsCenterOffset": [
+        0.401,
+        5.134,
+        0.025
+      ],
+      "visualNormalizedSize": [
+        4.735,
+        9.487,
+        4.735
+      ],
+      "visualNormalizedOffset": [
+        -0.413,
+        -5.134,
+        -0.039
+      ],
+      "settled": true
+    },
+    "feebe78ae6ed": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3.4,
+        3.1,
+        6.8
+      ],
+      "boundsCenterOffset": [
+        -1.3,
+        1.55,
+        0
+      ],
+      "visualNormalizedSize": [
+        5.4,
+        9.699,
+        8.523
+      ],
+      "visualNormalizedOffset": [
+        1.121,
+        -4.85,
+        0.209
+      ],
+      "settled": true
+    }
+  },
+  "stacked": {
+    "e9023347a7a8<-031559734221": {
+      "restY": 4.9,
+      "restHeightAboveSurface": 4.0,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        -0.207,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0.207,
+        0
+      ],
+      "onAsset": "e9023347a7a8",
+      "supportTopY": 3.4,
+      "restHeightAboveSupport": 1.5,
+      "settled": true
+    },
+    "e9023347a7a8<-3d6f0479de02": {
+      "restY": 4.68,
+      "restHeightAboveSurface": 3.78,
+      "boundsSize": [
+        3.96,
+        2.56,
+        4.037
+      ],
+      "boundsCenterOffset": [
+        -0.99,
+        -0.0,
+        -0.982
+      ],
+      "visualNormalizedSize": [
+        3.96,
+        2.56,
+        4.036
+      ],
+      "visualNormalizedOffset": [
+        0.99,
+        0.0,
+        0.982
+      ],
+      "onAsset": "e9023347a7a8",
+      "supportTopY": 3.4,
+      "restHeightAboveSupport": 1.28,
+      "settled": true
+    },
+    "e9023347a7a8<-e9023347a7a8": {
+      "restY": 4.4,
+      "restHeightAboveSurface": 3.5,
+      "boundsSize": [
+        4.0,
+        2.5,
+        4.0
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.25,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.5,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.25,
+        0
+      ],
+      "onAsset": "e9023347a7a8",
+      "supportTopY": 3.4,
+      "restHeightAboveSupport": 1.0,
+      "settled": true
+    },
+    "e9023347a7a8<-f58a16b08b7e": {
+      "restY": 3.4,
+      "restHeightAboveSurface": 2.5,
+      "boundsSize": [
+        4.0,
+        2.1,
+        4.0
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        1.05,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.1,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "onAsset": "e9023347a7a8",
+      "supportTopY": 3.4,
+      "restHeightAboveSupport": -0.0,
+      "settled": true
+    },
+    "f58a16b08b7e<-442da3ffde7a": {
+      "restY": 3.076,
+      "restHeightAboveSurface": 2.176,
+      "boundsSize": [
+        3.685,
+        7.029,
+        3.707
+      ],
+      "boundsCenterOffset": [
+        0.006,
+        3.438,
+        -0.028
+      ],
+      "visualNormalizedSize": [
+        3.96,
+        9.403,
+        4.014
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -4.459,
+        0
+      ],
+      "onAsset": "f58a16b08b7e",
+      "supportTopY": 3.0,
+      "restHeightAboveSupport": 0.076,
+      "settled": true
+    },
+    "f58a16b08b7e<-f58a16b08b7e": {
+      "restY": 3.0,
+      "restHeightAboveSurface": 2.1,
+      "boundsSize": [
+        4,
+        2.1,
+        4.0
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        1.05,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        4,
+        2.1,
+        4.0
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "onAsset": "f58a16b08b7e",
+      "supportTopY": 3.0,
+      "restHeightAboveSupport": -0.0,
+      "settled": true
+    },
+    "d654d331ecd3<-f78860d44825": {
+      "restY": 1.39,
+      "restHeightAboveSurface": 0.49,
+      "boundsSize": [
+        0.904,
+        1.16,
+        0.917
+      ],
+      "boundsCenterOffset": [
+        -0.004,
+        0.59,
+        -0.003
+      ],
+      "visualNormalizedSize": [
+        0.909,
+        1.16,
+        0.916
+      ],
+      "visualNormalizedOffset": [
+        -0.001,
+        -0.589,
+        0.003
+      ],
+      "onAsset": "d654d331ecd3",
+      "supportTopY": 3.486,
+      "restHeightAboveSupport": -2.096,
+      "settled": true
+    },
+    "031559734221<-f78860d44825": {
+      "restY": 1.644,
+      "restHeightAboveSurface": 0.744,
+      "boundsSize": [
+        1.316,
+        1.344,
+        0.962
+      ],
+      "boundsCenterOffset": [
+        0.389,
+        0.428,
+        0.107
+      ],
+      "visualNormalizedSize": [
+        0.909,
+        1.16,
+        0.916
+      ],
+      "visualNormalizedOffset": [
+        -0.001,
+        -0.589,
+        0.003
+      ],
+      "onAsset": "031559734221",
+      "supportTopY": 3.486,
+      "restHeightAboveSupport": -1.842,
+      "settled": true
+    }
+  },
+  "profiles": {
+    "method": "Physics.cast rays against the piece spawned Locked at rotY 0 at the clear corner (x 46-78, z -48/-64), then destroyed: straight down on a 0.1in grid over the cell (heights above the piece's bottom; -1 = no hit), and horizontally from the cell centre at 0.8, 1.4 and 2.0in above the bottom (distance to the first wall face). Collider geometry, not the mesh.",
+    "pieces": {
+      "c7eb57216d74": {
+        "name": "Trench Straight (plain)",
+        "spawnedLockedAt": [
+          46,
+          2.4,
+          -48
+        ],
+        "boundsSize": [
+          4.0,
+          2.586,
+          4.0
+        ],
+        "boundsCenterOffset": [
+          0,
+          -0.207,
+          0
+        ],
+        "wallFaceDistanceFromCentre": {
+          "0.8": {
+            "E": 1.132,
+            "W": 1.132
+          },
+          "1.4": {
+            "E": 1.288,
+            "W": 1.288
+          },
+          "2": {
+            "E": 1.37,
+            "W": 1.37
+          }
+        },
+        "heightAboveBottomAtZ0": {
+          "x": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            2.5,
+            2.5,
+            2.51,
+            2.5,
+            2.46,
+            2.4,
+            2.17,
+            1.46,
+            1.02,
+            0.7,
+            0.52,
+            0.52,
+            0.51,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.7,
+            1.02,
+            1.46,
+            2.17,
+            2.4,
+            2.46,
+            2.5,
+            2.51,
+            2.5,
+            2.5
+          ]
+        },
+        "heightAboveBottomAtX0": {
+          "z": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            -1,
+            0.5,
+            0.5,
+            0.51,
+            0.5,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.51,
+            0.51,
+            0.49,
+            0.48,
+            0.48,
+            0.49,
+            0.49,
+            0.5,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.49,
+            0.48,
+            0.48,
+            0.48,
+            0.49,
+            0.51,
+            0.52,
+            0.51,
+            0.52,
+            0.52,
+            0.53,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.5,
+            -1
+          ]
+        }
+      },
+      "031559734221": {
+        "name": "Trench Straight w/ Ledge",
+        "spawnedLockedAt": [
+          62,
+          2.4,
+          -48
+        ],
+        "boundsSize": [
+          4.0,
+          2.586,
+          4.0
+        ],
+        "boundsCenterOffset": [
+          0.0,
+          -0.207,
+          0
+        ],
+        "wallFaceDistanceFromCentre": {
+          "0.8": {
+            "E": 1.079,
+            "W": 0.351
+          },
+          "1.4": {
+            "E": 1.288,
+            "W": 0.473
+          },
+          "2": {
+            "E": 1.308,
+            "W": 1.37
+          }
+        },
+        "heightAboveBottomAtZ0": {
+          "x": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            2.5,
+            2.5,
+            2.51,
+            2.5,
+            2.46,
+            2.4,
+            2.17,
+            1.5,
+            1.5,
+            1.5,
+            1.52,
+            1.52,
+            1.52,
+            1.52,
+            1.52,
+            1.49,
+            1.05,
+            0.59,
+            0.52,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.82,
+            1.28,
+            2.05,
+            2.17,
+            2.4,
+            2.46,
+            2.5,
+            2.51,
+            2.5,
+            2.5
+          ]
+        },
+        "heightAboveBottomAtX0": {
+          "z": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            -1,
+            0.5,
+            0.5,
+            0.51,
+            0.5,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.51,
+            0.51,
+            0.49,
+            0.48,
+            0.48,
+            0.49,
+            0.49,
+            0.5,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.49,
+            0.48,
+            0.48,
+            0.48,
+            0.49,
+            0.51,
+            0.52,
+            0.51,
+            0.52,
+            0.52,
+            0.53,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.5,
+            -1
+          ]
+        }
+      },
+      "d654d331ecd3": {
+        "name": "Trench Straight w/ Double Logs",
+        "spawnedLockedAt": [
+          78,
+          2.4,
+          -48
+        ],
+        "boundsSize": [
+          4.0,
+          2.586,
+          4.076
+        ],
+        "boundsCenterOffset": [
+          0,
+          -0.207,
+          0.0
+        ],
+        "wallFaceDistanceFromCentre": {
+          "0.8": {
+            "E": 1.079,
+            "W": 1.079
+          },
+          "1.4": {
+            "E": 1.288,
+            "W": 1.288
+          },
+          "2": {
+            "E": 1.308,
+            "W": 1.308
+          }
+        },
+        "heightAboveBottomAtZ0": {
+          "x": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            2.5,
+            2.5,
+            2.51,
+            2.5,
+            2.46,
+            2.4,
+            2.17,
+            2.05,
+            1.28,
+            0.82,
+            0.52,
+            0.52,
+            0.51,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.82,
+            1.28,
+            2.05,
+            2.17,
+            2.4,
+            2.46,
+            2.5,
+            2.51,
+            2.5,
+            2.21
+          ]
+        },
+        "heightAboveBottomAtX0": {
+          "z": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            -1,
+            0.5,
+            0.5,
+            0.51,
+            0.5,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.51,
+            0.51,
+            0.49,
+            0.48,
+            0.48,
+            0.49,
+            0.49,
+            0.5,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.49,
+            0.48,
+            0.48,
+            0.48,
+            0.49,
+            0.51,
+            0.52,
+            0.51,
+            0.52,
+            0.52,
+            0.53,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.5,
+            -1
+          ]
+        }
+      },
+      "9767669a9c7f": {
+        "name": "Trench Corner",
+        "spawnedLockedAt": [
+          46,
+          2.4,
+          -64
+        ],
+        "boundsSize": [
+          4.001,
+          2.586,
+          4.0
+        ],
+        "boundsCenterOffset": [
+          0.0,
+          -0.207,
+          0.0
+        ],
+        "wallFaceDistanceFromCentre": {
+          "0.8": {
+            "N": 1.132,
+            "W": 1.132
+          },
+          "1.4": {
+            "N": 1.288,
+            "W": 1.288
+          },
+          "2": {
+            "N": 1.37,
+            "W": 1.37
+          }
+        },
+        "heightAboveBottomAtZ0": {
+          "x": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            2.5,
+            2.5,
+            2.51,
+            2.5,
+            2.46,
+            2.4,
+            2.17,
+            1.46,
+            1.02,
+            0.7,
+            0.52,
+            0.52,
+            0.51,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.51,
+            0.51,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            -1
+          ]
+        },
+        "heightAboveBottomAtX0": {
+          "z": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            0.5,
+            0.5,
+            0.5,
+            0.51,
+            0.5,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.51,
+            0.51,
+            0.49,
+            0.48,
+            0.48,
+            0.49,
+            0.49,
+            0.5,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.49,
+            0.48,
+            0.48,
+            0.48,
+            0.49,
+            0.51,
+            0.52,
+            0.51,
+            0.52,
+            0.7,
+            1.02,
+            1.46,
+            2.17,
+            2.4,
+            2.46,
+            2.5,
+            2.51,
+            2.5,
+            2.5
+          ]
+        }
+      },
+      "5a7d021c6537": {
+        "name": "Trench T-Section",
+        "spawnedLockedAt": [
+          62,
+          2.4,
+          -64
+        ],
+        "boundsSize": [
+          4.0,
+          2.586,
+          4.038
+        ],
+        "boundsCenterOffset": [
+          -0.0,
+          -0.207,
+          -0.019
+        ],
+        "wallFaceDistanceFromCentre": {
+          "0.8": {
+            "E": 1.079
+          },
+          "1.4": {
+            "E": 1.288
+          },
+          "2": {
+            "E": 1.308
+          }
+        },
+        "heightAboveBottomAtZ0": {
+          "x": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.51,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.52,
+            0.82,
+            1.28,
+            2.05,
+            2.17,
+            2.4,
+            2.46,
+            2.5,
+            2.51,
+            2.5,
+            2.21
+          ]
+        },
+        "heightAboveBottomAtX0": {
+          "z": [
+            -2.0,
+            -1.9,
+            -1.8,
+            -1.7,
+            -1.6,
+            -1.5,
+            -1.4,
+            -1.3,
+            -1.2,
+            -1.1,
+            -1.0,
+            -0.9,
+            -0.8,
+            -0.7,
+            -0.6,
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.6,
+            0.7,
+            0.8,
+            0.9,
+            1.0,
+            1.1,
+            1.2,
+            1.3,
+            1.4,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0
+          ],
+          "top": [
+            0.5,
+            0.5,
+            0.5,
+            0.51,
+            0.5,
+            0.5,
+            0.49,
+            0.5,
+            0.51,
+            0.52,
+            0.51,
+            0.51,
+            0.49,
+            0.48,
+            0.48,
+            0.49,
+            0.49,
+            0.5,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.49,
+            0.48,
+            0.48,
+            0.48,
+            0.49,
+            0.51,
+            0.52,
+            0.51,
+            0.52,
+            0.52,
+            0.53,
+            0.52,
+            0.51,
+            0.51,
+            0.51,
+            0.51,
+            0.5,
+            0.5,
+            0.5
+          ]
+        }
+      },
+      "44a0aae22d66": {
+        "name": "Log Fence",
+        "spawnedLockedAt": [
+          78,
+          2.1,
+          -64
+        ],
+        "boundsSize": [
+          0.687,
+          2.449,
+          3.914
+        ],
+        "boundsCenterOffset": [
+          1.216,
+          0.022,
+          -0.081
+        ]
+      }
+    }
+  }
+}

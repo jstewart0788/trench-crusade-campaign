@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { cellRect, OPPOSITE, pointInPolygon, type Cell, type Dir, type Grid } from "./grid.js";
 import type { Role } from "./palette.js";
+import type { DeploymentTrack } from "./trench.js";
 
 // The geometry the generator reads from a scenario: deployment polygons and
 // objective points in board inches, plus the handful of placement rules the
@@ -51,7 +53,9 @@ export interface ScenarioOverlay {
   objectives: ObjectiveSpec[];
 }
 
-const DEFAULT_COVER_ROLES: Role[] = ["ruin", "landmark", "difficult"];
+const RUINED_BUILDING_ROLES: Role[] = ["building", "ruin", "cover", "landmark", "difficult"];
+const TALL_ROLES: Role[] = ["building", "tower", "ruin", "landmark"];
+const DEFAULT_COVER_ROLES: Role[] = ["ruin", "cover", "landmark", "difficult"];
 
 export function scenarioOverlay(scenario: ScenarioGeometry): ScenarioOverlay {
   const zones: ZoneSpec[] = scenario.deployment.zones.map((z) => ({
@@ -71,10 +75,92 @@ export function scenarioOverlay(scenario: ScenarioGeometry): ScenarioOverlay {
       label: o.label ?? o.id,
       position: [o.position[0], o.position[1]],
       requiresCover: /covered by/i.test(rule),
-      preferredRoles: /tallest/i.test(rule) ? ["ruin", "landmark"] : DEFAULT_COVER_ROLES,
+      preferredRoles: /tall/i.test(rule) ? TALL_ROLES : /ruined building/i.test(rule) ? RUINED_BUILDING_ROLES : DEFAULT_COVER_ROLES,
       allowsTrench: /trench section/i.test(rule),
       keepOutIn: keepOut ? Number(keepOut[1]) : 0,
     });
   }
   return { zones, objectives };
+}
+
+/** The board edge a zone polygon runs along, when it is an edge strip. */
+export function zoneSide(zone: ZoneSpec, boardIn: number): Dir | null {
+  const xs = zone.polygon.map((p) => p[0]);
+  const ys = zone.polygon.map((p) => p[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const fullHeight = y0 <= 0 && y1 >= boardIn;
+  const fullWidth = x0 <= 0 && x1 >= boardIn;
+  if (fullHeight && x0 <= 0 && x1 < boardIn) return "W";
+  if (fullHeight && x1 >= boardIn && x0 > 0) return "E";
+  if (fullWidth && y0 <= 0 && y1 < boardIn) return "S";
+  if (fullWidth && y1 >= boardIn && y0 > 0) return "N";
+  return null;
+}
+
+const cellInside = (grid: Grid, cell: Cell, polygon: readonly [number, number][]): boolean => {
+  const r = cellRect(grid, cell.c, cell.r);
+  return [
+    [r.x0, r.y0],
+    [r.x1, r.y0],
+    [r.x0, r.y1],
+    [r.x1, r.y1],
+  ].every((p) => pointInPolygon(p as [number, number], polygon));
+};
+
+/**
+ * One track per deployment zone that is a board-edge strip: the row or column
+ * of cells along that edge, kept only where the cell lies wholly inside the
+ * zone, so models deployed in the trench are wholly within their zone.
+ */
+export function deploymentTracks(grid: Grid, zones: readonly ZoneSpec[], warnings: string[]): DeploymentTrack[] {
+  const tracks: DeploymentTrack[] = [];
+  for (const zone of zones) {
+    if (!zone.isDeployment) continue;
+    if (zone.noTerrain) {
+      warnings.push(`no deployment trench in ${zone.label}: the scenario bans terrain there`);
+      continue;
+    }
+    const side = zoneSide(zone, grid.boardIn);
+    if (!side) {
+      warnings.push(`no deployment trench in ${zone.label}: not a board-edge strip`);
+      continue;
+    }
+    const along = side === "W" || side === "E" ? "y" : "x";
+    const cells: Cell[] = [];
+    const n = along === "y" ? grid.rows : grid.cols;
+    for (let i = 0; i < n; i++) {
+      const cell = side === "W" ? { c: 0, r: i } : side === "E" ? { c: grid.cols - 1, r: i } : side === "S" ? { c: i, r: 0 } : { c: i, r: grid.rows - 1 };
+      if (cellInside(grid, cell, zone.polygon)) cells.push(cell);
+    }
+    if (cells.length < n) {
+      warnings.push(`no deployment trench in ${zone.label}: the zone is narrower than one ${grid.cellIn}in cell`);
+      continue;
+    }
+    tracks.push({ zoneLabel: zone.label, player: zone.player, side, along, cells });
+  }
+  return tracks;
+}
+
+/**
+ * The side facing the enemy from a cell: with two deployment zones on opposite
+ * edges, the half of the board nearer one zone faces the other. Cells on the
+ * centre line take a seeded side. Null when the zones are not opposed strips.
+ */
+export function enemyFacing(grid: Grid, zones: readonly ZoneSpec[], pickCentre: () => boolean): (cell: Cell) => Dir | null {
+  const sides = zones.filter((z) => z.isDeployment).map((z) => zoneSide(z, grid.boardIn));
+  const opposed = sides.length === 2 && sides[0] && sides[1] && OPPOSITE[sides[0]] === sides[1];
+  if (!opposed) return () => null;
+  const axisX = sides[0] === "W" || sides[0] === "E";
+  const centre = new Map<string, Dir>();
+  return (cell) => {
+    const [x, y] = [cell.c * grid.cellIn + grid.cellIn / 2, cell.r * grid.cellIn + grid.cellIn / 2];
+    const v = axisX ? x : y;
+    const mid = grid.boardIn / 2;
+    const [low, high]: [Dir, Dir] = axisX ? ["W", "E"] : ["S", "N"];
+    if (v < mid) return high;
+    if (v > mid) return low;
+    const key = `${cell.c},${cell.r}`;
+    if (!centre.has(key)) centre.set(key, pickCentre() ? high : low);
+    return centre.get(key)!;
+  };
 }
