@@ -1,5 +1,6 @@
 import { cellKey, DELTA, DIRS, edgeInDir, inGrid, isEdgeCell, isLateral, neighbours, OPPOSITE, rotateDir, type Cell, type Dir, type Grid, type Mask } from "./grid.js";
 import { decoratedSides, PaletteError, piecesByRole, rotationsForOpenings, type Palette, type PalettePiece, type RotYSense } from "./palette.js";
+import { mapCell, sideOf, type Parity } from "./parity.js";
 import type { Rng } from "./rng.js";
 
 // The trench network (rulebook p67): the first section enters from a board
@@ -55,6 +56,8 @@ export interface TrenchOptions {
   minLineCells: number;
   /** Longest communication trench, in cells. */
   maxCommCells: number;
+  /** Lay the two deployment lines as twins under this parity. */
+  parity?: Parity;
 }
 
 export const DEFAULT_TRENCH_OPTIONS: Omit<TrenchOptions, "mode" | "axis" | "fromLowEdge" | "branches" | "tracks"> = {
@@ -238,6 +241,24 @@ function mainPathStep(net: Network, rng: Rng, opts: TrenchOptions, forward: Dir,
   return false;
 }
 
+/**
+ * On a mirrored board whose mirror line runs along the spine's axis, a spine
+ * straight down that line is its own twin and leaves both halves the same
+ * room; it is laid when every cell on the line is free.
+ */
+function layMirrorSpine(net: Network, opts: TrenchOptions): Cell[] | null {
+  const g = net.grid;
+  const kind = opts.parity?.kind;
+  if (!(kind === "mirror-x" && opts.axis === "y" && g.cols % 2 === 1) && !(kind === "mirror-y" && opts.axis === "x" && g.rows % 2 === 1)) return null;
+  const forward = forwardDir(opts.axis, opts.fromLowEdge);
+  const n = opts.axis === "y" ? g.rows : g.cols;
+  const line = Array.from({ length: n }, (_, i): Cell => (opts.axis === "y" ? { c: (g.cols - 1) / 2, r: i } : { c: i, r: (g.rows - 1) / 2 }));
+  const path = forward === "N" || forward === "E" ? line : [...line].reverse();
+  if (!path.every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) return null;
+  for (const cell of path) net.add(cell.c, cell.r);
+  return path;
+}
+
 function layMainPath(net: Network, rng: Rng, opts: TrenchOptions): Cell[] | null {
   const forward = forwardDir(opts.axis, opts.fromLowEdge);
   const enterFrom = OPPOSITE[forward];
@@ -364,6 +385,7 @@ function removeLine(net: Network, laid: { line: DeploymentLine; exits: EdgeOpeni
  * length, or null when no pairing of line shapes can be joined.
  */
 function layPairedLines(net: Network, rng: Rng, opts: TrenchOptions, lines: DeploymentLine[]): number | null {
+  if (opts.parity && opts.parity.kind !== "none") return layTwinLines(net, rng, opts, lines, opts.parity);
   const [ta, tb] = opts.tracks as [DeploymentTrack, DeploymentTrack];
   const plansA = linePlans(net, rng, ta, opts);
   const plansB = linePlans(net, rng, tb, opts);
@@ -399,6 +421,115 @@ function layPairedLines(net: Network, rng: Rng, opts: TrenchOptions, lines: Depl
     }
     lines.push(la.line, lb.line);
     return cross.length;
+  }
+  return null;
+}
+
+const key = (cell: Cell) => cellKey(cell.c, cell.r);
+
+/**
+ * Twin deployment lines: line B is line A's image under the parity, so both
+ * players get the same length, shape and junctions. A pair of cross trenches,
+ * each the other's image, joins them through no man's land; where the pair
+ * cannot fit, one cross trench joins the two lines' ends (the cross trench may
+ * stay single). A mirror needs full-length lines to reach both board edges.
+ */
+function layTwinLines(net: Network, rng: Rng, opts: TrenchOptions, lines: DeploymentLine[], parity: Parity): number | null {
+  const g = net.grid;
+  const tracks = [...opts.tracks].sort((a, b) => (sideOf(parity, a.cells[0]!.c * g.cellIn + g.cellIn / 2, a.cells[0]!.r * g.cellIn + g.cellIn / 2) === "A" ? -1 : 1) - (sideOf(parity, b.cells[0]!.c * g.cellIn + g.cellIn / 2, b.cells[0]!.r * g.cellIn + g.cellIn / 2) === "A" ? -1 : 1));
+  const [ta, tb] = tracks as [DeploymentTrack, DeploymentTrack];
+  const n = tb.cells.length;
+  const width = Math.abs(ta.along === "y" ? ta.cells[0]!.c - tb.cells[0]!.c : ta.cells[0]!.r - tb.cells[0]!.r);
+  for (const plan of linePlans(net, rng, ta, opts).filter((p) => parity.kind === "point" || p.variant === "full").slice(0, 12)) {
+    const twinIdx = ta.cells.slice(plan.from, plan.to + 1).map((cell) => {
+      const t = mapCell(parity, g, cell);
+      return tb.cells.findIndex((x) => x.c === t.c && x.r === t.r);
+    });
+    if (twinIdx.some((i) => i < 0)) continue;
+    const from = Math.min(...twinIdx);
+    const to = Math.max(...twinIdx);
+    const twinPlan: LinePlan = { variant: from === 0 && to === n - 1 ? "full" : from === 0 ? "from-low" : "from-high", from, to };
+    if (!tb.cells.slice(from, to + 1).every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) continue;
+    const la = addLine(net, ta, plan);
+    const lb = addLine(net, tb, twinPlan);
+    const cross = layCrossPair(net, rng, la.line, lb.line, ta, parity, width) ?? layCrossSingle(net, rng, la.line, lb.line, ta, width, parity);
+    if (cross) {
+      lines.push(la.line, lb.line);
+      return cross;
+    }
+    removeLine(net, lb);
+    removeLine(net, la);
+  }
+  return null;
+}
+
+const interior = (net: Network, line: DeploymentLine): Cell[] => line.cells.filter((cell) => net.openingCount(cell.c, cell.r) === 2 && !net.exitsAt(cell.c, cell.r).length);
+
+function layCrossPair(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, parity: Parity, width: number): number | null {
+  const g = net.grid;
+  const own = new Set(la.cells.map(key));
+  for (const j of rng.shuffle(junctionsOf(la)).slice(0, 6)) {
+    const tj = mapCell(parity, g, j);
+    const targets = new Set(interior(net, lb).filter((t) => !(t.c === tj.c && t.r === tj.r)).map(key));
+    const path = connect(net, rng, j, OPPOSITE[ta.side], own, width + 6, (t) => targets.has(key(t)));
+    if (!path) continue;
+    for (const cell of path) net.add(cell.c, cell.r);
+    const last = path[path.length - 1]!;
+    const t = net.trenchNeighbours(last.c, last.r).find((x) => targets.has(key(x)))!;
+    const tt = mapCell(parity, g, t);
+    const twin = path.map((cell) => mapCell(parity, g, cell));
+    const allowed = new Set([...twin.map(key), key(tj), key(tt)]);
+    let ok = twin.every((cell) => net.free(cell.c, cell.r) && !path.some((x) => Math.abs(x.c - cell.c) + Math.abs(x.r - cell.r) <= 1));
+    ok &&= net.openingCount(tj.c, tj.r) < 3 && net.openingCount(tt.c, tt.r) === 2 && !(tt.c === j.c && tt.r === j.r);
+    const added: Cell[] = [];
+    if (ok) {
+      for (const cell of twin) {
+        if (net.makes2x2(cell.c, cell.r)) {
+          ok = false;
+          break;
+        }
+        net.add(cell.c, cell.r);
+        added.push(cell);
+      }
+    }
+    ok &&= twin.every((cell) => net.trenchNeighbours(cell.c, cell.r).every((x) => allowed.has(key(x))));
+    ok &&= [j, tj, t, tt].every((cell) => net.openingCount(cell.c, cell.r) <= 3);
+    if (ok) {
+      la.commCells = path;
+      lb.commCells = twin;
+      return path.length;
+    }
+    for (const cell of added) net.remove(cell.c, cell.r);
+    for (const cell of path) net.remove(cell.c, cell.r);
+  }
+  return null;
+}
+
+function layCrossSingle(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, width: number, parity: Parity | null = null): number | null {
+  const own = new Set(la.cells.map(key));
+  const ends = (line: DeploymentLine) => (line.variant === "full" ? [] : junctionsOf(line));
+  const needB = ends(lb);
+  const targets = new Set((needB.length ? needB : interior(net, lb)).map(key));
+  // Twin lines meet the cross trench at mirrored cells, so their junctions match as their cells do.
+  const meets = (j: Cell): Set<string> => (parity && parity.kind !== "none" ? new Set([key(mapCell(parity, net.grid, j))].filter((k) => targets.has(k))) : targets);
+  // A straight run across is its own mirror image, so junctions that have one go first.
+  const [ic, ir] = DELTA[OPPOSITE[ta.side]];
+  const straight = (j: Cell): boolean => {
+    const wanted = meets(j);
+    for (let at = { c: j.c + ic, r: j.r + ir }; inGrid(net.grid, at.c, at.r); at = { c: at.c + ic, r: at.r + ir }) {
+      if (wanted.has(key(at))) return true;
+      if (!net.free(at.c, at.r)) return false;
+    }
+    return false;
+  };
+  const junctions = rng.shuffle(junctionsOf(la)).filter((j) => meets(j).size > 0);
+  for (const j of [...junctions.filter(straight), ...junctions.filter((x) => !straight(x))].slice(0, 6)) {
+    const wanted = meets(j);
+    const path = connect(net, rng, j, OPPOSITE[ta.side], own, width + 6, (t) => wanted.has(key(t)));
+    if (!path) continue;
+    for (const cell of path) net.add(cell.c, cell.r);
+    la.commCells = path;
+    return path.length;
   }
   return null;
 }
@@ -493,7 +624,7 @@ export function layTrenchNetwork(grid: Grid, blocked: Mask, rng: Rng, opts: Tren
   let mainPathLength = 0;
   const paired = opts.mode === "trench-lines" && opposedTracks(opts.tracks);
   if (opts.mode === "trench-lines" && !paired) {
-    const path = layMainPath(net, rng, opts);
+    const path = layMirrorSpine(net, opts) ?? layMainPath(net, rng, opts);
     if (!path) return null;
     const forward = forwardDir(opts.axis, opts.fromLowEdge);
     const first = path[0]!;

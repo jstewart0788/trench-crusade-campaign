@@ -16,11 +16,120 @@
     "minFaceLengthIn": 3,
     "source": "Placed live 2026-11-04 against the bare -x wall of the plain straight: body centre 1.35 in from the cell centre, bottom 0.20 above the trench's base, rotY 0 for a -x wall (90 for +z, 180 for +x, 270 for -z); visually confirmed to read like the built-in Double Logs. The inner wall faces of the plain, ledge, logs, corner and T pieces measure within 0.06in of each other by collider raycast, so the same inset serves them all."
   },
+  "aesthetics": [
+    "urban-ruin",
+    "field-fortification",
+    "industrial",
+    "ecclesiastic"
+  ],
+  "categories": {
+    "large-block-ruin": {
+      "type": "ruined-building",
+      "scatter": false,
+      "note": "Multi-storey ruined buildings, 5-10in across."
+    },
+    "large-L-ruin": {
+      "type": "corner-ruin",
+      "scatter": false,
+      "note": "Big L-shaped wall ruins, about 6in a side."
+    },
+    "medium-corner": {
+      "type": "corner-ruin",
+      "scatter": false,
+      "note": "Corner ruins and sandbag corners, 3-5in."
+    },
+    "tall-tower": {
+      "type": "landmark",
+      "scatter": false,
+      "note": "Towers 6-10in tall: outposts, water towers, watchtowers."
+    },
+    "landmark": {
+      "type": "landmark",
+      "scatter": false,
+      "note": "Statues, crosses, pillars, tanks: solid single pieces."
+    },
+    "wreck": {
+      "type": "landmark",
+      "scatter": false,
+      "note": "Wrecked vehicles (the Trench Lines landmark list names them)."
+    },
+    "wall-run": {
+      "type": "cover",
+      "scatter": false,
+      "note": "Straight runs of wall or fence that block sight lines."
+    },
+    "crate-stack": {
+      "type": "cover",
+      "scatter": false,
+      "note": "Stacked crates, tanks and containers."
+    },
+    "emplacement": {
+      "type": "cover",
+      "scatter": false,
+      "note": "Gun pits, platforms, bunkers, tents."
+    },
+    "wire-line": {
+      "type": "dangerous-terrain",
+      "scatter": false,
+      "note": "Lines of barbed wire."
+    },
+    "rubble-patch": {
+      "type": "difficult-terrain",
+      "scatter": false,
+      "note": "Rubble, rock beds, lumber, heaps."
+    },
+    "crater": {
+      "type": "difficult-terrain",
+      "scatter": false,
+      "note": "Shell craters."
+    },
+    "scatter-crate": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Single crates and small boxes."
+    },
+    "scatter-barrel": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Barrels and tyre piles."
+    },
+    "scatter-sandbag": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Sandbag runs and small barricades."
+    },
+    "scatter-rubble": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Bricks, stone and concrete chunks."
+    },
+    "scatter-debris": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Planks, corpses, bones."
+    },
+    "scatter-decor": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Graves, candles, markers, camp gear."
+    },
+    "scatter-wire": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Single coils of wire."
+    },
+    "scatter-foliage": {
+      "type": "scattered-terrain",
+      "scatter": true,
+      "note": "Scrub and rough grass."
+    }
+  },
   "sources": {
     "footprints": "data/tts/palette-measured-v2.json (live TTS 2026-11-04: collider and visual bounds, rest heights, stacked rest heights); earlier values in palette-measured.json and rest-heights-measured.json",
     "openings": "Measured and visually verified in the live game, top-down capture with a +z marker, 2026-11-04 (coordinator message to TC-021)",
     "verticality": "data/tts/VERTICALITY.md: how the reference maps stack pieces",
-    "catalog": "data/tts/catalog.json supplies kind, urls, scale and colour at build time"
+    "catalog": "data/tts/catalog.json supplies kind, urls, scale and colour at build time",
+    "categories": "TC-021c: categories by footprint and silhouette, aesthetic tags by asset name and source bag; the scatter set measured live 2026-11-04 (palette-measured-v2.json scatterRun)"
   },
   "pieces": [
     {
@@ -117,6 +226,10 @@
         -2.0
       ],
       "topIn": 2.5,
+      "category": "crater",
+      "aesthetics": [
+        "any"
+      ],
       "enabled": true,
       "verified": true,
       "note": "Ground tile with the crater centred on the 2x2 block; counts as one difficult-terrain piece."
@@ -427,6 +540,10 @@
         -1.42,
         -1.41
       ],
+      "category": "medium-corner",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true,
       "note": "A complete corner ruin: 3.19 x 3.18 x 4.70 visually; only its collider is a 2.4in floor plate, which is what made it read as a floor."
@@ -448,6 +565,10 @@
         -0.02,
         -0.8
       ],
+      "category": "wall-run",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -467,6 +588,10 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "wall-run",
+      "aesthetics": [
+        "urban-ruin"
       ],
       "enabled": true,
       "verified": true
@@ -488,6 +613,10 @@
         -0.54,
         0.07
       ],
+      "category": "large-L-ruin",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -507,6 +636,11 @@
       "pivotOffsetIn": [
         1.5,
         1.22
+      ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin",
+        "ecclesiastic"
       ],
       "enabled": true,
       "verified": true
@@ -528,6 +662,10 @@
         -0.07,
         1.27
       ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -547,6 +685,11 @@
       "pivotOffsetIn": [
         1.05,
         1.05
+      ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin",
+        "ecclesiastic"
       ],
       "enabled": true,
       "verified": true
@@ -568,6 +711,10 @@
         -0.22,
         -0.22
       ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -587,6 +734,10 @@
       "pivotOffsetIn": [
         -0.28,
         -0.28
+      ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin"
       ],
       "enabled": true,
       "verified": true
@@ -608,6 +759,11 @@
         -1.12,
         -0.21
       ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin",
+        "ecclesiastic"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -627,6 +783,10 @@
       "pivotOffsetIn": [
         -0.46,
         0.0
+      ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin"
       ],
       "enabled": true,
       "verified": true
@@ -648,6 +808,10 @@
         -1.78,
         -0.28
       ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -668,6 +832,11 @@
         -1.5,
         -1.5
       ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin",
+        "ecclesiastic"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -687,6 +856,10 @@
       "pivotOffsetIn": [
         1.59,
         -1.8
+      ],
+      "category": "large-block-ruin",
+      "aesthetics": [
+        "urban-ruin"
       ],
       "enabled": false,
       "verified": true,
@@ -709,6 +882,11 @@
         0.0,
         0.0
       ],
+      "category": "tall-tower",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
       "enabled": true,
       "verified": true,
       "note": "Visual 3.96 x 4.01, 9.4 tall (collider only 3.69 x 3.71 x 7.03)."
@@ -729,6 +907,10 @@
       "pivotOffsetIn": [
         -1.18,
         0.0
+      ],
+      "category": "tall-tower",
+      "aesthetics": [
+        "field-fortification"
       ],
       "enabled": true,
       "verified": true,
@@ -751,6 +933,11 @@
         0.41,
         0.04
       ],
+      "category": "tall-tower",
+      "aesthetics": [
+        "urban-ruin",
+        "ecclesiastic"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -771,6 +958,10 @@
         0.0,
         0.0
       ],
+      "category": "tall-tower",
+      "aesthetics": [
+        "industrial"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -790,6 +981,10 @@
       "pivotOffsetIn": [
         0.23,
         -0.52
+      ],
+      "category": "tall-tower",
+      "aesthetics": [
+        "field-fortification"
       ],
       "enabled": true,
       "verified": true,
@@ -812,6 +1007,10 @@
         -0.06,
         -0.04
       ],
+      "category": "wall-run",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -831,6 +1030,10 @@
       "pivotOffsetIn": [
         -0.07,
         0.09
+      ],
+      "category": "wall-run",
+      "aesthetics": [
+        "urban-ruin"
       ],
       "enabled": true,
       "verified": true
@@ -852,6 +1055,10 @@
         -0.19,
         0.53
       ],
+      "category": "medium-corner",
+      "aesthetics": [
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -871,6 +1078,10 @@
       "pivotOffsetIn": [
         -0.04,
         -0.5
+      ],
+      "category": "wall-run",
+      "aesthetics": [
+        "urban-ruin"
       ],
       "enabled": true,
       "verified": true
@@ -892,6 +1103,10 @@
         0.0,
         0.0
       ],
+      "category": "wall-run",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -911,6 +1126,10 @@
       "pivotOffsetIn": [
         -0.05,
         0.1
+      ],
+      "category": "wall-run",
+      "aesthetics": [
+        "field-fortification"
       ],
       "enabled": true,
       "verified": true
@@ -932,6 +1151,11 @@
         -0.18,
         0.73
       ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -951,6 +1175,10 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "industrial"
       ],
       "enabled": true,
       "verified": true
@@ -972,6 +1200,10 @@
         0.03,
         1.05
       ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "industrial"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -991,6 +1223,10 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "industrial"
       ],
       "enabled": true,
       "verified": true
@@ -1012,6 +1248,10 @@
         0.0,
         0.63
       ],
+      "category": "emplacement",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1032,6 +1272,10 @@
         0.0,
         0.02
       ],
+      "category": "emplacement",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1039,7 +1283,7 @@
       "id": "makeshift-defense-tall",
       "assetId": "e7946cdd13ac",
       "name": "Makeshift Defense Tall",
-      "role": "cover",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1052,6 +1296,10 @@
         0.0,
         -0.06
       ],
+      "category": "scatter-sandbag",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1059,7 +1307,7 @@
       "id": "concrete-cover",
       "assetId": "accec884d4ed",
       "name": "Concrete Cover",
-      "role": "cover",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1071,6 +1319,11 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "scatter-sandbag",
+      "aesthetics": [
+        "industrial",
+        "urban-ruin"
       ],
       "enabled": true,
       "verified": true
@@ -1092,6 +1345,10 @@
         -0.53,
         -1.11
       ],
+      "category": "medium-corner",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1111,6 +1368,10 @@
       "pivotOffsetIn": [
         0.17,
         0.05
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
       ],
       "enabled": true,
       "verified": true
@@ -1132,6 +1393,10 @@
         0.0,
         0.0
       ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1139,7 +1404,7 @@
       "id": "barrel",
       "assetId": "f78860d44825",
       "name": "Barrel",
-      "role": "cover",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1152,7 +1417,12 @@
         0.0,
         0.0
       ],
-      "enabled": false,
+      "category": "scatter-barrel",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
+      "enabled": true,
       "verified": true,
       "note": "Group member only."
     },
@@ -1160,7 +1430,7 @@
       "id": "supplies",
       "assetId": "373d49b1cb6d",
       "name": "Supplies",
-      "role": "cover",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1173,7 +1443,11 @@
         0.0,
         0.0
       ],
-      "enabled": false,
+      "category": "scatter-crate",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
       "verified": true,
       "note": "Group member only."
     },
@@ -1181,7 +1455,7 @@
       "id": "tire-pile",
       "assetId": "56a3f7ec5da5",
       "name": "Tire Pile",
-      "role": "cover",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1194,7 +1468,11 @@
         -0.06,
         0.01
       ],
-      "enabled": false,
+      "category": "scatter-barrel",
+      "aesthetics": [
+        "industrial"
+      ],
+      "enabled": true,
       "verified": true,
       "note": "Group member only."
     },
@@ -1202,7 +1480,7 @@
       "id": "barbed-wire",
       "assetId": "1518249c7df4",
       "name": "Barbed Wire",
-      "role": "wire",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1214,6 +1492,10 @@
       "pivotOffsetIn": [
         0.0,
         -0.01
+      ],
+      "category": "scatter-wire",
+      "aesthetics": [
+        "field-fortification"
       ],
       "enabled": true,
       "verified": true,
@@ -1236,6 +1518,10 @@
         0.0,
         0.0
       ],
+      "category": "wire-line",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1255,6 +1541,10 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "wire-line",
+      "aesthetics": [
+        "field-fortification"
       ],
       "enabled": true,
       "verified": true
@@ -1276,6 +1566,10 @@
         0.0,
         0.0
       ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1295,6 +1589,10 @@
       "pivotOffsetIn": [
         -0.09,
         0.07
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
       ],
       "enabled": true,
       "verified": true
@@ -1316,6 +1614,10 @@
         0.0,
         0.0
       ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1323,7 +1625,7 @@
       "id": "rubble",
       "assetId": "b54bb593b47e",
       "name": "Rubble",
-      "role": "difficult",
+      "role": "scatter",
       "layer": "surface",
       "cells": null,
       "footprintIn": [
@@ -1335,6 +1637,10 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "scatter-rubble",
+      "aesthetics": [
+        "any"
       ],
       "enabled": true,
       "verified": true
@@ -1356,6 +1662,10 @@
         0.12,
         -0.08
       ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1375,6 +1685,10 @@
       "pivotOffsetIn": [
         0.38,
         -0.45
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "any"
       ],
       "enabled": true,
       "verified": true
@@ -1396,6 +1710,10 @@
         0.0,
         0.0
       ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "field-fortification"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1415,6 +1733,10 @@
       "pivotOffsetIn": [
         0.14,
         -0.12
+      ],
+      "category": "crater",
+      "aesthetics": [
+        "any"
       ],
       "enabled": true,
       "verified": true
@@ -1436,6 +1758,11 @@
         0.31,
         -0.25
       ],
+      "category": "landmark",
+      "aesthetics": [
+        "ecclesiastic",
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1455,6 +1782,10 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "landmark",
+      "aesthetics": [
+        "ecclesiastic"
       ],
       "enabled": true,
       "verified": true
@@ -1476,6 +1807,10 @@
         0.0,
         0.0
       ],
+      "category": "landmark",
+      "aesthetics": [
+        "industrial"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1496,6 +1831,11 @@
         0.21,
         -0.03
       ],
+      "category": "emplacement",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1515,6 +1855,10 @@
       "pivotOffsetIn": [
         0.18,
         0.0
+      ],
+      "category": "emplacement",
+      "aesthetics": [
+        "field-fortification"
       ],
       "enabled": true,
       "verified": true,
@@ -1537,6 +1881,11 @@
         0.0,
         0.0
       ],
+      "category": "landmark",
+      "aesthetics": [
+        "ecclesiastic",
+        "urban-ruin"
+      ],
       "enabled": true,
       "verified": true
     },
@@ -1556,6 +1905,11 @@
       "pivotOffsetIn": [
         0.0,
         0.0
+      ],
+      "category": "emplacement",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
       ],
       "enabled": true,
       "verified": true
@@ -1580,6 +1934,1340 @@
       "enabled": true,
       "verified": true,
       "note": "Upright at rotation 0 with its length along z; topples if unlocked, so it is always spawned Locked. Body centre 1.22 to +x of the pivot (collider and visual bounds agree), pivot 1.20 above its bottom."
+    },
+    {
+      "id": "box",
+      "assetId": "c853f74c717f",
+      "name": "Box",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.84,
+        0.83
+      ],
+      "heightIn": 0.91,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.01,
+        0.01
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "crates-small",
+      "assetId": "a2ab36517523",
+      "name": "Crates",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.54,
+        0.86
+      ],
+      "heightIn": 1.46,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.03,
+        0.0
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "crates-long",
+      "assetId": "bc167bcd8d13",
+      "name": "Crates",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.71,
+        1.13
+      ],
+      "heightIn": 1.2,
+      "restHeightIn": 0.01,
+      "pivotOffsetIn": [
+        0.0,
+        -0.08
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "crates-group",
+      "assetId": "a8001fe4e55b",
+      "name": "Crates",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.56,
+        1.52
+      ],
+      "heightIn": 1.34,
+      "restHeightIn": 0.01,
+      "pivotOffsetIn": [
+        0.01,
+        0.02
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "industrial",
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "cargo-pallet",
+      "assetId": "95ad3b75bff0",
+      "name": "Cargo Pallete",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.2,
+        2.3
+      ],
+      "heightIn": 1.67,
+      "restHeightIn": 0.04,
+      "pivotOffsetIn": [
+        0.04,
+        0.01
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "first-aid-small",
+      "assetId": "018f162b0767",
+      "name": "First Aid",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.65,
+        0.56
+      ],
+      "heightIn": 0.58,
+      "restHeightIn": 0.29,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "first-aid-crate",
+      "assetId": "f0805f43d22e",
+      "name": "First Aid",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.03,
+        1.52
+      ],
+      "heightIn": 0.51,
+      "restHeightIn": 0.25,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-crate",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ancient-books",
+      "assetId": "a0c97ff163bd",
+      "name": "Ancient Books",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.11,
+        1.27
+      ],
+      "heightIn": 1.14,
+      "restHeightIn": 0.02,
+      "pivotOffsetIn": [
+        0.14,
+        0.0
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "barrel-small",
+      "assetId": "f47ea984ac8a",
+      "name": "Barrel",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.65,
+        0.65
+      ],
+      "heightIn": 0.96,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-barrel",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "barrels-group",
+      "assetId": "525e6c7ae59b",
+      "name": "Barrels",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.23,
+        0.91
+      ],
+      "heightIn": 0.98,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.02,
+        0.02
+      ],
+      "category": "scatter-barrel",
+      "aesthetics": [
+        "industrial",
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "sandbags-long",
+      "assetId": "a098be22181d",
+      "name": "Sandbags",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.01,
+        4.82
+      ],
+      "heightIn": 1.13,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.01
+      ],
+      "category": "scatter-sandbag",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "sandbags-row",
+      "assetId": "5eb9c64ce6d3",
+      "name": "Sandbags",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.93,
+        4.61
+      ],
+      "heightIn": 1.08,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.02,
+        0.15
+      ],
+      "category": "scatter-sandbag",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "makeshift-defense",
+      "assetId": "8537f4975bb1",
+      "name": "Makeshift Defense",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.73,
+        0.81
+      ],
+      "heightIn": 1.15,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.01,
+        -0.05
+      ],
+      "category": "scatter-sandbag",
+      "aesthetics": [
+        "field-fortification",
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wood-barrier",
+      "assetId": "23d552778cc5",
+      "name": "Wood Barrier",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.84,
+        1.02
+      ],
+      "heightIn": 1.14,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-sandbag",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "ruins-brick",
+      "assetId": "ca8cb1360ad2",
+      "name": "Ruins Brick",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.18,
+        1.18
+      ],
+      "heightIn": 1.11,
+      "restHeightIn": 0.53,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-rubble",
+      "aesthetics": [
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "stone-pile",
+      "assetId": "202b98128e34",
+      "name": "Stone Pile",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.37,
+        1.59
+      ],
+      "heightIn": 1.13,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.12,
+        -0.19
+      ],
+      "category": "scatter-rubble",
+      "aesthetics": [
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "concrete-chunks",
+      "assetId": "263614cc496f",
+      "name": "Concrete Slabs",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.07,
+        2.6
+      ],
+      "heightIn": 1.3,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-rubble",
+      "aesthetics": [
+        "industrial",
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "stray-planks",
+      "assetId": "65485306a350",
+      "name": "Stray planks",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.9,
+        0.55
+      ],
+      "heightIn": 0.15,
+      "restHeightIn": 0.01,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "wood-planks",
+      "assetId": "6778d2490a90",
+      "name": "Wood Planks",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.71,
+        3.11
+      ],
+      "heightIn": 0.52,
+      "restHeightIn": 0.04,
+      "pivotOffsetIn": [
+        -0.56,
+        0.8
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "corpse-a",
+      "assetId": "86d19812e50b",
+      "name": "Corpse",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.85,
+        1.37
+      ],
+      "heightIn": 0.51,
+      "restHeightIn": 0.16,
+      "pivotOffsetIn": [
+        0.07,
+        -0.12
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "corpse-b",
+      "assetId": "38f97d6f118e",
+      "name": "Corpse",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.46,
+        1.92
+      ],
+      "heightIn": 0.46,
+      "restHeightIn": 0.18,
+      "pivotOffsetIn": [
+        0.06,
+        0.09
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "animal-skull",
+      "assetId": "f63e6af9d80d",
+      "name": "Animal Skull",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.11,
+        1.4
+      ],
+      "heightIn": 0.61,
+      "restHeightIn": -0.08,
+      "pivotOffsetIn": [
+        -0.06,
+        -0.01
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "ecclesiastic",
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "skeleton-pile-a",
+      "assetId": "1a3858af63d1",
+      "name": "Skeleton Pile",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.73,
+        1.75
+      ],
+      "heightIn": 0.21,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "skeleton-pile-b",
+      "assetId": "0855eaad6d4e",
+      "name": "Skeleton Pile",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.56,
+        1.54
+      ],
+      "heightIn": 0.23,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "strange-flesh",
+      "assetId": "5bdf92fbb93f",
+      "name": "Strange Flesh",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.3,
+        2.67
+      ],
+      "heightIn": 0.78,
+      "restHeightIn": 0.06,
+      "pivotOffsetIn": [
+        0.12,
+        0.02
+      ],
+      "category": "scatter-debris",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "candles-a",
+      "assetId": "eaf420b0bba9",
+      "name": "Candles",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.28,
+        0.56
+      ],
+      "heightIn": 0.31,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.01
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "candles-b",
+      "assetId": "79198b5dad6a",
+      "name": "Candles",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.33,
+        1.04
+      ],
+      "heightIn": 0.31,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "grave-a",
+      "assetId": "6fe86df7f8d5",
+      "name": "Grave",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.91,
+        0.14
+      ],
+      "heightIn": 1.32,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "grave-b",
+      "assetId": "53047d27cc29",
+      "name": "Grave",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.04,
+        0.15
+      ],
+      "heightIn": 1.32,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "holy-marker",
+      "assetId": "b4ecd7e70417",
+      "name": "Holy Marker",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.93,
+        0.39
+      ],
+      "heightIn": 2.33,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        -0.03
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "cross-small",
+      "assetId": "a101cb74ef4e",
+      "name": "Cross",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.04,
+        0.35
+      ],
+      "heightIn": 2.17,
+      "restHeightIn": 0.11,
+      "pivotOffsetIn": [
+        -0.13,
+        0.03
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "camp-fire",
+      "assetId": "7c20c6d877d8",
+      "name": "Camp Fire",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.11,
+        0.8
+      ],
+      "heightIn": 0.79,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.01,
+        0.01
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "radio",
+      "assetId": "4187dd4f7102",
+      "name": "Radio",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        0.28,
+        1.04
+      ],
+      "heightIn": 1.28,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.14,
+        0.0
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "training-dummy",
+      "assetId": "f0aec66fcdcb",
+      "name": "Dummy",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.21,
+        0.52
+      ],
+      "heightIn": 1.54,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        -0.07,
+        -0.01
+      ],
+      "category": "scatter-decor",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "rough-grass",
+      "assetId": "e65d80e3cc2b",
+      "name": "Rough Grass",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.37,
+        3.13
+      ],
+      "heightIn": 0.77,
+      "restHeightIn": -0.01,
+      "pivotOffsetIn": [
+        -0.05,
+        -0.12
+      ],
+      "category": "scatter-foliage",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tall-shrubs-a",
+      "assetId": "2044e00d0af9",
+      "name": "Tall Shrubs",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.55,
+        3.06
+      ],
+      "heightIn": 2.54,
+      "restHeightIn": -0.18,
+      "pivotOffsetIn": [
+        -0.12,
+        0.07
+      ],
+      "category": "scatter-foliage",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tall-shrubs-b",
+      "assetId": "b89d6d53ad20",
+      "name": "Tall Shrubs",
+      "role": "scatter",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.71,
+        3.84
+      ],
+      "heightIn": 2.48,
+      "restHeightIn": -0.13,
+      "pivotOffsetIn": [
+        -0.01,
+        0.03
+      ],
+      "category": "scatter-foliage",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "small-crater",
+      "assetId": "a81aaeb24530",
+      "name": "Small Crater",
+      "role": "crater",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.92,
+        2.92
+      ],
+      "heightIn": 0.37,
+      "restHeightIn": -0.01,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "crater",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "crater",
+      "assetId": "04071ef95730",
+      "name": "Crater",
+      "role": "crater",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        4.18,
+        4.05
+      ],
+      "heightIn": 0.71,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.07,
+        -0.1
+      ],
+      "category": "crater",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "heavy-crater-small",
+      "assetId": "dc4c09bd121a",
+      "name": "Heavy Crater Small",
+      "role": "crater",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        4.2,
+        4.01
+      ],
+      "heightIn": 0.7,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        -0.01
+      ],
+      "category": "crater",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "crater-wide",
+      "assetId": "87bd41651462",
+      "name": "Crater",
+      "role": "crater",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        5.53,
+        5.45
+      ],
+      "heightIn": 0.95,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.1,
+        -0.14
+      ],
+      "category": "crater",
+      "aesthetics": [
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "heavy-rubble",
+      "assetId": "c041b522f250",
+      "name": "Heavy Rubble",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        4.53,
+        3.46
+      ],
+      "heightIn": 0.8,
+      "restHeightIn": 0.05,
+      "pivotOffsetIn": [
+        0.05,
+        0.1
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "large-concrete-slabs",
+      "assetId": "0073899052d5",
+      "name": "Large Concrete Slabs",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.12,
+        5.29
+      ],
+      "heightIn": 1.48,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "industrial",
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "lumber-pile-b",
+      "assetId": "45b3a7d9d33b",
+      "name": "Lumber Pile",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.29,
+        4.68
+      ],
+      "heightIn": 1.5,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "rotting-flesh-mound",
+      "assetId": "12cb5dcfb50f",
+      "name": "Rotting Flesh Mound",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.87,
+        4.14
+      ],
+      "heightIn": 0.67,
+      "restHeightIn": 0.26,
+      "pivotOffsetIn": [
+        0.0,
+        0.01
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "ecclesiastic"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "corpses-heap",
+      "assetId": "b7ab8f6a57a5",
+      "name": "Corpses",
+      "role": "difficult",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.11,
+        3.21
+      ],
+      "heightIn": 0.65,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.28,
+        -0.21
+      ],
+      "category": "rubble-patch",
+      "aesthetics": [
+        "ecclesiastic",
+        "any"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "fishing-bags",
+      "assetId": "f4d7f35a5514",
+      "name": "Fishing Bags",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        4.18,
+        2.51
+      ],
+      "heightIn": 1.16,
+      "restHeightIn": 0.01,
+      "pivotOffsetIn": [
+        0.25,
+        0.38
+      ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "fuel-tank",
+      "assetId": "a82f1b8d7ef8",
+      "name": "Tank",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.95,
+        4.55
+      ],
+      "heightIn": 2.07,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        0.0
+      ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tent",
+      "assetId": "591b34ef4bc3",
+      "name": "Tent",
+      "role": "cover",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.4,
+        4.15
+      ],
+      "heightIn": 2.33,
+      "restHeightIn": 0.04,
+      "pivotOffsetIn": [
+        -0.05,
+        0.0
+      ],
+      "category": "emplacement",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "statue-tall",
+      "assetId": "2de5c0f0942a",
+      "name": "Statue",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.66,
+        1.16
+      ],
+      "heightIn": 5.88,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        -0.01
+      ],
+      "category": "landmark",
+      "aesthetics": [
+        "ecclesiastic",
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "jeep",
+      "assetId": "43c58d00b5ce",
+      "name": "Jeep",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        3.63,
+        2.29
+      ],
+      "heightIn": 1.65,
+      "restHeightIn": -0.1,
+      "pivotOffsetIn": [
+        0.07,
+        -0.25
+      ],
+      "category": "wreck",
+      "aesthetics": [
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true,
+      "note": "A wrecked vehicle: the Trench Lines landmark list names wrecked vehicles."
+    },
+    {
+      "id": "small-car",
+      "assetId": "689abb95e914",
+      "name": "Small Car",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.71,
+        4.06
+      ],
+      "heightIn": 1.57,
+      "restHeightIn": 0.0,
+      "pivotOffsetIn": [
+        0.0,
+        -0.08
+      ],
+      "category": "wreck",
+      "aesthetics": [
+        "industrial",
+        "urban-ruin"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "pickup-truck",
+      "assetId": "9983e9c2fc47",
+      "name": "Pickup Truck",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.74,
+        6.62
+      ],
+      "heightIn": 2.43,
+      "restHeightIn": 0.02,
+      "pivotOffsetIn": [
+        -0.03,
+        0.52
+      ],
+      "category": "wreck",
+      "aesthetics": [
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "tank-wreck",
+      "assetId": "b0c30932f0e3",
+      "name": "Tank",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        2.97,
+        8.37
+      ],
+      "heightIn": 2.21,
+      "restHeightIn": -0.03,
+      "pivotOffsetIn": [
+        -0.11,
+        -1.41
+      ],
+      "category": "wreck",
+      "aesthetics": [
+        "industrial"
+      ],
+      "enabled": true,
+      "verified": true
+    },
+    {
+      "id": "row-boat",
+      "assetId": "a9ca220c443b",
+      "name": "Row Boat",
+      "role": "landmark",
+      "layer": "surface",
+      "cells": null,
+      "footprintIn": [
+        1.83,
+        5.09
+      ],
+      "heightIn": 0.97,
+      "restHeightIn": -0.07,
+      "pivotOffsetIn": [
+        0.0,
+        0.06
+      ],
+      "category": "wreck",
+      "aesthetics": [
+        "field-fortification"
+      ],
+      "enabled": true,
+      "verified": true
     }
   ],
   "groups": [
@@ -1612,7 +3300,11 @@
           "rotY": 0
         }
       ],
-      "note": "Three wire segments end to end: how Trenches Square Off lays its 32 Difficult + Dangerous models, in rows."
+      "note": "Three wire segments end to end: how Trenches Square Off lays its 32 Difficult + Dangerous models, in rows.",
+      "category": "wire-line",
+      "aesthetics": [
+        "field-fortification"
+      ]
     },
     {
       "id": "wire-pair",
@@ -1634,6 +3326,10 @@
           ],
           "rotY": 0
         }
+      ],
+      "category": "wire-line",
+      "aesthetics": [
+        "field-fortification"
       ]
     },
     {
@@ -1656,6 +3352,10 @@
           ],
           "rotY": 0
         }
+      ],
+      "category": "wire-line",
+      "aesthetics": [
+        "field-fortification"
       ]
     },
     {
@@ -1686,6 +3386,11 @@
           ],
           "rotY": 0
         }
+      ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "field-fortification",
+        "industrial"
       ]
     },
     {
@@ -1716,6 +3421,10 @@
           ],
           "rotY": 0
         }
+      ],
+      "category": "crate-stack",
+      "aesthetics": [
+        "industrial"
       ]
     }
   ]

@@ -2,31 +2,37 @@ import {
   chooseObjectiveCovers,
   compositionTargets,
   coverKeepOut,
-  placeDressing,
-  placeHill,
-  placePlateau,
-  placeTallBeside,
+  dressFaces,
+  mergePlans,
+  placeScatter,
   placeTallOnPlateau,
-  planObjectivePlateaus,
+  placeTallPair,
+  placeTerrainSlots,
+  placeTwinHills,
+  placeTwinPlateaus,
+  planCentreHills,
+  planCentrePlateaus,
+  planObjectiveHills,
   registerCovers,
+  registerFeature,
   registerPlateau,
   TALL_MIN_HEIGHT_IN,
-  tileCells,
-  tileGround,
-  TYPE_BY_ROLE,
+  type Aesthetic,
   type ArchetypeSpec,
-  type GroundTile,
+  type CoverChoice,
   type Hill,
   type Placed,
   type PlacementContext,
-  type ObjectivePlateau,
   type Plateau,
+  type RaisedPlan,
 } from "./dressing.js";
 import { cellAt, cellCentre, cellKey, cellRect, cellsInRect, createGrid, DELTA, Mask, rectFromCentre, rectPointDistance, type Cell, type Grid } from "./grid.js";
-import { Layout, LAYOUT_VERSION, type LayoutCell, type LayoutPiece } from "./layout.js";
-import { pieceById, rotatedFootprint, rotateVector, rotYTurning, type Palette, type Role } from "./palette.js";
+import { Layout, LAYOUT_VERSION, type LayoutCell, type LayoutPiece, type SlotRef } from "./layout.js";
+import { chooseParity, mapCell, type Parity, type ParityKind } from "./parity.js";
+import { pieceById, rotatedFootprint, rotateVector, rotYTurning, STRUCTURAL_ROLES, type Palette, type Role } from "./palette.js";
 import { createRng, type Rng } from "./rng.js";
 import { deploymentTracks, enemyFacing, scenarioOverlay, type ObjectiveSpec, type ScenarioGeometry } from "./scenario.js";
+import { tileCells, tileGround, type GroundTile } from "./tiles.js";
 import { DEFAULT_TRENCH_OPTIONS, layTrenchNetwork, resolveTrenchPiece, resolveTrenchPieces, type Axis, type DeploymentTrack, type TrenchNetwork, type TrenchOptions, type TrenchPiece } from "./trench.js";
 
 export * from "./layout.js";
@@ -39,6 +45,8 @@ export interface GenerateOptions {
   axis: Axis | "auto";
   branches: number | "auto";
   spacingIn: number;
+  /** Gap scattered terrain keeps from everything, so model bases fit between. */
+  scatterGapIn: number;
   trenchClearanceIn: number;
   /** Free pieces keep this far inside the board edge. */
   edgeMarginIn: number;
@@ -47,39 +55,59 @@ export interface GenerateOptions {
   allowLoops: boolean;
   /** A trench line inside each deployment zone, joined to the network. */
   deploymentLines: boolean;
+  /** How the two halves mirror each other; "auto" picks per scenario. */
+  parity: ParityKind | "auto";
   plateau: boolean;
+  /** Cells in each twin plateau, when the centre cannot be raised. */
   plateauCells: [number, number];
   raisedTrenchChance: number;
-  hills: [number, number];
+  /** Chance a board gets hills; "auto" uses the scenario's rate (hillRateFor). */
+  hillRate: number | "auto";
   hillStepChance: number;
-  tallPieces: [number, number];
-  /** Upright cover pieces (walls, crates, sandbags) to add beyond the archetype list. */
+  tallPieces: boolean;
+  /** Upright cover pieces (walls, crates, emplacements) to aim for beyond the archetype list. */
   houseCover: number;
   /** Largest footprint side for an objective cover. */
   maxCoverSideIn: number;
+  /** Step the cover cap down when the archetype's minimums do not fit. */
+  relaxCovers: boolean;
   /** Chance a straight trench cell gets a duckboard along its floor. */
   duckboardChance: number;
+  /** Chance each exposed plateau face gets sandbags, crates or rubble against it. */
+  faceDressingChance: number;
+  /** Most times one piece or group fills a slot on a board, unless its category runs out of variants. */
+  repeatCap: number;
+  /** Object count the scatter fills the board toward. */
+  targetObjects: number;
+  aesthetic: Aesthetic | null;
 }
 
 export const DEFAULT_GENERATE_OPTIONS: GenerateOptions = {
   axis: "auto",
   branches: "auto",
   spacingIn: 3,
+  scatterGapIn: 1,
   trenchClearanceIn: 1,
   edgeMarginIn: 0.5,
   maxLateralRun: DEFAULT_TRENCH_OPTIONS.maxLateralRun,
   allowBranchExits: DEFAULT_TRENCH_OPTIONS.allowBranchExits,
   allowLoops: DEFAULT_TRENCH_OPTIONS.allowLoops,
   deploymentLines: true,
+  parity: "auto",
   plateau: true,
-  plateauCells: [2, 6],
+  plateauCells: [2, 3],
   raisedTrenchChance: 0.5,
-  hills: [0, 1],
+  hillRate: "auto",
   hillStepChance: 0.6,
-  tallPieces: [1, 2],
+  tallPieces: true,
   houseCover: 4,
   maxCoverSideIn: 7.5,
+  relaxCovers: true,
   duckboardChance: 0.6,
+  faceDressingChance: 0.8,
+  repeatCap: 3,
+  targetObjects: 270,
+  aesthetic: null,
 };
 
 export interface GenerateInput {
@@ -106,6 +134,18 @@ export class GenerateError extends Error {
 const BRANCHES_BY_DENSITY = { sparse: [0, 1], medium: [1, 3], dense: [2, 4] } as const;
 const ARCHETYPES: readonly Archetype[] = ["trench-lines", "no-mans-land"];
 
+/**
+ * Hills on 60% of boards whose scenario has objectives, relics or supplies to
+ * fight over (Jonathan likes the climbing they reward there), 20% elsewhere.
+ */
+export const HILL_RATE_OBJECTIVES = 0.6;
+export const HILL_RATE_OPEN = 0.2;
+
+export function hillRateFor(scenario: ScenarioGeometry): number {
+  const fought = scenario.objectives.some((o) => !/trench section/i.test(String(o.placementRule ?? "")));
+  return fought ? HILL_RATE_OBJECTIVES : HILL_RATE_OPEN;
+}
+
 function baseBlocked(grid: Grid, objectives: readonly ObjectiveSpec[], zoneMasks: { spec: { noTerrain: boolean }; mask: Mask }[]): Mask {
   const mask = new Mask(grid);
   for (const o of objectives) {
@@ -119,68 +159,73 @@ function baseBlocked(grid: Grid, objectives: readonly ObjectiveSpec[], zoneMasks
   return mask;
 }
 
+/** Without deployment lines, a mirrored board's spine runs down its mirror line, so the trench is its own twin. */
+const mirrorSpineAxis = (parity: Parity): Axis | null => (parity.kind === "mirror-x" ? "y" : parity.kind === "mirror-y" ? "x" : null);
+
 interface TrenchAttempt {
   network: TrenchNetwork;
-  covers: ReturnType<typeof chooseObjectiveCovers>;
+  covers: CoverChoice[];
   attempts: number;
   shrinks: number;
 }
 
+interface LayInputs {
+  grid: Grid;
+  rng: Rng;
+  seed: number;
+  palette: Palette;
+  parity: Parity;
+  objectives: ObjectiveSpec[];
+  blocked: Mask;
+  tracks: DeploymentTrack[];
+  mode: TrenchOptions["mode"];
+  opts: GenerateOptions;
+  archetype: ArchetypeSpec;
+}
+
 // Big objective covers can wall the trench off, so each cover configuration
 // gets a few fresh draws (new offsets, new walks) before the largest cover
-// steps down a size level.
-function layTrenchWithCovers(grid: Grid, rng: Rng, seed: number, palette: Palette, objectives: ObjectiveSpec[], blocked: Mask, tracks: DeploymentTrack[], mode: TrenchOptions["mode"], opts: GenerateOptions, archetype: ArchetypeSpec, raised: ObjectivePlateau | null, maxShrinks = Number.POSITIVE_INFINITY): TrenchAttempt {
-  const axes: Axis[] = tracks.length ? [tracks[0]!.along] : opts.axis === "auto" ? rng.shuffle(["x", "y"] as const) : [opts.axis];
+// steps down a size level. Covers on raised ground are fixed with their plan.
+function layTrenchWithCovers(p: LayInputs, raised: RaisedPlan | null, maxShrinks = Number.POSITIVE_INFINITY): TrenchAttempt {
+  const { grid, rng, opts, tracks } = p;
+  const axes: Axis[] = tracks.length ? [tracks[0]!.along] : opts.axis === "auto" ? (mirrorSpineAxis(p.parity) ? [mirrorSpineAxis(p.parity)!] : rng.shuffle(["x", "y"] as const)) : [opts.axis];
   const fromLowEdge = rng.chance(0.5);
-  const [lo, hi] = BRANCHES_BY_DENSITY[archetype.density];
-  // Deployment lines and their communication trenches already fill much of a 36in board.
-  const branches = opts.branches === "auto" ? (tracks.length ? rng.intBetween(0, 1) : rng.intBetween(lo, hi)) : opts.branches;
+  const [lo, hi] = BRANCHES_BY_DENSITY[p.archetype.density];
+  const twinned = p.parity.kind !== "none" && tracks.length === 2;
+  // Deployment lines and their cross trenches already fill much of a 36in board, and a mirrored board needs
+  // room for every slot twice: twin boards and mirrored boards take no branches.
+  const branches = opts.branches === "auto" ? (twinned || p.parity.kind !== "none" ? 0 : tracks.length ? rng.intBetween(0, 1) : rng.intBetween(lo, hi)) : opts.branches;
   const levels = new Map<string, number>();
   const avoid = tracks.flatMap((t) => t.cells.map((cell) => cellRect(grid, cell.c, cell.r)));
-  const pieces = raised ? [...raised.plateau.cells, ...raised.plateau.ramps.map((r) => r.cell)].map((cell) => cellRect(grid, cell.c, cell.r)) : [];
-  const rules = { boardIn: grid.boardIn, maxCoverSideIn: opts.maxCoverSideIn, edgeMarginIn: opts.edgeMarginIn, spacingIn: opts.spacingIn, trenchClearanceIn: opts.trenchClearanceIn, avoid, pieces };
-  const others = raised ? objectives.filter((o) => o.id !== raised.objectiveId) : objectives;
-  const withRaised = (covers: ReturnType<typeof chooseObjectiveCovers>) => (raised ? [raised.cover, ...covers] : covers);
-  const baseBlocked = raised ? blocked.or(raised.keepOut) : blocked;
+  const raisedCells = raised ? [...raised.plateaus.flatMap((x) => [...x.cells, ...x.ramps.map((r) => r.cell)]), ...raised.hills.flatMap((h) => h.cells)] : [];
+  const pieces = raisedCells.map((cell) => cellRect(grid, cell.c, cell.r));
+  const fixed = raised?.covers ?? [];
+  const sightAxis: Axis | null = tracks[0]?.along === "y" ? "x" : tracks[0]?.along === "x" ? "y" : null;
+  const rules = { grid, parity: p.parity, maxCoverSideIn: opts.maxCoverSideIn, edgeMarginIn: opts.edgeMarginIn, spacingIn: opts.spacingIn, trenchClearanceIn: opts.trenchClearanceIn, avoid, pieces, sightAxis, repeatCap: opts.repeatCap };
+  const base = raised ? p.blocked.or(raised.keepOut) : p.blocked;
   let attempts = 0;
   let shrinks = 0;
   for (;;) {
-    let covers = withRaised(chooseObjectiveCovers(palette, rng, others, levels, rules));
+    let covers: CoverChoice[] = [];
     for (let draw = 0; draw < 3; draw++) {
-      if (draw > 0) covers = withRaised(chooseObjectiveCovers(palette, rng, others, levels, rules));
-      const trenchBlocked = baseBlocked.or(coverKeepOut(grid, covers, opts.trenchClearanceIn));
+      covers = [...fixed, ...chooseObjectiveCovers(p.palette, rng, p.objectives, fixed, levels, rules)];
+      const trenchBlocked = base.or(coverKeepOut(grid, covers.filter((c) => c.base === "ground"), opts.trenchClearanceIn));
       for (const maxLateralRun of [opts.maxLateralRun, 99]) {
         for (const axis of axes) {
           attempts++;
-          const trenchOpts: TrenchOptions = { ...DEFAULT_TRENCH_OPTIONS, mode, axis, fromLowEdge, branches, maxLateralRun, allowBranchExits: opts.allowBranchExits, allowLoops: opts.allowLoops, tracks };
+          const trenchOpts: TrenchOptions = { ...DEFAULT_TRENCH_OPTIONS, mode: p.mode, axis, fromLowEdge, branches, maxLateralRun, allowBranchExits: opts.allowBranchExits, allowLoops: opts.allowLoops, tracks, parity: p.parity };
           const network = layTrenchNetwork(grid, trenchBlocked, rng, trenchOpts);
           if (network) return { network, covers, attempts, shrinks };
         }
       }
     }
-    const candidates = shrinks < maxShrinks ? covers.filter((c) => c.objectiveId !== raised?.objectiveId && (levels.get(c.objectiveId) ?? 0) < 2) : [];
-    if (!candidates.length) throw new GenerateError(`no trench network for seed ${seed} after ${attempts} attempts${covers.length ? " with every objective cover at its smallest" : ""}`);
+    const fixedIds = new Set(fixed.map((c) => c.objectiveId));
+    const candidates = shrinks < maxShrinks ? covers.filter((c) => !fixedIds.has(c.objectiveId) && (levels.get(c.objectiveId) ?? 0) < 2) : [];
+    if (!candidates.length) throw new GenerateError(`no trench network for seed ${p.seed} after ${attempts} attempts${covers.length ? " with every objective cover at its smallest" : ""}`);
     const largest = candidates.reduce((a, b) => ((b.rect.x1 - b.rect.x0) * (b.rect.y1 - b.rect.y0) > (a.rect.x1 - a.rect.x0) * (a.rect.y1 - a.rect.y0) ? b : a));
-    levels.set(largest.objectiveId, (levels.get(largest.objectiveId) ?? 0) + 1);
+    for (const c of covers) if (c.placeable.key === largest.placeable.key || c.objectiveId === largest.objectiveId) levels.set(c.objectiveId, (levels.get(c.objectiveId) ?? 0) + 1);
     shrinks++;
   }
-}
-
-function makeRaisedCover(raised: ObjectivePlateau): Placed {
-  const { cover } = raised;
-  return {
-    id: `o-${cover.objectiveId}`,
-    role: cover.placeable.role,
-    kind: "cover",
-    rects: [cover.rect],
-    placeable: cover.placeable,
-    centre: [(cover.rect.x0 + cover.rect.x1) / 2, (cover.rect.y0 + cover.rect.y1) / 2],
-    rotY: cover.rotY,
-    cells: null,
-    objectiveId: cover.objectiveId,
-    onPlateau: true,
-    typeId: TYPE_BY_ROLE[cover.placeable.role] ?? null,
-  };
 }
 
 interface Builder {
@@ -190,7 +235,11 @@ interface Builder {
 
 const round3 = (n: number): number => Math.round(n * 1000) / 1000 + 0;
 
-function addPiece(b: Builder, palette: Palette, p: { id: string; paletteId: string; role?: Role; rotY: number; centre: [number, number]; cells?: Cell[] | null; supports?: LayoutPiece[]; baseIn?: number; groupId?: string | null; objectiveId?: string | null }): LayoutPiece {
+function addPiece(
+  b: Builder,
+  palette: Palette,
+  p: { id: string; paletteId: string; role?: Role; rotY: number; centre: [number, number]; cells?: Cell[] | null; supports?: LayoutPiece[]; baseIn?: number; groupId?: string | null; objectiveId?: string | null; slot?: SlotRef | null },
+): LayoutPiece {
   const entry = pieceById(palette, p.paletteId);
   const supports = p.supports ?? [];
   const cells = p.cells ?? null;
@@ -210,6 +259,7 @@ function addPiece(b: Builder, palette: Palette, p: { id: string; paletteId: stri
     baseIn: round3(p.baseIn ?? (supports.length ? Math.max(...supports.map((s) => s.baseIn + (pieceById(palette, s.paletteId).topIn ?? 0))) : 0)),
     supportIds: supports.map((s) => s.id),
     groupId: p.groupId ?? null,
+    slot: p.slot ?? null,
     objectiveId: p.objectiveId ?? null,
   };
   b.pieces.push(piece);
@@ -220,31 +270,65 @@ function addPiece(b: Builder, palette: Palette, p: { id: string; paletteId: stri
 /** Height of the top a piece offers to what stands on it. */
 const topOf = (palette: Palette, piece: LayoutPiece): number => piece.baseIn + (pieceById(palette, piece.paletteId).topIn ?? 0);
 
-// Cover size caps to step down through when the archetype's minimums do not fit.
+// Cover size caps to step down through when the archetype's minimums do not
+// fit, and the fresh layouts each cap gets first. 6.2in still takes the
+// smaller ruined buildings; 4in drops to whatever fits.
 const COVER_CAPS_IN = [7.5, 6.2, 5.2, 4] as const;
+const DRAWS_PER_CAP = [3, 3, 2, 2] as const;
 
-const missesMinimum = (layout: Layout): boolean => layout.stats.shortfalls.some((s) => s.placed < s.min);
+const missingUnits = (layout: Layout): number => layout.stats.shortfalls.reduce((n, s) => n + Math.max(0, s.min - s.placed), 0);
+const settled = (layout: Layout): boolean => missingUnits(layout) === 0 && (!layout.stats.hillsWanted || layout.hills.length > 0);
 
 /**
- * Lays a battlefield. When the archetype's minimum of some listed type does
- * not fit (big objective covers can fill a 36in board), the same seed is laid
- * again with the covers capped smaller, down to 4in; the step is recorded.
+ * Lays a battlefield. The seed fixes the board's look and whether it has
+ * hills; when a layout misses the archetype's minimum of some listed type (big
+ * objective covers can fill a 36in board) or drew hills it could not fit, the
+ * seed's layout is drawn again, and then again with the objective covers
+ * capped smaller, down to 4in. The best layout found is returned with the
+ * draws and the cap it took recorded.
  */
 export function generateBattlefield(input: GenerateInput, env: GeneratorEnv): Layout {
   const requested = input.options?.maxCoverSideIn ?? DEFAULT_GENERATE_OPTIONS.maxCoverSideIn;
-  const caps = [requested, ...COVER_CAPS_IN.filter((cap) => cap < requested)];
-  let layout: Layout | null = null;
-  for (const cap of caps) {
-    layout = generateOnce({ ...input, options: { ...input.options, maxCoverSideIn: cap } }, env);
-    if (!missesMinimum(layout)) {
-      if (cap < requested) layout.stats.warnings.push(`objective covers capped at ${cap}in so the archetype's minimums fit`);
-      return layout;
+  const relax = input.options?.relaxCovers ?? DEFAULT_GENERATE_OPTIONS.relaxCovers;
+  const caps = relax ? [requested, ...COVER_CAPS_IN.filter((cap) => cap < requested)] : [requested];
+  let best: Layout | null = null;
+  let draws = 0;
+  for (const [i, cap] of caps.entries()) {
+    const perCap = relax ? DRAWS_PER_CAP[Math.min(i, DRAWS_PER_CAP.length - 1)]! : 1;
+    for (let draw = 0; draw < perCap; draw++) {
+      const layout = generateOnce({ ...input, options: { ...input.options, maxCoverSideIn: cap } }, env, draws++);
+      if (!best || missingUnits(layout) < missingUnits(best) || (missingUnits(layout) === missingUnits(best) && settled(layout) && !settled(best))) best = layout;
+      if (settled(layout)) break;
     }
+    if (settled(best!)) break;
   }
-  return layout!;
+  best!.stats.layoutDraws = draws;
+  if (best!.stats.coverCapIn < requested) best!.stats.warnings.push(`objective covers capped at ${best!.stats.coverCapIn}in so the archetype's minimums${best!.stats.hillsWanted ? " and the hills" : ""} fit`);
+  return best!;
 }
 
-function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
+/** The layout stream for a redraw: the same seed, a different walk. */
+const drawSeed = (seed: number, draw: number): number => (draw === 0 ? seed : (Math.imul(seed ^ 0x5bd1e995, 0x27d4eb2d) + Math.imul(draw, 0x165667b1)) | 0);
+
+function pickAesthetic(rng: Rng, palette: Palette): Aesthetic {
+  const primary = rng.pick(palette.aesthetics);
+  const others = palette.aesthetics.filter((a) => a !== primary);
+  return { primary, secondary: rng.chance(0.5) && others.length ? rng.pick(others) : null };
+}
+
+const STRUCTURAL_NAMES: Partial<Record<Role, string>> = {
+  ground: "ground",
+  "trench-straight": "trench",
+  "trench-corner": "trench",
+  "trench-t": "trench",
+  "trench-entrance": "trench",
+  revetment: "log-fence",
+  decor: "duckboard",
+  ramp: "ramp",
+  hill: "hill",
+};
+
+function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0): Layout {
   if (!ARCHETYPES.includes(input.archetype)) throw new GenerateError(`archetype ${String(input.archetype)} is not supported; v1 lays Trench Lines and No Man's Land`);
   const scenario = env.scenarios.find((s) => s.id === input.scenarioId);
   if (!scenario) throw new GenerateError(`unknown scenario "${input.scenarioId}"`);
@@ -255,13 +339,19 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
   const grid = createGrid(boardIn, env.palette.cellIn);
   const palette = env.palette;
   const sense = palette.rotation.rotYSense;
-  const rng = createRng(input.seed);
+  const decide = createRng(input.seed);
   const warnings: string[] = [];
   if (scenario.battlefield.widthIn !== boardIn || scenario.battlefield.depthIn !== boardIn) warnings.push(`scenario expects ${scenario.battlefield.widthIn}x${scenario.battlefield.depthIn}in, laying ${boardIn}x${boardIn}`);
   const archetypeMatchesScenario = scenario.archetypes.includes("any") || scenario.archetypes.includes(input.archetype);
   if (!archetypeMatchesScenario) warnings.push(`scenario ${scenario.id} lists ${scenario.archetypes.join("/")}, not ${input.archetype}`);
 
   const overlay = scenarioOverlay(scenario);
+  const parity = chooseParity(overlay, boardIn, opts.parity);
+  if (parity.kind !== "none" && !parity.objectivesMatch) warnings.push(`the objectives have no ${parity.kind} twin: they stand alone`);
+  const aesthetic = opts.aesthetic ?? pickAesthetic(decide, palette);
+  const hillRate = opts.hillRate === "auto" ? hillRateFor(scenario) : opts.hillRate;
+  const hillsWanted = decide.chance(hillRate);
+  const rng = draw === 0 ? decide : createRng(drawSeed(input.seed, draw));
   const zoneMasks = overlay.zones.map((spec) => ({ spec, mask: Mask.fromPolygon(grid, spec.polygon) }));
   const objectiveMask = Mask.fromPoints(
     grid,
@@ -272,24 +362,41 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
   const mode = input.archetype === "no-mans-land" ? "deployment-only" : "trench-lines";
   if (tracks.length && opts.axis !== "auto" && opts.axis !== tracks[0]!.along) warnings.push(`axis ${opts.axis} overridden: the spine runs alongside the deployment lines`);
 
-  // An objective may sit on a raised plateau: the one nearest the centre first, then the next ones out. If the
-  // trench cannot get round any of them, a plateau goes on open ground after the trench instead.
+  // Raised ground planned before the trench: the centre raised as its own
+  // twin (an H4x4 hill when the board draws hills, otherwise a plateau with
+  // ramps; the midpoint's cover on top), or twin objectives on hills beside a
+  // centre plateau. Each combination the trench cannot get round falls back to
+  // the next; raised ground on open cells comes after the minimums.
   const reserved = Mask.fromCells(grid, tracks.flatMap((t) => t.cells));
+  const spineAxis = !tracks.length && opts.axis === "auto" ? mirrorSpineAxis(parity) : null;
+  if (spineAxis === "y") for (let r = 0; r < grid.rows; r++) reserved.set((grid.cols - 1) / 2, r);
+  if (spineAxis === "x") for (let c = 0; c < grid.cols; c++) reserved.set(c, (grid.rows - 1) / 2);
   const noTerrain = zoneMasks.filter((z) => z.spec.noTerrain).reduce((m, z) => m.or(z.mask), new Mask(grid));
-  const plans = opts.plateau ? planObjectivePlateaus(grid, rng, palette, overlay.objectives, blocked, reserved, noTerrain, opts.edgeMarginIn) : [];
-  let raised: ObjectivePlateau | null = null;
+  const planInputs = { grid, rng, palette, parity, objectives: overlay.objectives, blocked, reserved, noTerrain, edgeMarginIn: opts.edgeMarginIn, trenchClearanceIn: opts.trenchClearanceIn };
+  const sightAxis: Axis | null = tracks[0]?.along === "y" ? "x" : tracks[0]?.along === "x" ? "y" : null;
+  const centres = opts.plateau ? planCentrePlateaus(planInputs, sightAxis) : [];
+  // A board that draws hills raises its centre as a hill; twin objective hills beside a centre plateau come next.
+  const combos: (RaisedPlan | null)[] = hillsWanted ? planCentreHills(planInputs, sightAxis, opts.hillStepChance) : [];
+  for (const centre of [...centres, null]) {
+    const avoid = new Mask(grid);
+    if (centre) for (const cell of centre.keepOut.cells()) for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) avoid.set(cell.c + dc, cell.r + dr);
+    const hills = hillsWanted ? planObjectiveHills(planInputs, avoid, sightAxis).slice(0, 2) : [];
+    for (const hill of hills) combos.push(mergePlans(grid, [...(centre ? [centre] : []), hill]));
+    if (centre) combos.push(centre);
+  }
+  const lay: LayInputs = { grid, rng, seed: input.seed, palette, parity, objectives: overlay.objectives, blocked, tracks, mode, opts, archetype };
+  let raised: RaisedPlan | null = null;
   let laid: TrenchAttempt | null = null;
-  for (const plan of plans.slice(0, 8)) {
+  for (const plan of combos.slice(0, 8)) {
     try {
-      laid = layTrenchWithCovers(grid, rng, input.seed, palette, overlay.objectives, blocked, tracks, mode, opts, archetype, plan, 3);
+      laid = layTrenchWithCovers(lay, plan, 3);
       raised = plan;
       break;
     } catch (e) {
       if (!(e instanceof GenerateError)) throw e;
     }
   }
-  if (plans.length && !raised) warnings.push("no objective could be raised: the trench had no way round any plateau");
-  laid ??= layTrenchWithCovers(grid, rng, input.seed, palette, overlay.objectives, blocked, tracks, mode, opts, archetype, null);
+  laid ??= layTrenchWithCovers(lay, null);
   const { network, covers, attempts, shrinks } = laid;
   warnings.push(...network.warnings);
   const enemyOf = enemyFacing(grid, overlay.zones, () => rng.chance(0.5));
@@ -300,6 +407,8 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
     grid,
     rng,
     palette,
+    parity,
+    aesthetic,
     trenchRects: network.cells.map((cell) => cellRect(grid, cell.c, cell.r)),
     trenchMask,
     zones: zoneMasks,
@@ -308,65 +417,50 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
     occupiedGround: trenchMask.clone(),
     featureMask: new Mask(grid),
     plateauTop: new Mask(grid),
+    keepClear: new Mask(grid),
     trackMask: Mask.fromCells(grid, tracks.flatMap((t) => t.cells)),
     placed: [],
+    usage: new Map(),
+    repeatCap: opts.repeatCap,
     spacingIn: opts.spacingIn,
+    scatterGapIn: opts.scatterGapIn,
     trenchClearanceIn: opts.trenchClearanceIn,
     edgeMarginIn: opts.edgeMarginIn,
-    sightAxis: tracks[0]?.along === "y" ? "x" : tracks[0]?.along === "x" ? "y" : null,
+    sightAxis,
+    nextId: 0,
   };
-  if (raised) registerPlateau(ctx, raised.plateau);
-  const coverResult = registerCovers(ctx, covers.filter((c) => c.objectiveId !== raised?.objectiveId));
-  if (raised) {
-    const onTop = makeRaisedCover(raised);
-    ctx.placed.push(onTop);
-    coverResult.placed.push(onTop);
-  }
+  const plateaus: Plateau[] = [...(raised?.plateaus ?? [])];
+  const hills: Hill[] = [...(raised?.hills ?? [])];
+  for (const plateau of plateaus) registerPlateau(ctx, plateau);
+  for (const hill of hills) registerFeature(ctx, hill.id, hill.cells, "hill");
+  const coverResult = registerCovers(ctx, covers);
   warnings.push(...coverResult.warnings);
 
-  // A plateau that is not on an objective goes down before the dressing, so it gets first pick of open ground.
-  let plateau: Plateau | null = raised?.plateau ?? null;
-  if (opts.plateau && !raised) {
-    plateau = placePlateau(ctx, rng.intBetween(opts.plateauCells[0], opts.plateauCells[1]), opts.raisedTrenchChance);
-    if (!plateau) warnings.push("no room for a plateau");
-    else if (plateau.raisedTrench) ctx.trenchRects.push(cellRect(grid, plateau.raisedTrench.cell.c, plateau.raisedTrench.cell.r));
-  }
-  // The archetype's minimum of each listed type goes down before the house extras (tall pieces, hills, upright cover).
-  const counted = new Map<string, number>();
-  const count = (placed: readonly Placed[]) => {
-    for (const p of placed) if (p.typeId) counted.set(p.typeId, (counted.get(p.typeId) ?? 0) + 1);
-  };
-  count(coverResult.placed);
-  const targets = compositionTargets(archetype, opts.houseCover);
-  const minimums = placeDressing(
-    ctx,
-    targets.map((t) => ({ ...t, target: Math.min(t.target, t.min) })),
-    counted,
-    "m",
-    true,
-  );
-  count(minimums.placed);
-  const hillMin = archetype.composition.find((c) => c.typeId === "hill") ? 2 - (plateau ? 1 : 0) : 0;
-  const hillsWanted = Math.max(rng.intBetween(opts.hills[0], opts.hills[1]), hillMin);
-  const hills: Hill[] = [];
-  for (let i = 0; i < hillsWanted; i++) {
-    const hill = placeHill(ctx, `hill-${i}`, rng.intBetween(1, 2), opts.hillStepChance);
-    if (hill) hills.push(hill);
-  }
-  // A tower or multi-storey ruin standing on the raised objective is already one of the tall pieces.
-  const tallWanted = Math.max(0, rng.intBetween(opts.tallPieces[0], opts.tallPieces[1]) - (raised && raised.cover.placeable.heightIn >= TALL_MIN_HEIGHT_IN ? 1 : 0));
   const tall: Placed[] = [];
-  for (let i = 0; i < tallWanted; i++) {
-    const id = `tall-${i}`;
-    const placed = (i === 0 && plateau && !raised ? placeTallOnPlateau(ctx, plateau, id) : null) ?? placeTallBeside(ctx, id);
-    if (placed) tall.push(placed);
+  const centrePlateau = plateaus.find((x) => x.id === "plateau");
+  if (opts.tallPieces && centrePlateau && !coverResult.placed.some((c) => c.base === "plateau")) {
+    const onTop = placeTallOnPlateau(ctx, centrePlateau);
+    if (onTop) tall.push(onTop);
   }
-  if (tall.length < tallWanted) warnings.push(`placed ${tall.length} of ${tallWanted} tall pieces`);
 
-  count(tall);
-  if (plateau || hills.length) counted.set("hill", (plateau ? 1 : 0) + hills.length);
-  const fill = placeDressing(ctx, targets, counted);
-  const dressing = { placed: [...minimums.placed, ...fill.placed], shortfalls: fill.shortfalls };
+  // The archetype's minimum of each listed type goes down before the house
+  // extras: raised ground on open cells, then tall pieces and the density fill.
+  const targets = compositionTargets(archetype, opts.houseCover);
+  const minimums = placeTerrainSlots(ctx, targets, "minimum");
+  if (opts.plateau && !plateaus.length && !hills.length) {
+    plateaus.push(...placeTwinPlateaus(ctx, rng.intBetween(opts.plateauCells[0], opts.plateauCells[1]), opts.raisedTrenchChance));
+    if (!plateaus.length) warnings.push("no room for a plateau");
+  }
+  for (const plateau of plateaus) if (plateau.raisedTrench) ctx.trenchRects.push(cellRect(grid, plateau.raisedTrench.cell.c, plateau.raisedTrench.cell.r));
+  if (hillsWanted && !hills.length) {
+    hills.push(...placeTwinHills(ctx, rng.intBetween(1, 2), opts.hillStepChance));
+    if (!hills.length) warnings.push("the board drew hills but none fit");
+  }
+  const faces = dressFaces(ctx, plateaus, opts.faceDressingChance);
+  const tallOnBoard = () => ctx.placed.filter((p) => p.placeable && (p.role === "tower" || p.role === "building") && p.placeable.heightIn >= TALL_MIN_HEIGHT_IN).length;
+  if (opts.tallPieces && tallOnBoard() < 2) tall.push(...placeTallPair(ctx));
+  const fill = placeTerrainSlots(ctx, targets, "fill");
+  const shortfalls = fill.shortfalls.map((s) => ({ ...s, min: targets.find((t) => t.typeId === s.typeId)!.min }));
 
   // ---- assemble pieces ------------------------------------------------------
   const b: Builder = { pieces: [], byId: new Map() };
@@ -376,6 +470,15 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
   const wallsByCell = new Map<string, LayoutCell["walls"]>();
   let revetments = 0;
 
+  // Duckboards follow parity: a straight's twin gets one when it does.
+  const duckboards = new Map<string, boolean>();
+  const wantsDuckboard = (cell: Cell): boolean => {
+    const twin = parity.kind === "none" ? cell : mapCell(parity, grid, cell);
+    const canonical = cellKey(cell.c, cell.r) < cellKey(twin.c, twin.r) ? cell : twin;
+    const k = cellKey(canonical.c, canonical.r);
+    if (!duckboards.has(k)) duckboards.set(k, rng.chance(opts.duckboardChance));
+    return duckboards.get(k)!;
+  };
   const trenchCounts = { straight: 0, corner: 0, t: 0 };
   const layTrench = (cell: Cell, resolved: TrenchPiece, id: string, supports: LayoutPiece[]) => {
     const trench = addPiece(b, palette, { id, paletteId: resolved.paletteId, rotY: resolved.rotY, centre: cellCentre(grid, cell.c, cell.r), cells: [cell], supports, baseIn: supports.length ? Math.max(...supports.map((s) => topOf(palette, s))) : 0 });
@@ -397,7 +500,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
     }
     wallsByCell.set(cellKey(cell.c, cell.r), walls);
     const entry = pieceById(palette, resolved.paletteId);
-    if (entry.role === "trench-straight" && entry.channelFloorIn !== undefined && rng.chance(opts.duckboardChance)) {
+    if (entry.role === "trench-straight" && entry.channelFloorIn !== undefined && wantsDuckboard(cell)) {
       const ledge = resolved.lined.find((l) => l.kind === "ledge");
       const shift: [number, number] = ledge ? [-DELTA[ledge.side][0] * 0.3, -DELTA[ledge.side][1] * 0.3] : [0, 0];
       const [cx, cy] = cellCentre(grid, cell.c, cell.r);
@@ -410,14 +513,12 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
     return trench;
   };
 
-  for (const cell of network.cells) {
-    const trench = layTrench(cell, trenchPieces.get(cellKey(cell.c, cell.r))!, `t-${cell.c}-${cell.r}`, []);
-    baseByCell.set(cellKey(cell.c, cell.r), trench);
-  }
+  for (const cell of network.cells) baseByCell.set(cellKey(cell.c, cell.r), layTrench(cell, trenchPieces.get(cellKey(cell.c, cell.r))!, `t-${cell.c}-${cell.r}`, []));
 
-  const craterTiles = dressing.placed.filter((p) => p.kind === "crater-tile");
+  const terrain = [...minimums.placed, ...tall.filter((t) => t.base === "ground"), ...fill.placed];
+  const craterTiles = terrain.filter((p) => p.kind === "crater-tile");
   for (const p of craterTiles) {
-    const piece = addPiece(b, palette, { id: p.id, paletteId: p.placeable!.key, rotY: 0, centre: p.centre, cells: p.cells });
+    const piece = addPiece(b, palette, { id: p.id, paletteId: p.placeable!.key, rotY: 0, centre: p.centre, cells: p.cells, slot: p.slot });
     for (const cell of p.cells!) baseByCell.set(cellKey(cell.c, cell.r), piece);
   }
 
@@ -433,12 +534,11 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
     });
   layTiles(groundTiles, "g", false);
 
-  let stackedTiles: LayoutPiece[] = [];
-  let tallOnPlateauId: string | null = null;
-  if (plateau) {
+  const stackedTiles: LayoutPiece[] = [];
+  const ramp = pieceById(palette, "hill-ramp");
+  for (const plateau of plateaus) {
     const tops = plateau.cells.filter((cell) => ctx.plateauTop.get(cell.c, cell.r));
-    stackedTiles = layTiles(tileCells(grid, tops, palette, rng, Mask.fromCells(grid, tops)), "s", true);
-    const ramp = pieceById(palette, "hill-ramp");
+    stackedTiles.push(...layTiles(tileCells(grid, tops, palette, rng, Mask.fromCells(grid, tops)), "s", true));
     for (const r of plateau.ramps) {
       const base = baseByCell.get(cellKey(r.cell.c, r.cell.r))!;
       addUpper(r.cell, addPiece(b, palette, { id: `ramp-${r.cell.c}-${r.cell.r}`, paletteId: ramp.id, rotY: rotYTurning(ramp.uphill!.rotY0, r.up, sense), centre: cellCentre(grid, r.cell.c, r.cell.r), cells: [r.cell], supports: [base] }));
@@ -449,40 +549,55 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
       addUpper(cell, layTrench(cell, resolveTrenchPiece(openings, palette, rng, enemyOf(cell)), `rt-${cell.c}-${cell.r}`, [base]));
     }
   }
+  const hillTopByCell = new Map<string, LayoutPiece>();
   for (const hill of hills) {
     for (const cell of hill.cells) {
       const base = baseByCell.get(cellKey(cell.c, cell.r))!;
       const block = addPiece(b, palette, { id: `${hill.id}-${cell.c}-${cell.r}`, paletteId: "h4x4", rotY: 0, centre: cellCentre(grid, cell.c, cell.r), cells: [cell], supports: [base] });
       addUpper(cell, block);
-      if (hill.stepped.some((s) => s.c === cell.c && s.r === cell.r)) addUpper(cell, addPiece(b, palette, { id: `${hill.id}-${cell.c}-${cell.r}-top`, paletteId: "h4x4", rotY: 0, centre: cellCentre(grid, cell.c, cell.r), cells: [cell], supports: [block] }));
+      hillTopByCell.set(cellKey(cell.c, cell.r), block);
+      if (hill.stepped.some((s) => s.c === cell.c && s.r === cell.r)) {
+        const top = addPiece(b, palette, { id: `${hill.id}-${cell.c}-${cell.r}-top`, paletteId: "h4x4", rotY: 0, centre: cellCentre(grid, cell.c, cell.r), cells: [cell], supports: [block] });
+        addUpper(cell, top);
+        hillTopByCell.set(cellKey(cell.c, cell.r), top);
+      }
     }
   }
 
-  // Free pieces rest on whatever tiles their footprint covers: stacked tiles on the plateau, the ground layer elsewhere.
+  // Free pieces rest on whatever their footprint covers: stacked tiles on a plateau, H4x4 tops on a hill, the ground layer elsewhere.
   const stackedByCell = new Map<string, LayoutPiece>();
   for (const tile of stackedTiles) for (const [c, r] of tile.cells!) stackedByCell.set(cellKey(c, r), tile);
+  const plateauTall = new Map<string, string>();
   const layFree = (p: Placed) => {
     const placeable = p.placeable!;
-    p.placeable!.members.forEach((m, i) => {
+    const supportsOf = p.base === "plateau" ? stackedByCell : p.base === "hill" ? hillTopByCell : baseByCell;
+    placeable.members.forEach((m, i) => {
       const rotY = (p.rotY + m.rotY) % 360;
       const [ox, oy] = rotateVector(m.at, p.rotY, sense);
       const centre: [number, number] = [p.centre[0] + ox, p.centre[1] + oy];
       const [w, d] = rotatedFootprint(pieceById(palette, m.pieceId), rotY);
       const under = cellsInRect(grid, rectFromCentre(centre[0], centre[1], w, d));
-      const supports = [...new Set(under.map((cell) => (p.onPlateau ? stackedByCell : baseByCell).get(cellKey(cell.c, cell.r))).filter((s): s is LayoutPiece => s !== undefined))];
+      const supports = [...new Set(under.map((cell) => supportsOf.get(cellKey(cell.c, cell.r))).filter((s): s is LayoutPiece => s !== undefined))];
       if (!supports.length) throw new GenerateError(`${p.id} has nothing under it`);
       const single = placeable.members.length === 1;
-      const piece = addPiece(b, palette, { id: single ? p.id : `${p.id}.${i}`, paletteId: m.pieceId, rotY, centre, supports, groupId: single ? null : p.id, objectiveId: p.objectiveId });
-      if (p.onPlateau && (p.kind === "tall" || p.kind === "cover")) tallOnPlateauId = piece.id;
+      const piece = addPiece(b, palette, { id: single ? p.id : `${p.id}.${i}`, paletteId: m.pieceId, rotY, centre, supports, groupId: single ? null : p.id, objectiveId: p.objectiveId, slot: p.slot });
+      if (p.base === "plateau") {
+        const plateau = plateaus.find((x) => x.cells.some((c) => under.some((u) => u.c === c.c && u.r === c.r)));
+        if (plateau && (p.kind === "tall" || p.kind === "cover")) plateauTall.set(plateau.id, piece.id);
+      }
     });
   };
-  for (const p of [...coverResult.placed, ...tall, ...dressing.placed.filter((x) => x.kind !== "crater-tile")]) layFree(p);
+  for (const p of [...coverResult.placed, ...tall.filter((t) => t.base !== "ground"), ...terrain.filter((x) => x.kind !== "crater-tile"), ...faces]) layFree(p);
+
+  // Scattered terrain fills the board toward the object target, in twin pairs.
+  const scatter = placeScatter(ctx, Math.max(0, opts.targetObjects - b.pieces.length));
+  for (const p of scatter) layFree(p);
 
   // ---- cells ----------------------------------------------------------------
-  const plateauKeys = new Set(plateau?.cells.map((c) => cellKey(c.c, c.r)) ?? []);
-  const rampByKey = new Map(plateau?.ramps.map((r) => [cellKey(r.cell.c, r.cell.r), r.up]) ?? []);
+  const plateauKeys = new Set(plateaus.flatMap((x) => x.cells.map((c) => cellKey(c.c, c.r))));
+  const rampByKey = new Map(plateaus.flatMap((x) => x.ramps.map((r) => [cellKey(r.cell.c, r.cell.r), r.up] as const)));
   const hillKeys = new Set(hills.flatMap((h) => h.cells.map((c) => cellKey(c.c, c.r))));
-  const raisedKey = plateau?.raisedTrench ? cellKey(plateau.raisedTrench.cell.c, plateau.raisedTrench.cell.r) : null;
+  const raisedKeys = new Set(plateaus.filter((x) => x.raisedTrench).map((x) => cellKey(x.raisedTrench!.cell.c, x.raisedTrench!.cell.r)));
   const trenchByKey = new Map(network.cells.map((cell) => [cellKey(cell.c, cell.r), cell]));
   const cells: LayoutCell[] = [];
   for (let r = 0; r < grid.rows; r++) {
@@ -492,7 +607,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
       if (!base) throw new GenerateError(`cell ${c},${r} was left empty`);
       const uppers = upperByCell.get(key) ?? [];
       const trench = trenchByKey.get(key);
-      const feature = key === raisedKey ? "raised-trench" : rampByKey.has(key) ? "ramp" : plateauKeys.has(key) ? "plateau" : hillKeys.has(key) ? "hill" : null;
+      const feature = raisedKeys.has(key) ? "raised-trench" : rampByKey.has(key) ? "ramp" : plateauKeys.has(key) ? "plateau" : hillKeys.has(key) ? "hill" : null;
       const topPiece = [base, ...uppers].filter((p) => p.role !== "ramp" && p.role !== "revetment" && p.role !== "decor").reduce((a, p) => (p.zOrder > a.zOrder ? p : a));
       const isTrenchTop = pieceById(palette, topPiece.paletteId).role.startsWith("trench");
       cells.push({
@@ -511,14 +626,17 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
   }
 
   const piecesByRole: Record<string, number> = {};
-  for (const p of b.pieces) piecesByRole[p.role] = (piecesByRole[p.role] ?? 0) + 1;
+  const objectsByCategory: Record<string, number> = {};
+  for (const p of b.pieces) {
+    piecesByRole[p.role] = (piecesByRole[p.role] ?? 0) + 1;
+    const category = p.slot?.category ?? STRUCTURAL_NAMES[p.role] ?? p.role;
+    objectsByCategory[category] = (objectsByCategory[category] ?? 0) + 1;
+  }
+  const slotted = b.pieces.filter((p) => p.slot && !STRUCTURAL_ROLES.includes(p.role)).length;
   const listed = new Set(archetype.composition.map((c) => c.typeId));
   const houseRules = new Set<string>();
-  for (const p of [...coverResult.placed, ...tall, ...dressing.placed]) {
-    const typeId = TYPE_BY_ROLE[p.role];
-    if (typeId && !listed.has(typeId)) houseRules.add(typeId);
-  }
-  if ((plateau || hills.length) && !listed.has("hill")) houseRules.add("hill");
+  for (const p of ctx.placed) if (p.typeId && p.typeId !== "scattered-terrain" && !listed.has(p.typeId)) houseRules.add(p.typeId);
+  if ((plateaus.length || hills.length) && !listed.has("hill")) houseRules.add("hill");
 
   const layout: Layout = {
     version: LAYOUT_VERSION,
@@ -527,6 +645,8 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
     archetype: input.archetype,
     boardIn,
     cellIn: grid.cellIn,
+    parity: { kind: parity.kind, objectivesMatch: parity.objectivesMatch },
+    aesthetic,
     grid: { cols: grid.cols, rows: grid.rows },
     cells,
     pieces: b.pieces,
@@ -548,14 +668,13 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
         commCells: l.commCells.map((c) => [c.c, c.r] as [number, number]),
       })),
     },
-    plateau: plateau
-      ? {
-          cells: plateau.cells.map((c) => [c.c, c.r] as [number, number]),
-          ramps: plateau.ramps.map((r) => ({ cell: [r.cell.c, r.cell.r] as [number, number], up: r.up })),
-          raisedTrench: plateau.raisedTrench ? [plateau.raisedTrench.cell.c, plateau.raisedTrench.cell.r] : null,
-          tallPieceId: tallOnPlateauId,
-        }
-      : null,
+    plateaus: plateaus.map((x) => ({
+      id: x.id,
+      cells: x.cells.map((c) => [c.c, c.r] as [number, number]),
+      ramps: x.ramps.map((r) => ({ cell: [r.cell.c, r.cell.r] as [number, number], up: r.up })),
+      raisedTrench: x.raisedTrench ? [x.raisedTrench.cell.c, x.raisedTrench.cell.r] : null,
+      tallPieceId: plateauTall.get(x.id) ?? null,
+    })),
     hills: hills.map((h) => ({ id: h.id, cells: h.cells.map((c) => [c.c, c.r] as [number, number]), stepped: h.stepped.map((c) => [c.c, c.r] as [number, number]) })),
     objectives: overlay.objectives.map((o) => {
       const cell = cellAt(grid, o.position[0], o.position[1]);
@@ -579,12 +698,19 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv): Layout {
       piecesByRole,
       groundTiles: groundTiles.length,
       stackedTiles: stackedTiles.length,
-      dressingPieces: coverResult.placed.length + tall.length + dressing.placed.length,
+      dressingPieces: ctx.placed.filter((p) => p.placeable && !p.scatter).length,
       tallPieces: b.pieces.filter((p) => (p.role === "tower" || p.role === "building") && pieceById(palette, p.paletteId).heightIn >= TALL_MIN_HEIGHT_IN).length,
+      scatterPieces: b.pieces.filter((p) => p.slot && palette.categories[p.slot.category]?.scatter).length,
+      objectsByCategory,
+      dressingShare: round3(slotted / b.pieces.length),
+      hillsWanted,
+      hillRate,
       totalPieces: b.pieces.length,
       coverShrinks: shrinks,
       trenchAttempts: attempts,
-      shortfalls: dressing.shortfalls,
+      layoutDraws: draw + 1,
+      coverCapIn: opts.maxCoverSideIn,
+      shortfalls,
       houseRules: [...houseRules].sort(),
       warnings,
       archetypeMatchesScenario,

@@ -34,6 +34,7 @@ const ROLE_STYLE: Record<Role, { fill: string; stroke: string; label: string; na
   landmark: { fill: "#6f6fb8", stroke: "#33337a", label: "L", name: "Landmark" },
   decor: { fill: "#c9a46a", stroke: "#7a5a2a", label: "", name: "Duckboard" },
   revetment: { fill: "#7a4f2a", stroke: "#3f2812", label: "", name: "Log fence" },
+  scatter: { fill: "#b7a98c", stroke: "#6a5f4b", label: "", name: "Scattered terrain" },
 };
 
 const ZONE_FILL = ["rgba(200,40,40,0.16)", "rgba(40,80,200,0.16)", "rgba(200,170,40,0.14)", "rgba(40,160,120,0.14)"];
@@ -226,7 +227,8 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
     const style = ROLE_STYLE[role];
     swatch(style.fill === "none" ? "#e8e1cf" : style.fill, style.stroke, `${style.name}${style.label ? ` (${style.label})` : ""}: ${n}`);
   }
-  swatch("url(#raised)", "#6d5c34", `Plateau (stacked tiles)${layout.plateau ? `: ${layout.plateau.cells.length} cells` : ": none"}`);
+  const plateauCells = layout.plateaus.reduce((n, p) => n + p.cells.length, 0);
+  swatch("url(#raised)", "#6d5c34", `Plateau (stacked tiles): ${layout.plateaus.length ? `${layout.plateaus.length} with ${plateauCells} cells` : "none"}`);
   swatch(WALL_STYLE.ledge, "#7a5a2a", "Wall: fire-step ledge");
   swatch(WALL_STYLE.revetment, "#3f2812", "Wall: logs (built-in or fence, dashed)");
   ly += 8;
@@ -238,11 +240,13 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
   line(`search: ${layout.stats.trenchAttempts} attempt(s), ${layout.stats.coverShrinks} cover shrink(s)`);
   ly += 8;
   line("Height", { bold: true, size: 16 });
-  if (layout.plateau) line(`plateau ${layout.plateau.cells.length} cells, ${layout.plateau.ramps.length} ramp(s)${layout.plateau.raisedTrench ? ", trench dug in" : ""}${layout.plateau.tallPieceId ? ", tower on top" : ""}`);
+  for (const p of layout.plateaus) line(`${p.id === "plateau" ? "centre plateau" : p.id} ${p.cells.length} cells, ${p.ramps.length} ramp(s)${p.raisedTrench ? ", trench dug in" : ""}${p.tallPieceId ? ", tall piece on top" : ""}`);
   line(`${layout.hills.length} H4x4 hill(s); ${layout.stats.tallPieces} tall piece(s) (▲ = top height)`);
   ly += 8;
   line("Board", { bold: true, size: 16 });
   line(`${layout.boardIn}in square, ${layout.cellIn}in cells (${layout.grid.cols}x${layout.grid.rows}); north is up`);
+  line(`parity: ${layout.parity.kind}; look: ${layout.aesthetic.primary}${layout.aesthetic.secondary ? ` + ${layout.aesthetic.secondary}` : ""}`);
+  line(`dressing share ${Math.round(layout.stats.dressingShare * 100)}%; ${layout.stats.scatterPieces} scatter`);
   line(`${layout.stats.groundTiles} ground + ${layout.stats.stackedTiles} stacked tiles, ${layout.stats.dressingPieces} terrain pieces`);
   line(`${layout.stats.totalPieces} objects to spawn`);
   line(`objectives: ${layout.objectives.length}${layout.objectives.some((o) => o.requiresCover) ? " (cover required)" : ""}`);

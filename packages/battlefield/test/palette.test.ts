@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decoratedSides, loadPalette, parsePalette, placeablesFor, piecesByRole, resolvePalette, rotateOffset, rotateOpenings, rotYForOpenings, rotYTurning, type Palette } from "../src/index.js";
+import { decoratedSides, loadPalette, parsePalette, placeablesIn, piecesByRole, STRUCTURAL_ROLES, resolvePalette, rotateOffset, rotateOpenings, rotYForOpenings, rotYTurning, type Palette } from "../src/index.js";
 import { fixtureCatalog, ROOT } from "./fixtures.js";
 
 const palette = loadPalette(ROOT);
@@ -113,14 +113,42 @@ describe("palette", () => {
   });
 
   it("builds a group's footprint from its members and centres them on it", () => {
-    const wire = placeablesFor(palette, "dangerous").find((p) => p.key === "wire-line")!;
+    const wire = placeablesIn(palette, "wire-line").find((p) => p.key === "wire-line")!;
     const segment = piece("difficult-dangerous").footprintIn;
     expect(wire.members).toHaveLength(3);
     expect(wire.footprintIn[0]).toBeCloseTo(2 * 2.3 + segment[0], 6);
     expect(wire.footprintIn[1]).toBeCloseTo(segment[1], 6);
     expect(wire.members.map((m) => m.at[0])).toEqual([-2.3, 0, 2.3]);
-    const singles = placeablesFor(palette, "cover", true);
-    expect(singles.every((p) => p.members.length === 1)).toBe(true);
-    expect(singles.some((p) => p.key === "barrel")).toBe(false);
+    const barrels = placeablesIn(palette, "scatter-barrel");
+    expect(barrels.every((p) => p.members.length === 1 && p.scatter && p.role === "scatter")).toBe(true);
+    expect(barrels.some((p) => p.key === "barrel")).toBe(true);
+  });
+
+  it("gives every placeable piece and group one category and aesthetic tags from the palette's own lists", () => {
+    const looks = new Set([...palette.aesthetics, "any"]);
+    for (const p of palette.pieces.filter((x) => x.enabled && !STRUCTURAL_ROLES.includes(x.role))) {
+      expect(palette.categories[p.category ?? ""], p.id).toBeDefined();
+      expect(p.aesthetics?.length, p.id).toBeGreaterThan(0);
+      for (const a of p.aesthetics!) expect(looks.has(a), `${p.id} ${a}`).toBe(true);
+      expect(p.role === "scatter", p.id).toBe(palette.categories[p.category!]!.scatter);
+    }
+    for (const g of palette.groups) expect(palette.categories[g.category], g.id).toBeDefined();
+    for (const [id, c] of Object.entries(palette.categories)) {
+      expect(c.scatter, id).toBe(c.type === "scattered-terrain");
+      expect(palette.pieces.some((p) => p.enabled && p.category === id) || palette.groups.some((g) => g.category === id), `${id} is empty`).toBe(true);
+    }
+    expect(palette.aesthetics).toEqual(["urban-ruin", "field-fortification", "industrial", "ecclesiastic"]);
+  });
+
+  it("rejects a placeable piece without a category, and a category or aesthetic the palette does not list", () => {
+    const raw = JSON.parse(JSON.stringify(palette)) as Palette;
+    const statue = raw.pieces.find((p) => p.id === "statue")!;
+    delete statue.category;
+    expect(() => parsePalette(raw)).toThrow(/category/);
+    statue.category = "no-such-category";
+    expect(() => parsePalette(raw)).toThrow(/category/);
+    statue.category = "landmark";
+    statue.aesthetics = ["baroque"];
+    expect(() => parsePalette(raw)).toThrow(/aesthetic/);
   });
 });

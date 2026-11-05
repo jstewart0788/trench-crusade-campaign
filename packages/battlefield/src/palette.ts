@@ -28,6 +28,7 @@ export const Role = z.enum([
   "landmark",
   "decor",
   "revetment",
+  "scatter",
 ]);
 export type Role = z.infer<typeof Role>;
 
@@ -67,6 +68,10 @@ export const PalettePiece = z
     decoratedWalls: z.object({ rotY0: z.array(DirSchema), kind: z.enum(["ledge", "logs"]), source: WallSource, note: z.string().optional() }).optional(),
     /** Ramps: the side the slope climbs toward, at rotY 0. */
     uphill: z.object({ rotY0: DirSchema, verified: z.boolean() }).optional(),
+    /** The slot category the piece fills (palette.categories), for terrain and scatter. */
+    category: z.string().optional(),
+    /** Looks the piece suits (palette.aesthetics, or "any"). */
+    aesthetics: z.array(z.string()).optional(),
     enabled: z.boolean(),
     verified: z.boolean(),
     note: z.string().optional(),
@@ -91,9 +96,27 @@ export const GroupMember = z.object({ piece: z.string(), at: Pair, rotY: z.union
 // Several objects that make one rulebook terrain piece (a wire line, a crate
 // stack), placed and spaced as one footprint.
 export const PaletteGroup = z
-  .object({ id: z.string().min(1), role: Role, members: z.array(GroupMember).min(2), enabled: z.boolean().optional(), note: z.string().optional() })
+  .object({
+    id: z.string().min(1),
+    role: Role,
+    category: z.string(),
+    aesthetics: z.array(z.string()),
+    members: z.array(GroupMember).min(2),
+    enabled: z.boolean().optional(),
+    note: z.string().optional(),
+  })
   .strict();
 export type PaletteGroup = z.infer<typeof PaletteGroup>;
+
+// A slot category: pieces of one footprint and silhouette ("large L ruin",
+// "crate stack"), and the rulebook terrain type it counts as. Scatter
+// categories are the rulebook's scattered terrain (p64): decorative, ignored
+// for movement and exempt from the 3in spacing between terrain pieces.
+export const Category = z.object({ type: z.string(), scatter: z.boolean(), note: z.string().optional() }).strict();
+export type Category = z.infer<typeof Category>;
+
+/** Pieces that make up the battlefield's structure rather than fill slots. */
+export const STRUCTURAL_ROLES: readonly Role[] = ["ground", "trench-straight", "trench-corner", "trench-t", "trench-entrance", "ramp", "hill", "revetment", "decor"];
 
 export const RotYSense = z.enum(["cw", "ccw"]);
 export type RotYSense = z.infer<typeof RotYSense>;
@@ -121,6 +144,8 @@ export const Palette = z
     coordinates: z.string().optional(),
     rotation: z.object({ rotYSense: RotYSense, verified: z.boolean(), note: z.string().optional() }),
     revetment: Revetment,
+    aesthetics: z.array(z.string()).min(1),
+    categories: z.record(Category),
     sources: z.record(z.string()).optional(),
     pieces: z.array(PalettePiece).min(1),
     groups: z.array(PaletteGroup).default([]),
@@ -135,6 +160,14 @@ export const Palette = z
     for (const g of p.groups) {
       if (ids.has(g.id)) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `group ${g.id} shares an id with a piece` });
       for (const m of g.members) if (!ids.has(m.piece)) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `group ${g.id} uses unknown piece ${m.piece}` });
+    }
+    const looks = new Set([...p.aesthetics, "any"]);
+    for (const entry of [...p.pieces, ...p.groups]) {
+      const id = entry.id;
+      const structural = "layer" in entry && STRUCTURAL_ROLES.includes(entry.role);
+      if (!structural && entry.enabled !== false && !entry.category) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${id}: terrain and scatter pieces need a category` });
+      if (entry.category && !p.categories[entry.category]) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${id}: unknown category ${entry.category}` });
+      for (const a of entry.aesthetics ?? []) if (!looks.has(a)) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${id}: unknown aesthetic ${a}` });
     }
     const fence = p.pieces.find((x) => x.id === p.revetment.pieceId);
     if (!fence) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `revetment piece ${p.revetment.pieceId} is not in the palette` });

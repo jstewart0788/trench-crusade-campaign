@@ -4,6 +4,56 @@
   "method": "scripts/tts_measure_rest.py in the running TTS, spawned at x 46-78 z -48/-64 (clear of the mat), settled, read, destroyed. boundsSize/boundsCenterOffset are collider bounds; visualNormalized* are getVisualBoundsNormalized (mesh). Visual centre minus pivot = -visualNormalizedOffset (same sign rule as the live Landscape 1x2 check).",
   "surfaceTopY": 0.900002598762512,
   "assets": {
+    "0073899052d5": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3.122,
+        1.475,
+        5.295
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.738,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        3.122,
+        1.475,
+        5.295
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.738,
+        -0.0
+      ],
+      "settled": true
+    },
+    "018f162b0767": {
+      "restY": 1.189,
+      "restHeightAboveSurface": 0.289,
+      "boundsSize": [
+        0.654,
+        0.58,
+        0.563
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        0.654,
+        0.579,
+        0.564
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "settled": true
+    },
     "031559734221": {
       "restY": 2.4,
       "restHeightAboveSurface": 1.5,
@@ -26,6 +76,31 @@
         0,
         0.207,
         0
+      ],
+      "settled": true
+    },
+    "04071ef95730": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4.111,
+        0.137,
+        4.019
+      ],
+      "boundsCenterOffset": [
+        0.066,
+        0.069,
+        -0.104
+      ],
+      "visualNormalizedSize": [
+        4.185,
+        0.706,
+        4.05
+      ],
+      "visualNormalizedOffset": [
+        -0.074,
+        -0.365,
+        0.103
       ],
       "settled": true
     },
@@ -54,6 +129,31 @@
       ],
       "settled": true
     },
+    "0855eaad6d4e": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.556,
+        0.196,
+        1.538
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.098,
+        0.002
+      ],
+      "visualNormalizedSize": [
+        2.556,
+        0.23,
+        1.541
+      ],
+      "visualNormalizedOffset": [
+        -0.0,
+        -0.081,
+        -0.001
+      ],
+      "settled": true
+    },
     "0f9003d125d0": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -76,6 +176,31 @@
         1.784,
         -3.405,
         0.284
+      ],
+      "settled": true
+    },
+    "121a09861b72": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.803,
+        0.519,
+        2.893
+      ],
+      "boundsCenterOffset": [
+        0.254,
+        0.26,
+        -0.189
+      ],
+      "visualNormalizedSize": [
+        2.89,
+        0.743,
+        2.893
+      ],
+      "visualNormalizedOffset": [
+        -0.21,
+        -0.199,
+        0.189
       ],
       "settled": true
     },
@@ -129,6 +254,31 @@
       ],
       "settled": true
     },
+    "12cb5dcfb50f": {
+      "restY": 1.157,
+      "restHeightAboveSurface": 0.257,
+      "boundsSize": [
+        3.797,
+        0.607,
+        4.122
+      ],
+      "boundsCenterOffset": [
+        -0.037,
+        0.047,
+        0.008
+      ],
+      "visualNormalizedSize": [
+        3.869,
+        0.665,
+        4.136
+      ],
+      "visualNormalizedOffset": [
+        0.002,
+        -0.067,
+        -0.008
+      ],
+      "settled": true
+    },
     "145f3a6b9b95": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -176,6 +326,56 @@
         0,
         -0.631,
         0.015
+      ],
+      "settled": true
+    },
+    "16c4c8fff758": {
+      "restY": 0.948,
+      "restHeightAboveSurface": 0.048,
+      "boundsSize": [
+        1.4,
+        0.0,
+        1.4
+      ],
+      "boundsCenterOffset": [
+        0,
+        -0.048,
+        0
+      ],
+      "visualNormalizedSize": [
+        5.728,
+        1.122,
+        5.971
+      ],
+      "visualNormalizedOffset": [
+        -0.241,
+        -0.42,
+        -0.066
+      ],
+      "settled": true
+    },
+    "1a3858af63d1": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.728,
+        0.171,
+        1.748
+      ],
+      "boundsCenterOffset": [
+        -0.002,
+        0.086,
+        -0.002
+      ],
+      "visualNormalizedSize": [
+        1.728,
+        0.213,
+        1.748
+      ],
+      "visualNormalizedOffset": [
+        0.002,
+        -0.065,
+        0.002
       ],
       "settled": true
     },
@@ -279,6 +479,56 @@
       ],
       "settled": true
     },
+    "202b98128e34": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.371,
+        0.977,
+        1.591
+      ],
+      "boundsCenterOffset": [
+        0.121,
+        0.489,
+        -0.186
+      ],
+      "visualNormalizedSize": [
+        2.371,
+        1.134,
+        1.591
+      ],
+      "visualNormalizedOffset": [
+        -0.121,
+        -0.41,
+        0.186
+      ],
+      "settled": true
+    },
+    "2044e00d0af9": {
+      "restY": 0.723,
+      "restHeightAboveSurface": -0.177,
+      "boundsSize": [
+        1.606,
+        0.0,
+        2.129
+      ],
+      "boundsCenterOffset": [
+        -0.098,
+        0.177,
+        -0.072
+      ],
+      "visualNormalizedSize": [
+        3.549,
+        2.541,
+        3.061
+      ],
+      "visualNormalizedOffset": [
+        0.115,
+        -1.364,
+        -0.072
+      ],
+      "settled": true
+    },
     "21f1fcb0adfd": {
       "restY": 0.894,
       "restHeightAboveSurface": -0.006,
@@ -329,6 +579,31 @@
       ],
       "settled": true
     },
+    "237f8533a8a7": {
+      "restY": 0.065,
+      "restHeightAboveSurface": -0.835,
+      "boundsSize": [
+        1.089,
+        0.0,
+        2.118
+      ],
+      "boundsCenterOffset": [
+        -0.045,
+        0.835,
+        0.033
+      ],
+      "visualNormalizedSize": [
+        3.845,
+        3.483,
+        4.434
+      ],
+      "visualNormalizedOffset": [
+        0.047,
+        -2.29,
+        0.114
+      ],
+      "settled": true
+    },
     "2382640b6cc8": {
       "restY": 1.034,
       "restHeightAboveSurface": 0.134,
@@ -350,6 +625,31 @@
       "visualNormalizedOffset": [
         0,
         0,
+        0
+      ],
+      "settled": true
+    },
+    "23d552778cc5": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.838,
+        1.144,
+        1.023
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.572,
+        0
+      ],
+      "visualNormalizedSize": [
+        1.838,
+        1.144,
+        1.023
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.572,
         0
       ],
       "settled": true
@@ -376,6 +676,56 @@
         0,
         -0.97,
         -0.02
+      ],
+      "settled": true
+    },
+    "263614cc496f": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.066,
+        1.303,
+        2.597
+      ],
+      "boundsCenterOffset": [
+        -0.004,
+        0.652,
+        -0.002
+      ],
+      "visualNormalizedSize": [
+        2.066,
+        1.303,
+        2.597
+      ],
+      "visualNormalizedOffset": [
+        0.004,
+        -0.652,
+        0.002
+      ],
+      "settled": true
+    },
+    "29fbaabd04d7": {
+      "restY": 0.902,
+      "restHeightAboveSurface": 0.002,
+      "boundsSize": [
+        0.956,
+        2.371,
+        0.953
+      ],
+      "boundsCenterOffset": [
+        0.024,
+        1.183,
+        -0.159
+      ],
+      "visualNormalizedSize": [
+        1.251,
+        3.219,
+        1.319
+      ],
+      "visualNormalizedOffset": [
+        -0.005,
+        -0.849,
+        0.099
       ],
       "settled": true
     },
@@ -429,6 +779,81 @@
       ],
       "settled": true
     },
+    "2d05a16d1326": {
+      "restY": 0.766,
+      "restHeightAboveSurface": -0.134,
+      "boundsSize": [
+        1.819,
+        5.178,
+        2.011
+      ],
+      "boundsCenterOffset": [
+        0.47,
+        2.723,
+        0.565
+      ],
+      "visualNormalizedSize": [
+        7.731,
+        13.825,
+        7.775
+      ],
+      "visualNormalizedOffset": [
+        0.222,
+        -6.589,
+        -0.085
+      ],
+      "settled": true
+    },
+    "2de5c0f0942a": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.658,
+        5.875,
+        1.161
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        2.937,
+        -0.005
+      ],
+      "visualNormalizedSize": [
+        1.658,
+        5.875,
+        1.161
+      ],
+      "visualNormalizedOffset": [
+        -0.0,
+        -2.937,
+        0.005
+      ],
+      "settled": true
+    },
+    "2e45b2b82c5f": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4.808,
+        8.361,
+        4.537
+      ],
+      "boundsCenterOffset": [
+        0.051,
+        4.181,
+        0.117
+      ],
+      "visualNormalizedSize": [
+        4.808,
+        10.877,
+        4.68
+      ],
+      "visualNormalizedOffset": [
+        -0.051,
+        -5.155,
+        -0.108
+      ],
+      "settled": true
+    },
     "2f1be9f52091": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -479,6 +904,31 @@
       ],
       "settled": true
     },
+    "365c201e1ba5": {
+      "restY": 0.348,
+      "restHeightAboveSurface": -0.552,
+      "boundsSize": [
+        1.107,
+        3.428,
+        1.07
+      ],
+      "boundsCenterOffset": [
+        -0.351,
+        2.267,
+        -0.212
+      ],
+      "visualNormalizedSize": [
+        10.506,
+        12.33,
+        10.451
+      ],
+      "visualNormalizedOffset": [
+        -0.206,
+        -6.507,
+        0.893
+      ],
+      "settled": true
+    },
     "373d49b1cb6d": {
       "restY": 0.903,
       "restHeightAboveSurface": 0.003,
@@ -501,6 +951,31 @@
         0.0,
         -0.49,
         0.001
+      ],
+      "settled": true
+    },
+    "38f97d6f118e": {
+      "restY": 1.078,
+      "restHeightAboveSurface": 0.178,
+      "boundsSize": [
+        1.244,
+        0.02,
+        1.856
+      ],
+      "boundsCenterOffset": [
+        -0.045,
+        -0.167,
+        0.059
+      ],
+      "visualNormalizedSize": [
+        1.461,
+        0.461,
+        1.92
+      ],
+      "visualNormalizedOffset": [
+        -0.064,
+        -0.052,
+        -0.091
       ],
       "settled": true
     },
@@ -629,6 +1104,81 @@
       ],
       "settled": true
     },
+    "4187dd4f7102": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.277,
+        1.281,
+        1.044
+      ],
+      "boundsCenterOffset": [
+        0.14,
+        0.641,
+        0.0
+      ],
+      "visualNormalizedSize": [
+        0.277,
+        1.281,
+        1.044
+      ],
+      "visualNormalizedOffset": [
+        -0.139,
+        -0.641,
+        0.0
+      ],
+      "settled": true
+    },
+    "42fbf5f8e9e9": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.448,
+        0.876,
+        3.136
+      ],
+      "boundsCenterOffset": [
+        0.01,
+        0.438,
+        0.039
+      ],
+      "visualNormalizedSize": [
+        2.338,
+        1.126,
+        4.706
+      ],
+      "visualNormalizedOffset": [
+        -0.034,
+        -0.481,
+        -0.158
+      ],
+      "settled": true
+    },
+    "43c58d00b5ce": {
+      "restY": 0.798,
+      "restHeightAboveSurface": -0.102,
+      "boundsSize": [
+        3.278,
+        1.152,
+        1.406
+      ],
+      "boundsCenterOffset": [
+        0.026,
+        0.678,
+        0.028
+      ],
+      "visualNormalizedSize": [
+        3.628,
+        1.649,
+        2.288
+      ],
+      "visualNormalizedOffset": [
+        -0.068,
+        -0.926,
+        0.253
+      ],
+      "settled": true
+    },
     "442da3ffde7a": {
       "restY": 0.976,
       "restHeightAboveSurface": 0.076,
@@ -650,6 +1200,56 @@
       "visualNormalizedOffset": [
         0,
         -4.459,
+        0
+      ],
+      "settled": true
+    },
+    "4481860446d2": {
+      "restY": 0.714,
+      "restHeightAboveSurface": -0.186,
+      "boundsSize": [
+        1.55,
+        6.607,
+        1.625
+      ],
+      "boundsCenterOffset": [
+        -0.24,
+        3.489,
+        -0.083
+      ],
+      "visualNormalizedSize": [
+        5.036,
+        13.849,
+        5.186
+      ],
+      "visualNormalizedOffset": [
+        0.032,
+        -7.104,
+        0.134
+      ],
+      "settled": true
+    },
+    "45b3a7d9d33b": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.286,
+        1.498,
+        4.676
+      ],
+      "boundsCenterOffset": [
+        -0.0,
+        0.749,
+        0
+      ],
+      "visualNormalizedSize": [
+        2.286,
+        1.498,
+        4.676
+      ],
+      "visualNormalizedOffset": [
+        0.0,
+        -0.749,
         0
       ],
       "settled": true
@@ -679,6 +1279,31 @@
       ],
       "settled": true
     },
+    "4e82591c22c2": {
+      "restY": 1.914,
+      "restHeightAboveSurface": 1.014,
+      "boundsSize": [
+        0.591,
+        2.681,
+        0.569
+      ],
+      "boundsCenterOffset": [
+        2.138,
+        0.327,
+        0.2
+      ],
+      "visualNormalizedSize": [
+        5.346,
+        7.855,
+        5.733
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -2.803,
+        0
+      ],
+      "settled": true
+    },
     "4e83593fc438": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -701,6 +1326,56 @@
         -0.376,
         -0.905,
         0.452
+      ],
+      "settled": true
+    },
+    "525e6c7ae59b": {
+      "restY": 0.902,
+      "restHeightAboveSurface": 0.002,
+      "boundsSize": [
+        1.228,
+        0.977,
+        0.914
+      ],
+      "boundsCenterOffset": [
+        0.022,
+        0.486,
+        0.024
+      ],
+      "visualNormalizedSize": [
+        1.228,
+        0.977,
+        0.914
+      ],
+      "visualNormalizedOffset": [
+        -0.022,
+        -0.486,
+        -0.024
+      ],
+      "settled": true
+    },
+    "53047d27cc29": {
+      "restY": 0.9,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        1.041,
+        1.319,
+        0.153
+      ],
+      "boundsCenterOffset": [
+        -0.0,
+        0.659,
+        0.001
+      ],
+      "visualNormalizedSize": [
+        1.041,
+        1.318,
+        0.151
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.659,
+        0
       ],
       "settled": true
     },
@@ -779,6 +1454,31 @@
       ],
       "settled": true
     },
+    "5783f45a5aa4": {
+      "restY": 1.515,
+      "restHeightAboveSurface": 0.615,
+      "boundsSize": [
+        0.713,
+        1.761,
+        0.433
+      ],
+      "boundsCenterOffset": [
+        0.728,
+        0.265,
+        -0.141
+      ],
+      "visualNormalizedSize": [
+        4.853,
+        6.636,
+        5.212
+      ],
+      "visualNormalizedOffset": [
+        0.108,
+        -2.618,
+        -0.508
+      ],
+      "settled": true
+    },
     "585b630e3cd6": {
       "restY": 1.9,
       "restHeightAboveSurface": 1.0,
@@ -801,6 +1501,31 @@
         0,
         -0.25,
         2
+      ],
+      "settled": true
+    },
+    "591b34ef4bc3": {
+      "restY": 0.94,
+      "restHeightAboveSurface": 0.04,
+      "boundsSize": [
+        3.405,
+        2.329,
+        4.154
+      ],
+      "boundsCenterOffset": [
+        -0.046,
+        1.124,
+        0.002
+      ],
+      "visualNormalizedSize": [
+        3.405,
+        2.329,
+        4.154
+      ],
+      "visualNormalizedOffset": [
+        0.046,
+        -1.124,
+        -0.002
       ],
       "settled": true
     },
@@ -854,6 +1579,31 @@
       ],
       "settled": true
     },
+    "5bdf92fbb93f": {
+      "restY": 0.963,
+      "restHeightAboveSurface": 0.063,
+      "boundsSize": [
+        2.296,
+        0.78,
+        2.665
+      ],
+      "boundsCenterOffset": [
+        0.12,
+        0.327,
+        0.018
+      ],
+      "visualNormalizedSize": [
+        2.296,
+        0.78,
+        2.665
+      ],
+      "visualNormalizedOffset": [
+        -0.12,
+        -0.327,
+        -0.018
+      ],
+      "settled": true
+    },
     "5d6746bc93a5": {
       "restY": 0.694,
       "restHeightAboveSurface": -0.206,
@@ -901,6 +1651,31 @@
         -0.166,
         -0.663,
         -0.052
+      ],
+      "settled": true
+    },
+    "5eb9c64ce6d3": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.439,
+        0.858,
+        3.071
+      ],
+      "boundsCenterOffset": [
+        0.01,
+        0.429,
+        0.038
+      ],
+      "visualNormalizedSize": [
+        0.931,
+        1.08,
+        4.609
+      ],
+      "visualNormalizedOffset": [
+        0.023,
+        -0.483,
+        -0.155
       ],
       "settled": true
     },
@@ -1004,6 +1779,31 @@
       ],
       "settled": true
     },
+    "65485306a350": {
+      "restY": 0.912,
+      "restHeightAboveSurface": 0.012,
+      "boundsSize": [
+        2.898,
+        0.141,
+        0.516
+      ],
+      "boundsCenterOffset": [
+        0.001,
+        0.059,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        2.905,
+        0.148,
+        0.549
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.061,
+        0
+      ],
+      "settled": true
+    },
     "6557fa863ef6": {
       "restY": 0.976,
       "restHeightAboveSurface": 0.076,
@@ -1054,6 +1854,56 @@
       ],
       "settled": true
     },
+    "663f10c31ac1": {
+      "restY": 2.365,
+      "restHeightAboveSurface": 1.465,
+      "boundsSize": [
+        8.147,
+        2.931,
+        3.216
+      ],
+      "boundsCenterOffset": [
+        0,
+        -0.0,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        8.147,
+        2.931,
+        3.216
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "settled": true
+    },
+    "6778d2490a90": {
+      "restY": 0.94,
+      "restHeightAboveSurface": 0.04,
+      "boundsSize": [
+        2.716,
+        0.457,
+        3.103
+      ],
+      "boundsCenterOffset": [
+        -0.558,
+        0.188,
+        0.798
+      ],
+      "visualNormalizedSize": [
+        2.714,
+        0.521,
+        3.106
+      ],
+      "visualNormalizedOffset": [
+        0.557,
+        -0.168,
+        -0.802
+      ],
+      "settled": true
+    },
     "67e376e90648": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -1076,6 +1926,31 @@
         -1.5,
         -4.842,
         -1.217
+      ],
+      "settled": true
+    },
+    "689abb95e914": {
+      "restY": 0.897,
+      "restHeightAboveSurface": -0.003,
+      "boundsSize": [
+        1.705,
+        1.572,
+        4.06
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.789,
+        -0.076
+      ],
+      "visualNormalizedSize": [
+        1.705,
+        1.572,
+        4.06
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.789,
+        0.076
       ],
       "settled": true
     },
@@ -1126,6 +2001,106 @@
         0,
         -1.407,
         -0.02
+      ],
+      "settled": true
+    },
+    "6f2e4cf2f874": {
+      "restY": 3.525,
+      "restHeightAboveSurface": 2.625,
+      "boundsSize": [
+        1.818,
+        1.692,
+        8.972
+      ],
+      "boundsCenterOffset": [
+        -0.998,
+        -1.779,
+        3.094
+      ],
+      "visualNormalizedSize": [
+        2.218,
+        5.1,
+        9.477
+      ],
+      "visualNormalizedOffset": [
+        -0.285,
+        -3.404,
+        -0.76
+      ],
+      "settled": true
+    },
+    "6fe86df7f8d5": {
+      "restY": 0.901,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        0.905,
+        1.321,
+        0.149
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.66,
+        -0.006
+      ],
+      "visualNormalizedSize": [
+        0.905,
+        1.32,
+        0.138
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.66,
+        0
+      ],
+      "settled": true
+    },
+    "79198b5dad6a": {
+      "restY": 0.901,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        0.277,
+        0.182,
+        0.976
+      ],
+      "boundsCenterOffset": [
+        -0.003,
+        0.091,
+        -0.001
+      ],
+      "visualNormalizedSize": [
+        0.328,
+        0.309,
+        1.041
+      ],
+      "visualNormalizedOffset": [
+        -0.001,
+        -0.154,
+        0.001
+      ],
+      "settled": true
+    },
+    "7c20c6d877d8": {
+      "restY": 0.9,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        1.111,
+        0.789,
+        0.804
+      ],
+      "boundsCenterOffset": [
+        -0.008,
+        0.394,
+        0.005
+      ],
+      "visualNormalizedSize": [
+        1.111,
+        0.789,
+        0.804
+      ],
+      "visualNormalizedOffset": [
+        0.009,
+        -0.394,
+        -0.005
       ],
       "settled": true
     },
@@ -1254,6 +2229,31 @@
       ],
       "settled": true
     },
+    "8537f4975bb1": {
+      "restY": 0.901,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        2.731,
+        1.146,
+        0.811
+      ],
+      "boundsCenterOffset": [
+        0.007,
+        0.572,
+        -0.052
+      ],
+      "visualNormalizedSize": [
+        2.731,
+        1.146,
+        0.811
+      ],
+      "visualNormalizedOffset": [
+        -0.007,
+        -0.572,
+        0.052
+      ],
+      "settled": true
+    },
     "859f77538985": {
       "restY": 1.305,
       "restHeightAboveSurface": 0.405,
@@ -1276,6 +2276,81 @@
         0,
         -3.773,
         -0.001
+      ],
+      "settled": true
+    },
+    "85b098c68ee4": {
+      "restY": 1.736,
+      "restHeightAboveSurface": 0.836,
+      "boundsSize": [
+        0.834,
+        3.472,
+        0.849
+      ],
+      "boundsCenterOffset": [
+        -0.413,
+        0.9,
+        0.154
+      ],
+      "visualNormalizedSize": [
+        5.648,
+        5.565,
+        5.799
+      ],
+      "visualNormalizedOffset": [
+        0.11,
+        -1.91,
+        -0.03
+      ],
+      "settled": true
+    },
+    "86d19812e50b": {
+      "restY": 1.063,
+      "restHeightAboveSurface": 0.162,
+      "boundsSize": [
+        0.85,
+        0.015,
+        1.367
+      ],
+      "boundsCenterOffset": [
+        0.07,
+        -0.155,
+        -0.116
+      ],
+      "visualNormalizedSize": [
+        0.85,
+        0.513,
+        1.367
+      ],
+      "visualNormalizedOffset": [
+        -0.07,
+        -0.049,
+        0.116
+      ],
+      "settled": true
+    },
+    "87bd41651462": {
+      "restY": 0.899,
+      "restHeightAboveSurface": -0.001,
+      "boundsSize": [
+        5.43,
+        0.184,
+        5.41
+      ],
+      "boundsCenterOffset": [
+        0.087,
+        0.093,
+        -0.14
+      ],
+      "visualNormalizedSize": [
+        5.527,
+        0.95,
+        5.452
+      ],
+      "visualNormalizedOffset": [
+        -0.097,
+        -0.491,
+        0.138
       ],
       "settled": true
     },
@@ -1354,6 +2429,81 @@
       ],
       "settled": true
     },
+    "92a091be98e9": {
+      "restY": 1.025,
+      "restHeightAboveSurface": 0.125,
+      "boundsSize": [
+        0.25,
+        0.25,
+        0.25
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.0,
+        0
+      ],
+      "visualNormalizedSize": [
+        0.25,
+        0.25,
+        0.25
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "settled": true
+    },
+    "957a28aa75cf": {
+      "restY": 0.671,
+      "restHeightAboveSurface": -0.229,
+      "boundsSize": [
+        1.639,
+        3.41,
+        1.92
+      ],
+      "boundsCenterOffset": [
+        -0.072,
+        1.934,
+        -0.312
+      ],
+      "visualNormalizedSize": [
+        6.559,
+        5.763,
+        5.936
+      ],
+      "visualNormalizedOffset": [
+        -0.824,
+        -3.026,
+        0.015
+      ],
+      "settled": true
+    },
+    "95ad3b75bff0": {
+      "restY": 0.935,
+      "restHeightAboveSurface": 0.035,
+      "boundsSize": [
+        2.196,
+        1.664,
+        2.297
+      ],
+      "boundsCenterOffset": [
+        0.038,
+        0.797,
+        0.014
+      ],
+      "visualNormalizedSize": [
+        2.196,
+        1.673,
+        2.296
+      ],
+      "visualNormalizedOffset": [
+        -0.038,
+        -0.796,
+        -0.014
+      ],
+      "settled": true
+    },
     "9767669a9c7f": {
       "restY": 2.4,
       "restHeightAboveSurface": 1.5,
@@ -1376,6 +2526,56 @@
         -0.0,
         0.207,
         -0.0
+      ],
+      "settled": true
+    },
+    "98ab7f847a79": {
+      "restY": 1.115,
+      "restHeightAboveSurface": 0.215,
+      "boundsSize": [
+        0.221,
+        0.43,
+        0.206
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.0,
+        0
+      ],
+      "visualNormalizedSize": [
+        0.217,
+        0.43,
+        0.205
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.0,
+        0
+      ],
+      "settled": true
+    },
+    "9983e9c2fc47": {
+      "restY": 0.92,
+      "restHeightAboveSurface": 0.02,
+      "boundsSize": [
+        2.742,
+        2.434,
+        6.624
+      ],
+      "boundsCenterOffset": [
+        -0.031,
+        1.197,
+        0.515
+      ],
+      "visualNormalizedSize": [
+        2.742,
+        2.434,
+        6.624
+      ],
+      "visualNormalizedOffset": [
+        0.031,
+        -1.197,
+        -0.515
       ],
       "settled": true
     },
@@ -1404,6 +2604,356 @@
       ],
       "settled": true
     },
+    "9c73449f0310": {
+      "restY": 0.714,
+      "restHeightAboveSurface": -0.186,
+      "boundsSize": [
+        1.913,
+        2.279,
+        2.299
+      ],
+      "boundsCenterOffset": [
+        -0.407,
+        1.326,
+        -0.599
+      ],
+      "visualNormalizedSize": [
+        9.08,
+        9.479,
+        8.731
+      ],
+      "visualNormalizedOffset": [
+        -0.424,
+        -4.031,
+        -0.162
+      ],
+      "settled": true
+    },
+    "9ddd2ae58b9f": {
+      "restY": 0.934,
+      "restHeightAboveSurface": 0.034,
+      "boundsSize": [
+        0.832,
+        0.13,
+        3.327
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.031,
+        0
+      ],
+      "visualNormalizedSize": [
+        1.427,
+        1.335,
+        7.849
+      ],
+      "visualNormalizedOffset": [
+        -0.012,
+        -0.51,
+        -0.015
+      ],
+      "settled": true
+    },
+    "9efa828e4d64": {
+      "restY": 0.49,
+      "restHeightAboveSurface": -0.41,
+      "boundsSize": [
+        2.365,
+        0.0,
+        3.604
+      ],
+      "boundsCenterOffset": [
+        0.39,
+        0.41,
+        -0.019
+      ],
+      "visualNormalizedSize": [
+        4.804,
+        3.475,
+        5.741
+      ],
+      "visualNormalizedOffset": [
+        -0.055,
+        -1.814,
+        -0.159
+      ],
+      "settled": true
+    },
+    "a098be22181d": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.452,
+        0.885,
+        3.168
+      ],
+      "boundsCenterOffset": [
+        0.01,
+        0.443,
+        0.04
+      ],
+      "visualNormalizedSize": [
+        1.01,
+        1.127,
+        4.821
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.499,
+        -0.009
+      ],
+      "settled": true
+    },
+    "a0c97ff163bd": {
+      "restY": 0.921,
+      "restHeightAboveSurface": 0.021,
+      "boundsSize": [
+        1.159,
+        1.079,
+        1.278
+      ],
+      "boundsCenterOffset": [
+        0.079,
+        0.518,
+        0.001
+      ],
+      "visualNormalizedSize": [
+        1.108,
+        1.144,
+        1.275
+      ],
+      "visualNormalizedOffset": [
+        -0.14,
+        -0.522,
+        0
+      ],
+      "settled": true
+    },
+    "a101cb74ef4e": {
+      "restY": 1.01,
+      "restHeightAboveSurface": 0.11,
+      "boundsSize": [
+        1.04,
+        2.172,
+        0.346
+      ],
+      "boundsCenterOffset": [
+        -0.126,
+        0.976,
+        0.028
+      ],
+      "visualNormalizedSize": [
+        1.04,
+        2.172,
+        0.346
+      ],
+      "visualNormalizedOffset": [
+        0.126,
+        -0.976,
+        -0.028
+      ],
+      "settled": true
+    },
+    "a2ab36517523": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        1.536,
+        1.462,
+        0.862
+      ],
+      "boundsCenterOffset": [
+        0.027,
+        0.731,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        1.536,
+        1.462,
+        0.862
+      ],
+      "visualNormalizedOffset": [
+        -0.027,
+        -0.731,
+        0.0
+      ],
+      "settled": true
+    },
+    "a362f76e4de4": {
+      "restY": 1.171,
+      "restHeightAboveSurface": 0.271,
+      "boundsSize": [
+        1.07,
+        0.831,
+        2.122
+      ],
+      "boundsCenterOffset": [
+        0.083,
+        0.145,
+        0.827
+      ],
+      "visualNormalizedSize": [
+        1.07,
+        0.831,
+        2.122
+      ],
+      "visualNormalizedOffset": [
+        -0.083,
+        -0.145,
+        -0.827
+      ],
+      "settled": true
+    },
+    "a37bda331d11": {
+      "restY": 1.362,
+      "restHeightAboveSurface": 0.462,
+      "boundsSize": [
+        0.535,
+        1.321,
+        0.325
+      ],
+      "boundsCenterOffset": [
+        0.546,
+        0.199,
+        -0.105
+      ],
+      "visualNormalizedSize": [
+        3.64,
+        4.977,
+        3.909
+      ],
+      "visualNormalizedOffset": [
+        0.081,
+        -1.963,
+        -0.381
+      ],
+      "settled": true
+    },
+    "a8001fe4e55b": {
+      "restY": 0.911,
+      "restHeightAboveSurface": 0.011,
+      "boundsSize": [
+        1.563,
+        1.33,
+        1.531
+      ],
+      "boundsCenterOffset": [
+        0.011,
+        0.654,
+        0.027
+      ],
+      "visualNormalizedSize": [
+        1.564,
+        1.338,
+        1.524
+      ],
+      "visualNormalizedOffset": [
+        -0.01,
+        -0.656,
+        -0.023
+      ],
+      "settled": true
+    },
+    "a81aaeb24530": {
+      "restY": 0.889,
+      "restHeightAboveSurface": -0.011,
+      "boundsSize": [
+        2.791,
+        0.243,
+        2.905
+      ],
+      "boundsCenterOffset": [
+        -0.0,
+        0.133,
+        -0.01
+      ],
+      "visualNormalizedSize": [
+        2.925,
+        0.373,
+        2.925
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.187,
+        0
+      ],
+      "settled": true
+    },
+    "a82f1b8d7ef8": {
+      "restY": 0.899,
+      "restHeightAboveSurface": -0.001,
+      "boundsSize": [
+        1.947,
+        2.072,
+        4.549
+      ],
+      "boundsCenterOffset": [
+        0,
+        1.037,
+        0.002
+      ],
+      "visualNormalizedSize": [
+        1.947,
+        2.072,
+        4.549
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.037,
+        -0.002
+      ],
+      "settled": true
+    },
+    "a9ca220c443b": {
+      "restY": 0.835,
+      "restHeightAboveSurface": -0.065,
+      "boundsSize": [
+        1.826,
+        0.974,
+        5.087
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.552,
+        0.064
+      ],
+      "visualNormalizedSize": [
+        1.826,
+        0.974,
+        5.087
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.552,
+        -0.064
+      ],
+      "settled": true
+    },
+    "ab1150a3d2c4": {
+      "restY": 0.812,
+      "restHeightAboveSurface": -0.088,
+      "boundsSize": [
+        0.9,
+        1.0,
+        2.622
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.588,
+        -0.051
+      ],
+      "visualNormalizedSize": [
+        3.909,
+        1.017,
+        3.919
+      ],
+      "visualNormalizedOffset": [
+        0.013,
+        -0.581,
+        -0.003
+      ],
+      "settled": true
+    },
     "accec884d4ed": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -1426,6 +2976,31 @@
         0,
         -0.525,
         0
+      ],
+      "settled": true
+    },
+    "b0c30932f0e3": {
+      "restY": 0.873,
+      "restHeightAboveSurface": -0.027,
+      "boundsSize": [
+        2.966,
+        2.195,
+        6.506
+      ],
+      "boundsCenterOffset": [
+        -0.113,
+        1.125,
+        -0.476
+      ],
+      "visualNormalizedSize": [
+        2.966,
+        2.214,
+        8.365
+      ],
+      "visualNormalizedOffset": [
+        0.113,
+        -1.134,
+        1.405
       ],
       "settled": true
     },
@@ -1476,6 +3051,31 @@
         0.217,
         -3.401,
         0.217
+      ],
+      "settled": true
+    },
+    "b4ecd7e70417": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.941,
+        2.326,
+        0.339
+      ],
+      "boundsCenterOffset": [
+        0.002,
+        1.163,
+        -0.001
+      ],
+      "visualNormalizedSize": [
+        0.933,
+        2.326,
+        0.394
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -1.163,
+        0.029
       ],
       "settled": true
     },
@@ -1554,6 +3154,31 @@
       ],
       "settled": true
     },
+    "b7ab8f6a57a5": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        3.114,
+        0.577,
+        3.214
+      ],
+      "boundsCenterOffset": [
+        0.282,
+        0.288,
+        -0.21
+      ],
+      "visualNormalizedSize": [
+        3.114,
+        0.648,
+        3.214
+      ],
+      "visualNormalizedOffset": [
+        -0.282,
+        -0.253,
+        0.21
+      ],
+      "settled": true
+    },
     "b8157fe58f88": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -1579,6 +3204,31 @@
       ],
       "settled": true
     },
+    "b89d6d53ad20": {
+      "restY": 0.77,
+      "restHeightAboveSurface": -0.13,
+      "boundsSize": [
+        1.836,
+        0.0,
+        1.309
+      ],
+      "boundsCenterOffset": [
+        -0.005,
+        0.13,
+        0.011
+      ],
+      "visualNormalizedSize": [
+        3.706,
+        2.485,
+        3.837
+      ],
+      "visualNormalizedOffset": [
+        0.009,
+        -1.23,
+        -0.031
+      ],
+      "settled": true
+    },
     "b96fb2c4c431": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -1601,6 +3251,106 @@
         0.284,
         -3.405,
         0.284
+      ],
+      "settled": true
+    },
+    "bc167bcd8d13": {
+      "restY": 0.905,
+      "restHeightAboveSurface": 0.005,
+      "boundsSize": [
+        2.712,
+        1.199,
+        1.134
+      ],
+      "boundsCenterOffset": [
+        -0.002,
+        0.594,
+        -0.076
+      ],
+      "visualNormalizedSize": [
+        2.712,
+        1.199,
+        1.134
+      ],
+      "visualNormalizedOffset": [
+        0.002,
+        -0.594,
+        0.076
+      ],
+      "settled": true
+    },
+    "c041b522f250": {
+      "restY": 0.954,
+      "restHeightAboveSurface": 0.054,
+      "boundsSize": [
+        4.419,
+        0.415,
+        3.625
+      ],
+      "boundsCenterOffset": [
+        0.092,
+        0.154,
+        0.09
+      ],
+      "visualNormalizedSize": [
+        4.53,
+        0.803,
+        3.458
+      ],
+      "visualNormalizedOffset": [
+        -0.053,
+        -0.359,
+        -0.103
+      ],
+      "settled": true
+    },
+    "c0b452f20d86": {
+      "restY": 0.892,
+      "restHeightAboveSurface": -0.008,
+      "boundsSize": [
+        0.92,
+        1.77,
+        0.542
+      ],
+      "boundsCenterOffset": [
+        0.116,
+        0.893,
+        0.168
+      ],
+      "visualNormalizedSize": [
+        1.645,
+        3.867,
+        0.879
+      ],
+      "visualNormalizedOffset": [
+        0,
+        -0.809,
+        0
+      ],
+      "settled": true
+    },
+    "c1ed8374eda1": {
+      "restY": 1.012,
+      "restHeightAboveSurface": 0.112,
+      "boundsSize": [
+        1.935,
+        1.463,
+        4.364
+      ],
+      "boundsCenterOffset": [
+        0.154,
+        0.619,
+        0.482
+      ],
+      "visualNormalizedSize": [
+        1.889,
+        1.539,
+        4.363
+      ],
+      "visualNormalizedOffset": [
+        -0.186,
+        -0.59,
+        -0.482
       ],
       "settled": true
     },
@@ -1654,6 +3404,31 @@
       ],
       "settled": true
     },
+    "c41863fa539c": {
+      "restY": -0.186,
+      "restHeightAboveSurface": -1.086,
+      "boundsSize": [
+        10.004,
+        1.006,
+        0.718
+      ],
+      "boundsCenterOffset": [
+        -0.509,
+        1.589,
+        0.059
+      ],
+      "visualNormalizedSize": [
+        14.449,
+        5.181,
+        7.075
+      ],
+      "visualNormalizedOffset": [
+        -0.306,
+        -2.535,
+        -0.201
+      ],
+      "settled": true
+    },
     "c6781ed0494f": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -1676,6 +3451,56 @@
         -1.051,
         -4.922,
         -1.051
+      ],
+      "settled": true
+    },
+    "c853f74c717f": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.781,
+        0.89,
+        0.798
+      ],
+      "boundsCenterOffset": [
+        -0.005,
+        0.445,
+        0.007
+      ],
+      "visualNormalizedSize": [
+        0.842,
+        0.908,
+        0.831
+      ],
+      "visualNormalizedOffset": [
+        -0.01,
+        -0.454,
+        -0.009
+      ],
+      "settled": true
+    },
+    "ca8cb1360ad2": {
+      "restY": 1.434,
+      "restHeightAboveSurface": 0.534,
+      "boundsSize": [
+        1.188,
+        1.094,
+        1.189
+      ],
+      "boundsCenterOffset": [
+        -0.002,
+        0.012,
+        -0.017
+      ],
+      "visualNormalizedSize": [
+        1.182,
+        1.112,
+        1.181
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0,
+        0
       ],
       "settled": true
     },
@@ -1754,6 +3579,31 @@
       ],
       "settled": true
     },
+    "dc4c09bd121a": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4.077,
+        0.165,
+        3.959
+      ],
+      "boundsCenterOffset": [
+        -0.014,
+        0.083,
+        -0.053
+      ],
+      "visualNormalizedSize": [
+        4.202,
+        0.703,
+        4.013
+      ],
+      "visualNormalizedOffset": [
+        -0.004,
+        -0.354,
+        0.013
+      ],
+      "settled": true
+    },
     "de291f3dc364": {
       "restY": 0.902,
       "restHeightAboveSurface": 0.002,
@@ -1776,6 +3626,31 @@
         0.302,
         -1.036,
         -0.856
+      ],
+      "settled": true
+    },
+    "e65d80e3cc2b": {
+      "restY": 0.893,
+      "restHeightAboveSurface": -0.007,
+      "boundsSize": [
+        0.9,
+        0.0,
+        0.9
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.007,
+        0
+      ],
+      "visualNormalizedSize": [
+        3.367,
+        0.769,
+        3.127
+      ],
+      "visualNormalizedOffset": [
+        0.053,
+        -0.37,
+        0.12
       ],
       "settled": true
     },
@@ -1904,6 +3779,156 @@
       ],
       "settled": true
     },
+    "eaf420b0bba9": {
+      "restY": 0.901,
+      "restHeightAboveSurface": 0.001,
+      "boundsSize": [
+        0.246,
+        0.166,
+        0.522
+      ],
+      "boundsCenterOffset": [
+        0.004,
+        0.082,
+        0.013
+      ],
+      "visualNormalizedSize": [
+        0.276,
+        0.308,
+        0.558
+      ],
+      "visualNormalizedOffset": [
+        -0.003,
+        -0.153,
+        -0.014
+      ],
+      "settled": true
+    },
+    "f0805f43d22e": {
+      "restY": 1.154,
+      "restHeightAboveSurface": 0.254,
+      "boundsSize": [
+        1.031,
+        0.507,
+        1.524
+      ],
+      "boundsCenterOffset": [
+        0,
+        0.0,
+        0
+      ],
+      "visualNormalizedSize": [
+        1.031,
+        0.507,
+        1.524
+      ],
+      "visualNormalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "settled": true
+    },
+    "f0aec66fcdcb": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        0.371,
+        1.543,
+        0.278
+      ],
+      "boundsCenterOffset": [
+        -0.092,
+        0.772,
+        -0.0
+      ],
+      "visualNormalizedSize": [
+        1.213,
+        1.543,
+        0.523
+      ],
+      "visualNormalizedOffset": [
+        0.07,
+        -0.772,
+        0.006
+      ],
+      "settled": true
+    },
+    "f3a75a65fff3": {
+      "restY": 0.9,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        2.064,
+        2.464,
+        0.069
+      ],
+      "boundsCenterOffset": [
+        -0.008,
+        1.232,
+        -0.034
+      ],
+      "visualNormalizedSize": [
+        2.064,
+        2.464,
+        0.068
+      ],
+      "visualNormalizedOffset": [
+        0.008,
+        -1.232,
+        0.033
+      ],
+      "settled": true
+    },
+    "f47ea984ac8a": {
+      "restY": 0.899,
+      "restHeightAboveSurface": -0.001,
+      "boundsSize": [
+        0.652,
+        0.958,
+        0.652
+      ],
+      "boundsCenterOffset": [
+        0.0,
+        0.48,
+        0.001
+      ],
+      "visualNormalizedSize": [
+        0.652,
+        0.958,
+        0.652
+      ],
+      "visualNormalizedOffset": [
+        -0.0,
+        -0.48,
+        -0.001
+      ],
+      "settled": true
+    },
+    "f4d7f35a5514": {
+      "restY": 0.906,
+      "restHeightAboveSurface": 0.006,
+      "boundsSize": [
+        4.178,
+        1.15,
+        2.514
+      ],
+      "boundsCenterOffset": [
+        0.253,
+        0.569,
+        0.377
+      ],
+      "visualNormalizedSize": [
+        4.177,
+        1.155,
+        2.514
+      ],
+      "visualNormalizedOffset": [
+        -0.254,
+        -0.566,
+        -0.377
+      ],
+      "settled": true
+    },
     "f58a16b08b7e": {
       "restY": 0.9,
       "restHeightAboveSurface": -0.0,
@@ -1926,6 +3951,31 @@
         0,
         -1.05,
         0
+      ],
+      "settled": true
+    },
+    "f63e6af9d80d": {
+      "restY": 0.824,
+      "restHeightAboveSurface": -0.076,
+      "boundsSize": [
+        1.174,
+        0.366,
+        1.401
+      ],
+      "boundsCenterOffset": [
+        0.127,
+        0.259,
+        -0.025
+      ],
+      "visualNormalizedSize": [
+        1.113,
+        0.607,
+        1.401
+      ],
+      "visualNormalizedOffset": [
+        0.064,
+        -0.309,
+        0.013
       ],
       "settled": true
     },
@@ -3340,5 +5390,95 @@
         ]
       }
     }
+  },
+  "scatterRun": {
+    "measuredAt": "2026-11-04T23:02:05",
+    "note": "TC-021c scatter and category candidates, same method and corner as the first run",
+    "ids": [
+      "0073899052d5",
+      "018f162b0767",
+      "04071ef95730",
+      "0855eaad6d4e",
+      "121a09861b72",
+      "12cb5dcfb50f",
+      "16c4c8fff758",
+      "1a3858af63d1",
+      "202b98128e34",
+      "2044e00d0af9",
+      "237f8533a8a7",
+      "23d552778cc5",
+      "263614cc496f",
+      "29fbaabd04d7",
+      "2d05a16d1326",
+      "2de5c0f0942a",
+      "2e45b2b82c5f",
+      "365c201e1ba5",
+      "38f97d6f118e",
+      "4187dd4f7102",
+      "42fbf5f8e9e9",
+      "43c58d00b5ce",
+      "4481860446d2",
+      "45b3a7d9d33b",
+      "4e82591c22c2",
+      "525e6c7ae59b",
+      "53047d27cc29",
+      "5783f45a5aa4",
+      "591b34ef4bc3",
+      "5bdf92fbb93f",
+      "5eb9c64ce6d3",
+      "65485306a350",
+      "663f10c31ac1",
+      "6778d2490a90",
+      "689abb95e914",
+      "6f2e4cf2f874",
+      "6fe86df7f8d5",
+      "79198b5dad6a",
+      "7c20c6d877d8",
+      "8537f4975bb1",
+      "85b098c68ee4",
+      "86d19812e50b",
+      "87bd41651462",
+      "92a091be98e9",
+      "957a28aa75cf",
+      "95ad3b75bff0",
+      "98ab7f847a79",
+      "9983e9c2fc47",
+      "9c73449f0310",
+      "9ddd2ae58b9f",
+      "9efa828e4d64",
+      "a098be22181d",
+      "a0c97ff163bd",
+      "a101cb74ef4e",
+      "a2ab36517523",
+      "a362f76e4de4",
+      "a37bda331d11",
+      "a8001fe4e55b",
+      "a81aaeb24530",
+      "a82f1b8d7ef8",
+      "a9ca220c443b",
+      "ab1150a3d2c4",
+      "b0c30932f0e3",
+      "b4ecd7e70417",
+      "b7ab8f6a57a5",
+      "b89d6d53ad20",
+      "bc167bcd8d13",
+      "c041b522f250",
+      "c0b452f20d86",
+      "c1ed8374eda1",
+      "c3e2ac1d53ba",
+      "c41863fa539c",
+      "c853f74c717f",
+      "ca8cb1360ad2",
+      "dc4c09bd121a",
+      "e65d80e3cc2b",
+      "e7946cdd13ac",
+      "eaf420b0bba9",
+      "f0805f43d22e",
+      "f0aec66fcdcb",
+      "f3a75a65fff3",
+      "f47ea984ac8a",
+      "f4d7f35a5514",
+      "f63e6af9d80d"
+    ]
   }
 }

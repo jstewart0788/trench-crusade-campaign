@@ -43,8 +43,8 @@ describe("renderPlanSvg", () => {
       expect((svg.match(/<title>t-\d+-\d+ /g) ?? []).length).toBe(layout.stats.trenchCells);
       const walls = layout.cells.reduce((n, c) => n + (c.walls?.length ?? 0), 0);
       expect((svg.match(/<title>[NESW] wall: /g) ?? []).length).toBe(walls);
-      expect((svg.match(/<title>ramp, climbs [NESW]<\/title>/g) ?? []).length).toBe(layout.plateau?.ramps.length ?? 0);
-      expect((svg.match(/<title>plateau, top /g) ?? []).length).toBe(layout.plateau?.cells.length ?? 0);
+      expect((svg.match(/<title>ramp, climbs [NESW]<\/title>/g) ?? []).length).toBe(layout.plateaus.reduce((n, x) => n + x.ramps.length, 0));
+      expect((svg.match(/<title>plateau, top /g) ?? []).length).toBe(layout.plateaus.reduce((n, x) => n + x.cells.length, 0));
       expect(svg).toContain(`seed ${seed}`);
       expect(svg).toContain("claim-no-mans-land");
       expect((svg.match(/<circle[^>]*fill="#ffffff" fill-opacity/g) ?? []).length).toBe(layout.objectives.length);

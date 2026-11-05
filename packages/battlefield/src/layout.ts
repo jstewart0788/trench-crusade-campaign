@@ -4,7 +4,7 @@ import { Layer, Role } from "./palette.js";
 // The generator's output contract. Everything the preview, the TTS emitter and
 // the mod need is here in board inches; nothing refers back to the rng.
 
-export const LAYOUT_VERSION = "tc-battlefield-layout-v2";
+export const LAYOUT_VERSION = "tc-battlefield-layout-v3";
 
 const DirSchema = z.enum(["N", "E", "S", "W"]);
 const CellRef = z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]);
@@ -34,6 +34,22 @@ export const LayoutCell = z.object({
 });
 export type LayoutCell = z.infer<typeof LayoutCell>;
 
+export const SlotRef = z.object({
+  id: z.string(),
+  category: z.string(),
+  /** The player's half it stands in, or "centre": on the line or point the halves mirror across, its own twin, or covering an objective that has none. */
+  side: z.enum(["A", "B", "centre"]),
+  /** The twin slot on the other player's half; null for a centre slot. */
+  twin: z.string().nullable(),
+  /** Slot centre in board inches. */
+  at: Point,
+  /** What fills it: a palette piece, a palette group, or a heap of scatter. */
+  fill: z.string(),
+  /** Dressing set against a raised feature's face (its id), which it may touch. */
+  against: z.string().nullable(),
+});
+export type SlotRef = z.infer<typeof SlotRef>;
+
 export const LayoutPiece = z.object({
   id: z.string(),
   role: Role,
@@ -56,6 +72,8 @@ export const LayoutPiece = z.object({
   supportIds: z.array(z.string()),
   /** Members of one rulebook terrain piece (a wire line, a crate stack) share a group id. */
   groupId: z.string().nullable(),
+  /** The slot the piece fills (shared by a group's members); null for structural pieces. */
+  slot: SlotRef.nullable(),
   objectiveId: z.string().nullable(),
 });
 export type LayoutPiece = z.infer<typeof LayoutPiece>;
@@ -71,6 +89,8 @@ export const Layout = z.object({
   archetype: z.enum(["trench-lines", "no-mans-land"]),
   boardIn: z.number().positive(),
   cellIn: z.number().positive(),
+  parity: z.object({ kind: z.enum(["point", "mirror-x", "mirror-y", "none"]), objectivesMatch: z.boolean() }),
+  aesthetic: z.object({ primary: z.string(), secondary: z.string().nullable() }),
   grid: z.object({ cols: z.number().int().positive(), rows: z.number().int().positive() }),
   cells: z.array(LayoutCell),
   pieces: z.array(LayoutPiece),
@@ -94,14 +114,15 @@ export const Layout = z.object({
       }),
     ),
   }),
-  plateau: z
-    .object({
+  plateaus: z.array(
+    z.object({
+      id: z.string(),
       cells: z.array(CellRef),
       ramps: z.array(z.object({ cell: CellRef, up: DirSchema })),
       raisedTrench: CellRef.nullable(),
       tallPieceId: z.string().nullable(),
-    })
-    .nullable(),
+    }),
+  ),
   hills: z.array(z.object({ id: z.string(), cells: z.array(CellRef), stepped: z.array(CellRef) })),
   objectives: z.array(
     z.object({
@@ -134,9 +155,21 @@ export const Layout = z.object({
     dressingPieces: z.number().int(),
     /** Towers and multi-storey ruins at least 6in tall, objective covers included. */
     tallPieces: z.number().int(),
+    /** Scattered terrain (p64) and the dressing against raised faces. */
+    scatterPieces: z.number().int(),
+    /** Objects by slot category, structural pieces under their own names. */
+    objectsByCategory: CountByRole,
+    /** Share of objects that fill slots (terrain and scatter) rather than build the ground and trenches. */
+    dressingShare: z.number(),
+    /** The seeded draw for hills on this board, and the scenario's rate. */
+    hillsWanted: z.boolean(),
+    hillRate: z.number(),
     totalPieces: z.number().int(),
     coverShrinks: z.number().int(),
     trenchAttempts: z.number().int(),
+    /** Layouts drawn for this seed before one met the minimums (the seed's choices of look and hills held fixed), and the cover cap it used. */
+    layoutDraws: z.number().int(),
+    coverCapIn: z.number(),
     shortfalls: z.array(z.object({ typeId: z.string(), min: z.number().int(), target: z.number().int(), placed: z.number().int() })),
     /** Piece types placed that the archetype's pick-list does not name, on Jonathan's direction. */
     houseRules: z.array(z.string()),

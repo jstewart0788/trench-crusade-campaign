@@ -8,7 +8,7 @@ const palette = env.palette;
 const sense = palette.rotation.rotYSense;
 const MAT_TOP = 0.95;
 const boards: Layout[] = [1, 2, 7, 11, 23].map((seed) => generateBattlefield({ scenarioId: "claim-no-mans-land", archetype: "trench-lines", seed }, env));
-const layout = boards.find((l) => l.plateau)!;
+const layout = boards.find((l) => l.plateaus.length && l.pieces.some((p) => p.groupId))!;
 const statesOf = (l: Layout) => layoutToObjectStates(l, palette, catalog, { matTopY: MAT_TOP, matCenter: [0, 0] });
 const states = statesOf(layout);
 const urlToAsset = new Map(catalog.assets.map((a) => [a.urls.primary, a]));
@@ -55,7 +55,7 @@ describe("layoutToObjectStates", () => {
     expect(byId.get(stacked.id)!.Transform.posY).toBeCloseTo(MAT_TOP + 2.5 + 1.0, 3);
     const ramp = layout.pieces.find((p) => p.role === "ramp")!;
     expect(byId.get(ramp.id)!.Transform.posY).toBeCloseTo(MAT_TOP + 2.5 + 1.28, 3);
-    const trench = layout.pieces.find((p) => p.role === "trench-corner")!;
+    const trench = layout.pieces.find((p) => p.role.startsWith("trench-"))!;
     expect(byId.get(trench.id)!.Transform.posY).toBeCloseTo(MAT_TOP + 1.5, 3);
     const fence = layout.pieces.find((p) => p.role === "revetment" && p.baseIn < 1)!;
     expect(byId.get(fence.id)!.Transform.posY).toBeCloseTo(MAT_TOP + 0.2 + 1.2, 3);
