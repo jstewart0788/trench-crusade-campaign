@@ -260,7 +260,7 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
   line("Trench", { bold: true, size: 16 });
   const t = layout.trench;
   line(`${layout.stats.trenchCells} cells; spine ${t.mainPathLength} (${t.axis === "x" ? "west-east" : "south-north"}), ${t.branches} branches`);
-  for (const dl of t.deploymentLines) line(`${dl.player} line: ${dl.cells.length} cells (${dl.variant}), comm ${dl.commCells.length}`);
+  for (const dl of t.deploymentLines) line(`${dl.player} line: ${dl.cells.length} cells (${dl.variant}${dl.gaps.length ? `, ${dl.gaps.length + 1} sections` : ""}), comm ${dl.commCells.length}`);
   line(`straight ${layout.stats.trenchPieces.straight} · corner ${layout.stats.trenchPieces.corner} · T ${layout.stats.trenchPieces.t} · fences ${layout.stats.revetments}`);
   line(`search: ${layout.stats.trenchAttempts} attempt(s), ${layout.stats.coverShrinks} cover shrink(s)`);
   ly += 8;

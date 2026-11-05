@@ -1,4 +1,4 @@
-import { cellKey, DELTA, DIRS, edgeInDir, inGrid, isEdgeCell, isLateral, neighbours, OPPOSITE, rotateDir, type Cell, type Dir, type Grid, type Mask } from "./grid.js";
+import { cellCentre, cellKey, DELTA, DIRS, edgeInDir, inGrid, isEdgeCell, isLateral, neighbours, OPPOSITE, rotateDir, type Cell, type Dir, type Grid, type Mask } from "./grid.js";
 import { decoratedSides, PaletteError, piecesByRole, rotationsForOpenings, type Palette, type PalettePiece, type RotYSense } from "./palette.js";
 import { mapCell, sideOf, type Parity } from "./parity.js";
 import type { Rng } from "./rng.js";
@@ -91,6 +91,8 @@ export interface DeploymentLine {
   variant: "full" | "from-low" | "from-high";
   /** Track index where the line jogs inward, or null for a straight line. */
   jog: number | null;
+  /** Track indices left as ground between the line's sections (No Man's Land); each section's ends open onto it. */
+  gaps: number[];
   /** Cells of the communication trench joining this line to the rest. */
   commCells: Cell[];
 }
@@ -103,6 +105,8 @@ export interface TrenchNetwork {
   end: EdgeOpening | null;
   /** Every place the network runs off the board. */
   exits: EdgeOpening[];
+  /** Section ends that open onto the ground of a gap in a line, as an end does at the board edge. */
+  openEnds: EdgeOpening[];
   mainPathLength: number;
   branches: number;
   loops: number;
@@ -122,6 +126,7 @@ export class TrenchError extends Error {
 class Network {
   private readonly set = new Map<string, Cell>();
   readonly exits: EdgeOpening[] = [];
+  readonly openEnds: EdgeOpening[] = [];
   /** Set when no bending cross trench fitted and a straight one joins the lines. */
   straightCross = false;
   constructor(
@@ -146,8 +151,11 @@ class Network {
   exitsAt(c: number, r: number): Dir[] {
     return this.exits.filter((e) => e.c === c && e.r === r).map((e) => e.dir);
   }
+  openEndsAt(c: number, r: number): Dir[] {
+    return this.openEnds.filter((e) => e.c === c && e.r === r).map((e) => e.dir);
+  }
   openingCount(c: number, r: number): number {
-    return this.trenchNeighbours(c, r).length + this.exitsAt(c, r).length;
+    return this.trenchNeighbours(c, r).length + this.exitsAt(c, r).length + this.openEndsAt(c, r).length;
   }
   /** Would adding (c, r) complete a 2x2 block of trench cells? */
   makes2x2(c: number, r: number): boolean {
@@ -186,7 +194,7 @@ interface Search {
 
 // ---- deployment lines ---------------------------------------------------
 
-type LinePlan = { variant: DeploymentLine["variant"]; from: number; to: number; jog: number | null };
+type LinePlan = { variant: DeploymentLine["variant"]; from: number; to: number; jog: number | null; gaps?: number[] };
 
 // A deployment line runs along its zone's board-edge column and jogs once into
 // the next column in for a single bay (Jonathan: real fire trenches bend; most
@@ -206,6 +214,7 @@ function innerCell(track: DeploymentTrack, i: number): Cell {
 function lineCells(track: DeploymentTrack, plan: LinePlan): Cell[] {
   const out: Cell[] = [];
   for (let i = plan.from; i <= plan.to; i++) {
+    if (plan.gaps?.includes(i)) continue;
     if (plan.jog !== null && i >= plan.jog && i <= plan.jog + JOG_SPAN) {
       if (i === plan.jog) out.push(track.cells[i]!, innerCell(track, i));
       else if (i === plan.jog + JOG_SPAN) out.push(innerCell(track, i), track.cells[i]!);
@@ -222,14 +231,42 @@ function jogsFor(from: number, to: number, opts: TrenchOptions): number[] {
   return out;
 }
 
+// No Man's Land keeps its trenches wholly inside zones one cell deep, so a line
+// cannot jog: it breaks instead into straight sections of 2 to maxStraightRun
+// cells with one cell of ground between them (Jonathan: no single long trench in
+// a deployment zone). A section's end opens onto that ground as an end does at
+// the board edge.
+const MIN_SECTION = 2;
+
+/** Every way to break track cells from..to into sections with one-cell gaps between them, as the gaps' track indices. */
+function sectionGaps(from: number, to: number, opts: TrenchOptions): number[][] {
+  const out: number[][] = [];
+  const walk = (start: number, gaps: number[]) => {
+    for (let len = MIN_SECTION; len <= opts.maxStraightRun; len++) {
+      const end = start + len - 1;
+      if (end === to) {
+        if (gaps.length) out.push(gaps);
+      } else if (end + 1 + MIN_SECTION - 1 <= to) walk(end + 2, [...gaps, end + 1]);
+    }
+  };
+  walk(from, []);
+  return out;
+}
+
 /** Every line shape the track allows, in seeded order: full length, or a run from one board edge, each with a seeded jog. */
 function linePlans(net: Network, rng: Rng, track: DeploymentTrack, opts: TrenchOptions): LinePlan[] {
   const n = track.cells.length;
   const fits = (plan: LinePlan) => lineCells(track, plan).every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0);
   const options: { item: LinePlan; weight: number }[] = [];
   const add = (variant: LinePlan["variant"], from: number, to: number, weight: number) => {
-    // No Man's Land keeps its trenches wholly inside the zones, so its lines stay in the edge column.
-    const jogs = opts.mode === "deployment-only" ? [null] : rng.shuffle(jogsFor(from, to, opts));
+    if (opts.mode === "deployment-only") {
+      // Two sections over three as often: fewer, longer bays read as a line.
+      const shapes = sectionGaps(from, to, opts).map((gaps) => ({ variant, from, to, jog: null, gaps })).filter(fits);
+      for (const plan of shapes) options.push({ item: plan, weight: (weight * (plan.gaps.length === 1 ? 2 : 1)) / shapes.length });
+      if (!shapes.length && to - from + 1 <= opts.maxStraightRun && fits({ variant, from, to, jog: null })) options.push({ item: { variant, from, to, jog: null }, weight });
+      return;
+    }
+    const jogs = rng.shuffle(jogsFor(from, to, opts));
     const plan = jogs.map((jog) => ({ variant, from, to, jog })).find(fits);
     if (plan) options.push({ item: plan, weight });
   };
@@ -253,6 +290,27 @@ function layDeploymentLine(net: Network, rng: Rng, track: DeploymentTrack, opts:
     removeLine(net, laid);
   }
   return null;
+}
+
+/**
+ * No Man's Land lines on twinned boards: line B is line A's image under the
+ * parity, its gaps at the images of A's, so both players get the same
+ * sections. Returns false when no shape fits both zones.
+ */
+function layTwinSections(net: Network, rng: Rng, opts: TrenchOptions, lines: DeploymentLine[], parity: Parity): boolean {
+  const g = net.grid;
+  const [ta, tb] = [...opts.tracks].sort((a, b) => (sideOf(parity, ...cellCentre(g, a.cells[0]!.c, a.cells[0]!.r)) === "A" ? -1 : 1) - (sideOf(parity, ...cellCentre(g, b.cells[0]!.c, b.cells[0]!.r)) === "A" ? -1 : 1)) as [DeploymentTrack, DeploymentTrack];
+  const indexIn = (track: DeploymentTrack, cell: Cell) => track.cells.findIndex((x) => x.c === cell.c && x.r === cell.r);
+  for (const plan of linePlans(net, rng, ta, opts).filter((p) => p.variant === "full")) {
+    const gapsB = (plan.gaps ?? []).map((i) => indexIn(tb, mapCell(parity, g, ta.cells[i]!)));
+    if (gapsB.some((i) => i < 0)) continue;
+    const planB: LinePlan = { variant: "full", from: 0, to: tb.cells.length - 1, jog: null, gaps: gapsB };
+    const cellsB = lineCells(tb, planB);
+    if (!cellsB.every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) continue;
+    lines.push(addLine(net, ta, plan).line, addLine(net, tb, planB).line);
+    return true;
+  }
+  return false;
 }
 
 // ---- the spine ----------------------------------------------------------
@@ -471,12 +529,14 @@ const junctionsOf = (line: DeploymentLine): Cell[] =>
 /** Line cells that can take a communication trench toward the zone's inside: the interior for a full line, the inner end otherwise. */
 const junctionCandidates = (net: Network, line: DeploymentLine): Cell[] => junctionsOf(line).filter((cell) => net.openingCount(cell.c, cell.r) < 3);
 
-function addLine(net: Network, track: DeploymentTrack, plan: LinePlan): { line: DeploymentLine; exits: EdgeOpening[] } {
-  return addCells(net, track, lineCells(track, plan), plan.variant, plan.jog);
+type LaidLine = { line: DeploymentLine; exits: EdgeOpening[]; openEnds: EdgeOpening[] };
+
+function addLine(net: Network, track: DeploymentTrack, plan: LinePlan): LaidLine {
+  return addCells(net, track, lineCells(track, plan), plan.variant, plan.jog, plan.gaps ?? []);
 }
 
-/** Lays given line cells (path order from the track's low end) with exits where they reach the track's ends. */
-function addCells(net: Network, track: DeploymentTrack, cells: Cell[], variant: DeploymentLine["variant"], jog: number | null): { line: DeploymentLine; exits: EdgeOpening[] } {
+/** Lays given line cells (path order from the track's low end) with exits where they reach the track's ends, and open ends at its gaps. */
+function addCells(net: Network, track: DeploymentTrack, cells: Cell[], variant: DeploymentLine["variant"], jog: number | null, gaps: number[] = []): LaidLine {
   const n = track.cells.length;
   for (const cell of cells) net.add(cell.c, cell.r);
   const exits: EdgeOpening[] = [];
@@ -484,12 +544,15 @@ function addCells(net: Network, track: DeploymentTrack, cells: Cell[], variant: 
   if (variant !== "from-high" && at(0)) exits.push({ ...track.cells[0]!, dir: lowDir(track.along) });
   if (variant !== "from-low" && at(n - 1)) exits.push({ ...track.cells[n - 1]!, dir: highDir(track.along) });
   net.exits.push(...exits);
-  return { line: { zoneLabel: track.zoneLabel, player: track.player, side: track.side, cells, variant, jog, commCells: [] }, exits };
+  const openEnds = gaps.flatMap((g) => [{ ...track.cells[g - 1]!, dir: highDir(track.along) }, { ...track.cells[g + 1]!, dir: lowDir(track.along) }]);
+  net.openEnds.push(...openEnds);
+  return { line: { zoneLabel: track.zoneLabel, player: track.player, side: track.side, cells, variant, jog, gaps: [...gaps].sort((a, b) => a - b), commCells: [] }, exits, openEnds };
 }
 
-function removeLine(net: Network, laid: { line: DeploymentLine; exits: EdgeOpening[] }): void {
+function removeLine(net: Network, laid: LaidLine): void {
   for (const cell of laid.line.cells) net.remove(cell.c, cell.r);
   for (const exit of laid.exits) net.exits.splice(net.exits.indexOf(exit), 1);
+  for (const end of laid.openEnds) net.openEnds.splice(net.openEnds.indexOf(end), 1);
 }
 
 /**
@@ -849,6 +912,8 @@ export function layTrenchNetwork(grid: Grid, blocked: Mask, rng: Rng, opts: Tren
     const along = opts.tracks[0]!.along;
     start = net.exits.find((e) => e.dir === lowDir(along)) ?? null;
     end = net.exits.find((e) => e.dir === highDir(along)) ?? null;
+  } else if (opts.mode === "deployment-only" && opts.parity && opts.parity.kind !== "none" && opposedTracks(opts.tracks)) {
+    if (!layTwinSections(net, rng, opts, lines, opts.parity)) for (const track of opts.tracks) warnings.push(`no room for a deployment line in ${track.zoneLabel}`);
   } else {
     for (const track of opts.tracks) {
       const line = layDeploymentLine(net, rng, track, opts);
@@ -881,13 +946,13 @@ export function layTrenchNetwork(grid: Grid, blocked: Mask, rng: Rng, opts: Tren
     .cells()
     .sort((a, b) => a.r - b.r || a.c - b.c)
     .map((cell) => {
-      const openings = DIRS.filter((d) => net.trenchNeighbours(cell.c, cell.r).some((n) => n.dir === d) || net.exitsAt(cell.c, cell.r).includes(d));
+      const openings = DIRS.filter((d) => net.trenchNeighbours(cell.c, cell.r).some((n) => n.dir === d) || net.exitsAt(cell.c, cell.r).includes(d) || net.openEndsAt(cell.c, cell.r).includes(d));
       if (openings.length < 2 || openings.length > 3) throw new TrenchError(`cell ${cell.c},${cell.r} has ${openings.length} openings`);
       return { c: cell.c, r: cell.r, openings };
     });
   const axis = opts.tracks[0]?.along ?? opts.axis;
   if (net.straightCross) warnings.push("the cross trench runs straight: no jog fits between the covers");
-  return { axis, mode: opts.mode, cells, start, end, exits: [...net.exits], mainPathLength, branches, loops, deploymentLines: lines, straightCross: net.straightCross, warnings };
+  return { axis, mode: opts.mode, cells, start, end, exits: [...net.exits], openEnds: [...net.openEnds], mainPathLength, branches, loops, deploymentLines: lines, straightCross: net.straightCross, warnings };
 }
 
 /**

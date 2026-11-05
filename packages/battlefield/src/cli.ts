@@ -59,7 +59,7 @@ function writeOut(path: string, content: string): void {
 }
 
 function usage(): never {
-  console.error("usage: generate --scenario <id> --seed <n> [--archetype trench-lines|no-mans-land, default the scenario's own] [--board 36] [--axis x|y|auto] [--branches n|auto] [--out layout.json] [--tts objects.json] [--svg plan.svg] [--mat-top 0.95] [--root <repo>]");
+  console.error("usage: generate --scenario <id> --seed <n> [--archetype trench-lines|no-mans-land, default the scenario's own] [--board <in>, default the scenario's own] [--axis x|y|auto] [--branches n|auto] [--out layout.json] [--tts objects.json] [--svg plan.svg] [--mat-top 0.95] [--root <repo>]");
   console.error("       preview [--scenario <id>] [--archetype trench-lines|no-mans-land, default the scenario's own] [--seeds 1-10] [--out-dir packages/battlefield/preview] [--root <repo>]");
   process.exit(2);
 }
@@ -68,7 +68,8 @@ function main(): void {
   const { command, flags } = parseArgs(process.argv.slice(2));
   const root = resolve(flags.get("root") ?? DEFAULT_REPO_ROOT);
   const env = loadGeneratorEnv(root);
-  const boardIn = Number(flags.get("board") ?? 36);
+  // Left out, each scenario is laid at its own battlefield size.
+  const boardIn = flags.has("board") ? Number(flags.get("board")) : undefined;
   const options = optionsFromFlags(flags);
   // Left out, each scenario is laid as its own archetype.
   const archetypeFlag = flags.get("archetype");

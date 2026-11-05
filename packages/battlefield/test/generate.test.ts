@@ -27,6 +27,7 @@ import {
   SCATTER_ROLES,
   sideOf,
   STRUCTURAL_ROLES,
+  TALL_EDGE_GAP_IN,
   TERRAIN_YAW_JITTER_DEG,
   trenchComponents,
   trenchConnectsEdges,
@@ -109,6 +110,8 @@ const HILL_GROUPS: { rate: number; boards: Layout[] }[] = [
 ];
 // Every scenario here mirrors across the line between its zones; point symmetry is laid on request.
 const POINT_BOARDS = seedsFrom(1, 40).map((seed) => generateBattlefield({ scenarioId: "relic-hunt", archetype: "trench-lines", seed, options: { parity: "point" } }, env));
+// Their own archetype for the scenarios that list No Man's Land.
+const NML_BOARDS = ["claim-no-mans-land", "relic-hunt", "supply-raid", "the-high-ground"].flatMap((id) => seedsFrom(1, 40).map((seed) => gen(id, seed, "no-mans-land")));
 
 describe("generateBattlefield", () => {
   it("is deterministic: the same seed gives byte-identical layouts, different seeds differ", () => {
@@ -211,7 +214,8 @@ describe("generateBattlefield", () => {
           const expected: Dir[] = [];
           for (const dir of ["N", "E", "S", "W"] as const) {
             const [dc, dr] = DELTA[dir];
-            if (set.has(cellKey(cell.c + dc, cell.r + dr)) || layout.trench.exits.some((e) => e.c === cell.c && e.r === cell.r && e.dir === dir)) expected.push(dir);
+            const opens = (e: { c: number; r: number; dir: string }) => e.c === cell.c && e.r === cell.r && e.dir === dir;
+            if (set.has(cellKey(cell.c + dc, cell.r + dr)) || layout.trench.exits.some(opens) || layout.trench.openEnds.some(opens)) expected.push(dir);
           }
           expect(cell.openings, `seed ${layout.seed} cell ${cell.c},${cell.r}`).toEqual(expected);
           expect(expected.length).toBeGreaterThanOrEqual(2);
@@ -605,7 +609,7 @@ describe("generateBattlefield", () => {
       const irregular = big.filter((h) => spread(h).cv > 0.1).length / big.length;
       expect(irregular).toBeGreaterThan(0.8);
       for (const layout of boards) {
-        const shapes = heapsOf(layout).filter((h) => h.length >= 3).map((h) => spread(h).d.map((v) => v.toFixed(2)).sort().join(","));
+        const shapes = heapsOf(layout).filter((h) => h.length >= 3).map((h) => spread(h).d.map((v) => v.toFixed(3)).sort().join(","));
         // A heap and its mirrored twin share a shape; no third heap does.
         const counts = new Map<string, number>();
         for (const k of shapes) counts.set(k, (counts.get(k) ?? 0) + 1);
@@ -614,8 +618,8 @@ describe("generateBattlefield", () => {
     });
 
     it("lays the scatter before the house fill: Fields keeps a12a0d8's 36 a board and Claim its measured ceiling, most of it in heaps of two to five, under 200 objects a board", () => {
-      // Claim's minimums, five objective covers, its trench lines and the raised centre leave room for about 29 (a12a0d8 laid 30.9 round a straighter, smaller network).
-      for (const [id, least] of [["claim-no-mans-land", 28], ["fields-of-glory", 36.3]] as const) {
+      // Claim's minimums, five objective covers, its trench lines, the raised centre and the edge gap for tall pieces leave room for about 27 (a12a0d8 laid 30.9 round a straighter, smaller network).
+      for (const [id, least] of [["claim-no-mans-land", 27], ["fields-of-glory", 36.3]] as const) {
         const set = LAYOUTS.get(id)!;
         const pieces = set.flatMap((l) => l.pieces.filter(isScatter)).length;
         const inHeaps = set.flatMap(heapsOf).filter((h) => h.length >= 2 && h.length <= 5).reduce((n, h) => n + h.length, 0);
@@ -644,9 +648,8 @@ describe("generateBattlefield", () => {
         }
         return best;
       };
-      // Their own archetype for the scenarios that list No Man's Land, where face dressing lines up most.
-      const own = ["claim-no-mans-land", "relic-hunt", "supply-raid", "the-high-ground"].flatMap((id) => seedsFrom(1, 40).map((seed) => gen(id, seed, "no-mans-land")));
-      const all = [...boards, ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...own];
+      // No Man's Land boards are where face dressing lines up most.
+      const all = [...boards, ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...NML_BOARDS];
       expect(all.length).toBeGreaterThan(700);
       for (const layout of all) {
         const singles = layout.pieces.filter((p) => isScatter(p) && !p.groupId).map((p) => p.position);
@@ -757,6 +760,68 @@ describe("generateBattlefield", () => {
         expect(inside, `seed ${seed} cell ${cell.c},${cell.r}`).toBe(true);
       }
     }
+  });
+
+  it("breaks each No Man's Land line into mirrored sections of 2 to 6 straight cells, one cell of ground between, their ends open onto it", () => {
+    let lines = 0;
+    for (const layout of NML_BOARDS) {
+      const along = (c: number, r: number) => (layout.trench.axis === "y" ? r : c);
+      const byKey = new Map(trenchCells(layout).map((c) => [cellKey(c.c, c.r), c]));
+      for (const line of layout.trench.deploymentLines) {
+        lines++;
+        const at = line.cells.map(([c, r]) => along(c, r)).sort((a, b) => a - b);
+        const runs: number[][] = [];
+        for (const i of at) (runs.length && runs.at(-1)!.at(-1)! === i - 1 ? runs.at(-1)!.push(i) : runs.push([i]));
+        expect(runs.length, `${layout.scenarioId} seed ${layout.seed} ${line.zoneLabel} is one straight line`).toBeGreaterThan(1);
+        for (const run of runs) {
+          expect(run.length, `${layout.scenarioId} seed ${layout.seed} ${line.zoneLabel}`).toBeGreaterThanOrEqual(2);
+          expect(run.length, `${layout.scenarioId} seed ${layout.seed} ${line.zoneLabel}`).toBeLessThanOrEqual(6);
+        }
+        for (let k = 1; k < runs.length; k++) {
+          expect(runs[k]![0]! - runs[k - 1]!.at(-1)!, `${layout.scenarioId} seed ${layout.seed} gap`).toBe(2);
+          expect(line.gaps).toContain(runs[k]![0]! - 1);
+        }
+        // A section end beside a gap opens onto it, so it is a straight like the rest of the section.
+        for (const [c, r] of line.cells) expect(byKey.get(cellKey(c, r))!.openings.length, `${layout.scenarioId} seed ${layout.seed} ${c},${r}`).toBe(2);
+      }
+      const [a, b] = layout.trench.deploymentLines;
+      if (a && b) {
+        const p = parityOf(layout);
+        const mapped = a.cells.map(([c, r]) => cellKey(mapCell(p, grid, { c, r }).c, mapCell(p, grid, { c, r }).r)).sort();
+        expect(mapped, `${layout.scenarioId} seed ${layout.seed}`).toEqual(b.cells.map(([c, r]) => cellKey(c, r)).sort());
+      }
+    }
+    expect(lines).toBeGreaterThan(300);
+  });
+
+  it("stands no lone flat wall as a ruin or building, and keeps everything tall a 32mm base off the board edge", () => {
+    // A 32mm base, so models on 25mm and 32mm bases can pass behind.
+    const BASE_32MM_IN = 32 / 25.4;
+    expect(TALL_EDGE_GAP_IN).toBeGreaterThanOrEqual(BASE_32MM_IN);
+    // A single wall: one thin side, long against it (measured from the palette footprints).
+    const oneWall = (p: { footprintIn: readonly [number, number] }) => Math.min(...p.footprintIn) <= 2.3 && Math.max(...p.footprintIn) >= 2.5 * Math.min(...p.footprintIn);
+    for (const p of palette.pieces.filter((x) => x.enabled && (x.role === "ruin" || x.role === "building"))) expect(oneWall(p), p.id).toBe(false);
+    const all = [...[...LAYOUTS.values()].flat(), ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...NML_BOARDS];
+    let tall = 0;
+    for (const layout of all) {
+      for (const p of layout.pieces) {
+        if (p.cells || isScatter(p) || !["ruin", "building", "tower", "cover", "landmark", "wire"].includes(p.role)) continue;
+        tall++;
+        const r = rectOf(p);
+        expect(Math.min(r.x0, r.y0, layout.boardIn - r.x1, layout.boardIn - r.y1), `${layout.scenarioId} seed ${layout.seed} ${p.id} ${p.paletteId}`).toBeGreaterThanOrEqual(BASE_32MM_IN - ROUNDING);
+      }
+    }
+    expect(tall).toBeGreaterThan(5000);
+  });
+
+  it("lays a scenario at its own battlefield size when none is asked for, and its objective covers clear of ramp feet", () => {
+    expect(generateBattlefield({ scenarioId: "armoured-train", seed: 2 }, env).boardIn).toBe(48);
+    expect(generateBattlefield({ scenarioId: "dont-breathe", seed: 2 }, env).boardIn).toBe(48);
+    const claim = generateBattlefield({ scenarioId: "claim-no-mans-land", seed: 2 }, env);
+    expect(claim.boardIn).toBe(36);
+    expect(claim.stats.warnings.some((w) => w.startsWith("scenario expects"))).toBe(false);
+    // Hunt for Heroes' covers once stood on the foot of the centre hill's ramp.
+    for (const layout of HILL_GROUPS.flatMap((g) => g.boards).filter((l) => l.scenarioId === "hunt-for-heroes")) expect(layout.stats.warnings.filter((w) => w.includes("breaks a spacing rule")), `seed ${layout.seed}`).toEqual([]);
   });
 
   it("reads the scenario prose into placement rules", () => {

@@ -4,7 +4,7 @@ import { Layer, Role } from "./palette.js";
 // The generator's output contract. Everything the preview, the TTS emitter and
 // the mod need is here in board inches; nothing refers back to the rng.
 
-export const LAYOUT_VERSION = "tc-battlefield-layout-v4";
+export const LAYOUT_VERSION = "tc-battlefield-layout-v5";
 
 const DirSchema = z.enum(["N", "E", "S", "W"]);
 const CellRef = z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]);
@@ -105,6 +105,8 @@ export const Layout = z.object({
     start: EdgeOpeningSchema.nullable(),
     end: EdgeOpeningSchema.nullable(),
     exits: z.array(EdgeOpeningSchema),
+    /** Section ends that open onto the ground of a gap in a deployment line. */
+    openEnds: z.array(EdgeOpeningSchema),
     mainPathLength: z.number().int(),
     branches: z.number().int(),
     loops: z.number().int(),
@@ -117,6 +119,8 @@ export const Layout = z.object({
         cells: z.array(CellRef),
         /** Track index of the line's jog into the next column in; null for a straight line (No Man's Land). */
         jog: z.number().int().nullable(),
+        /** Track indices left as ground between the line's sections (No Man's Land). */
+        gaps: z.array(z.number().int()),
         /** Line cells wholly inside the zone (the jog's bay straddles the zone's edge). */
         insideCells: z.number().int(),
         commCells: z.array(CellRef),

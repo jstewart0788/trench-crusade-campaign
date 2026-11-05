@@ -113,6 +113,7 @@ export interface GenerateInput {
   /** Left out, the scenario's own (see scenarioArchetype). */
   archetype?: Archetype;
   seed: number;
+  /** Left out, the scenario's own battlefield size (36in where it is not square). */
   boardIn?: number;
   options?: Partial<GenerateOptions>;
 }
@@ -215,7 +216,9 @@ function layTrenchWithCovers(p: LayInputs, raised: RaisedPlan | null, maxShrinks
   const pieces = raisedCells.map((cell) => cellRect(grid, cell.c, cell.r));
   const fixed = raised?.covers ?? [];
   const sightAxis: Axis | null = tracks[0]?.along === "y" ? "x" : tracks[0]?.along === "x" ? "y" : null;
-  const rules = { grid, parity: p.parity, maxCoverSideIn: opts.maxCoverSideIn, edgeMarginIn: opts.edgeMarginIn, spacingIn: opts.spacingIn, trenchClearanceIn: opts.trenchClearanceIn, avoid, pieces, sightAxis, repeatCap: opts.repeatCap };
+  // The ramps' feet stay open ground, so no objective cover may stand on one.
+  const feet = raised ? [...raised.plateaus, ...raised.hills].flatMap((x) => x.ramps.map((r) => cellRect(grid, r.cell.c - DELTA[r.up][0], r.cell.r - DELTA[r.up][1]))) : [];
+  const rules = { grid, parity: p.parity, maxCoverSideIn: opts.maxCoverSideIn, edgeMarginIn: opts.edgeMarginIn, spacingIn: opts.spacingIn, trenchClearanceIn: opts.trenchClearanceIn, avoid, pieces, clear: feet, sightAxis, repeatCap: opts.repeatCap };
   const base = raised ? p.blocked.or(raised.keepOut) : p.blocked;
   let attempts = 0;
   let shrinks = 0;
@@ -377,7 +380,8 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
   const archetype = env.archetypes.find((a) => a.id === archetypeId);
   if (!archetype) throw new GenerateError(`archetype ${archetypeId} missing from terrain data`);
   const opts: GenerateOptions = { ...DEFAULT_GENERATE_OPTIONS, ...input.options };
-  const boardIn = input.boardIn ?? 36;
+  const square = scenario.battlefield.widthIn === scenario.battlefield.depthIn;
+  const boardIn = input.boardIn ?? (square ? scenario.battlefield.widthIn : 36);
   const grid = createGrid(boardIn, env.palette.cellIn);
   const palette = env.palette;
   const sense = palette.rotation.rotYSense;
@@ -703,6 +707,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
       start: network.start,
       end: network.end,
       exits: network.exits,
+      openEnds: network.openEnds,
       mainPathLength: network.mainPathLength,
       branches: network.branches,
       loops: network.loops,
@@ -719,6 +724,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
           variant: l.variant,
           cells: l.cells.map((c) => [c.c, c.r] as [number, number]),
           jog: l.jog,
+          gaps: l.gaps,
           insideCells: inside,
           commCells: l.commCells.map((c) => [c.c, c.r] as [number, number]),
         };

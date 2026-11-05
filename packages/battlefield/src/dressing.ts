@@ -236,8 +236,17 @@ export interface AllowOptions {
 }
 
 /** The placement rules for one rectangle. */
+// Walls, ruins, buildings and towers keep a 32mm base's width (1.3in) off the board edge, so models on
+// 25mm and 32mm bases (84 of the 130 units in the rules data) can pass behind them. A 40mm gap (1.6in)
+// left Claim's edge-side objectives a ruined building only half the time, against three in four.
+export const TALL_EDGE_GAP_IN = 1.3;
+const TALL_ROLES: readonly Role[] = ["ruin", "building", "tower", "cover", "landmark", "wire"];
+
+/** How far a piece keeps from the board edge: the edge margin, or for anything tall a model's way past. */
+export const edgeGapFor = (ctx: { edgeMarginIn: number }, role: Role, scatter = false): number => (!scatter && TALL_ROLES.includes(role) ? Math.max(ctx.edgeMarginIn, TALL_EDGE_GAP_IN) : ctx.edgeMarginIn);
+
 export function rectAllowed(ctx: PlacementContext, rect: Rect, role: Role, opts: AllowOptions = {}): boolean {
-  if (!rectInside(rect, boardRect(ctx.grid, ctx.edgeMarginIn))) return false;
+  if (!rectInside(rect, boardRect(ctx.grid, edgeGapFor(ctx, role, opts.scatter)))) return false;
   for (const t of ctx.trenchRects) if (rectsWithin(rect, t, ctx.trenchClearanceIn)) return false;
   // Cells under the bounds, then under the turned outline itself where a mask asks.
   const bounded = cellsInRect(ctx.grid, { x0: rect.x0, y0: rect.y0, x1: rect.x1, y1: rect.y1 });
@@ -422,16 +431,16 @@ const jitteredYaw = (ctx: PlacementContext, placeable: Placeable, quarter: numbe
  * their ends and a point between. Candidates only: the full rules still
  * decide.
  */
-function openSpots(ctx: PlacementContext, w: number, d: number, scatter: boolean): [number, number][] {
+function openSpots(ctx: PlacementContext, w: number, d: number, scatter: boolean, margin = ctx.edgeMarginIn): [number, number][] {
   const obstacles: { r: Rect; gap: number }[] = [
     ...ctx.trenchRects.map((r) => ({ r, gap: ctx.trenchClearanceIn })),
     ...ctx.placed.flatMap((p) => p.rects.map((r) => ({ r, gap: scatter || p.scatter ? ctx.scatterGapIn : ctx.spacingIn }))),
   ];
   for (let c = 0; c < ctx.grid.cols; c++) for (let r = 0; r < ctx.grid.rows; r++) if (ctx.featureMask.get(c, r) || ctx.keepClear.get(c, r)) obstacles.push({ r: cellRect(ctx.grid, c, r), gap: 0.001 });
-  const lo = ctx.edgeMarginIn + w / 2;
-  const hi = ctx.grid.boardIn - ctx.edgeMarginIn - w / 2;
+  const lo = margin + w / 2;
+  const hi = ctx.grid.boardIn - margin - w / 2;
   const out: [number, number][] = [];
-  for (const cy of snugCoords(ctx, d, scatter, "y")) {
+  for (const cy of snugCoords(ctx, d, scatter, "y", margin)) {
     const y0 = cy - d / 2;
     const y1 = cy + d / 2;
     const blocked: [number, number][] = [];
@@ -465,9 +474,9 @@ function openSpots(ctx: PlacementContext, w: number, d: number, scatter: boolean
  * rules ask, plus a coarse sweep: tight spots a random or lattice search
  * steps over.
  */
-function snugCoords(ctx: PlacementContext, size: number, scatter: boolean, axis: "x" | "y"): number[] {
-  const lo = ctx.edgeMarginIn + size / 2;
-  const hi = ctx.grid.boardIn - ctx.edgeMarginIn - size / 2;
+function snugCoords(ctx: PlacementContext, size: number, scatter: boolean, axis: "x" | "y", margin = ctx.edgeMarginIn): number[] {
+  const lo = margin + size / 2;
+  const hi = ctx.grid.boardIn - margin - size / 2;
   const out = new Set<number>([lo, hi]);
   const add = (v: number) => {
     if (v >= lo - 1e-9 && v <= hi + 1e-9) out.add(Math.round(v * 1000) / 1000);
@@ -552,7 +561,7 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
   for (const [pa, pb] of tries) {
     const candidates: { a: { placeable: Placeable; rect: Rect; rotY: number }; b: { placeable: Placeable; rect: Rect; rotY: number } | null; score: number }[] = [];
     const keep = opts.keep ?? (scatter ? 1 : 8);
-    const margin = ctx.edgeMarginIn;
+    const margin = edgeGapFor(ctx, pa.role, scatter);
     const span = ctx.grid.boardIn - 2 * margin;
     const consider = (rotY: number, cx: number, cy: number) => {
       if (twinned && sideOf(ctx.parity, cx, cy) !== "A") return;
@@ -585,7 +594,7 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
       for (const quarter of rotations.filter((r, i) => rotations.findIndex((o) => o % 180 === r % 180) === i)) {
         const rotY = jitteredYaw(ctx, pa, quarter);
         const [w, d] = rotatedFootprint(pa, rotY);
-        for (const spot of ctx.rng.shuffle(openSpots(ctx, w, d, scatter))) {
+        for (const spot of ctx.rng.shuffle(openSpots(ctx, w, d, scatter, margin))) {
           if (candidates.length >= keep) break;
           if (!twinned || sideOf(ctx.parity, ...spot) === "A") consider(rotY, ...spot);
         }
@@ -606,7 +615,7 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
 export function placeOnMirrorLine(ctx: PlacementContext, placeable: Placeable, category: string, opts: PairOptions): Placed[] {
   if (ctx.parity.kind === "none") return [];
   const mid = ctx.grid.boardIn / 2;
-  const margin = ctx.edgeMarginIn;
+  const margin = edgeGapFor(ctx, placeable.role);
   const best: { rect: Rect; rotY: number; score: number }[] = [];
   for (const rotY of rotationOrder(ctx, placeable)) {
     const [w, d] = rotatedFootprint(placeable, rotY);
@@ -689,6 +698,8 @@ export interface CoverRules {
   trenchClearanceIn: number;
   /** Rects the covers keep the trench clearance from (the deployment trench tracks). */
   avoid: Rect[];
+  /** Cells no cover may overlap: the feet of planned ramps. */
+  clear: Rect[];
   /** Footprints already fixed (raised features), which covers keep the piece spacing from. */
   pieces: Rect[];
   /** The axis the deployment zones face each other along, or null. */
@@ -715,7 +726,8 @@ const coverFits = (rect: Rect, point: readonly [number, number]): boolean => rec
  */
 export function chooseObjectiveCovers(palette: Palette, rng: Rng, objectives: readonly ObjectiveSpec[], fixed: readonly CoverChoice[], levels: Map<string, number>, rules: CoverRules): CoverChoice[] {
   const out: CoverChoice[] = [];
-  const board = boardRect(rules.grid, rules.edgeMarginIn);
+  // Objective covers are the board's standing pieces, so they keep the tall pieces' gap from the edge.
+  const board = boardRect(rules.grid, Math.max(rules.edgeMarginIn, TALL_EDGE_GAP_IN));
   const done = new Set(fixed.map((c) => c.objectiveId));
   const taken = () => [...fixed, ...out];
   // The repeat cap holds for covers too: a piece already on the board three times waits until its pool runs dry.
@@ -770,6 +782,7 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
     rectInside(rect, board) &&
     coverFits(rect, point) &&
     !rules.avoid.some((a) => rectDistance(rect, a) < rules.trenchClearanceIn) &&
+    !rules.clear.some((a) => rectsOverlap(rect, a)) &&
     !rules.pieces.some((a) => rectDistance(rect, a) < rules.spacingIn) &&
     !others.some((c) => rectDistance(rect, c.rect) < rules.spacingIn) &&
     !objectives.some((other) => !self.includes(other.id) && rectContains(rect, other.position[0], other.position[1]));
@@ -929,7 +942,7 @@ function coverOnTop(p: PlanInputs, o: ObjectiveSpec, union: (rect: Rect) => bool
       const [w, d] = rotatedFootprint(placeable, rotY);
       for (const [ox, oy] of offsets) {
         const rect = rectFromCentre(o.position[0] + ox, o.position[1] + oy, w, d);
-        if (!union(rect) || !coverFits(rect, o.position) || !rectInside(rect, boardRect(p.grid, p.edgeMarginIn)) || !clear(rect)) continue;
+        if (!union(rect) || !coverFits(rect, o.position) || !rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN))) || !clear(rect)) continue;
         return { objectiveId: o.id, placeable, rotY, rect, base: "plateau" };
       }
     }
@@ -1169,7 +1182,7 @@ function twinCoverOnTop(p: PlanInputs, t: ObjectiveSpec, a: CoverChoice, cells: 
   for (const placeable of [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category && x.role === a.placeable.role)), a.placeable]) {
     const [w, d] = rotatedFootprint(placeable, rotY);
     const rect = rectFromCentre(cx, cy, w, d);
-    if (fits(rect) && coverFits(rect, t.position) && rectInside(rect, boardRect(p.grid, p.edgeMarginIn))) return { objectiveId: t.id, placeable, rotY, rect, base: "hill" };
+    if (fits(rect) && coverFits(rect, t.position) && rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN)))) return { objectiveId: t.id, placeable, rotY, rect, base: "hill" };
   }
   return null;
 }

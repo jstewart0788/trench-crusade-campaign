@@ -869,7 +869,7 @@
       "aesthetics": [
         "urban-ruin"
       ],
-      "enabled": true,
+      "enabled": false,
       "verified": true,
       "terrain": {
         "label": "Ruined wall",
@@ -887,7 +887,8 @@
           45,
           62
         ]
-      }
+      },
+      "note": "Out of the generator (TC-021j): one flat wall standing alone reads oddly as a ruined building (Jonathan, live review); its footprint is a single wall (6.1x1.88in, the thin side the wall and its slab). Corner ruins and the multi-wall ruined buildings take its place."
     },
     {
       "id": "ruins-defendable",
@@ -910,7 +911,7 @@
       "aesthetics": [
         "urban-ruin"
       ],
-      "enabled": true,
+      "enabled": false,
       "verified": true,
       "terrain": {
         "label": "Ruined wall",
@@ -928,7 +929,8 @@
           45,
           62
         ]
-      }
+      },
+      "note": "Out of the generator (TC-021j): one flat wall standing alone reads oddly as a ruined building (Jonathan, live review); its footprint is a single wall (3.08x0.61in, the thin side the wall and its slab). Corner ruins and the multi-wall ruined buildings take its place."
     },
     {
       "id": "wrecked-brick-wall-l",
@@ -1770,7 +1772,7 @@
       "aesthetics": [
         "urban-ruin"
       ],
-      "enabled": true,
+      "enabled": false,
       "verified": true,
       "terrain": {
         "label": "Ruined wall",
@@ -1788,7 +1790,8 @@
           45,
           62
         ]
-      }
+      },
+      "note": "Out of the generator (TC-021j): one flat wall standing alone reads oddly as a ruined building (Jonathan, live review); its footprint is a single wall (6.56x2.27in, the thin side the wall and its slab). Corner ruins and the multi-wall ruined buildings take its place."
     },
     {
       "id": "tall-fence",
