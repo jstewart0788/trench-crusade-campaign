@@ -12,6 +12,8 @@ export type LimitScope = "warband" | "model";
 export interface LimitContext {
   /** Instances of `name` in the roster, or undefined when the name is not something we model. */
   count(name: string): number | undefined;
+  /** A cap the roster's list puts on a unit beyond its entry (variantRenames max: 0-4 Dervishes, p90). */
+  unitCap?(unitId: string): number | undefined;
 }
 
 export interface ResolvedLimit {

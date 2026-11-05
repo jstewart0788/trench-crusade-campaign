@@ -2706,12 +2706,6 @@
     },
     {
       "file": "units.json",
-      "id": "iron-sultanate/janissary",
-      "issue": "Fida'i Dervishes reuse the Janissary entry with different keywords (IGNORE OFF-HAND WEAPON and Whirling Dervish instead of STRONG) and no Reinforced Armour; the entry cannot be gated per variant without losing those. The House of Wisdom Faris is its own entry since TC-003d (unit-rules.json variantSubstituteUnits house-of-wisdom-faris)",
-      "page": 90
-    },
-    {
-      "file": "units.json",
       "id": "heretic-legion/wretched",
       "issue": "Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error, not by filtering the access list (glory-priced items remain listed)",
       "page": 114

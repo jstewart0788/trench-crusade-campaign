@@ -162,6 +162,35 @@ export const PurseAdjustment = z.object({
 });
 export type PurseAdjustment = z.infer<typeof PurseAdjustment>;
 
+/** Under a list, a unit is presented under another name, or only when the model has an upgrade ("uses the X Warband Entry"). The id stays, so model picks still apply. */
+export const VariantRename = z.object({
+  id: z.string(),
+  under: Under,
+  unitIds: Ids,
+  name: z.string(),
+  /** Only a model that has this upgrade (the Banshee upgrade makes a Chorister a Barbed Wire Banshee). */
+  withUpgrade: z.string().optional(),
+  /** "0-N" under this name, when the book caps it there (0-4 Dervishes). */
+  max: z.number().int().nonnegative().optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type VariantRename = z.infer<typeof VariantRename>;
+
+/** Keywords a list adds to or takes from its units, for nothing; without unitIds, every model of the list but its Mercenaries (p172). */
+export const VariantKeywords = z.object({
+  id: z.string(),
+  under: Under,
+  unitIds: Ids.optional(),
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type VariantKeywords = z.infer<typeof VariantKeywords>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -175,6 +204,8 @@ export const UnitRulesFile = z.object({
   freeKeywordGrants: z.array(FreeKeywordGrant),
   freeAtCreation: z.array(FreeAtCreation),
   purseAdjustments: z.array(PurseAdjustment),
+  variantRenames: z.array(VariantRename),
+  variantKeywords: z.array(VariantKeywords),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -348,6 +379,17 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
     if (!listUnits(where, rule.under).some((u) => u.equipmentAccess.some((a) => a.itemId === rule.itemId))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers "${rule.itemId}"`);
   }
   for (const rule of file.purseAdjustments) listUnits(`purseAdjustments.${rule.id}`, rule.under);
+  for (const rule of [...file.variantRenames, ...file.variantKeywords]) {
+    const kind = "name" in rule ? "variantRenames" : "variantKeywords";
+    const where = `${kind}.${rule.id}`;
+    const units = listUnits(where, rule.under);
+    for (const unitId of rule.unitIds ?? []) {
+      const unit = unitOf(where, unitId);
+      if (unit && !units.includes(unit)) problems.push(`${where}: ${unitId} is not in the ${rule.under.join(" / ")} list`);
+      if (unit && "withUpgrade" in rule && rule.withUpgrade && !(unit.upgrades ?? []).some((g) => g.name === rule.withUpgrade)) problems.push(`${where}: ${unitId} has no upgrade "${rule.withUpgrade}"`);
+    }
+    if (!("name" in rule) && !rule.add?.length && !rule.remove?.length) problems.push(`${where}: adds and removes nothing`);
+  }
 
   // A grant's toggle is an upgrade: the list's own where upstream already
   // offers one (Swiss Guard), otherwise a free one added here. Either way it

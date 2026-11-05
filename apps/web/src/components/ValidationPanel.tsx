@@ -1,4 +1,4 @@
-import { findUnit, type RulesData, type ValidationResult, type Warband } from "@tc/rules/browser";
+import { findUnit, unitDisplayName, type RulesData, type ValidationResult, type Warband } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { memberLabel } from "../roster/select.js";
 import styles from "./ValidationPanel.module.css";
@@ -18,8 +18,10 @@ export function ValidationPanel({ warband, rules, validation, linkTo }: Props) {
 
   const subject = (memberId?: string, unitId?: string) => {
     const member = memberId ? warband.members.find((m) => m.id === memberId) : undefined;
-    if (member) return memberLabel(member, findUnit(rules, warband, member.unitId));
-    if (unitId) return rules.unitsById.get(unitId)?.name ?? unitId;
+    if (member) return memberLabel(member, findUnit(rules, warband, member.unitId), rules, warband);
+    const unit = unitId ? rules.unitsById.get(unitId) : undefined;
+    if (unit) return unitDisplayName(rules, warband, unit);
+    if (unitId) return unitId;
     return undefined;
   };
 

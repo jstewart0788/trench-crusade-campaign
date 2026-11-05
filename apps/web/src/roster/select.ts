@@ -7,6 +7,7 @@ import {
   resolveLimit,
   rosterUnits,
   unitCost,
+  unitDisplayName,
   unitLimits,
   upgradeCost,
   upgradeFor,
@@ -14,6 +15,7 @@ import {
   type GateResult,
   type LimitContext,
   type LineCost,
+  type ListScope,
   type RosterAccess,
   type RosterUnit,
   type RulesData,
@@ -45,6 +47,8 @@ export function gateStatus(result: GateResult): GateStatus {
 
 export interface UnitRow {
   unit: RosterUnit;
+  /** The unit's name under this roster's variant (Silahdar for the Yüzbaşı in the Defenders, p99). */
+  name: string;
   /** The next one's price under this roster (a variant may reprice it, or only its first). */
   cost: LineCost;
   count: number;
@@ -76,7 +80,7 @@ export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): 
     // A limit that resolves to 0 for this roster (the Sea Hag under the Leviathan Shoal) bars the unit as surely as a gate does.
     if (max === 0) continue;
     const count = counts.get(unit.id) ?? 0;
-    rows.push({ unit, cost: unitCost(data, warband, unit), count, min, max, atMax: max !== null && count >= max });
+    rows.push({ unit, name: unitDisplayName(data, warband, unit), cost: unitCost(data, warband, unit), count, min, max, atMax: max !== null && count >= max });
   }
   return { rows, uncheckable };
 }
@@ -236,13 +240,19 @@ export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Wa
   return { rows, uncheckable };
 }
 
-export function memberLabel(member: WarbandMember, unit: RosterUnit | undefined): string {
-  return member.name ?? unit?.name ?? member.unitId;
+/** The unit's name as the roster's list gives it, when the rules and the roster are passed; its entry name otherwise. */
+function shownName(member: WarbandMember, unit: RosterUnit | undefined, data?: RulesData, scope?: ListScope): string {
+  if (!unit) return member.unitId;
+  return data && scope ? unitDisplayName(data, scope, unit, member) : unit.name;
+}
+
+export function memberLabel(member: WarbandMember, unit: RosterUnit | undefined, data?: RulesData, scope?: ListScope): string {
+  return member.name ?? shownName(member, unit, data, scope);
 }
 
 /** "Captain Vane (Lieutenant)" when the member is named, else the unit name. */
-export function memberTitle(member: WarbandMember, unit: RosterUnit | undefined): string {
-  const unitName = unit?.name ?? member.unitId;
+export function memberTitle(member: WarbandMember, unit: RosterUnit | undefined, data?: RulesData, scope?: ListScope): string {
+  const unitName = shownName(member, unit, data, scope);
   return member.name ? `${member.name} (${unitName})` : unitName;
 }
 

@@ -462,7 +462,6 @@ Homunculus, the Trench Dog and the Disciple of St. Roch.
 | `new-antioch` | Kingdom of Alba 'Cold Steel': halve the first purchase of each Melee Weapon; needs purchase history the roster does not keep (Claymore Smiths is resolved, TC-003d) | 39 |
 | `new-antioch/mechanized-heavy-infantry` | Kingdom of Alba 'Melee-focused': MHI have Melee +1 DICE and Ranged +0 DICE; upstream encodes it as a compound stat modifier the converter cannot apply | 40 |
 | `trench-pilgrims/anchorite-shrine` | Bonebreaker Mace is recorded as a built-in weapon but the Catherine Wheel is an access entry with no cost; both are built in (p59-60). Methodius lets the Catherine Wheel be replaced by one Anchorite Ranged Weapon | 59 |
-| `iron-sultanate/janissary` | Fida'i Dervishes reuse the Janissary entry with different keywords and no Reinforced Armour; the entry cannot be gated per variant without losing those (the House of Wisdom Fāris is its own entry since TC-003d) | 90 |
 | `heretic-legion/wretched` | Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error, not by filtering the access list (glory-priced items remain listed) | 114 |
 | `court-of-the-seven-headed-serpent/praetor` | Unholy Relic (15 ducats, no stipulation) is hidden upstream for models that already have FEAR (Praetor, Sorcerer) and for Wretched; the item only grants FEAR so the omission has no mechanical effect | 149 |
 | `court-of-the-seven-headed-serpent/wretched` | Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error rather than by filtering the access list | 167 |
@@ -495,6 +494,18 @@ Janissary entry (House of Wisdom Fāris is its own `variantSubstituteUnits` entr
 bars Janissaries from a House of Wisdom, p94; Fida'i Dervishes remain). Overrides: 16 added
 (170 total); unresolved: 12.
 
+### TC-003e: variant names and keywords
+
+`unit-rules.json` `variantRenames` (a unit shown under another name under a list, or only when the
+model took an upgrade; ids unchanged) and `variantKeywords` (keywords a list adds or removes; without
+unitIds, every model but the Mercenaries). The Fida'i Dervishes entry above is resolved and removed:
+the Janissary is named Dervish under Fida'i of Alamut, 0-4 (the rename's `max`), loses STRONG and gains
+IGNORE OFF-HAND WEAPON; the Reinforced Armour gate and the Whirling Dervishes ability were already in
+the converted data. The Silahdar's extra armoury (Alaybozan 9, Anqā Guard 10, Explosive Charges 35,
+p99-101) was already converted as Defenders-gated rows on the Yüzbaşı entry; nothing to add.
+Unresolved: 11. (This also restores the "Missing from upstream" heading the TC-003d section dropped.)
+
+### Missing from upstream
 
 | faction | name | kind | p. | detail |
 |---|---|---|---|---|

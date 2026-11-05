@@ -1,4 +1,4 @@
-import { accessFor, findUnit, isEliteMember, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
+import { accessFor, findUnit, isEliteMember, unitDisplayName, upgradeFor, type ListScope, type MemberCost, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
 import { useId, type MouseEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
@@ -15,7 +15,7 @@ import styles from "./MemberList.module.css";
 
 interface Props {
   rows: StagedMemberRow[];
-  roster: RosterScope;
+  roster: ListScope;
   rules: RulesData;
   cost: WarbandCost;
   validation: ValidationResult;
@@ -56,6 +56,7 @@ export function MemberList({ rows, roster, rules, cost, validation, base, onRena
           key={row.member.id}
           row={row}
           unit={findUnit(rules, roster, row.member.unitId)}
+          roster={roster}
           cost={cost.perMember.find((c) => c.memberId === row.member.id)}
           issues={validation.errors.filter((e) => e.memberId === row.member.id).length}
           rules={rules}
@@ -73,6 +74,7 @@ export function MemberList({ rows, roster, rules, cost, validation, base, onRena
 interface RowProps {
   row: StagedMemberRow;
   unit: RosterUnit | undefined;
+  roster: ListScope;
   cost: MemberCost | undefined;
   issues: number;
   rules: RulesData;
@@ -90,10 +92,11 @@ const clickTogglesRow = (e: MouseEvent) => {
   return !target.closest("a, button, input, select, textarea, label, [role='region']") && !window.getSelection()?.toString();
 };
 
-function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, traitsFor, expand }: RowProps) {
+function MemberRow({ row, unit, roster, cost, issues, rules, base, onRename, manage, traitsFor, expand }: RowProps) {
   const { member } = row;
   const leaving = row.pending === "remove";
-  const title = memberTitle(member, unit);
+  const title = memberTitle(member, unit, rules, roster);
+  const unitName = unit ? unitDisplayName(rules, roster, unit, member) : member.unitId;
   const detailsId = useId();
   const open = expand?.isOpen(member.id) ?? false;
   const traits = unit && traitsFor ? traitsFor(row, unit) : undefined;
@@ -118,8 +121,8 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
       onClick={expand ? (e) => clickTogglesRow(e) && expand.onToggle(member.id) : undefined}
     >
       <div className={styles.title}>
-        <span className={`${styles.unit} ${leaving ? styles.struck : ""}`}>{unit?.name ?? member.unitId}</span>
-        {unit && isEliteMember(member, unit, rules) && <span className={styles.tag}>Elite</span>}
+        <span className={`${styles.unit} ${leaving ? styles.struck : ""}`}>{unitName}</span>
+        {unit && isEliteMember(member, unit, rules, roster) && <span className={styles.tag}>Elite</span>}
         {unit?.mercenary && <span className={styles.tag}>Mercenary</span>}
         {row.pending === "add" && <span className={styles.pending}>pending</span>}
         {leaving && <span className={styles.leaving}>leaving</span>}
@@ -138,7 +141,7 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
         className={styles.nameInput}
         value={member.name ?? ""}
         placeholder="Custom name"
-        aria-label={`Name for ${unit?.name ?? member.unitId}`}
+        aria-label={`Name for ${unitName}`}
         onChange={(e) => onRename(row, e.target.value)}
         onBlur={(e) => onRename(row, e.target.value.trim())}
       />
@@ -171,7 +174,7 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
             <IconButton glyph="revert" label="Keep" subject={title} onClick={() => manage.onKeep(row)} />
           ) : (
             <>
-              <PriceButton offer={manage.duplicateOffer(row)} purse={manage.purse} label={`Recruit another ${unit?.name ?? "model"} with this kit`} verb="Copy" onBuy={() => manage.onDuplicate(row)} />
+              <PriceButton offer={manage.duplicateOffer(row)} purse={manage.purse} label={`Recruit another ${unit ? unitName : "model"} with this kit`} verb="Copy" onBuy={() => manage.onDuplicate(row)} />
               {row.pending === "add" ? (
                 <IconButton glyph="revert" label="Undo" subject={`recruiting ${title}`} onClick={() => manage.onRemove(row)} />
               ) : (

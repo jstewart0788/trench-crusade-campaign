@@ -1,4 +1,4 @@
-import { effectiveStats, findUnit, itemCost, memberKeywords, type ReplaceableBuiltIn } from "@tc/rules/browser";
+import { effectiveStats, findUnit, itemCost, memberKeywords, presentedUnit, type ReplaceableBuiltIn } from "@tc/rules/browser";
 import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Figure } from "../components/Figure.js";
@@ -34,7 +34,9 @@ export function ArmouryScreen() {
   const closePicker = useCallback(() => setPicker(undefined), []);
 
   const confirmedMember = member ? baseMember(confirmed, pending, member.id) : undefined;
-  const unit = member ? findUnit(rules, warband, member.unitId) : undefined;
+  // The unit as the roster's list presents it: its name there and its keywords there (STRONG from Highland Strength seats a 2-Handed Melee Weapon one-handed).
+  const entry = member ? findUnit(rules, warband, member.unitId) : undefined;
+  const unit = useMemo(() => (entry && member ? presentedUnit(rules, warband, entry, member) : undefined), [entry, member, rules, warband]);
   const pm = member ? pending.members[member.id] : undefined;
 
   const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm) : []), [member, confirmedMember, unit, rules, pm]);
@@ -127,7 +129,7 @@ export function ArmouryScreen() {
               .filter((r) => r.pending !== "remove")
               .map(({ member: m, pending: p }) => (
                 <option key={m.id} value={m.id}>
-                  {memberTitle(m, findUnit(rules, warband, m.unitId))}
+                  {memberTitle(m, findUnit(rules, warband, m.unitId), rules, warband)}
                   {p === "add" ? " (pending recruit)" : ""}
                 </option>
               ))}
@@ -140,7 +142,7 @@ export function ArmouryScreen() {
           <div className={styles.column}>
             <Loadout
               stats={effectiveStats(unit, warband, rules, ctx)}
-              keywords={memberKeywords(member, unit, rules)}
+              keywords={memberKeywords(member, unit, rules, warband)}
               member={member}
               unit={unit}
               before={delta.before.perMember.find((c) => c.memberId === member.id)}

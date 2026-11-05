@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "35, 39, 59, 61, 63-64, 69, 90, 94, 99, 120, 142; Heretic-Naval-Raiders-Warband.pdf 37, 39",
+    "pages": "35, 38-40, 43, 59, 61, 63-64, 69, 90, 94, 99, 118, 120, 142; Heretic-Naval-Raiders-Warband.pdf 37, 39",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -261,6 +261,168 @@
       "page": 35,
       "source": "Warbands-of-Trench-Crusade.pdf",
       "text": "Specialist Force: A Papal States Intervention Force gains 4 glory each time it calls for Reinforcements."
+    }
+  ],
+  "variantRenames": [
+    {
+      "id": "defenders-silahdar",
+      "under": ["iron-sultanate/defenders-of-the-iron-wall"],
+      "unitIds": ["iron-sultanate/yuzbasi-captain"],
+      "name": "Silahdar",
+      "page": 99,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Silahdar: The commanders of the Iron Wall's units come from the personal bodyguards of the Sultan known as Silahdar. A Defenders of the Iron Wall Warband must include 1 Silahdar. The Silahdar uses the Yüzbaşı Warband Entry, except that it replaces the Mubarizun ability with the STRONG Keyword."
+    },
+    {
+      "id": "fidai-dervishes",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "unitIds": ["iron-sultanate/janissary"],
+      "name": "Dervish",
+      "max": 4,
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Dervishes: A Fida'i of Alamut Warband can include 0-4 Dervishes. The Dervishes use the Janissaries Warband Entry, but cannot wear Reinforced Armour and replace the STRONG Keyword with the IGNORE OFF-HAND WEAPON Keyword and the Whirling Dervish ability."
+    },
+    {
+      "id": "dirge-bereaved",
+      "under": ["black-grail/dirge-of-the-great-hegemon"],
+      "unitIds": ["black-grail/grail-thrall"],
+      "name": "Bereaved",
+      "page": 142,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Bereaved: The Grail Thralls or Fly Thralls in a Dirge of the Great Hegemon Warband are called the Bereaved."
+    },
+    {
+      "id": "abyssinia-holy-warrior",
+      "under": ["new-antioch/expeditionary-forces-of-abyssinia"],
+      "unitIds": ["new-antioch/trench-cleric"],
+      "name": "Holy Warrior",
+      "withUpgrade": "Holy Warrior",
+      "page": 43,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Holy Warriors: An Expeditionary Forces of Abyssinia Warband can include 0-1 Trench Cleric and 0-2 Holy Warriors. Use the Trench Clerics Warband Entry for Holy Warriors."
+    },
+    {
+      "id": "fidai-master-assassin",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "unitIds": ["iron-sultanate/sultanate-assassin"],
+      "name": "Master Assassin",
+      "withUpgrade": "Master Assassin",
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Master Assassin: A Fida'i of Alamut Warband must include 1 Master Assassin. The Master Assassin uses the Sultanate Assassin Warband Entry, except that it has the LEADER and TOUGH Keywords and has a cost of 95 ducats."
+    },
+    {
+      "id": "trench-ghosts-barbed-wire-banshee",
+      "under": ["heretic-legion/trench-ghosts"],
+      "unitIds": ["heretic-legion/chorister"],
+      "name": "Barbed Wire Banshee",
+      "withUpgrade": "Banshee",
+      "page": 118,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Barbed Wire Banshee: A Trench Ghost Warband can include a Barbed Wire Banshee instead of a Chorister. The Barbed Wire Banshee has the same Profile and Cost as a Chorister."
+    },
+    {
+      "id": "dirge-executor",
+      "under": ["black-grail/dirge-of-the-great-hegemon"],
+      "unitIds": ["black-grail/plague-knight"],
+      "name": "Executor",
+      "withUpgrade": "The Executor",
+      "page": 142,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "The Executor: A Dirge of the Great Hegemon Warband must include 1 Executor. The Executor uses the Plague Knight Warband Entry, except that it has a Ranged Characteristic of +1 DICE and the LEADER and TOUGH Keywords, and has a cost of 80 ducats."
+    },
+    {
+      "id": "drowned-choir-leviathal-chorus",
+      "under": ["heretic-naval-raiders/the-drowned-choir"],
+      "unitIds": ["heretic-naval-raiders/drowned-chorister"],
+      "name": "Leviathal Chorus",
+      "withUpgrade": "Leviathal Chorus",
+      "page": 37,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "A Song Within the Deep: 1 Drowned Chorister must take the Leviathal Chorus upgrade at a cost of 20 ducats. The Drowned Chorister with the Leviathal Chorus upgrade increases its base size to 40mm, has the LEADER and TOUGH Keywords."
+    }
+  ],
+  "variantKeywords": [
+    {
+      "id": "papal-lector",
+      "under": ["new-antioch/papal-states-intervention-force"],
+      "unitIds": ["new-antioch/trench-cleric"],
+      "add": ["LEADER"],
+      "page": 35,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Lector: A Papal States Intervention Force Warband must include 1 Trench Cleric, but does not have to include a Lieutenant. A Trench Cleric in a Papal States Intervention Force Warband has the LEADER Keyword."
+    },
+    {
+      "id": "eire-loose-formation",
+      "under": ["new-antioch/eire-rangers"],
+      "unitIds": ["new-antioch/lieutenant"],
+      "add": ["SKIRMISHER"],
+      "page": 38,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Loose Formation: The Lieutenant in an Éire Rangers Warband replaces their Hold Your Fire! ability with the SKIRMISHER Keyword at no change to their cost in ducats."
+    },
+    {
+      "id": "alba-highland-strength",
+      "under": ["new-antioch/kingdom-of-alba-assault-detachment"],
+      "unitIds": ["new-antioch/lieutenant", "new-antioch/shocktrooper"],
+      "add": ["STRONG"],
+      "page": 39,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Highland Strength: The Lieutenant and any Shock Troopers in a Kingdom of Alba Assault Detachment Warband have the STRONG Keyword at no additional cost in ducats."
+    },
+    {
+      "id": "alba-rampant-charge",
+      "under": ["new-antioch/kingdom-of-alba-assault-detachment"],
+      "add": ["IGNORE DEFENDED OBSTACLE"],
+      "page": 40,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Rampant Charge: Models in a Kingdom of Alba Assault Detachment Warband have the IGNORE DEFENDED OBSTACLE Keyword."
+    },
+    {
+      "id": "cavalcade-blood-of-the-lamb",
+      "under": ["trench-pilgrims/cavalcade-of-the-tenth-plague"],
+      "unitIds": ["trench-pilgrims/castigator"],
+      "add": ["TOUGH"],
+      "page": 69,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Blood of the Lamb: Castigators in a Cavalcade of the Tenth Plague Warband have the TOUGH Keyword at no additional cost in ducats."
+    },
+    {
+      "id": "fidai-dervishes",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "unitIds": ["iron-sultanate/janissary"],
+      "remove": ["STRONG"],
+      "add": ["IGNORE OFF-HAND WEAPON"],
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Dervishes: The Dervishes use the Janissaries Warband Entry, but cannot wear Reinforced Armour and replace the STRONG Keyword with the IGNORE OFF-HAND WEAPON Keyword and the Whirling Dervish ability."
+    },
+    {
+      "id": "defenders-silahdar",
+      "under": ["iron-sultanate/defenders-of-the-iron-wall"],
+      "unitIds": ["iron-sultanate/yuzbasi-captain"],
+      "add": ["STRONG"],
+      "page": 99,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Silahdar: The Silahdar uses the Yüzbaşı Warband Entry, except that it replaces the Mubarizun ability with the STRONG Keyword."
+    },
+    {
+      "id": "trench-ghosts-undead-horror",
+      "under": ["heretic-legion/trench-ghosts"],
+      "add": ["FEAR", "NEGATE DIFFICULT TERRAIN", "NEGATE GAS"],
+      "page": 118,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Undead Horror: Models in this Warband have the FEAR, NEGATE DIFFICULT TERRAIN, and NEGATE GAS Keywords."
+    },
+    {
+      "id": "leviathan-strong-captains",
+      "under": ["heretic-naval-raiders/the-leviathan-shoal"],
+      "unitIds": ["heretic-naval-raiders/heretic-captain"],
+      "add": ["STRONG"],
+      "page": 39,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "Only the Strong Survive: In addition, Heretic Captains in this Warband have the STRONG Keyword."
     }
   ]
 }

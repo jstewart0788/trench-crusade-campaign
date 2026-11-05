@@ -22,7 +22,7 @@ export function PreGamePanel({ warband, rules, dispatch }: Props) {
         const victim = c.candidates.find((m) => m.id === c.chosen);
         const title = (id: string) => {
           const m = warband.members.find((x) => x.id === id)!;
-          return memberTitle(m, findUnit(rules, warband, m.unitId));
+          return memberTitle(m, findUnit(rules, warband, m.unitId), rules, warband);
         };
         return (
           <div key={c.rule.key} className={styles.choice}>

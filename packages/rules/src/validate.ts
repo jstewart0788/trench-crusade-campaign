@@ -1,7 +1,8 @@
 import { checkBattlekit, type CarriedItem } from "./battlekit.js";
 import type { GroupLimit, PreGameChoice, ReplaceableBuiltIn } from "./unit-rules.js";
 import { variantItemLimit, warbandCost } from "./cost.js";
-import { grantStates, isEliteMember } from "./grants.js";
+import { grantStates, isEliteMember, memberKeywords } from "./grants.js";
+import { unitDisplayName } from "./presentation.js";
 import { appliesUnder } from "./unit-rules.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
@@ -169,12 +170,12 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
         code: "unit-faction",
         memberId: member.id,
         unitId: unit.id,
-        message: `${unit.name} belongs to ${unit.subfactionId ?? unit.factionId}, not ${listName}`,
+        message: `${unitDisplayName(data, warband, unit, member)} belongs to ${unit.subfactionId ?? unit.factionId}, not ${listName}`,
       });
       continue;
     }
     if (unit.kind === "fireteam") {
-      warn({ memberId: member.id, unitId: unit.id, message: `${unit.name} is a deprecated Fireteam wrapper with no profile; its members are not validated` });
+      warn({ memberId: member.id, unitId: unit.id, message: `${unitDisplayName(data, warband, unit, member)} is a deprecated Fireteam wrapper with no profile; its members are not validated` });
     }
     members.push({ member, unit });
   }
@@ -206,7 +207,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   checkUnitCounts(warband, data, members, ctx, fail, warn);
 
   // Warbands p10: "more than 6 models with the ELITE Keyword", however they got it.
-  const elites = members.filter((m) => isEliteMember(m.member, m.unit, data)).length;
+  const elites = members.filter((m) => isEliteMember(m.member, m.unit, data, warband)).length;
   if (elites > MAX_ELITES) {
     fail({ code: "elite-cap", message: `${elites} ELITE models; a warband can never include more than ${MAX_ELITES}` });
   }
@@ -221,7 +222,9 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     checkFixedKit(member, unit, data, warband, ctx, fail);
     checkUnitRules(member, unit, data, warband, ctx, fail);
     const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
-    const kit = checkBattlekit(unit, carried, data.headgearItemIds);
+    // The model as its list presents it: its name there, and the keywords the list gives or takes (Highland Strength STRONG, p39).
+    const shown = { ...unit, name: unitDisplayName(data, warband, unit, member), keywords: memberKeywords(member, unit, data, warband) };
+    const kit = checkBattlekit(shown, carried, data.headgearItemIds);
     for (const e of kit.errors) fail({ ...where, ...e });
     for (const w of kit.warnings) warn({ ...where, ...w });
     for (const c of carried) {
@@ -317,11 +320,11 @@ export function limitContext(warband: Warband, data: RulesData): LimitContext {
 
 /** Effective per-warband min/max for a unit under this roster (null: no limit). */
 export function unitLimits(unit: RosterUnit, ctx: LimitContext): { min: number | null; max: number | null } {
-  return { min: unitLimit(unit, "min", ctx).value, max: capMax(unit, unitLimit(unit, "max", ctx).value) };
+  return { min: unitLimit(unit, "min", ctx).value, max: capMax(unit, unitLimit(unit, "max", ctx).value, ctx) };
 }
 
-function capMax(unit: RosterUnit, resolved: number | null): number | null {
-  const cap = [resolved, unit.maxPerWarband ?? null].filter((n): n is number => n !== null);
+function capMax(unit: RosterUnit, resolved: number | null, ctx: LimitContext): number | null {
+  const cap = [resolved, unit.maxPerWarband ?? null, ctx.unitCap?.(unit.id) ?? null].filter((n): n is number => n !== null);
   return cap.length ? Math.min(...cap) : null;
 }
 
@@ -402,7 +405,14 @@ function buildLimitContext(warband: Warband, data: RulesData, members: ResolvedM
   const knownItems = new Set(data.equipment.map((e) => normaliseName(e.name)));
   const knownUpgrades = new Set(units.flatMap((u) => (u.upgrades ?? []).map((g) => normaliseName(g.name))));
 
+  const caps = new Map<string, number>();
+  for (const rule of data.unitRules.file.variantRenames) {
+    if (rule.max === undefined || rule.withUpgrade || !appliesUnder(rule.under, warband)) continue;
+    for (const id of rule.unitIds) caps.set(id, Math.min(rule.max, caps.get(id) ?? rule.max));
+  }
+
   return {
+    unitCap: (unitId) => caps.get(unitId),
     count(name) {
       const key = normaliseName(name);
       const variantId = variants.get(key);
@@ -520,26 +530,27 @@ function checkUnitCounts(
   for (const unit of rosterUnits(data, warband)) {
     const count = counts.get(unit.id) ?? 0;
     const where = { unitId: unit.id };
+    const label = unitDisplayName(data, warband, unit);
 
     if (count > 0) {
-      checkGates(unit.name, unit.onlyWith, unit.onlyWithout, warband, data, ctx, { locked: "variant-locked", excluded: "variant-excluded" }, where, fail, warn);
+      checkGates(label, unit.onlyWith, unit.onlyWithout, warband, data, ctx, { locked: "variant-locked", excluded: "variant-excluded" }, where, fail, warn);
     }
 
     const max = unitLimit(unit, "max", ctx);
-    const effectiveMax = capMax(unit, max.value);
+    const effectiveMax = capMax(unit, max.value, ctx);
     if (effectiveMax !== null && count > effectiveMax) {
       fail({
         code: unit.mercenary ? "mercenary-limit" : "unit-max",
         ...where,
-        message: `${count} x ${unit.name}; at most ${effectiveMax} per warband`,
+        message: `${count} x ${label}; at most ${effectiveMax} per warband`,
       });
-      warnUnresolved(warn, max.unresolved, where, unit.name);
+      warnUnresolved(warn, max.unresolved, where, label);
     }
 
     const min = unitLimit(unit, "min", ctx);
     if (min.value !== null && count < min.value && unitAvailable(unit, warband, data, ctx)) {
-      fail({ code: "unit-min", ...where, message: `${count} x ${unit.name}; at least ${min.value} required` });
-      warnUnresolved(warn, min.unresolved, where, unit.name);
+      fail({ code: "unit-min", ...where, message: `${count} x ${label}; at least ${min.value} required` });
+      warnUnresolved(warn, min.unresolved, where, label);
     }
   }
 }
@@ -586,22 +597,23 @@ export function groupCounts(member: WarbandMember, unit: RosterUnit, data: Rules
 
 function checkUnitRules(member: WarbandMember, unit: RosterUnit, data: RulesData, warband: Warband, ctx: LimitContext, fail: (e: RosterError) => void): void {
   const where = { memberId: member.id, unitId: unit.id };
+  const label = unitDisplayName(data, warband, unit, member);
   const name = (id: string) => data.equipmentById.get(id)?.name ?? id;
   for (const s of replaceableState(member, unit, warband, data, ctx)) {
     const { rule } = s;
     if (s.carried.length === 0) {
       const alt = s.open ? `, or one of its replacements (p${rule.replacements.page})` : "";
-      fail({ ...where, code: "built-in-missing", itemId: rule.itemId, message: `${unit.name} must carry its ${rule.name}${alt} (p${rule.page})` });
+      fail({ ...where, code: "built-in-missing", itemId: rule.itemId, message: `${label} must carry its ${rule.name}${alt} (p${rule.page})` });
     } else if (s.carried.length > 1) {
-      fail({ ...where, code: "built-in-replacement", message: `${unit.name} carries ${s.carried.map(name).join(" and ")}; its ${rule.name} slot holds exactly one` });
+      fail({ ...where, code: "built-in-replacement", message: `${label} carries ${s.carried.map(name).join(" and ")}; its ${rule.name} slot holds exactly one` });
     } else if (s.carried[0] !== rule.itemId && !s.open) {
       const where_ = (rule.replacements.onlyWith ?? []).map((g) => data.variantsById.get(g)?.name ?? g).join(" or ");
-      fail({ ...where, code: "built-in-replacement", itemId: s.carried[0], message: `${unit.name} can only swap its ${rule.name} for ${name(s.carried[0]!)}${where_ ? ` in a ${where_} warband` : ""} (p${rule.replacements.page})` });
+      fail({ ...where, code: "built-in-replacement", itemId: s.carried[0], message: `${label} can only swap its ${rule.name} for ${name(s.carried[0]!)}${where_ ? ` in a ${where_} warband` : ""} (p${rule.replacements.page})` });
     }
   }
   for (const { limit, count } of groupCounts(member, unit, data)) {
     if (count > limit.maxPerModel) {
-      fail({ ...where, code: "item-group-limit", message: `${unit.name}: up to ${limit.maxPerModel} ${limit.name} (has ${count}, p${limit.page})` });
+      fail({ ...where, code: "item-group-limit", message: `${label}: up to ${limit.maxPerModel} ${limit.name} (has ${count}, p${limit.page})` });
     }
   }
 }
@@ -687,7 +699,7 @@ function checkFixedKit(member: WarbandMember, unit: RosterUnit, data: RulesData,
     const required = Math.max(1, resolveLimit(access.limitsText ?? item.limits ?? undefined, "min", "model", null, ctx, item.name).value ?? 1);
     const carried = member.equipmentItemIds.filter((id) => id === access.itemId).length;
     if (carried < required) {
-      fail({ code: "item-fixed-missing", memberId: member.id, unitId: unit.id, itemId: item.id, message: `${unit.name} must carry ${item.name}: it is part of the unit's kit` });
+      fail({ code: "item-fixed-missing", memberId: member.id, unitId: unit.id, itemId: item.id, message: `${unitDisplayName(data, warband, unit, member)} must carry ${item.name}: it is part of the unit's kit` });
     }
   }
 }
@@ -714,7 +726,7 @@ function checkMemberItems(
     }
     const access = accessFor(unit, itemId);
     if (!access) {
-      fail({ code: "item-not-available", ...where, message: `${item.name} is not in the ${unit.name} armoury` });
+      fail({ code: "item-not-available", ...where, message: `${item.name} is not in the ${unitDisplayName(data, warband, unit, member)} armoury` });
       continue;
     }
     checkGates(item.name, access.onlyWith, access.onlyWithout, warband, data, ctx, { locked: "item-variant-locked", excluded: "item-variant-locked" }, where, fail, warn, { member, unit });
@@ -745,7 +757,7 @@ function checkMemberUpgrades(
   for (const id of member.upgradeIds ?? []) {
     const upgrade = upgradeFor(unit, id);
     if (!upgrade) {
-      fail({ code: "upgrade-unknown", ...where, message: `Unknown upgrade "${id}" for ${unit.name}` });
+      fail({ code: "upgrade-unknown", ...where, message: `Unknown upgrade "${id}" for ${unitDisplayName(data, warband, unit, member)}` });
       continue;
     }
     checkGates(upgrade.name, upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, { locked: "upgrade-variant-locked", excluded: "upgrade-variant-locked" }, where, fail, warn, { member, unit });
@@ -765,7 +777,7 @@ function checkMemberUpgrades(
       fail({
         code: max === 1 ? "upgrade-duplicate" : "upgrade-max-per-model",
         ...where,
-        message: `${t.upgrade.name} taken ${t.count} times on one ${t.unit.name}; limit ${max} per model`,
+        message: `${t.upgrade.name} taken ${t.count} times on one ${unitDisplayName(data, warband, t.unit, member)}; limit ${max} per model`,
       });
       warnUnresolved(warn, perModel.unresolved, where, t.upgrade.name);
     }

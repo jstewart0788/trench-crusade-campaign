@@ -249,3 +249,19 @@ describe("variant prices and grants on the shelf", () => {
     expect(row(5).cap).toEqual({ count: 4, max: 4, scope: "warband" });
   });
 });
+
+// TC-003e: names a variant gives its units reach the lists.
+describe("variant names on the lists", () => {
+  it("lists the Yüzbaşı as the Silahdar in a Defenders warband and titles its member so", () => {
+    const defenders = createWarband({ name: "t", factionId: "iron-sultanate", variantId: "iron-sultanate/defenders-of-the-iron-wall" }, "w");
+    const core = createWarband({ name: "t", factionId: "iron-sultanate" }, "w");
+    const row = (w: Warband) => unitRows(w, data, ctxFor(w)).rows.find((r) => r.unit.id === "iron-sultanate/yuzbasi-captain")!;
+    expect(row(defenders).name).toBe("Silahdar");
+    expect(row(core).name).toBe("Yüzbaşı");
+    const w = rosterReducer(defenders, { type: "add-member", unitId: "iron-sultanate/yuzbasi-captain" });
+    const yuz = data.unitsById.get("iron-sultanate/yuzbasi-captain")!;
+    expect(memberTitle(w.members[0]!, yuz, data, w)).toBe("Silahdar");
+    expect(memberTitle({ ...w.members[0]!, name: "Kara" }, yuz, data, w)).toBe("Kara (Silahdar)");
+    expect(memberTitle(w.members[0]!, yuz)).toBe("Yüzbaşı");
+  });
+});

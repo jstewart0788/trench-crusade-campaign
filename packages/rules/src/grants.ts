@@ -1,5 +1,6 @@
 import { findUnit, upgradeFor, type RosterUnit, type RulesData } from "./data.js";
 import type { Warband, WarbandMember } from "./roster.js";
+import { listKeywords, type ListScope } from "./presentation.js";
 import { appliesUnder, dataKeyword, type FreeKeywordGrant, type PurseAdjustment } from "./unit-rules.js";
 
 // unit-rules.json freeKeywordGrants and purseAdjustments: what a roster's
@@ -11,9 +12,9 @@ export function memberGrants(member: WarbandMember, unit: RosterUnit, data: Rule
   return [...ids].map((id) => data.unitRules.grantsById.get(id)).filter((g): g is FreeKeywordGrant => g !== undefined);
 }
 
-/** The member's keywords: the unit's, then any granted, in the data's spelling. */
-export function memberKeywords(member: WarbandMember, unit: RosterUnit, data: RulesData): string[] {
-  const keywords = [...unit.keywords];
+/** The member's keywords: the unit's under the list (variantKeywords, when a scope is given), then any granted, in the data's spelling. */
+export function memberKeywords(member: WarbandMember, unit: RosterUnit, data: RulesData, scope?: ListScope): string[] {
+  const keywords = scope ? listKeywords(data, scope, unit) : [...unit.keywords];
   for (const g of memberGrants(member, unit, data)) {
     const k = dataKeyword(g.keyword);
     if (!keywords.some((have) => have.toLowerCase() === k.toLowerCase())) keywords.push(k);
@@ -21,9 +22,10 @@ export function memberKeywords(member: WarbandMember, unit: RosterUnit, data: Ru
   return keywords;
 }
 
-/** ELITE by its entry or by a grant (Janissary Officers); Warbands p10 caps both alike. */
-export function isEliteMember(member: WarbandMember, unit: RosterUnit, data: RulesData): boolean {
-  return unit.elite || memberGrants(member, unit, data).some((g) => g.keyword.trim().toLowerCase() === "elite");
+/** ELITE by its entry, its list or a grant (Janissary Officers); Warbands p10 caps them all alike. */
+export function isEliteMember(member: WarbandMember, unit: RosterUnit, data: RulesData, scope?: ListScope): boolean {
+  if (unit.elite) return true;
+  return memberKeywords(member, unit, data, scope).some((k) => k.toLowerCase() === "elite");
 }
 
 export interface GrantPoolState {

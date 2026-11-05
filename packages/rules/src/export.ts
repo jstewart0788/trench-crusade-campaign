@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { memberCost, warbandCost } from "./cost.js";
 import { isEliteMember, memberKeywords } from "./grants.js";
+import { unitDisplayName } from "./presentation.js";
 import { normaliseName } from "./limits.js";
 import { modelFor, accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
 import { profileAbilities, profileKit } from "./profile.js";
@@ -232,6 +233,7 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
   const unit = findUnit(data, warband, member.unitId);
   if (!unit) throw new WarbandExportError(`Unknown unit "${member.unitId}" on member ${member.id}`);
   const card = effectiveStats(unit, warband, data);
+  const shownName = unitDisplayName(data, warband, unit, member);
   const priced = memberCost(data, warband, member);
 
   const equipment: ExportEquipment[] = member.equipmentItemIds.map((itemId, i) => {
@@ -283,8 +285,8 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
 
   return {
     id: member.id,
-    displayName: member.name ?? unit.name,
-    unit: { id: unit.id, name: unit.name, kind: unit.kind, elite: isEliteMember(member, unit, data), keywords: memberKeywords(member, unit, data) },
+    displayName: member.name ?? shownName,
+    unit: { id: unit.id, name: shownName, kind: unit.kind, elite: isEliteMember(member, unit, data, warband), keywords: memberKeywords(member, unit, data, warband) },
     stats: {
       movement: unit.stats.movement,
       ranged: card.ranged,

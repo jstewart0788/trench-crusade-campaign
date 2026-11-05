@@ -1,5 +1,6 @@
 import { findSubfaction, rosterUnits, rosterVariants, upgradeFor, type RosterScope, type RosterUnit, type RulesData } from "../data.js";
 import { normaliseName } from "../limits.js";
+import { unitNamesInList } from "../presentation.js";
 import type { Warband, WarbandMember } from "../roster.js";
 import type { EquipmentItem } from "../schema.js";
 import { patronsForFaction } from "../validate.js";
@@ -251,8 +252,9 @@ function unitFor(sel: RosterSelection, scope: RosterScope, data: RulesData): Ros
     const byId = units.find((u) => u.bsId === seg || u.bsLinkId === seg);
     if (byId) return byId;
   }
+  // By name: the entry's own, or the one a variant of this list gives it (Silahdar for the Yüzbaşı, p99).
   const key = normaliseName(sel.name);
-  return units.find((u) => normaliseName(u.name) === key);
+  return units.find((u) => normaliseName(u.name) === key) ?? units.find((u) => unitNamesInList(data, u).some((n) => normaliseName(n) === key));
 }
 
 function itemFor(sel: RosterSelection, unit: RosterUnit, data: RulesData): string | undefined {

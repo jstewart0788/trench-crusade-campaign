@@ -147,7 +147,7 @@ function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: Rules
             const perMember = cost.perMember.find((c) => c.memberId === m.id);
             return (
               <li key={m.id}>
-                <span className={styles.memberTitle}>{memberTitle(m, unit)}</span>
+                <span className={styles.memberTitle}>{memberTitle(m, unit, rules, warband)}</span>
                 <span className={styles.kit}>{kit.length ? kit.join(", ") : <span className="muted">No equipment</span>}</span>
                 <span>{perMember ? <Price cost={perMember} /> : null}</span>
               </li>

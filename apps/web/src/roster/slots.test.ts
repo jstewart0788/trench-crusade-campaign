@@ -288,3 +288,16 @@ describe("pickerRows", () => {
     expect(pickNames("inventory", abyssinia)).toContain("Holy Water of Lalibela");
   });
 });
+
+// TC-003e: the Armoury lays out the unit as its list presents it (presentedUnit), so a variant's STRONG counts.
+describe("layoutFigure with a variant's keywords", () => {
+  it("seats an Alba Shock Trooper's Great Sword/Axe one-handed beside a Sword (Highland Strength, p39)", async () => {
+    const { presentedUnit } = await import("@tc/rules");
+    const trooper = unit("new-antioch/shocktrooper");
+    const kit = ["great-sword-axe", "sword-axe"];
+    const alba = createWarband({ name: "t", factionId: "new-antioch", variantId: "new-antioch/kingdom-of-alba-assault-detachment" }, "w");
+    const shown = presentedUnit(data, alba, trooper, memberOf(trooper.id, kit));
+    expect(layoutFigure(kitEntries(memberOf(trooper.id, kit), shown, data, undefined), shown).unplaced).toEqual([]);
+    expect(layoutFigure(kitEntries(memberOf(trooper.id, kit), trooper, data, undefined), trooper).unplaced.map((e) => e.itemId)).toEqual(["sword-axe"]);
+  });
+});

@@ -35,7 +35,7 @@ export function RecruitList({ warband, rules, ctx, purse, onAdd }: Props) {
               <li key={row.unit.id} className={styles.row}>
                 <div className={styles.main}>
                   <span className={styles.titleLine}>
-                    <span className={styles.name}>{row.unit.name}</span>
+                    <span className={styles.name}>{row.name}</span>
                     {row.unit.elite && <span className={styles.tag}>Elite</span>}
                   </span>
                   <span className={styles.sub}>
@@ -46,7 +46,7 @@ export function RecruitList({ warband, rules, ctx, purse, onAdd }: Props) {
                 <PriceButton
                   offer={{ cost: { ducats: row.cost.ducats, glory: row.cost.glory }, cap: row.max !== null ? { count: row.count, max: row.max } : undefined }}
                   purse={purse}
-                  label={`Recruit ${row.unit.name}`}
+                  label={`Recruit ${row.name}`}
                   onBuy={() => onAdd(row.unit)}
                 />
               </li>
