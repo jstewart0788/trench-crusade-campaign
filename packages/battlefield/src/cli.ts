@@ -89,7 +89,7 @@ function main(): void {
       writeOut(resolve(tts), JSON.stringify(states, null, 2));
     }
     const svg = flags.get("svg");
-    if (svg) writeOut(resolve(svg), renderPlanSvg(layout, { heights }));
+    if (svg) writeOut(resolve(svg), renderPlanSvg(layout, { heights, rotYSense: env.palette.rotation.rotYSense, palette: env.palette }));
     if (!out && !tts && !svg) process.stdout.write(`${JSON.stringify(layout, null, 2)}\n`);
     const s = layout.stats;
     console.error(`seed ${seed} ${scenarioId}: ${s.trenchCells} trench cells (${layout.trench.axis}), ${s.dressingPieces} dressing, ${s.totalPieces} objects${s.shortfalls.length ? `, shortfalls ${s.shortfalls.map((f) => `${f.typeId}=${f.placed}/${f.target}`).join(" ")}` : ""}${s.warnings.length ? `, warnings: ${s.warnings.join("; ")}` : ""}`);
@@ -103,7 +103,7 @@ function main(): void {
     for (const seed of seeds) {
       const layout = generateBattlefield({ scenarioId, archetype, seed, boardIn, options }, env);
       const path = resolve(outDir, `${scenarioId}-seed-${seed}.svg`);
-      writeOut(path, renderPlanSvg(layout, { heights }));
+      writeOut(path, renderPlanSvg(layout, { heights, rotYSense: env.palette.rotation.rotYSense, palette: env.palette }));
       const s = layout.stats;
       const roles = Object.entries(s.piecesByRole)
         .filter(([role]) => role !== "ground")

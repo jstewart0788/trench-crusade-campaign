@@ -1,5 +1,6 @@
 import type { Layout, LayoutPiece } from "./layout.js";
 import { PaletteError, resolvePalette, rotateVector, type Catalog, type CatalogAsset, type Palette, type ResolvedPalette } from "./palette.js";
+import { terrainName, terrainOf, terrainReminder } from "./terrain.js";
 
 // Turns a layout into the object-state tables spawnObjectData accepts, the
 // same shape scripts/tts_measure_rest.py spawns with. Board inches become
@@ -77,13 +78,15 @@ export function pieceToObjectState(piece: LayoutPiece, layout: Layout, palette: 
   if (entry.assetId !== piece.assetId) throw new PaletteError(`layout piece ${piece.id} expects asset ${piece.assetId}, palette has ${entry.assetId}`);
   const asset = entry.asset;
   const [offX, offZ] = rotateOffset(entry.pivotOffsetIn, piece.rotY, palette.rotation.rotYSense);
+  const terrain = terrainOf(entry, piece.baseIn);
   const half = layout.boardIn / 2;
   const [sx, sy, sz] = asset.scale;
   const [cr = 1, cg = 1, cb = 1] = asset.colorDiffuse;
   return {
     ...customBlock(asset),
-    Nickname: entry.name,
-    Description: `${piece.role} ${piece.id} (${entry.id})${piece.objectiveId ? ` covers ${piece.objectiveId}` : ""}`,
+    // What it is and how it plays for the players on hover; the generator's ids on the last line.
+    Nickname: terrainName(terrain),
+    Description: `${terrainReminder(terrain, palette)}\n${piece.role} ${piece.id} (${entry.id})${piece.objectiveId ? ` covers ${piece.objectiveId}` : ""}`,
     Transform: {
       posX: round(opts.matCenter[0] + (piece.position[0] - half) - offX),
       posY: round(opts.matTopY + piece.baseIn + entry.restHeightIn),

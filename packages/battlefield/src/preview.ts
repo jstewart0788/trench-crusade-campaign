@@ -1,6 +1,7 @@
 import { DELTA, type Dir } from "./grid.js";
 import type { Layout, LayoutCell, LayoutPiece } from "./layout.js";
-import type { Role } from "./palette.js";
+import { pieceById, type Palette, type Role } from "./palette.js";
+import { terrainName, terrainOf } from "./terrain.js";
 
 // Top-down plan of a layout as a standalone SVG: the grid, deployment zones,
 // objectives, height (raised plateau cells shaded, ramps with an uphill arrow,
@@ -15,6 +16,8 @@ export interface PreviewOptions {
   heights?: Readonly<Record<string, number>>;
   /** The palette's yaw sense, so turned pieces are drawn the way they stand on the table. */
   rotYSense?: "cw" | "ccw";
+  /** The palette, so pieces and the legend carry the names the table shows on hover. */
+  palette?: Palette;
 }
 
 const ROLE_STYLE: Record<Role, { fill: string; stroke: string; label: string; name: string }> = {
@@ -51,6 +54,7 @@ const fmt = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(
 
 export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> = {}): string {
   const s = options.pxPerIn ?? 20;
+  const nameOf = (p: LayoutPiece): string | null => (options.palette ? terrainName(terrainOf(pieceById(options.palette, p.paletteId), p.baseIn)) : null);
   const margin = 28;
   const titleH = 34;
   const legendW = 330;
@@ -67,10 +71,13 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
   const cellBox = (cell: LayoutCell) => ({ x: X(cell.c * layout.cellIn), y: Y((cell.r + 1) * layout.cellIn), size: layout.cellIn * s });
 
   out.push(`<?xml version="1.0" encoding="UTF-8"?>`);
-  out.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" font-family="Helvetica, Arial, sans-serif">`);
+  const frame = (h: number) => [`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${h}" viewBox="0 0 ${width} ${h}" font-family="Helvetica, Arial, sans-serif">`, `<rect width="${width}" height="${h}" fill="#f6f3ea"/>`];
+  const svgAt = out.length;
+  out.push(frame(height)[0]!);
   out.push(`<title>${escapeXml(title)}</title>`);
   out.push(`<defs><pattern id="raised" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#b9ab84"/><line x1="0" y1="0" x2="0" y2="8" stroke="#9c8d63" stroke-width="3"/></pattern></defs>`);
-  out.push(`<rect width="${width}" height="${height}" fill="#f6f3ea"/>`);
+  const backgroundAt = out.length;
+  out.push(frame(height)[1]!);
   out.push(`<text x="${margin}" y="${margin + 18}" font-size="18" font-weight="bold" fill="#2b2620">${escapeXml(title)}</text>`);
   out.push(`<rect x="${X(0)}" y="${Y(layout.boardIn)}" width="${board}" height="${board}" fill="#e8e1cf" stroke="#2b2620" stroke-width="2"/>`);
 
@@ -181,7 +188,7 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
     const cy = Y(p.position[1]);
     const transform = quarter ? "" : ` transform="rotate(${fmt(turn * p.rotY)} ${fmt(cx)} ${fmt(cy)})"`;
     const entryTall = p.role === "tower" || p.role === "building";
-    out.push(`<rect x="${fmt(cx - (w * s) / 2)}" y="${fmt(cy - (d * s) / 2)}" width="${fmt(w * s)}" height="${fmt(d * s)}"${transform} fill="${style.fill}" fill-opacity="0.85" stroke="${style.stroke}" stroke-width="${entryTall ? 2.5 : 1.5}"><title>${escapeXml(`${p.id} ${p.paletteId} rotY ${p.rotY}, rests at ${p.baseIn}in${p.objectiveId ? ` covers ${p.objectiveId}` : ""}${p.slot?.placement ? `, ${p.slot.placement}` : ""}`)}</title></rect>`);
+    out.push(`<rect x="${fmt(cx - (w * s) / 2)}" y="${fmt(cy - (d * s) / 2)}" width="${fmt(w * s)}" height="${fmt(d * s)}"${transform} fill="${style.fill}" fill-opacity="0.85" stroke="${style.stroke}" stroke-width="${entryTall ? 2.5 : 1.5}"><title>${escapeXml(`${nameOf(p) ? `${nameOf(p)}: ` : ""}${p.id} ${p.paletteId} rotY ${p.rotY}, rests at ${p.baseIn}in${p.objectiveId ? ` covers ${p.objectiveId}` : ""}${p.slot?.placement ? `, ${p.slot.placement}` : ""}`)}</title></rect>`);
     if (style.label) out.push(`<text x="${fmt(cx)}" y="${fmt(cy + 4)}" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">${style.label}</text>`);
   }
   for (const p of free.filter((p) => p.role === "tower" || p.role === "building")) {
@@ -225,12 +232,25 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
   };
   const counts = layout.stats.piecesByRole;
   line("Legend", { bold: true, size: 16 });
-  const roleOrder: Role[] = ["trench-straight", "trench-corner", "trench-t", "revetment", "decor", "ramp", "hill", "crater", "difficult", "wire", "dangerous", "ruin", "building", "tower", "cover", "landmark", "ground"];
+  const roleOrder: Role[] = ["trench-straight", "trench-corner", "trench-t", "revetment", "decor", "ramp", "hill", "crater", "difficult", "wire", "dangerous", "ruin", "building", "tower", "cover", "landmark", "scatter", "ground"];
+  // With the palette, one line per name the table shows, drawn in the colour of the first role that carries it.
+  const named = new Map<string, { role: Role; n: number }>();
   for (const role of roleOrder) {
     const n = counts[role] ?? 0;
     if (!n && role !== "ground") continue;
     const style = ROLE_STYLE[role];
-    swatch(style.fill === "none" ? "#e8e1cf" : style.fill, style.stroke, `${style.name}${style.label ? ` (${style.label})` : ""}: ${n}`);
+    if (!options.palette || !n) {
+      swatch(style.fill === "none" ? "#e8e1cf" : style.fill, style.stroke, `${style.name}${style.label ? ` (${style.label})` : ""}: ${n}`);
+      continue;
+    }
+    for (const p of layout.pieces.filter((x) => x.role === role)) {
+      const name = nameOf(p)!;
+      named.set(name, { role: named.get(name)?.role ?? role, n: (named.get(name)?.n ?? 0) + 1 });
+    }
+  }
+  for (const [name, { role, n }] of named) {
+    const style = ROLE_STYLE[role];
+    swatch(style.fill === "none" ? "#e8e1cf" : style.fill, style.stroke, `${name}${style.label ? ` (${style.label})` : ""}: ${n}`);
   }
   const plateauCells = layout.plateaus.reduce((n, p) => n + p.cells.length, 0);
   swatch("url(#raised)", "#6d5c34", `Plateau (stacked tiles): ${layout.plateaus.length ? `${layout.plateaus.length} with ${plateauCells} cells` : "none"}`);
@@ -268,6 +288,9 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
     line("Warnings", { bold: true, size: 16, color: "#8a2420" });
     for (const w of layout.stats.warnings) line(w, { size: 12, color: "#8a2420" });
   }
+  // A long legend runs past the board; the page grows to hold it.
+  const full = Math.max(height, Math.ceil(ly + margin));
+  [out[svgAt], out[backgroundAt]] = frame(full) as [string, string];
   out.push("</svg>");
   return out.join("\n");
 }

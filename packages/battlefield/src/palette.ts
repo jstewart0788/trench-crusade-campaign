@@ -43,6 +43,37 @@ const Pair = z.tuple([z.number(), z.number()]);
 
 export const WallSource = z.enum(["visual", "collider", "assumed"]);
 
+export const TerrainType = z.enum(["open", "difficult", "dangerous", "impassable"]);
+export type TerrainType = z.infer<typeof TerrainType>;
+/** The rulebook's standard terrain (p.60), plus the board itself, ramps, unique pieces and scattered terrain (p.64). */
+export const TerrainKind = z.enum(["ground", "hill", "ramp", "trench", "linear", "ruined-building", "corner-ruin", "area", "landmark", "unique", "scattered"]);
+export type TerrainKind = z.infer<typeof TerrainKind>;
+
+/** How a piece plays, in the rulebook's terms, with the printed pages it comes from. */
+export const TerrainRules = z
+  .object({
+    /** What players call it. */
+    label: z.string().min(1),
+    kind: TerrainKind,
+    types: z.array(TerrainType).min(1),
+    /** Keywords in brackets after DANGEROUS TERRAIN, e.g. FIRE (p.54). */
+    keywords: z.array(z.string()).optional(),
+    /** It gives COVER, and Defended Obstacle in melee, when it lies between (p.38, p.43, p.45). */
+    cover: z.boolean(),
+    /** Over 1in high: climbed as a sheer surface (p.39, p.62). */
+    climb: z.boolean(),
+    /** Measured height in inches to the nearest 1/2in: its top above the ground it stands on, unless `measure` says otherwise. */
+    heightIn: z.number().nonnegative().nullable(),
+    measure: z.string().optional(),
+    /** Trench pieces with a fire step: its height above the trench floor. */
+    fireStepIn: z.number().positive().optional(),
+    pages: z.array(z.number().int().positive()).min(1),
+    /** Why, where the book leaves the classification to the players. */
+    call: z.string().optional(),
+  })
+  .strict();
+export type TerrainRules = z.infer<typeof TerrainRules>;
+
 export const PalettePiece = z
   .object({
     id: z.string().min(1),
@@ -75,6 +106,9 @@ export const PalettePiece = z
     enabled: z.boolean(),
     verified: z.boolean(),
     note: z.string().optional(),
+    terrain: TerrainRules,
+    /** Ground tiles: how one plays stacked on another, as a hill or plateau top. */
+    stackedTerrain: TerrainRules.optional(),
   })
   .strict()
   .superRefine((p, ctx) => {
@@ -147,6 +181,8 @@ export const Palette = z
     aesthetics: z.array(z.string()).min(1),
     categories: z.record(Category),
     sources: z.record(z.string()).optional(),
+    /** One reminder per rule a piece can carry, the book's wording cut short, with its pages. */
+    terrainRules: z.record(z.enum(["open", "difficult", "dangerous", "impassable", "keywords", "cover", "climb", "trench", "fireStep", "hill", "ramp", "landmark", "ruined-building", "corner-ruin", "scattered"]), z.object({ text: z.string(), pages: z.array(z.number().int().positive()) }).strict()),
     pieces: z.array(PalettePiece).min(1),
     groups: z.array(PaletteGroup).default([]),
   })

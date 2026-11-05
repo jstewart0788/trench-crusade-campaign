@@ -129,7 +129,8 @@
     "openings": "Measured and visually verified in the live game, top-down capture with a +z marker, 2026-11-04 (coordinator message to TC-021)",
     "verticality": "data/tts/VERTICALITY.md: how the reference maps stack pieces",
     "catalog": "data/tts/catalog.json supplies kind, urls, scale and colour at build time",
-    "categories": "TC-021c: categories by footprint and silhouette, aesthetic tags by asset name and source bag; the scatter set measured live 2026-11-04 (palette-measured-v2.json scatterRun)"
+    "categories": "TC-021c: categories by footprint and silhouette, aesthetic tags by asset name and source bag; the scatter set measured live 2026-11-04 (palette-measured-v2.json scatterRun)",
+    "terrainRules": "Trench Crusade Comprehensive Rules, printed page numbers (the PDF's page index matches): terrain types and cover p.38, climbing p.39, jumping p.40, Elevated position and Cover modifiers p.43, Defended Obstacle p.45, DIFFICULT/DANGEROUS TERRAIN and COVER keywords p.54, IMPASSABLE TERRAIN p.55, standard terrain and landmarks p.60, area terrain and hills p.61, linear terrain and trench sections p.62, ruined buildings and corner ruins p.63, unique and scattered terrain p.64. Heights are heightIn (live visual bounds, 2026-11-04) rounded to the nearest 1/2in; trench depth from the Physics.cast profiles in palette-measured-v2.json (TC-021h)."
   },
   "pieces": [
     {
@@ -154,7 +155,37 @@
       ],
       "topIn": 2.5,
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ground",
+        "kind": "ground",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38
+        ]
+      },
+      "stackedTerrain": {
+        "label": "Hill",
+        "kind": "hill",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": true,
+        "heightIn": 2.5,
+        "measure": "one tile stacked on the ground: its top above the ground around it",
+        "pages": [
+          38,
+          39,
+          61
+        ],
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+      }
     },
     {
       "id": "landscape-1x2",
@@ -178,7 +209,37 @@
       ],
       "topIn": 2.5,
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ground",
+        "kind": "ground",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38
+        ]
+      },
+      "stackedTerrain": {
+        "label": "Hill",
+        "kind": "hill",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": true,
+        "heightIn": 2.5,
+        "measure": "one tile stacked on the ground: its top above the ground around it",
+        "pages": [
+          38,
+          39,
+          61
+        ],
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+      }
     },
     {
       "id": "landscape-2x2",
@@ -203,7 +264,37 @@
       "topIn": 2.58,
       "enabled": true,
       "verified": true,
-      "note": "Named 1x4 in the source mods; an 8x8 (2x2 cell) block. Collider top 2.58 above its support (0.08 above the 1x1)."
+      "note": "Named 1x4 in the source mods; an 8x8 (2x2 cell) block. Collider top 2.58 above its support (0.08 above the 1x1).",
+      "terrain": {
+        "label": "Ground",
+        "kind": "ground",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38
+        ]
+      },
+      "stackedTerrain": {
+        "label": "Hill",
+        "kind": "hill",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": true,
+        "heightIn": 2.5,
+        "measure": "one tile stacked on the ground: its top above the ground around it",
+        "pages": [
+          38,
+          39,
+          61
+        ],
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+      }
     },
     {
       "id": "crater-2x2",
@@ -232,7 +323,24 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Ground tile with the crater centred on the 2x2 block; counts as one difficult-terrain piece."
+      "note": "Ground tile with the crater centred on the 2x2 block; counts as one difficult-terrain piece.",
+      "terrain": {
+        "label": "Crater",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38,
+          54,
+          60,
+          61
+        ],
+        "call": "A crater cut into a ground tile, level with the board: Difficult as the book's craters (p.38), no rim to give cover."
+      }
     },
     {
       "id": "trench-straight-ledge",
@@ -272,7 +380,26 @@
         "source": "collider",
         "note": "The 1.5in fire step sits on -x at rotY 0 in the collider (collider raycast of the piece spawned locked in the live game, 2026-11-04 (data/tts/VERTICALITY.md)), and Trenches Square Off's ledge straights only face no-man's-land on both lines that way. The 2026-11-04 visual note said +x; one look settles it, and flipping this field is the whole fix."
       },
-      "channelFloorIn": 0.5
+      "channelFloorIn": 0.5,
+      "terrain": {
+        "label": "Trench",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "fireStepIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+      }
     },
     {
       "id": "trench-straight-logs",
@@ -312,6 +439,24 @@
         "kind": "logs",
         "source": "assumed",
         "note": "Logs on one wall only (live 2026-11-04), but the collider is symmetric, so which wall is not known. Not used while the source is assumed: plain straights with log fences stand in."
+      },
+      "terrain": {
+        "label": "Trench",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
       }
     },
     {
@@ -344,7 +489,25 @@
       "channelFloorIn": 0.5,
       "enabled": true,
       "verified": true,
-      "note": "Bare earth on both walls (live 2026-11-04). Same collider family as the ledge and logs straights: pivot 1.5 above the bottom, channel floor 0.5, wall faces 1.13-1.37 from the centre."
+      "note": "Bare earth on both walls (live 2026-11-04). Same collider family as the ledge and logs straights: pivot 1.5 above the bottom, channel floor 0.5, wall faces 1.13-1.37 from the centre.",
+      "terrain": {
+        "label": "Trench",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+      }
     },
     {
       "id": "trench-corner",
@@ -376,7 +539,25 @@
       "enabled": true,
       "verified": true,
       "note": "At rotY 0 the walls are on the +z and -x edges, openings on -z and +x. Both walls are bare earth (live 2026-11-04).",
-      "channelFloorIn": 0.5
+      "channelFloorIn": 0.5,
+      "terrain": {
+        "label": "Trench",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+      }
     },
     {
       "id": "trench-t",
@@ -417,7 +598,25 @@
         "source": "visual",
         "note": "Logs on the through wall, +x at rotY 0 (live 2026-11-04)."
       },
-      "channelFloorIn": 0.5
+      "channelFloorIn": 0.5,
+      "terrain": {
+        "label": "Trench",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+      }
     },
     {
       "id": "trench-entrance",
@@ -447,7 +646,25 @@
       },
       "enabled": false,
       "verified": true,
-      "note": "A ramp piece with a wall on the -x edge. Trenches Square Off places all four at the ends of its two N-S lines, rotY 0 at the south end and 180 at the north end, which puts the trench opening on +z at rotY 0 (4/4 consistent, see VERTICALITY.md). Not visually confirmed, so still unused: runs end at a board edge or a junction."
+      "note": "A ramp piece with a wall on the -x edge. Trenches Square Off places all four at the ends of its two N-S lines, rotY 0 at the south end and 180 at the north end, which puts the trench opening on +z at rotY 0 (4/4 consistent, see VERTICALITY.md). Not visually confirmed, so still unused: runs end at a board edge or a junction.",
+      "terrain": {
+        "label": "Trench",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+      }
     },
     {
       "id": "hill-ramp",
@@ -475,7 +692,21 @@
       },
       "enabled": true,
       "verified": true,
-      "note": "Sits on a Landscape tile (1.28 above it, live) and climbs one tile height, 2.5in. Uphill is +x at rotY 0: all 20 Hill Ramps in Trenches Square Off climb toward their raised trench line that way (VERTICALITY.md). Not visually confirmed."
+      "note": "Sits on a Landscape tile (1.28 above it, live) and climbs one tile height, 2.5in. Uphill is +x at rotY 0: all 20 Hill Ramps in Trenches Square Off climb toward their raised trench line that way (VERTICALITY.md). Not visually confirmed.",
+      "terrain": {
+        "label": "Ramp",
+        "kind": "ramp",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38,
+          39
+        ]
+      }
     },
     {
       "id": "h4x4",
@@ -500,7 +731,24 @@
       "topIn": 2.1,
       "enabled": false,
       "verified": true,
-      "note": "Out of the generator (TC-021f): its top is a grass texture that does not match the Landscape tiles around it (Jonathan, live review of seed 4). Hills are stacked Landscape tiles now, top 5.00 like a plateau. Kept for its measured numbers (2.1 tall, rest 0)."
+      "note": "Out of the generator (TC-021f): its top is a grass texture that does not match the Landscape tiles around it (Jonathan, live review of seed 4). Hills are stacked Landscape tiles now, top 5.00 like a plateau. Kept for its measured numbers (2.1 tall, rest 0).",
+      "terrain": {
+        "label": "Hill",
+        "kind": "hill",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": true,
+        "heightIn": 2.0,
+        "measure": "its top above the ground around it",
+        "pages": [
+          38,
+          39,
+          61
+        ],
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+      }
     },
     {
       "id": "plank-floor",
@@ -521,7 +769,20 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Duckboard laid along a Double Logs trench channel; scattered terrain (p64), ignored by spacing."
+      "note": "Duckboard laid along a Double Logs trench channel; scattered terrain (p64), ignored by spacing.",
+      "terrain": {
+        "label": "Duckboard",
+        "kind": "ground",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38
+        ]
+      }
     },
     {
       "id": "ruins-corner",
@@ -546,7 +807,24 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "A complete corner ruin: 3.19 x 3.18 x 4.70 visually; only its collider is a 2.4in floor plate, which is what made it read as a floor."
+      "note": "A complete corner ruin: 3.19 x 3.18 x 4.70 visually; only its collider is a 2.4in floor plate, which is what made it read as a floor.",
+      "terrain": {
+        "label": "Corner ruin",
+        "kind": "corner-ruin",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 4.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          63
+        ]
+      }
     },
     {
       "id": "ruins-wall",
@@ -570,7 +848,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined wall",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 4.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "ruins-defendable",
@@ -594,7 +889,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined wall",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "wrecked-brick-wall-l",
@@ -618,7 +930,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Corner ruin",
+        "kind": "corner-ruin",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          63
+        ]
+      }
     },
     {
       "id": "ruins-small-a",
@@ -643,7 +972,26 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 9.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-small-b",
@@ -667,7 +1015,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 7.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-medium-a",
@@ -692,7 +1059,26 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 10.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-medium-b",
@@ -716,7 +1102,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 7.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-medium-c",
@@ -740,7 +1145,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 7.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-medium-d",
@@ -765,7 +1189,26 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 9.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-medium-e",
@@ -789,7 +1232,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 10.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-medium-f",
@@ -813,7 +1275,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 7.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-large-a",
@@ -838,7 +1319,26 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 10.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "ruins-large-b",
@@ -863,7 +1363,26 @@
       ],
       "enabled": false,
       "verified": true,
-      "note": "10.9 x 11.3in: too big for a 36in board."
+      "note": "10.9 x 11.3in: too big for a 36in board.",
+      "terrain": {
+        "label": "Ruined building",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 10.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "Height is the top of the highest wall; floors inside are Open and rubble Difficult as the book's ruined buildings (p.63), but floor heights are not measured."
+      }
     },
     {
       "id": "outpost-tower",
@@ -889,7 +1408,26 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Visual 3.96 x 4.01, 9.4 tall (collider only 3.69 x 3.71 x 7.03)."
+      "note": "Visual 3.96 x 4.01, 9.4 tall (collider only 3.69 x 3.71 x 7.03).",
+      "terrain": {
+        "label": "Tower",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 9.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "The book counts a tower as a ruined building (p.60); height is the top of the structure, platform heights not measured."
+      }
     },
     {
       "id": "tower-small",
@@ -914,7 +1452,26 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Visual 4.41 x 2.65, 6.87 tall; the collider is 1.66 x 1.59, which is why it looked far too big as an objective cover."
+      "note": "Visual 4.41 x 2.65, 6.87 tall; the collider is 1.66 x 1.59, which is why it looked far too big as an objective cover.",
+      "terrain": {
+        "label": "Tower",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 7.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "The book counts a tower as a ruined building (p.60); height is the top of the structure, platform heights not measured."
+      }
     },
     {
       "id": "tower-tall",
@@ -939,7 +1496,26 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Tower",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 9.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "The book counts a tower as a ruined building (p.60); height is the top of the structure, platform heights not measured."
+      }
     },
     {
       "id": "water-tower",
@@ -963,7 +1539,26 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Water tower",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 8.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "The book counts a tower as a ruined building (p.60); height is the top of the structure, platform heights not measured."
+      }
     },
     {
       "id": "watchtower",
@@ -988,7 +1583,26 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "9.1 x 9.4in; its collider bottom is 4.2in above the mesh bottom, so it physics-rests with the pivot 4.28 below the surface and the legs on it."
+      "note": "9.1 x 9.4in; its collider bottom is 4.2in above the mesh bottom, so it physics-rests with the pivot 4.28 below the surface and the legs on it.",
+      "terrain": {
+        "label": "Tower",
+        "kind": "ruined-building",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 9.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          60,
+          63
+        ],
+        "call": "The book counts a tower as a ruined building (p.60); height is the top of the structure, platform heights not measured."
+      }
     },
     {
       "id": "brick-wall",
@@ -1012,7 +1626,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Wall",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "brick-wall-gate",
@@ -1036,7 +1667,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Wall",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "wrecked-brick-wall-a",
@@ -1060,7 +1708,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Corner ruin",
+        "kind": "corner-ruin",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          63
+        ]
+      }
     },
     {
       "id": "wrecked-brick-wall-b",
@@ -1084,7 +1749,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Ruined wall",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "tall-fence",
@@ -1108,7 +1790,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Fence",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "wood-fence",
@@ -1132,7 +1831,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Fence",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "tall-crates",
@@ -1157,7 +1873,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crates",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "concrete-slabs",
@@ -1181,7 +1915,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Concrete slabs",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "stacked-tanks",
@@ -1205,7 +1957,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Tanks",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 4.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "shipping-crate",
@@ -1229,7 +1999,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Shipping container",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "wooden-platform-a",
@@ -1253,7 +2041,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Platform",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "wooden-platform-b",
@@ -1277,7 +2083,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Platform",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "makeshift-defense-tall",
@@ -1301,7 +2125,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barricade",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "concrete-cover",
@@ -1326,7 +2168,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Concrete barrier",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "sandbags-corner",
@@ -1350,7 +2209,23 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Sandbags",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ]
+      }
     },
     {
       "id": "rock-cover",
@@ -1374,7 +2249,25 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rocks",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "A single rock played as an obstacle (linear terrain, p.62) rather than an area of rocky ground."
+      }
     },
     {
       "id": "tall-rock",
@@ -1398,7 +2291,25 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rock",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "A single rock played as an obstacle (linear terrain, p.62) rather than an area of rocky ground."
+      }
     },
     {
       "id": "barrel",
@@ -1424,7 +2335,22 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Group member only."
+      "note": "Group member only.",
+      "terrain": {
+        "label": "Barrel",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "supplies",
@@ -1449,7 +2375,24 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Group member only."
+      "note": "Group member only.",
+      "terrain": {
+        "label": "Supplies",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "tire-pile",
@@ -1474,7 +2417,25 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Group member only."
+      "note": "Group member only.",
+      "terrain": {
+        "label": "Tyres",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "barbed-wire",
@@ -1499,7 +2460,23 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Visual 3.71 x 1.77 x 1.65 coils; the collider is a 0.01in flat plate."
+      "note": "Visual 3.71 x 1.77 x 1.65 coils; the collider is a 0.01in flat plate.",
+      "terrain": {
+        "label": "Barbed wire",
+        "kind": "area",
+        "types": [
+          "dangerous"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          54,
+          60,
+          61
+        ]
+      }
     },
     {
       "id": "barbed-wall",
@@ -1523,7 +2500,23 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barbed wire",
+        "kind": "area",
+        "types": [
+          "dangerous"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          54,
+          60,
+          61
+        ]
+      }
     },
     {
       "id": "difficult-dangerous",
@@ -1547,7 +2540,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barbed wire",
+        "kind": "area",
+        "types": [
+          "difficult",
+          "dangerous"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          54,
+          60,
+          61
+        ],
+        "call": "The piece is named Difficult + Dangerous in its source save; barbed wire is Dangerous in the book (p.38)."
+      }
     },
     {
       "id": "difficult-flat",
@@ -1571,7 +2582,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rubble",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "difficult-mound",
@@ -1595,7 +2625,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rubble",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "difficult-block",
@@ -1619,7 +2668,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rubble",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "rubble",
@@ -1643,7 +2711,24 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rubble",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38,
+          54,
+          60,
+          61
+        ],
+        "call": "A flat rubble patch (0.1in): the book lists rubble as Difficult (p.60) rather than leaving it as scenery."
+      }
     },
     {
       "id": "rock",
@@ -1667,7 +2752,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rocks",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "tall-rock-b",
@@ -1691,7 +2795,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rocks",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "lumber-pile",
@@ -1715,7 +2838,26 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Lumber",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "heavy-crater",
@@ -1739,7 +2881,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crater",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "A crater is Difficult (p.38); its rim gives cover when it stands at least 1/2in (p.38), so the smallest crater gives none."
+      }
     },
     {
       "id": "statue",
@@ -1764,7 +2925,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Statue",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ]
+      }
     },
     {
       "id": "cross",
@@ -1788,7 +2966,24 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Cross",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ]
+      }
     },
     {
       "id": "water-tank",
@@ -1812,7 +3007,24 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Water tank",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 4.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ]
+      }
     },
     {
       "id": "turret",
@@ -1837,7 +3049,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Gun turret",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "A gun emplacement played as a landmark: Impassable (p.60)."
+      }
     },
     {
       "id": "artillery",
@@ -1862,7 +3092,25 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Visual 5.25 x 4.36 with the barrel; the collider is only 1.12 x 1.63."
+      "note": "Visual 5.25 x 4.36 with the barrel; the collider is only 1.12 x 1.63.",
+      "terrain": {
+        "label": "Artillery piece",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "A gun emplacement played as a landmark: Impassable (p.60)."
+      }
     },
     {
       "id": "pillar",
@@ -1887,7 +3135,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Pillar",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 5.5,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ]
+      }
     },
     {
       "id": "bunker",
@@ -1912,7 +3177,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Bunker",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 3.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "An intact bunker: the book treats intact buildings as Impassable unless floor plans are drawn (p.64)."
+      }
     },
     {
       "id": "log-fence",
@@ -1933,7 +3216,22 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "Upright at rotation 0 with its length along z; topples if unlocked, so it is always spawned Locked. Body centre 1.22 to +x of the pivot (collider and visual bounds agree), pivot 1.20 above its bottom."
+      "note": "Upright at rotation 0 with its length along z; topples if unlocked, so it is always spawned Locked. Body centre 1.22 to +x of the pivot (collider and visual bounds agree), pivot 1.20 above its bottom.",
+      "terrain": {
+        "label": "Trench wall",
+        "kind": "trench",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 2.0,
+        "measure": "the trench side it lines: floor to parapet",
+        "pages": [
+          38,
+          62
+        ]
+      }
     },
     {
       "id": "box",
@@ -1958,7 +3256,22 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Box",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "crates-small",
@@ -1983,7 +3296,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crates",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "crates-long",
@@ -2008,7 +3339,24 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crates",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "crates-group",
@@ -2033,7 +3381,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crates",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "cargo-pallet",
@@ -2057,7 +3423,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Cargo pallet",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "first-aid-small",
@@ -2081,7 +3465,22 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "First aid kit",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "first-aid-crate",
@@ -2105,7 +3504,22 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "First aid crate",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "ancient-books",
@@ -2129,7 +3543,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Books",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "barrel-small",
@@ -2154,7 +3583,22 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barrel",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "barrels-group",
@@ -2179,7 +3623,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barrels",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "sandbags-long",
@@ -2203,7 +3664,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Sandbags",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "sandbags-row",
@@ -2227,7 +3705,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Sandbags",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "makeshift-defense",
@@ -2252,7 +3747,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barricade",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "wood-barrier",
@@ -2276,7 +3788,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Barricade",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "ruins-brick",
@@ -2300,7 +3829,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Bricks",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "stone-pile",
@@ -2324,7 +3870,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Stones",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "concrete-chunks",
@@ -2349,7 +3912,25 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Concrete chunks",
+        "kind": "linear",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      }
     },
     {
       "id": "stray-planks",
@@ -2373,7 +3954,22 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Planks",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "wood-planks",
@@ -2397,7 +3993,22 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Planks",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "corpse-a",
@@ -2422,7 +4033,22 @@
       ],
       "enabled": false,
       "verified": true,
-      "note": "Renders solid magenta on macOS (seen live on the seed-4 board, 2026-11-05): the bundle (Unity 2019.4.40f1, StandaloneWindows64) carries its own copy of Mobile/Diffuse (fallback Mobile/VertexLit) compiled for D3D11 and OpenGLCore only, with no Metal program, and TTS on Apple silicon draws with Metal; Player.log: \"Shader Mobile/VertexLit shader is not supported on this GPU\". The source maps spawn it the same way (MaterialIndex 0, TypeIndex 0), so the asset itself is the fault."
+      "note": "Renders solid magenta on macOS (seen live on the seed-4 board, 2026-11-05): the bundle (Unity 2019.4.40f1, StandaloneWindows64) carries its own copy of Mobile/Diffuse (fallback Mobile/VertexLit) compiled for D3D11 and OpenGLCore only, with no Metal program, and TTS on Apple silicon draws with Metal; Player.log: \"Shader Mobile/VertexLit shader is not supported on this GPU\". The source maps spawn it the same way (MaterialIndex 0, TypeIndex 0), so the asset itself is the fault.",
+      "terrain": {
+        "label": "Corpse",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "corpse-b",
@@ -2447,7 +4073,22 @@
       ],
       "enabled": false,
       "verified": true,
-      "note": "Same fault as corpse-a (not on the seed-4 board, found by scanning every palette bundle): the bundle (Unity 2019.4.40f1, StandaloneWindows64) carries its own Mobile/Diffuse compiled for D3D11 and OpenGLCore only, with no Metal program, so it renders magenta in TTS on macOS."
+      "note": "Same fault as corpse-a (not on the seed-4 board, found by scanning every palette bundle): the bundle (Unity 2019.4.40f1, StandaloneWindows64) carries its own Mobile/Diffuse compiled for D3D11 and OpenGLCore only, with no Metal program, so it renders magenta in TTS on macOS.",
+      "terrain": {
+        "label": "Corpse",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "animal-skull",
@@ -2472,7 +4113,22 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Skull",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "skeleton-pile-a",
@@ -2496,7 +4152,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Bones",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "skeleton-pile-b",
@@ -2520,7 +4191,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Bones",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": null,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "strange-flesh",
@@ -2544,7 +4230,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Strange flesh",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "candles-a",
@@ -2568,7 +4269,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Candles",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "candles-b",
@@ -2592,7 +4308,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Candles",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "grave-a",
@@ -2616,7 +4347,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Grave",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "grave-b",
@@ -2640,7 +4386,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Grave",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "holy-marker",
@@ -2664,7 +4425,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Holy marker",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 2.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "cross-small",
@@ -2688,7 +4464,22 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Grave cross",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "camp-fire",
@@ -2712,7 +4503,22 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Camp fire",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "A small camp fire, scattered in heaps anywhere on the board, kept as scenery; the book's raging fires are Dangerous (p.38) with FIRE Injury Rolls (p.54), which a bigger blaze could take."
+      }
     },
     {
       "id": "radio",
@@ -2736,7 +4542,22 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Radio",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "training-dummy",
@@ -2760,7 +4581,22 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Training dummy",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "rough-grass",
@@ -2784,7 +4620,22 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rough grass",
+        "kind": "scattered",
+        "types": [
+          "open"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          64
+        ],
+        "call": "Too small to matter: the book's scattered terrain, decorative, ignored or moved aside (p.64)."
+      }
     },
     {
       "id": "tall-shrubs-a",
@@ -2808,7 +4659,25 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Shrubs",
+        "kind": "area",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.5,
+        "pages": [
+          38,
+          43,
+          45,
+          60,
+          61
+        ],
+        "call": "Tall shrubs block sight partly, so they give cover (p.38); the book's hedges are linear terrain and single trees scattered terrain, so a clump is ours to call: Open to move through."
+      }
     },
     {
       "id": "tall-shrubs-b",
@@ -2832,7 +4701,25 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Shrubs",
+        "kind": "area",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.5,
+        "pages": [
+          38,
+          43,
+          45,
+          60,
+          61
+        ],
+        "call": "Tall shrubs block sight partly, so they give cover (p.38); the book's hedges are linear terrain and single trees scattered terrain, so a clump is ours to call: Open to move through."
+      }
     },
     {
       "id": "small-crater",
@@ -2856,7 +4743,24 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crater",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": false,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          54,
+          60,
+          61
+        ],
+        "call": "A crater is Difficult (p.38); its rim gives cover when it stands at least 1/2in (p.38), so the smallest crater gives none."
+      }
     },
     {
       "id": "crater",
@@ -2880,7 +4784,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crater",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "A crater is Difficult (p.38); its rim gives cover when it stands at least 1/2in (p.38), so the smallest crater gives none."
+      }
     },
     {
       "id": "heavy-crater-small",
@@ -2904,7 +4827,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crater",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "A crater is Difficult (p.38); its rim gives cover when it stands at least 1/2in (p.38), so the smallest crater gives none."
+      }
     },
     {
       "id": "crater-wide",
@@ -2928,7 +4870,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Crater",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "A crater is Difficult (p.38); its rim gives cover when it stands at least 1/2in (p.38), so the smallest crater gives none."
+      }
     },
     {
       "id": "heavy-rubble",
@@ -2952,7 +4913,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rubble",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "large-concrete-slabs",
@@ -2977,7 +4957,26 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Rubble",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "lumber-pile-b",
@@ -3001,7 +5000,26 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Lumber",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "rotting-flesh-mound",
@@ -3025,7 +5043,26 @@
         "ecclesiastic"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Flesh mound",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "corpses-heap",
@@ -3050,7 +5087,26 @@
         "any"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Corpses",
+        "kind": "area",
+        "types": [
+          "difficult"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 0.5,
+        "pages": [
+          38,
+          43,
+          45,
+          54,
+          60,
+          61
+        ],
+        "call": "Difficult ground at least 1/2in high gives cover when it lies between (p.38)."
+      }
     },
     {
       "id": "fishing-bags",
@@ -3074,7 +5130,24 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Sacks",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "fuel-tank",
@@ -3098,7 +5171,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Fuel tank",
+        "kind": "unique",
+        "types": [
+          "open"
+        ],
+        "cover": true,
+        "climb": true,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          39,
+          43,
+          45,
+          64
+        ],
+        "call": "Not one of the book's standard types (p.64): played as an obstacle that gives cover and is climbed when over 1in, like linear terrain (p.62)."
+      }
     },
     {
       "id": "tent",
@@ -3122,7 +5213,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Tent",
+        "kind": "unique",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.5,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          64
+        ],
+        "call": "A standing tent is an intact structure; the book has intact buildings treated as Impassable unless floor plans are drawn (p.64)."
+      }
     },
     {
       "id": "statue-tall",
@@ -3147,7 +5256,24 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Statue",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 6.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ]
+      }
     },
     {
       "id": "jeep",
@@ -3172,7 +5298,25 @@
       ],
       "enabled": true,
       "verified": true,
-      "note": "A wrecked vehicle: the Trench Lines landmark list names wrecked vehicles."
+      "note": "A wrecked vehicle: the Trench Lines landmark list names wrecked vehicles.",
+      "terrain": {
+        "label": "Wrecked jeep",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "Wrecks are not in the book's list (p.64); the Trench Lines archetype names them among its landmarks, so they are Impassable (p.60). Could as well be climbable cover."
+      }
     },
     {
       "id": "small-car",
@@ -3197,7 +5341,25 @@
         "urban-ruin"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Wrecked car",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.5,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "Wrecks are not in the book's list (p.64); the Trench Lines archetype names them among its landmarks, so they are Impassable (p.60). Could as well be climbable cover."
+      }
     },
     {
       "id": "pickup-truck",
@@ -3221,7 +5383,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Wrecked truck",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.5,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "Wrecks are not in the book's list (p.64); the Trench Lines archetype names them among its landmarks, so they are Impassable (p.60). Could as well be climbable cover."
+      }
     },
     {
       "id": "tank-wreck",
@@ -3245,7 +5425,25 @@
         "industrial"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Wrecked tank",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 2.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "Wrecks are not in the book's list (p.64); the Trench Lines archetype names them among its landmarks, so they are Impassable (p.60). Could as well be climbable cover."
+      }
     },
     {
       "id": "row-boat",
@@ -3269,7 +5467,25 @@
         "field-fortification"
       ],
       "enabled": true,
-      "verified": true
+      "verified": true,
+      "terrain": {
+        "label": "Wrecked boat",
+        "kind": "landmark",
+        "types": [
+          "impassable"
+        ],
+        "cover": true,
+        "climb": false,
+        "heightIn": 1.0,
+        "pages": [
+          38,
+          43,
+          45,
+          55,
+          60
+        ],
+        "call": "Wrecks are not in the book's list (p.64); the Trench Lines archetype names them among its landmarks, so they are Impassable (p.60). Could as well be climbable cover."
+      }
     }
   ],
   "groups": [
@@ -3429,5 +5645,99 @@
         "industrial"
       ]
     }
-  ]
+  ],
+  "terrainRules": {
+    "open": {
+      "text": "Open: models move freely",
+      "pages": [
+        38
+      ]
+    },
+    "difficult": {
+      "text": "Difficult: every 1\" moved through it counts as 2\"",
+      "pages": [
+        54
+      ]
+    },
+    "dangerous": {
+      "text": "Dangerous: Risky Success Roll when a model moves in or Activates in it; on a Failure, Injury Roll and its Activation ends",
+      "pages": [
+        54
+      ]
+    },
+    "impassable": {
+      "text": "Impassable: models cannot move onto or across it",
+      "pages": [
+        55
+      ]
+    },
+    "keywords": {
+      "text": "Injury Rolls it causes have {keywords}",
+      "pages": [
+        54
+      ]
+    },
+    "cover": {
+      "text": "Cover: -1 DICE to ranged attacks on a model in contact with it when it lies between; Defended Obstacle: -1 DICE in melee across it",
+      "pages": [
+        38,
+        43,
+        45
+      ]
+    },
+    "climb": {
+      "text": "Over 1\" high: Climb it as a sheer surface (Risky Success Roll)",
+      "pages": [
+        39
+      ]
+    },
+    "trench": {
+      "text": "Trench sides under 3\" cross as Open; a model may Jump across as a gap",
+      "pages": [
+        62,
+        40
+      ]
+    },
+    "fireStep": {
+      "text": "Fire step {fireStep}\" above the floor",
+      "pages": []
+    },
+    "hill": {
+      "text": "Hill: Elevated position needs a model 3\" higher than its target",
+      "pages": [
+        61,
+        43
+      ]
+    },
+    "ramp": {
+      "text": "Ramps count as Open terrain",
+      "pages": [
+        39
+      ]
+    },
+    "landmark": {
+      "text": "Landmark: only FLYING models cross it",
+      "pages": [
+        60
+      ]
+    },
+    "ruined-building": {
+      "text": "Ruined building: Climb its walls; floors and stairs are Open, rubble Difficult",
+      "pages": [
+        63
+      ]
+    },
+    "corner-ruin": {
+      "text": "Corner ruin: Climb to any upper floor; rubble is Difficult",
+      "pages": [
+        63
+      ]
+    },
+    "scattered": {
+      "text": "Scattered terrain: decorative; ignore it or move it aside",
+      "pages": [
+        64
+      ]
+    }
+  }
 }

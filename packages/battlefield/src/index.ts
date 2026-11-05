@@ -1,6 +1,7 @@
 export * from "./rng.js";
 export * from "./grid.js";
 export * from "./palette.js";
+export * from "./terrain.js";
 export * from "./scenario.js";
 export * from "./trench.js";
 export * from "./parity.js";

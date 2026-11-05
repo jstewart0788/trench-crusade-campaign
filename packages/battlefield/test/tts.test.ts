@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateBattlefield, layoutToObjectStates, pieceById, pieceToObjectState, resolvePalette, rotatedFootprint, rotateOffset, TERRAIN_TAG, type Catalog, type Layout, type TtsObjectState } from "../src/index.js";
+import { generateBattlefield, layoutToObjectStates, pieceById, pieceToObjectState, resolvePalette, rotatedFootprint, rotateOffset, TERRAIN_TAG, terrainName, terrainOf, terrainReminder, type Catalog, type Layout, type TtsObjectState } from "../src/index.js";
 import { fixtureCatalog, fixtureEnv } from "./fixtures.js";
 
 const env = fixtureEnv();
@@ -12,7 +12,10 @@ const layout = boards.find((l) => l.plateaus.length && l.pieces.some((p) => p.gr
 const statesOf = (l: Layout) => layoutToObjectStates(l, palette, catalog, { matTopY: MAT_TOP, matCenter: [0, 0] });
 const states = statesOf(layout);
 const urlToAsset = new Map(catalog.assets.map((a) => [a.urls.primary, a]));
-const byPiece = (states: TtsObjectState[]) => new Map(states.map((s) => [s.Description.split(" ")[1]!, s]));
+/** The generator's ids, on the Description's last line: role, piece id, (palette id). */
+const idsLine = (s: TtsObjectState) => s.Description.split("\n").at(-1)!;
+const idsOf = (s: TtsObjectState) => idsLine(s).split(" ");
+const byPiece = (states: TtsObjectState[]) => new Map(states.map((s) => [idsOf(s)[1]!, s]));
 
 describe("layoutToObjectStates", () => {
   it("emits one locked, tagged object per piece with a known asset, quarter turns for cell-aligned pieces", () => {
@@ -22,7 +25,7 @@ describe("layoutToObjectStates", () => {
       expect(url, s.Nickname).toBeDefined();
       expect(urlToAsset.has(url!), `${s.Nickname} url unknown`).toBe(true);
       // Cell-aligned pieces turn by quarters; free pieces stand at any yaw.
-      const piece = layout.pieces.find((p) => p.id === s.Description.split(" ")[1])!;
+      const piece = layout.pieces.find((p) => p.id === idsOf(s)[1])!;
       if (piece.cells) expect([0, 90, 180, 270]).toContain(s.Transform.rotY);
       else expect(s.Transform.rotY >= 0 && s.Transform.rotY < 360).toBe(true);
       expect(s.Transform.rotX).toBe(0);
@@ -37,9 +40,27 @@ describe("layoutToObjectStates", () => {
     expect(states.some((s) => s.Tags.includes("tc-role:revetment"))).toBe(true);
   });
 
+  it("names every object for the players from the palette's terrain rules, a tile stacked on another as a hill, with the rules on hover", () => {
+    let hills = 0;
+    for (const board of boards) {
+      const pieces = new Map(board.pieces.map((p) => [p.id, p]));
+      for (const s of statesOf(board)) {
+        const piece = pieces.get(idsOf(s)[1]!)!;
+        const terrain = terrainOf(pieceById(palette, piece.paletteId), piece.baseIn);
+        expect(s.Nickname, piece.id).toBe(terrainName(terrain));
+        expect(s.Description.split("\n")[0], piece.id).toBe(terrainReminder(terrain, palette));
+        if (piece.role === "ground" && piece.baseIn > 0) {
+          expect(s.Nickname, piece.id).toBe('Hill · 2.5" · Climb');
+          hills++;
+        }
+      }
+    }
+    expect(hills).toBeGreaterThan(0);
+  });
+
   it("spawns in stack order: everything a piece rests on comes before it", () => {
     for (const board of boards) {
-      const order = statesOf(board).map((s) => s.Description.split(" ")[1]!);
+      const order = statesOf(board).map((s) => idsOf(s)[1]!);
       const index = new Map(order.map((id, i) => [id, i]));
       for (const p of board.pieces) for (const s of p.supportIds) expect(index.get(s)!, `${p.id} before ${s}`).toBeLessThan(index.get(p.id)!);
     }
@@ -139,7 +160,7 @@ describe("layoutToObjectStates", () => {
     let models = 0;
     for (const board of boards) {
       for (const s of statesOf(board)) {
-        const spawn = resolved.byId.get(/\(([^)]+)\)/.exec(s.Description)![1]!)!.asset.spawn!;
+        const spawn = resolved.byId.get(/\(([^)]+)\)/.exec(idsLine(s))![1]!)!.asset.spawn!;
         expect(spawn, s.Description).toBeDefined();
         const block = s.CustomAssetbundle ?? s.CustomMesh!;
         expect([block.MaterialIndex, block.TypeIndex], s.Description).toEqual([spawn.materialIndex, spawn.typeIndex]);

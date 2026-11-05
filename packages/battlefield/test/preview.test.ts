@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateBattlefield, renderPlanSvg } from "../src/index.js";
+import { escapeXml, generateBattlefield, pieceById, renderPlanSvg, terrainName, terrainOf } from "../src/index.js";
 import { fixtureEnv } from "./fixtures.js";
 
 // A small well-formedness check for the SVG the renderer writes: balanced,
@@ -49,6 +49,15 @@ describe("renderPlanSvg", () => {
       expect(svg).toContain("claim-no-mans-land");
       expect((svg.match(/<circle[^>]*fill="#ffffff" fill-opacity/g) ?? []).length).toBe(layout.objectives.length);
     }
+  });
+
+  it("names pieces and the legend as the table does, given the palette", () => {
+    const layout = generateBattlefield({ scenarioId: "claim-no-mans-land", archetype: "trench-lines", seed: 7 }, env);
+    const svg = renderPlanSvg(layout, { palette: env.palette, rotYSense: env.palette.rotation.rotYSense });
+    expect(() => assertWellFormedXml(svg)).not.toThrow();
+    const names = new Set(layout.pieces.map((p) => terrainName(terrainOf(pieceById(env.palette, p.paletteId), p.baseIn))));
+    for (const name of names) expect(svg, name).toMatch(new RegExp(`>${escapeXml(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?: \\([A-Za-z]\\))?: \\d+</text>`));
+    expect(svg).toContain(escapeXml('Trench · 2" deep · Cover'));
   });
 
   it("escapes text it interpolates", () => {
