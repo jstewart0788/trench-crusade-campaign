@@ -984,13 +984,14 @@ function onload()
         changeMeasurementCircle(9, target, nil, playerColor)
     end)
     lastClickTimestamp=nowSeconds()
-    defaultFontSize=500
+    defaultFontSize=400
     fontSize=defaultFontSize
     lineCount=0
     defaultDivisionLabel="|\n|"
     self.createButton({
         label="---", click_function="none", function_owner=Global,
-        position={-6.4,0.11,0.01}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
+        -- Right of the tool column and below the dice frame, so the tallest readout stays on the mat.
+        position={-4.9,0.11,0.2}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
         font_color={1, 1, 1},
         scale={0.25, 0.25, 0.25},
 		alignment=2
