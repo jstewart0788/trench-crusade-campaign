@@ -160,20 +160,119 @@ function countTagged(entries, role)
   return count
 end
 
+---------------------------------------------------------------- widgets --
+
+-- Classic 3D buttons laid out for the tile face TTS reports at load, the same
+-- scheme as the Warband Importer (mod/scripts/b91983.lua, which carries the
+-- sources). Measured live on 2026-11-04 (scripts/tts_exec.py) on 4ac9e3 at
+-- scale (4,1,4): visual bounds size (10.667, 0.2, 8) centred 0.1 above the
+-- object position, so the face is local x -1.333..1.333 by z -1..1 (the 4:3
+-- board image, not the square save.json asks for), the mesh spans local
+-- y 0..0.2 with the pivot on the bottom face, and the collider (14.127, 0.2, 8)
+-- is wider than the face. Buttons at y 0.15 sat inside the slab and never
+-- rendered; the live-tuned layout below (y 0.30, width 1150, height 170, font
+-- 70, the Shaken pair 560 wide at x +-0.72) is what Jonathan accepted on
+-- screen. width/height/font_size are 1/500 of a local unit (a width-900
+-- button spans two thirds of a 16-unit face at scale 6).
+REF = { hx = 1.333, hz = 1.0, top = 0.2 }
+UNITS_PER_LOCAL = 500
+HEIGHT_UNITS_PER_LOCAL = 650
+WIDGET_LIFT = 0.1
+
+LIGHT = { 0.95, 0.92, 0.85 }
+PANEL = { 0.12, 0.12, 0.12 }
+CLEAR = { 0, 0, 0, 0 }
+RED_SIDE = { 0.55, 0.12, 0.12 }
+BLUE_SIDE = { 0.12, 0.3, 0.6 }
+
+-- Rows are 0.27 apart (the live-tuned 0.26 nudged so 170-tall buttons clear
+-- each other at HEIGHT_UNITS_PER_LOCAL); the Shaken labels are filled at
+-- layout time from the state, so match buttons by id, never by label.
+BUTTONS = {
+  { id = "label", label = "", row = -0.81, width = 0, height = 0, font = 80, click = "noop", colour = CLEAR },
+  { id = "rollOff", label = "Initiative roll-off", row = -0.54, width = 1150, height = 170, font = 70, click = "onRollOff" },
+  { id = "startTurn", label = "Start turn (clear Activated)", row = -0.27, width = 1150, height = 170, font = 70, click = "onStartTurn" },
+  { id = "morale", label = "Morale reminder", row = 0.0, width = 1150, height = 170, font = 70, click = "onMorale" },
+  { id = "nextTurn", label = "Next turn", row = 0.27, width = 1150, height = 170, font = 70, click = "onNextTurn" },
+  { id = "shakenRed", label = "", row = 0.54, col = -0.72, width = 560, height = 170, font = 60, click = "onToggleShakenRed", colour = RED_SIDE },
+  { id = "shakenBlue", label = "", row = 0.54, col = 0.72, width = 560, height = 170, font = 60, click = "onToggleShakenBlue", colour = BLUE_SIDE },
+  { id = "rules", label = "Rules shelf", row = 0.81, width = 1150, height = 170, font = 70, click = "onRulesShelf" },
+}
+
+function geomFromBounds(visual, collider, scale, position)
+  local g = { hx = REF.hx, hz = REF.hz, top = REF.top }
+  scale = scale or { x = 1, y = 1, z = 1 }
+  position = position or { x = 0, y = 0, z = 0 }
+  if visual and visual.size and visual.size.x > 0 and visual.size.z > 0 then
+    g.hx = visual.size.x / scale.x / 2
+    g.hz = visual.size.z / scale.z / 2
+    g.top = ((visual.center.y - position.y) + visual.size.y / 2) / scale.y
+  end
+  if collider and collider.size and collider.size.y > 0 then
+    local top = ((collider.center.y - position.y) + collider.size.y / 2) / scale.y
+    if top > g.top then g.top = top end
+  end
+  g.y = g.top + WIDGET_LIFT
+  g.sx = g.hx / REF.hx
+  g.sz = g.hz / REF.hz
+  return g
+end
+
+function widgetExtent(spec)
+  local half = { w = (spec.width or 0) / UNITS_PER_LOCAL / 2, h = (spec.height or 0) / HEIGHT_UNITS_PER_LOCAL / 2 }
+  return {
+    left = spec.position[1] - half.w,
+    right = spec.position[1] + half.w,
+    top = spec.position[3] - half.h,
+    bottom = spec.position[3] + half.h,
+  }
+end
+
+-- Screen right is local -x (labels keep rotation {0,0,0}, top at local -z,
+-- and the tile's rotY 270 turns that toward +x, the way the seats face).
+function trackerLayout(state, geom)
+  geom = geom or geomFromBounds()
+  local fontScale = geom.sx
+  if geom.sz < fontScale then fontScale = geom.sz end
+  local specs = {}
+  for _, b in ipairs(BUTTONS) do
+    local label = b.label
+    if b.id == "label" then label = phaseLabel(state) end
+    if b.id == "shakenRed" then label = shakenLabel(state, "Red") end
+    if b.id == "shakenBlue" then label = shakenLabel(state, "Blue") end
+    specs[#specs + 1] = {
+      id = b.id,
+      label = label,
+      click_function = b.click,
+      position = { -(b.col or 0) * geom.sx, geom.y, b.row * geom.sz },
+      rotation = { 0, 0, 0 },
+      width = math.floor(b.width * geom.sx + 0.5),
+      height = math.floor(b.height * geom.sz + 0.5),
+      font_size = math.floor(b.font * fontScale + 0.5),
+      font_color = LIGHT,
+      color = b.colour or PANEL,
+    }
+  end
+  return specs
+end
+
+function describeGeometry(name, geom, scale, visual, specs)
+  local first, last = specs[1], specs[#specs]
+  local function p(spec)
+    if not spec then return "-" end
+    return string.format("%s(%.2f,%.2f,%.2f)", spec.id, spec.position[1], spec.position[2], spec.position[3])
+  end
+  local size = "n/a"
+  if visual and visual.size then size = string.format("%.2fx%.2fx%.2f", visual.size.x, visual.size.y, visual.size.z) end
+  return string.format("[%s] visual %s scale %.2f,%.2f,%.2f half %.3fx%.3f top %.2f y %.2f units/local %d first %s last %s",
+    name, size, scale.x, scale.y, scale.z, geom.hx, geom.hz, geom.top, geom.y, UNITS_PER_LOCAL, p(first), p(last))
+end
+
 ---------------------------------------------------------------- TTS glue --
 
 state = newState()
-
-BUTTONS = {
-  { id = "label", label = "", z = -0.78, w = 1700, h = 0, font = 95, click = "noop", display = true },
-  { id = "rollOff", label = "Initiative roll-off", z = -0.52, w = 1700, h = 210, font = 90, click = "onRollOff" },
-  { id = "startTurn", label = "Start turn (clear Activated)", z = -0.26, w = 1700, h = 210, font = 90, click = "onStartTurn" },
-  { id = "morale", label = "Morale reminder", z = 0.0, w = 1700, h = 210, font = 90, click = "onMorale" },
-  { id = "nextTurn", label = "Next turn", z = 0.26, w = 1700, h = 210, font = 90, click = "onNextTurn" },
-  { id = "shakenRed", label = "", z = 0.52, x = -0.43, w = 820, h = 210, font = 80, click = "onToggleShakenRed", colour = { 0.55, 0.12, 0.12 } },
-  { id = "shakenBlue", label = "", z = 0.52, x = 0.43, w = 820, h = 210, font = 80, click = "onToggleShakenBlue", colour = { 0.12, 0.3, 0.6 } },
-  { id = "rules", label = "Rules shelf", z = 0.78, w = 1700, h = 210, font = 90, click = "onRulesShelf" },
-}
+buttonIndex = {}
+geometry = nil
 
 function onSave()
   return JSON.encode(state)
@@ -187,45 +286,39 @@ function onLoad(saved)
   end
   state = normaliseState(loaded)
   math.randomseed(os.time())
-  createButtons()
-  refreshLabels()
+  relayout()
 end
 
 function noop() end
 
-function createButtons()
-  self.clearButtons()
-  for _, b in ipairs(BUTTONS) do
-    local params = {
-      click_function = b.click,
-      function_owner = self,
-      label = b.label,
-      position = { b.x or 0, 0.15, b.z },
-      width = b.w,
-      height = b.h,
-      font_size = b.font,
-      font_color = { 1, 1, 1 },
-      color = b.colour or { 0.2, 0.2, 0.2 },
-    }
-    if b.display then
-      params.color = { 0, 0, 0, 0 }
-      params.font_color = { 0.85, 0.7, 0.32 }
-    end
-    self.createButton(params)
-  end
+-- Re-measures the face and rebuilds the buttons; also callable from the
+-- console: getObjectFromGUID("4ac9e3").call("relayout").
+function relayout()
+  local visual = self.getVisualBoundsNormalized()
+  local scale = self.getScale()
+  geometry = geomFromBounds(visual, self.getBoundsNormalized(), scale, self.getPosition())
+  createButtons()
+  print(describeGeometry(self.getName(), geometry, scale, visual, trackerLayout(state, geometry)))
 end
 
-function buttonIndex(id)
-  for i, b in ipairs(BUTTONS) do
-    if b.id == id then return i - 1 end
+function createButtons()
+  self.clearButtons()
+  buttonIndex = {}
+  for i, spec in ipairs(trackerLayout(state, geometry)) do
+    local params = {}
+    for k, v in pairs(spec) do
+      if k ~= "id" then params[k] = v end
+    end
+    params.function_owner = self
+    self.createButton(params)
+    buttonIndex[spec.id] = i - 1
   end
-  return nil
 end
 
 function refreshLabels()
-  self.editButton({ index = buttonIndex("label"), label = phaseLabel(state) })
+  self.editButton({ index = buttonIndex.label, label = phaseLabel(state) })
   for _, side in ipairs(SIDES) do
-    self.editButton({ index = buttonIndex("shaken" .. side), label = shakenLabel(state, side) })
+    self.editButton({ index = buttonIndex["shaken" .. side], label = shakenLabel(state, side) })
   end
 end
 

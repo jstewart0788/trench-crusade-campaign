@@ -15,7 +15,7 @@ TAG_MEMBER = "tc-member:"
 TAG_SPAWNED = "tc-spawned"
 TAG_BOUND = "tc-bound"
 
-MAX_ROWS = 20
+MAX_ROWS = 14
 
 -- Gannel's 32mm base: the top-level mesh of every Gannel's model (the
 -- Lieutenant 15e05f in 3700111403 among them). Members without a default model
@@ -45,17 +45,20 @@ PLAYER_COLOURS = {
 }
 COLOUR_ORDER = {"Red", "Blue", "Teal", "Purple", "Orange", "Yellow", "Green", "White", "Pink", "Brown"}
 
--- Where an imported warband lands. In 1v1 the mat is centred on x=20 and runs
--- 60" along x by 44" along z; Red plays from +z, Blue from -z (dice mats at
--- z=+/-29, the LCT Army Placer parks armies at z=+/-74). The grid starts past
--- the dice mat, centred on the mat, and grows away from the table centre one
--- row of `perRow` at a time. Any other colour gets a grid in front of the
--- importer tile itself.
+-- Where an imported warband lands: on the game mat, which the glue measures at
+-- import time (object 4ee1f2 "matObjSurface", a Custom_Model; getBounds on the
+-- live table on 2026-11-04 gave centre (0, -0.5, 0) and size (60, 2.9, 44), so
+-- the playing surface is x -30..30, z -22..22 with its top at y 0.95 - the big
+-- 136x199 tile 28865a under it is the table, not the mat). Red's first row sits
+-- MAT_EDGE_INSET inside the +z edge and grows toward the centre, Blue mirrored
+-- from -z; both are centred on the mat's x. The earlier fixed anchors at
+-- z = +/-44 dropped models 22" off the mat where nobody saw them. Any other
+-- colour gets a grid in front of the importer tile itself.
 GRID = { perRow = 6, dx = 2.5, dz = 2.5, y = 1.5 }
-ANCHORS = {
-  Red = { x = 13.75, z = 44, dirX = 1, dirZ = 1, rotY = 180 },
-  Blue = { x = 26.25, z = -44, dirX = -1, dirZ = -1, rotY = 0 },
-}
+MAT_GUID = "4ee1f2"
+MAT_EDGE_INSET = 3
+MAT_LIFT = 1
+DEFAULT_MAT = { center = { x = 0, y = -0.5, z = 0 }, size = { x = 60, y = 2.9, z = 44 } }
 
 function trim(s)
   s = tostring(s or "")
@@ -104,8 +107,33 @@ function tint(base, rgb, amount)
   }
 end
 
-function anchorFor(colour, origin)
-  if ANCHORS[colour] then return ANCHORS[colour] end
+function matFrame(bounds)
+  bounds = bounds or DEFAULT_MAT
+  return {
+    centreX = bounds.center.x,
+    minZ = bounds.center.z - bounds.size.z / 2,
+    maxZ = bounds.center.z + bounds.size.z / 2,
+    top = bounds.center.y + bounds.size.y / 2,
+  }
+end
+
+-- A flat object about the mat's size, for tables where 4ee1f2 is gone.
+function looksLikeMat(size)
+  return size.x >= 50 and size.x <= 70 and size.z >= 34 and size.z <= 54 and size.y <= 5
+end
+
+function anchorsFromMat(bounds)
+  local frame = matFrame(bounds)
+  local halfRow = (GRID.perRow - 1) * GRID.dx / 2
+  return {
+    Red = { x = frame.centreX - halfRow, y = frame.top + MAT_LIFT, z = frame.maxZ - MAT_EDGE_INSET, dirX = 1, dirZ = -1, rotY = 180 },
+    Blue = { x = frame.centreX + halfRow, y = frame.top + MAT_LIFT, z = frame.minZ + MAT_EDGE_INSET, dirX = -1, dirZ = 1, rotY = 0 },
+  }
+end
+
+function anchorFor(colour, origin, matBounds)
+  local anchors = anchorsFromMat(matBounds)
+  if anchors[colour] then return anchors[colour] end
   return {
     x = origin.x - (GRID.perRow - 1) * GRID.dx / 2,
     z = origin.z + 8,
@@ -121,7 +149,7 @@ function gridPosition(index, anchor, grid)
   local row = (i - col) / grid.perRow
   return {
     x = anchor.x + anchor.dirX * col * grid.dx,
-    y = grid.y,
+    y = anchor.y or grid.y,
     z = anchor.z + anchor.dirZ * row * grid.dz,
   }
 end
@@ -278,6 +306,11 @@ function buildSpawnSpecs(payload, anchor, playerRgb, keep)
   return specs
 end
 
+-- The row button shows the short title; the full label is its tooltip.
+function memberRowTitle(index, member)
+  return string.format("%d. %s", index, member.displayName or "?")
+end
+
 function memberRowLabel(index, member)
   local name = member.displayName or "?"
   if member.unit and member.unit.name and member.unit.name ~= name then
@@ -290,51 +323,108 @@ end
 
 ---------------------------------------------------------------- widgets --
 
--- The panel is classic 3D widgets (self.createInput / self.createButton) in
--- the tile's local space, the way ForceOrg's Yellow Machine lays out its
--- buttons: position in local units, width/height/font_size in 1/500ths of a
--- local unit (calibrated against the LCT dice mats, whose rows touch at that
--- ratio). The tile face is 2 local units square (12" at scale 6). Widgets keep
--- rotation {0,0,0}, which puts a label's top at local -z; the tile's own rotY
--- of 270 in save.json turns that toward +x, the way every seat faces. Screen
--- coordinates below: col grows to the viewer's right (local -x), row grows
--- downward (local +z).
+-- The panel is classic 3D widgets (self.createInput / self.createButton) in the
+-- tile's local space, laid out for the tile face that TTS reports at load:
+--
+-- * Measured live on 2026-11-04 through the External Editor API
+--   (scripts/tts_exec.py, getVisualBoundsNormalized / getBoundsNormalized /
+--   getScale on b91983 at scale (6,1,6)): visual bounds size (16, 0.2, 12) with
+--   its centre 0.1 above the object position, collider bounds (16, 0.3, 12)
+--   centred 0.15 above. So the face is local x -1.333..1.333 by z -1..1 (the
+--   tile keeps its 4:3 image although save.json has CustomTile.Stretch true -
+--   the Custom Tile page's "If the source image is stretched to make for a
+--   symmetrical tile" did not hold on this build, the measurement wins), the
+--   mesh spans local y 0..0.2 and the collider y 0..0.3: the pivot is the bottom
+--   face. Widgets at y 0.12 sat inside the slab and never rendered; y 0.30 did.
+-- * API (https://api.tabletopsimulator.com/object/): position is "Where the
+--   button appears, relative to the Object's center"; width is "How wide the
+--   button will be, relative to the Object"; the bounds tables carry "center",
+--   "size" and "offset". No unit is named, so the width unit was read off the
+--   screen: a width-900 button spanned two thirds of the 16-unit face at scale
+--   6, i.e. 500 units per local unit, consistent with the LCT dice mats
+--   (acae21, scale 3.75) whose 160/110/80-unit widgets sit 0.29 and 0.2 local
+--   units apart. Font units are assumed to match; this is the one number that
+--   remains unverified by a direct measurement.
+-- * Inputs: height is "(font_size * # of lines) + 23" (createInput tips); a
+--   width-900 input with height 100-130 and font 70-100 at button scale 1 reads
+--   well at tile scale 6 (live-tuned 2026-11-04).
+-- * Labels keep rotation {0,0,0}: their top points to local -z, and the tile's
+--   rotY of 270 in save.json turns that toward +x, the way every seat faces
+--   (CameraStates[0] yaw 90, hand zones rotY 270). Screen right is local -x.
+--
+-- The layout below is written for the measured reference face (REF) and is
+-- stretched at load to whatever face the object reports (geomFromBounds), so a
+-- different tile image cannot bury or overflow it.
+REF = { hx = 4 / 3, hz = 1.0, top = 0.3 }
 UNITS_PER_LOCAL = 500
-WIDGET_Y = 0.12
-FULL_WIDTH = 900
-HALF_WIDTH = 435
-HALF_OFFSET = 0.46
+-- Height renders on a different scale from width: 170-tall tracker buttons at
+-- a 0.26 pitch read as separate on screen (so at least 654 per local unit),
+-- while 210-tall ones measured about 0.38 local in a screenshot (548). 650 is
+-- the bracketed value the overlap checks use; unverified beyond that.
+HEIGHT_UNITS_PER_LOCAL = 650
+WIDGET_LIFT = 0.1
 
+-- Two blocks across the 4:3 face: the controls down the viewer's left
+-- (col -0.66, 600 wide) and the member list down the right (col 0.66). Row
+-- pitches respect the API's floor - "The minimum width/height is 60. Any lower
+-- number (besides 0) will appear to be 60" - which is why member rows are 60
+-- tall at a 0.14 pitch: a 25-tall row at 0.055 rendered as one blob on
+-- 2026-11-04, and 40-tall rows at 0.14 read as separate rows.
+LEFT = -0.56
+RIGHT = 0.80
 LAYOUT = {
-  title = { row = -0.91, font = 90 },
-  baseUrl = { row = -0.74, height = 100, font = 70 },
-  code = { row = -0.49, height = 130, font = 100 },
-  colour = { row = -0.24, height = 90, font = 55 },
-  bind = { row = -0.24, height = 90, font = 60 },
-  import = { row = -0.02, height = 110, font = 80 },
-  status = { row = 0.24, height = 130, font = 34, wrap = 48 },
-  members = { row = 0.44, pitch = 0.055, height = 25, font = 22, perColumn = 10 },
+  title = { row = -0.91, col = LEFT, font = 80 },
+  baseUrl = { row = -0.72, col = LEFT, width = 760, height = 85, font = 55 },
+  code = { row = -0.47, col = LEFT, width = 760, height = 115, font = 85 },
+  colour = { row = -0.22, col = LEFT, width = 760, height = 90, font = 55 },
+  bind = { row = 0.0, col = LEFT, width = 760, height = 90, font = 60 },
+  import = { row = 0.24, col = LEFT, width = 760, height = 110, font = 80 },
+  confirm = { row = 0.24, offset = 0.39, width = 370, height = 110, font = 60 },
+  status = { row = 0.62, col = LEFT, width = 760, height = 170, font = 32, wrap = 40 },
+  members = { row = -0.91, pitch = 0.14, col = RIGHT, width = 500, height = 60, font = 28 },
 }
 
 INPUT_BASE_URL = 0
 INPUT_CODE = 1
 
 GOLD = { 0.85, 0.70, 0.32 }
-PANEL = { 0.13, 0.13, 0.13 }
+PANEL = { 0.12, 0.12, 0.12 }
 ROW = { 0.2, 0.2, 0.2 }
-LIGHT = { 0.9, 0.9, 0.9 }
-DARK = { 0, 0, 0 }
+LIGHT = { 0.95, 0.92, 0.85 }
+DARK = { 0.05, 0.05, 0.05 }
 GREEN = { 0.18, 0.49, 0.2 }
 RED = { 0.55, 0.13, 0.13 }
 GREY = { 0.33, 0.33, 0.33 }
 WHITE = { 1, 1, 1 }
 
-function screenToLocal(col, row)
-  return { -col, WIDGET_Y, row }
+-- Face geometry from what the object reports: visual bounds give the face,
+-- the collider can be thicker, and bounds are world-space so scale divides
+-- them back to local units. Falls back to REF when nothing is measured.
+function geomFromBounds(visual, collider, scale, position)
+  local g = { hx = REF.hx, hz = REF.hz, top = REF.top }
+  scale = scale or { x = 1, y = 1, z = 1 }
+  position = position or { x = 0, y = 0, z = 0 }
+  if visual and visual.size and visual.size.x > 0 and visual.size.z > 0 then
+    g.hx = visual.size.x / scale.x / 2
+    g.hz = visual.size.z / scale.z / 2
+    g.top = ((visual.center.y - position.y) + visual.size.y / 2) / scale.y
+  end
+  if collider and collider.size and collider.size.y > 0 then
+    local top = ((collider.center.y - position.y) + collider.size.y / 2) / scale.y
+    if top > g.top then g.top = top end
+  end
+  g.y = g.top + WIDGET_LIFT
+  g.sx = g.hx / REF.hx
+  g.sz = g.hz / REF.hz
+  return g
+end
+
+function screenToLocal(col, row, geom)
+  return { -col * geom.sx, geom.y, row * geom.sz }
 end
 
 function widgetExtent(spec)
-  local half = { w = (spec.width or 0) / UNITS_PER_LOCAL / 2, h = (spec.height or 0) / UNITS_PER_LOCAL / 2 }
+  local half = { w = (spec.width or 0) / UNITS_PER_LOCAL / 2, h = (spec.height or 0) / HEIGHT_UNITS_PER_LOCAL / 2 }
   return {
     left = spec.position[1] - half.w,
     right = spec.position[1] + half.w,
@@ -385,71 +475,100 @@ function wrapText(text, maxChars)
   return table.concat(lines, "\n")
 end
 
-function inputLayout(baseUrl, code)
+local function fontFor(units, geom)
+  local s = geom.sx
+  if geom.sz < s then s = geom.sz end
+  return math.floor(units * s + 0.5)
+end
+
+local function widget(id, col, row, width, height, font, geom)
   return {
-    {
-      id = "baseUrl", input_function = "onBaseUrlInput", label = "API base URL",
-      tooltip = "Where the roster tool is serving /api/tts/warband/<code>",
-      value = baseUrl or "", alignment = 3,
-      position = screenToLocal(0, LAYOUT.baseUrl.row), rotation = { 0, 0, 0 },
-      width = FULL_WIDTH, height = LAYOUT.baseUrl.height, font_size = LAYOUT.baseUrl.font,
-      color = LIGHT, font_color = DARK,
-    },
-    {
-      id = "code", input_function = "onCodeInput", label = "Warband code",
-      tooltip = "The code the roster tool handed out for your warband",
-      value = code or "", alignment = 3,
-      position = screenToLocal(0, LAYOUT.code.row), rotation = { 0, 0, 0 },
-      width = FULL_WIDTH, height = LAYOUT.code.height, font_size = LAYOUT.code.font,
-      color = WHITE, font_color = DARK,
-    },
+    id = id,
+    position = screenToLocal(col, row, geom), rotation = { 0, 0, 0 },
+    width = math.floor(width * geom.sx + 0.5), height = math.floor(height * geom.sz + 0.5),
+    font_size = fontFor(font, geom),
   }
 end
 
-local function button(id, label, click, col, row, width, height, font, colour, fontColour, tooltip)
-  return {
-    id = id, label = label, click_function = click, tooltip = tooltip or "",
-    position = screenToLocal(col, row), rotation = { 0, 0, 0 },
-    width = width, height = height, font_size = font,
-    color = colour, font_color = fontColour,
-  }
+function inputLayout(baseUrl, code, geom)
+  geom = geom or geomFromBounds()
+  local url = widget("baseUrl", LAYOUT.baseUrl.col, LAYOUT.baseUrl.row, LAYOUT.baseUrl.width, LAYOUT.baseUrl.height, LAYOUT.baseUrl.font, geom)
+  url.input_function = "onBaseUrlInput"
+  url.label = "API base URL"
+  url.tooltip = "Where the roster tool is serving /api/tts/warband/<code>"
+  url.value = baseUrl or ""
+  url.alignment = 3
+  url.color = LIGHT
+  url.font_color = DARK
+  local codeInput = widget("code", LAYOUT.code.col, LAYOUT.code.row, LAYOUT.code.width, LAYOUT.code.height, LAYOUT.code.font, geom)
+  codeInput.input_function = "onCodeInput"
+  codeInput.label = "Warband code"
+  codeInput.tooltip = "The code the roster tool handed out for your warband"
+  codeInput.value = code or ""
+  codeInput.alignment = 3
+  codeInput.color = WHITE
+  codeInput.font_color = DARK
+  return { url, codeInput }
+end
+
+local function button(id, label, click, col, row, width, height, font, colour, fontColour, tooltip, geom)
+  local spec = widget(id, col, row, width, height, font, geom)
+  spec.label = label
+  spec.click_function = click
+  spec.tooltip = tooltip or ""
+  spec.color = colour
+  spec.font_color = fontColour
+  return spec
 end
 
 -- `view` is what the buttons show: colourLabel, pending (re-import confirm
 -- shown), status, members (row labels, at most MAX_ROWS) and selected.
-function widgetLayout(view)
+function widgetLayout(view, geom)
+  geom = geom or geomFromBounds()
+  local L = LAYOUT
   local specs = {}
-  specs[#specs + 1] = button("title", "WARBAND IMPORTER", "noop", 0, LAYOUT.title.row, 0, 0, LAYOUT.title.font, PANEL, GOLD)
-  specs[#specs + 1] = button("colour", view.colourLabel, "onCycleColour", -HALF_OFFSET, LAYOUT.colour.row,
-    HALF_WIDTH, LAYOUT.colour.height, LAYOUT.colour.font, GREY, WHITE,
-    "Which seat the models are placed and tinted for; 'mine' follows whoever presses Import")
-  specs[#specs + 1] = button("bind", "Bind", "onBind", HALF_OFFSET, LAYOUT.bind.row,
-    HALF_WIDTH, LAYOUT.bind.height, LAYOUT.bind.font, GREY, WHITE,
-    "Select a member below, press Bind, then pick up your own model")
+  specs[#specs + 1] = button("title", "WARBAND IMPORTER", "noop", L.title.col, L.title.row, 0, 0, L.title.font, PANEL, GOLD, nil, geom)
+  specs[#specs + 1] = button("colour", view.colourLabel, "onCycleColour", L.colour.col, L.colour.row,
+    L.colour.width, L.colour.height, L.colour.font, GREY, LIGHT,
+    "Which seat the models are placed and tinted for; 'mine' follows whoever presses Import", geom)
+  specs[#specs + 1] = button("bind", "Bind", "onBind", L.bind.col, L.bind.row,
+    L.bind.width, L.bind.height, L.bind.font, GREY, LIGHT,
+    "Select a member below, press Bind, then pick up your own model", geom)
   if view.pending then
-    specs[#specs + 1] = button("replace", "Replace", "onConfirmReplace", -HALF_OFFSET, LAYOUT.import.row,
-      HALF_WIDTH, LAYOUT.import.height, LAYOUT.import.font, RED, WHITE, "Delete the spawned models and import again")
-    specs[#specs + 1] = button("cancel", "Cancel", "onConfirmCancel", HALF_OFFSET, LAYOUT.import.row,
-      HALF_WIDTH, LAYOUT.import.height, LAYOUT.import.font, GREY, WHITE, "Leave the table as it is")
+    specs[#specs + 1] = button("replace", "Replace", "onConfirmReplace", L.import.col - L.confirm.offset, L.confirm.row,
+      L.confirm.width, L.confirm.height, L.confirm.font, RED, LIGHT, "Delete the spawned models and import again", geom)
+    specs[#specs + 1] = button("cancel", "Cancel", "onConfirmCancel", L.import.col + L.confirm.offset, L.confirm.row,
+      L.confirm.width, L.confirm.height, L.confirm.font, GREY, LIGHT, "Leave the table as it is", geom)
   else
-    specs[#specs + 1] = button("import", "Import", "onImport", 0, LAYOUT.import.row,
-      FULL_WIDTH, LAYOUT.import.height, LAYOUT.import.font, GREEN, WHITE, "Fetch the warband and spawn its models")
+    specs[#specs + 1] = button("import", "Import", "onImport", L.import.col, L.import.row,
+      L.import.width, L.import.height, L.import.font, GREEN, LIGHT, "Fetch the warband and spawn its models", geom)
   end
-  specs[#specs + 1] = button("status", wrapText(view.status, LAYOUT.status.wrap), "noop", 0, LAYOUT.status.row,
-    FULL_WIDTH, LAYOUT.status.height, LAYOUT.status.font, PANEL, LIGHT)
-  local m = LAYOUT.members
-  for i, label in ipairs(view.members or {}) do
+  specs[#specs + 1] = button("status", wrapText(view.status, L.status.wrap), "noop", L.status.col, L.status.row,
+    L.status.width, L.status.height, L.status.font, PANEL, LIGHT, nil, geom)
+  local m = L.members
+  for i, member in ipairs(view.members or {}) do
     if i > MAX_ROWS then break end
-    local column = math.floor((i - 1) / m.perColumn)
-    local col = HALF_OFFSET
-    if column == 0 then col = -HALF_OFFSET end
-    local row = m.row + ((i - 1) % m.perColumn) * m.pitch
+    local row = m.row + (i - 1) * m.pitch
     local bg, fg = ROW, LIGHT
     if view.selected == i then bg, fg = GOLD, DARK end
-    specs[#specs + 1] = button("row" .. i, label, "selectMember" .. i, col, row, HALF_WIDTH, m.height, m.font, bg, fg,
-      "Click to select, then Bind")
+    specs[#specs + 1] = button("row" .. i, member.title, "selectMember" .. i, m.col, row, m.width, m.height, m.font, bg, fg,
+      member.detail .. "\nClick to select, then Bind", geom)
   end
   return specs
+end
+
+-- One chat line so the numbers can be read back from the table if the panel
+-- still renders wrong.
+function describeGeometry(name, geom, scale, visual, specs)
+  local first, last = specs[1], specs[#specs]
+  local function p(spec)
+    if not spec then return "-" end
+    return string.format("%s(%.2f,%.2f,%.2f)", spec.id, spec.position[1], spec.position[2], spec.position[3])
+  end
+  local size = "n/a"
+  if visual and visual.size then size = string.format("%.2fx%.2fx%.2f", visual.size.x, visual.size.y, visual.size.z) end
+  return string.format("[%s] visual %s scale %.2f,%.2f,%.2f half %.3fx%.3f top %.2f y %.2f units/local %d first %s last %s",
+    name, size, scale.x, scale.y, scale.z, geom.hx, geom.hz, geom.top, geom.y, UNITS_PER_LOCAL, p(first), p(last))
 end
 
 ---------------------------------------------------------------- TTS glue --
@@ -457,6 +576,7 @@ end
 state = { baseUrl = DEFAULT_BASE_URL, code = "", colour = "Red", useMyColour = true }
 session = { payload = nil, selected = nil, armed = {}, pending = nil, status = "Start the API, type a code, press Import." }
 buttonIndex = {}
+geometry = nil
 
 function onSave()
   return JSON.encode(state)
@@ -473,11 +593,27 @@ function onLoad(saved)
   for i = 1, MAX_ROWS do
     _G["selectMember" .. i] = function(obj, colour, alt) onSelectMember(colour, i) end
   end
+  relayout()
+end
+
+function measureGeometry()
+  local visual = self.getVisualBoundsNormalized()
+  local collider = self.getBoundsNormalized()
+  local scale = self.getScale()
+  geometry = geomFromBounds(visual, collider, scale, self.getPosition())
+  return visual, scale
+end
+
+-- Re-measures the face and rebuilds every widget; also callable from the
+-- console: getObjectFromGUID("b91983").call("relayout").
+function relayout()
+  local visual, scale = measureGeometry()
   self.clearInputs()
-  for _, spec in ipairs(inputLayout(state.baseUrl, state.code)) do
+  for _, spec in ipairs(inputLayout(state.baseUrl, state.code, geometry)) do
     self.createInput(widgetParams(spec))
   end
   renderButtons()
+  print(describeGeometry(self.getName(), geometry, scale, visual, widgetLayout(currentView(), geometry)))
 end
 
 function widgetParams(spec)
@@ -494,7 +630,9 @@ function noop() end
 function currentView()
   local labels = {}
   local members = (session.payload and session.payload.members) or {}
-  for i = 1, math.min(#members, MAX_ROWS) do labels[i] = memberRowLabel(i, members[i]) end
+  for i = 1, math.min(#members, MAX_ROWS) do
+    labels[i] = { title = memberRowTitle(i, members[i]), detail = memberRowLabel(i, members[i]) }
+  end
   return {
     colourLabel = colourButtonLabel(state.useMyColour, state.colour),
     pending = session.pending ~= nil,
@@ -507,7 +645,7 @@ end
 function renderButtons()
   self.clearButtons()
   buttonIndex = {}
-  for i, spec in ipairs(widgetLayout(currentView())) do
+  for i, spec in ipairs(widgetLayout(currentView(), geometry)) do
     self.createButton(widgetParams(spec))
     buttonIndex[spec.id] = i - 1
   end
@@ -663,7 +801,8 @@ function spawnWarband(payload, colour)
     end
   end
 
-  local specs = buildSpawnSpecs(payload, anchorFor(colour, self.getPosition()), colourFor(colour), keep)
+  local mat = findMat()
+  local specs = buildSpawnSpecs(payload, anchorFor(colour, self.getPosition(), mat), colourFor(colour), keep)
   for _, spec in ipairs(specs) do
     spawnObjectData({
       data = spec,
@@ -675,6 +814,18 @@ function spawnWarband(payload, colour)
   local suffix = ""
   if rebound > 0 then suffix = string.format(", re-bound %d of your own", rebound) end
   setStatus(string.format("%s: spawned %d model(s) for %s%s.", payload.warband.name or payload.code, #specs, colour, suffix))
+end
+
+-- The mat by GUID, else the first flat object about its size; nil falls back
+-- to the measured default in DEFAULT_MAT.
+function findMat()
+  local mat = getObjectFromGUID(MAT_GUID)
+  if mat then return mat.getBounds() end
+  for _, obj in ipairs(getAllObjects()) do
+    local bounds = obj.getBounds()
+    if bounds and bounds.size and looksLikeMat(bounds.size) then return bounds end
+  end
+  return nil
 end
 
 function applyBinding(object, member, code, origin)

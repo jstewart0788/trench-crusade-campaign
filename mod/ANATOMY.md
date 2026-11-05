@@ -250,7 +250,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP | Tournament Companion 1.0 | `5ac9e2` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
 | STRIP | TwistSlot | `d1e006` | ScriptingTrigger | 0 | 0 | scripting zone for a primary / deployment / twist mission card slot |
 | STRIP | Warhammer Open FAQ | `47587b` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
-| ADDED | Warband Importer | `b91983` | Custom_Tile | 24,786 | 0 | TC-016: code entry, `WebRequest` fetch of `/api/tts/warband/{code}`, spawn of bound models, Bind mode, re-import; see below |
+| ADDED | Warband Importer | `b91983` | Custom_Tile | 32,082 | 0 | TC-016: code entry, `WebRequest` fetch of `/api/tts/warband/{code}`, spawn of bound models, Bind mode, re-import; see below |
 | ADDED | Trench Crusade Digital Rulebook 1.0.2 | `6b081d` | Custom_PDF | 6,297 | 0 | TC-014 rules shelf, from Scripted Table `70e736`; section-jump buttons (Core Rules p13 ... Scenarios p142) |
 | ADDED | Warbands of Trench Crusade 1.0.2 | `a55c7e` | Custom_PDF | 6,238 | 0 | TC-014 rules shelf, from Scripted Table `a00f4d`; faction-jump buttons |
 | ADDED | Trench Crusade FAQ 1.0.1 | `ff5f5a` | Custom_PDF | 0 | 0 | TC-014 rules shelf, from Scripted Table `bb1029` |
@@ -278,7 +278,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | ADDED | Down | `9eb271` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `dff860`, tag `tc-token:down` |
 | ADDED | Tough | `359c8c` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `afb1c2`, tag `tc-token:tough` |
 | ADDED | Objective | `2d4b7e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `8f0c3a`, tag `tc-token:objective` |
-| ADDED | Turn Tracker | `4ac9e3` | Custom_Tile | 9,678 | 0 | TC-017 turn helpers: initiative roll-off, Start turn, Morale reminder, Next turn, Shaken flags, rules-shelf camera; see below |
+| ADDED | Turn Tracker | `4ac9e3` | Custom_Tile | 14,076 | 0 | TC-017 turn helpers: initiative roll-off, Start turn, Morale reminder, Next turn, Shaken flags, rules-shelf camera; see below |
 
 
 ## global.lua (128,527 bytes, 151 functions) by system
@@ -352,33 +352,43 @@ changelog constants (KEEP).
 
 ## Added: Warband Importer `b91983` (TC-016)
 
-A locked 12"x12" Custom_Tile at (-22, 1, 0), 20" in front of the host camera between the
-two hand zones, turned to `rotY: 270` so its widgets read upright from the seats (every seat
-faces +x: the hand zones sit at x=-42 with rotY 270 and `CameraStates[0]` loads looking
-along +x; the LCT Start Menu at x=52 uses the same rotY 270). The face is the Scripted
-Table's plain charcoal board image (3603166284, Custom_Boards `199749` / `f1195f`, 2272x1704)
-at ColorDiffuse white, replacing the 832px Lethal-Hit-Zone square that stretched grainy over
-the tile. The panel is classic 3D widgets created from the script (`self.createInput` for
-the API base URL and the warband code, `self.createButton` for everything else: title and
-status as width-0 / full-width label buttons with a no-op click, Colour cycle, Bind, Import
-or the Replace / Cancel pair while a re-import is pending, and one thin button per member in
-two columns of ten) - the pattern ForceOrg's Yellow Machine uses for its on-block buttons,
-and the same `rotation {0,0,0}` / label-top-at-local-`-z` convention the LCT's own scripted
-objects rely on. Widgets are rebuilt with `clearButtons` on every state change; the inputs
-are created once and read through their `input_function` callback (stored on every call,
-trimmed when `stillEditing` is false) and again via `self.getInputs()` when Import is
-pressed. There is no XML UI on the object. `mod/state/b91983.json` persists the base URL,
-code and colour choice through `onSave`/`onLoad`.
+A locked Custom_Tile at (-22, 1, 0), 20" in front of the host camera between the two hand
+zones, turned to `rotY: 270` so its widgets read upright from the seats (every seat faces
++x: the hand zones sit at x=-42 with rotY 270 and `CameraStates[0]` loads looking along +x;
+the LCT Start Menu at x=52 uses the same rotY 270). The face is the Scripted Table's plain
+charcoal board image (3603166284, Custom_Boards `199749` / `f1195f`, 2272x1704); measured
+live it is 16x12 units at scale 6 (the tile keeps the image's 4:3 despite `Stretch: true`)
+with the mesh from local y 0 to 0.2, pivot on the bottom face. The panel is classic 3D
+widgets created from the script (`self.createInput` for the API base URL and the warband
+code, `self.createButton` for everything else: title and status as width-0 / full-width
+label buttons with a no-op click, Colour cycle, Bind, Import or the Replace / Cancel pair
+while a re-import is pending, and one 60-tall button per member down the right half) -
+ForceOrg's Yellow Machine pattern for on-object buttons, with the LCT's `rotation {0,0,0}`
+/ label-top-at-local-`-z` convention. At load (and on `call("relayout")`) the script
+measures `getVisualBoundsNormalized` / `getBoundsNormalized` / `getScale`, stretches the
+layout written for the measured reference face to whatever the object reports, lifts it
+0.1 above the collider top, and prints one geometry line to the host chat. Widgets are
+rebuilt with `clearButtons` on every state change; the inputs are created once and read
+through their `input_function` callback (stored on every call, trimmed when `stillEditing`
+is false) and again via `self.getInputs()` when Import is pressed. There is no XML UI on the
+object. `mod/state/b91983.json` persists the base URL, code and colour choice through
+`onSave`/`onLoad`.
 
-Geometry (`LAYOUT`, local units; the face spans -1..1, 1 local unit = 6"; width / height /
-font_size are 1/500ths of a local unit, calibrated against the LCT dice mats whose rows
-touch at that ratio; `UNITS_PER_LOCAL` is the one number to change if everything renders
-uniformly wrong): title label at row -0.91 font 90; API input row -0.74, 900 x 100, font
-70; code input row -0.49, 900 x 130, font 100; Colour / Bind row -0.24, 435 x 90 each at
-+-0.46, font 55 / 60; Import row -0.02, 900 x 110, font 80 (Replace / Cancel: 435 wide at
-+-0.46); status row 0.24, 900 x 130, font 34, text wrapped at 48 characters; member rows
-from row 0.44, pitch 0.055, 435 x 25, font 22, ten per column. Everything floats at local
-y = 0.12. Screen right is local -x, screen down is local +z (`screenToLocal`).
+Geometry (`LAYOUT`, local units on the measured face x -1.333..1.333, z -1..1; width /
+height / font in widget units, 500 per local unit of width - read off the screen, the API
+names no unit - and about 650 per local unit of height, bracketed from two observations;
+the API's 60 floor on width/height is why rows are 60 tall): controls down the viewer's
+left at col -0.56 (local x +0.56), 760 wide - title font 80 at row -0.91; API input row
+-0.72, 85 tall, font 55; code input row -0.47, 115 tall, font 85; Colour row -0.22 and
+Bind row 0.0, 90 tall; Import row 0.24, 110 tall, font 80 (Replace / Cancel 370 wide at
++-0.39 around it); status row 0.62, 170 tall, font 32, wrapped at 40 characters - and the
+member list down the right at col 0.80 (local x -0.80), 500 wide, 60 tall, font 28, pitch
+0.14 from row -0.91, fourteen rows (MAX_ROWS). Screen right is local -x, screen down is
+local +z (`screenToLocal`). The widget y is the measured top + 0.1 (0.40 here). The anchors
+for the spawned models come from the mat at import time: `findMat` reads `4ee1f2`'s
+`getBounds` (live: centre (0, -0.5, 0), size (60, 2.9, 44)), or the first flat 50-70 x
+34-54 object, else `DEFAULT_MAT`; Red's rows start 3" inside the +z edge and grow toward
+the centre, Blue mirrored, both centred on the mat's x, one unit above the mat top.
 
 `mod/scripts/b91983.lua` is split in two. Above the `TTS glue` line nothing touches a TTS
 global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`):
@@ -386,9 +396,9 @@ global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`
 - `validatePayload` accepts only `version == "tc-warband-export-v1"` payloads with a code,
   a warband and members with ids (`packages/rules/src/export.ts` is the contract).
 - `buildSpawnSpecs` turns the payload into one object-state table per member, laid out by
-  `gridPosition` on the colour's anchor (`ANCHORS`: Red starts at (13.75, 44) and grows +x
-  then +z, Blue at (26.25, -44) mirrored, six per row 2.5" apart; any other colour gets a
-  grid 8" in front of the tile). Each state mirrors a Gannel's Model Corner miniature
+  `gridPosition` on the colour's anchor (`anchorsFromMat`: Red starts at (centre - 6.25,
+  top edge - 3) and grows +x then toward the centre, Blue mirrored from the -z edge, six per
+  row 2.5" apart; any other colour gets a grid 8" in front of the tile). Each state mirrors a Gannel's Model Corner miniature
   (3700111403, Lieutenant `15e05f`): a base `Custom_Model` (TypeIndex 1, the candidate's
   `base` mesh/collider, `ColorDiffuse` tinted 60% from Gannel's dark grey toward the player
   colour) with the figure parts as `ChildObjects` carrying their own `CustomMesh` (Gannel's)
@@ -398,10 +408,12 @@ global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`
   null` gets Gannel's bare 32mm base with the same binding.
 - `mergeTags` / `memberTags` / `memberIdFromTags` keep foreign tags and replace the
   importer's own.
-- `widgetLayout` / `inputLayout` / `widgetExtent` / `screenToLocal` build the button and
-  input parameter tables from a view of the state; `nextColourChoice` / `colourButtonLabel`
-  drive the Colour cycle and `wrapText` folds the status text. The test checks every widget
-  stays on the tile without overlapping.
+- `geomFromBounds` / `widgetLayout` / `inputLayout` / `widgetExtent` / `screenToLocal` /
+  `describeGeometry` build the button and input parameter tables from a view of the state
+  and the measured face; `nextColourChoice` / `colourButtonLabel` drive the Colour cycle,
+  `wrapText` folds the status text, `memberRowTitle` is the short row label. The test
+  checks every widget stays on the measured face (and on a square one) without overlapping,
+  with letters 0.6-1.3 units tall at the committed scale.
 
 The glue: `onImport` reads the inputs, then checks `getObjectsWithTag("tc-warband:<code>")`;
 if the code is already on the table it swaps Import for Replace / Cancel, and Replace deletes
@@ -500,11 +512,16 @@ bags (not asked for; candidates for TC-018 friction tickets).
 
 ### Turn Tracker `4ac9e3` (TC-017)
 
-A locked 8"x8" `Custom_Tile` at (-22, 1, 15), above the Warband Importer, with eight
+A locked `Custom_Tile` at (-22, 1, 15), above the Warband Importer (measured live: a
+10.67x8 face at scale 4, the same 4:3 board image, mesh from local y 0 to 0.2), with eight
 `createButton`s: a label (`Turn N - <Phase> Phase`), **Initiative roll-off**, **Start turn
 (clear Activated)**, **Morale reminder**, **Next turn**, **Red Shaken** / **Blue Shaken**
-toggles and **Rules shelf**. `mod/scripts/4ac9e3.lua` is split like the importer: above
-the `TTS glue` line is pure Lua that `mod/test/tracker_test.lua` runs under plain Lua:
+toggles and **Rules shelf**, laid out by `trackerLayout` from `BUTTONS` (rows 0.27 apart,
+1150x170 font 70, the Shaken pair 560 wide at x +-0.72, font 60; live-tuned) on the face
+`geomFromBounds` measures at load, at y top + 0.1, with one geometry line printed to the
+host chat and a `relayout` call. Buttons are matched by id (`buttonIndex`), never by label.
+`mod/scripts/4ac9e3.lua` is split like the importer: above the `TTS glue` line is pure
+Lua that `mod/test/tracker_test.lua` runs under plain Lua:
 
 - `tokenTag` / `roleFromTag` - the `tc-token:<role>` names, six roles.
 - `newState` / `normaliseState` - `{ turn, phase, shaken = { Red, Blue } }` with garbage
@@ -521,6 +538,9 @@ the `TTS glue` line is pure Lua that `mod/test/tracker_test.lua` runs under plai
   and Out of Action models have left the table, so the tracker cannot tell whose they were
   without the importer's roster bookkeeping; the whole-table Down count is what is cheap.
 - `countTagged` - counts entries whose tag list carries a role.
+- `geomFromBounds` / `trackerLayout` / `widgetExtent` / `describeGeometry` - the widget
+  geometry; the test keeps every button on the measured face, apart, with letters 0.45-1.3
+  units tall at the committed scale.
 
 The glue: `onStartTurn` destroys every `tc-token:activated` object; `onNextTurn` calls
 `setValue(turn)` on both TC Turn counters; `onMorale` counts `tc-token:down`; the Shaken

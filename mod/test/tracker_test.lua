@@ -27,6 +27,11 @@ local function eq(actual, expected, what)
   check(actual == expected, string.format("%s: expected %s, got %s", what, tostring(expected), tostring(actual)))
 end
 
+local function near(actual, expected, what)
+  check(type(actual) == "number" and math.abs(actual - expected) < 1e-6,
+    string.format("%s: expected %s, got %s", what, tostring(expected), tostring(actual)))
+end
+
 -- The script's top level touches no TTS global; JSON is only used by the glue.
 JSON = { decode = function() return nil end, encode = function() return "{}" end }
 dofile(SCRIPT)
@@ -175,6 +180,87 @@ do
   check(TURN_COUNTERS.Blue:match("^%x%x%x%x%x%x$") ~= nil, "Blue turn counter GUID shape")
   check(TURN_COUNTERS.Red ~= TURN_COUNTERS.Blue, "turn counters differ")
   eq(RULES_SHELF.x, 102, "rules shelf x matches the shelf objects")
+end
+
+---------------------------------------------------------------- layout --
+
+local function readFile(path)
+  local fh = assert(io.open(path, "rb"), "cannot open " .. path)
+  local text = fh:read("*a")
+  fh:close()
+  return text
+end
+
+local function tileScale(guid)
+  local text = readFile(root .. "/mod/save.json")
+  local at = text:find('"GUID": "' .. guid .. '"', 1, true)
+  check(at ~= nil, guid .. " is in mod/save.json")
+  return {
+    x = tonumber(text:match('"scaleX": ([%d%.]+)', at)),
+    y = tonumber(text:match('"scaleY": ([%d%.]+)', at)),
+    z = tonumber(text:match('"scaleZ": ([%d%.]+)', at)),
+  }
+end
+
+local function overlaps(a, b)
+  return a.left < b.right and b.left < a.right and a.top < b.bottom and b.top < a.bottom
+end
+
+do
+  local scale = tileScale("4ac9e3")
+  -- Live measurement of 4ac9e3 (script header): visual 10.667 x 0.2 x 8 at scale (4,1,4).
+  local worldX, worldZ = 1.333 * 2 * scale.x, 1.0 * 2 * scale.z
+  local visual = { size = { x = worldX, y = 0.2 * scale.y, z = worldZ }, center = { x = -22, y = 1 + 0.1 * scale.y, z = 15 } }
+  local collider = { size = { x = worldX * 1.32, y = 0.2 * scale.y, z = worldZ }, center = visual.center }
+  local geom = geomFromBounds(visual, collider, scale, { x = -22, y = 1, z = 15 })
+  near(geom.hx, 1.333, "half width from the visual bounds, not the wider collider")
+  near(geom.hz, 1.0, "half depth")
+  near(geom.top, 0.2, "top face")
+  near(geom.y, 0.3, "buttons sit at the live-tuned height")
+
+  local s = newState()
+  s.shaken.Red = true
+  local specs = trackerLayout(s, geom)
+  eq(#specs, #BUTTONS, "one spec per button")
+  local ids = {}
+  for _, spec in ipairs(specs) do ids[spec.id] = spec end
+  eq(ids.label.label, "Turn 1 - Initiative Phase", "label carries the phase")
+  eq(ids.shakenRed.label, "Red Shaken: YES", "Red shaken label")
+  eq(ids.shakenBlue.label, "Blue Shaken: no", "Blue shaken label")
+  eq(ids.rollOff.width, 1150, "live-tuned width at the measured face")
+  eq(ids.rollOff.height, 170, "live-tuned height")
+  eq(ids.rollOff.font_size, 70, "live-tuned font")
+  eq(ids.shakenRed.width, 560, "shaken pair width")
+  check(ids.shakenRed.position[1] > 0 and ids.shakenBlue.position[1] < 0, "Red is to the viewer's left (local +x) of Blue")
+  eq(ids.label.width, 0, "the phase label is a label-only button")
+
+  local drawn = {}
+  for _, spec in ipairs(specs) do
+    eq(spec.position[2], geom.y, spec.id .. " sits at the measured height")
+    eq(spec.rotation[2], 0, spec.id .. " keeps the tile's orientation")
+    check(spec.font_color and spec.color, spec.id .. " has explicit colours")
+    local e = widgetExtent(spec)
+    check(e.left >= -geom.hx and e.right <= geom.hx and e.top >= -geom.hz and e.bottom <= geom.hz, spec.id .. " stays on the tile")
+    if spec.width > 0 then drawn[#drawn + 1] = { id = spec.id, extent = e } end
+    local letters = spec.font_size / UNITS_PER_LOCAL * scale.z
+    check(letters >= 0.45 and letters <= 1.3, string.format("%s letters are %.2f units tall", spec.id, letters))
+  end
+  for i = 1, #drawn do
+    for j = i + 1, #drawn do
+      check(not overlaps(drawn[i].extent, drawn[j].extent), drawn[i].id .. " does not overlap " .. drawn[j].id)
+    end
+  end
+
+  local square = geomFromBounds({ size = { x = worldZ, y = 0.2, z = worldZ }, center = visual.center }, nil, scale, { x = -22, y = 1, z = 15 })
+  for _, spec in ipairs(trackerLayout(s, square)) do
+    local e = widgetExtent(spec)
+    check(e.left >= -square.hx and e.right <= square.hx, spec.id .. " stays on a square face")
+  end
+  check(trackerLayout(s).rollOff == nil and #trackerLayout(s) == #BUTTONS, "layout falls back to the reference face")
+
+  local line = describeGeometry("Turn Tracker", geom, scale, visual, specs)
+  check(line:find("half 1.333x1.000", 1, true) ~= nil, "geometry line reports the half extents")
+  check(line:find("first label(", 1, true) ~= nil and line:find("last rules(", 1, true) ~= nil, "geometry line names the first and last button")
 end
 
 print(string.format("tracker_test: %d checks, %d failed", checks, failures))
