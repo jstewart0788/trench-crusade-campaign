@@ -14,7 +14,8 @@ interface Props {
   onAdd: (unit: RosterUnit) => void;
 }
 
-const statLine = (s: RosterUnit["stats"]) => `Mov ${s.movement.raw} · Rng ${s.ranged} · Mel ${s.melee} · Arm ${s.armour}`;
+// Non-breaking spaces keep each stat with its value when the line wraps on a phone.
+const statLine = (s: RosterUnit["stats"]) => `Mov\u00a0${s.movement.raw} · Rng\u00a0${s.ranged} · Mel\u00a0${s.melee} · Arm\u00a0${s.armour}`;
 
 /** Units this roster can recruit, each priced: the price is the button. Anything a gate closes, or that depends on a campaign selection the data cannot count, is not listed. */
 export function RecruitList({ warband, rules, ctx, purse, onAdd }: Props) {

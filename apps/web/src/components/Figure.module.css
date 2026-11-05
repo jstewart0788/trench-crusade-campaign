@@ -154,3 +154,20 @@
   color: var(--oxblood-ink);
   vertical-align: -1px;
 }
+/* On a phone three columns leave each slot too narrow for its rules line: two columns, no silhouette. */
+@media (max-width: 560px) {
+  .figure {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "head torso"
+      "ranged-a melee-a"
+      "ranged-b melee-b"
+      "offhand grenade";
+  }
+  .silhouette {
+    display: none;
+  }
+  .slot {
+    min-height: 3.6rem;
+  }
+}

@@ -33,7 +33,3 @@
   align-items: flex-end;
   gap: 0.5rem;
 }
-.headActions {
-  display: flex;
-  gap: 0.5rem;
-}

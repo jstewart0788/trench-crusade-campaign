@@ -38,7 +38,7 @@ describe("faction themes", () => {
   it("each have a backdrop and a panel frame in styles/themes.css, with nothing animated", () => {
     const sheet = css("themes.css");
     for (const id of Object.keys(THEMES)) {
-      expect(sheet, id).toContain(`:root[data-faction="${id}"] {`);
+      expect(sheet, id).toContain(`:root[data-faction="${id}"] .faction-backdrop {`);
       expect(sheet, id).toContain(`:root[data-faction="${id}"] .panel {`);
     }
     expect(sheet).not.toMatch(/animation|transition|@keyframes/);

@@ -1,6 +1,5 @@
 import { findSubfaction, rosterVariants, type RulesData, type ValidationResult, type Warband, type WarbandCost, type WarbandThreshold } from "@tc/rules/browser";
 import type { Dispatch } from "react";
-import { Link } from "react-router-dom";
 import type { RosterAction } from "../roster/reducer.js";
 import type { PendingDelta } from "../roster/staging.js";
 import { cx } from "./cx.js";
@@ -20,7 +19,6 @@ interface Props {
   threshold: WarbandThreshold;
   validation: ValidationResult;
   code?: string;
-  base: string;
   dirty: boolean;
   busy: boolean;
   error?: string;
@@ -29,7 +27,7 @@ interface Props {
 }
 
 /** Shown above all three warband screens: the name (always editable), the fixed campaign facts, totals (current → after while purchases are pending), the legality badge, Confirm/Discard and Save. */
-export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, onConfirm, onDiscard, threshold, validation, code, base, dirty, busy, error, onSave, dispatch }: Props) {
+export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, onConfirm, onDiscard, threshold, validation, code, dirty, busy, error, onSave, dispatch }: Props) {
   const faction = rules.factionsById.get(warband.factionId);
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
@@ -71,10 +69,10 @@ export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, 
             <span className={styles.coinValue}>{cost.glory}</span>
             {pool !== undefined && <span className={styles.coinOf}>/ {pool}</span>}
           </span>
-          <Link to={base} className={`${styles.badge} ${errors ? styles.bad : styles.good}`} title="Open the Warband screen for the full list">
+          <span className={`${styles.badge} ${errors ? styles.bad : styles.good}`} title={errors || warnings ? "The full list is on the Warband screen" : "Rulebook-legal"}>
             {errors === 0 ? "Legal" : `${errors} ${errors === 1 ? "error" : "errors"}`}
             {warnings > 0 && <span className={styles.warn}> · {warnings} {warnings === 1 ? "warning" : "warnings"}</span>}
-          </Link>
+          </span>
         </div>
         {staging && (
           <div className={styles.receipt} aria-label="Pending purchases">

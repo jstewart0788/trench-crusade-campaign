@@ -157,3 +157,38 @@
   border-bottom: 1px dotted var(--line-strong);
   transform: translateY(-3px);
 }
+@media (max-width: 1000px) {
+  .purse {
+    justify-self: stretch;
+  }
+  .save {
+    justify-self: stretch;
+    justify-content: flex-end;
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-3);
+  }
+}
+@media (max-width: 560px) {
+  .name {
+    font-size: 1.3rem;
+  }
+  .meta {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+  }
+  .coins {
+    gap: var(--space-2);
+  }
+  .coinValue {
+    font-size: 1.1rem;
+  }
+  .save {
+    gap: var(--space-2);
+  }
+  .save button {
+    flex: 1 1 auto;
+  }
+  .code {
+    margin-right: auto;
+  }
+}

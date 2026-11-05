@@ -4,48 +4,150 @@
   flex-direction: column;
 }
 .nav {
+  position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--line);
-  background: var(--bg-raised);
+  gap: var(--space-4);
+  padding: 0.6rem 1.25rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent, var(--brass)) 9%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--bg-raised), var(--bg-sunken));
+  border-bottom: 1px solid var(--frame, var(--line-strong));
+  box-shadow:
+    0 1px 0 var(--bg-sunken),
+    0 3px 0 -1px color-mix(in srgb, var(--accent, var(--brass)) 35%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+/* Engraved rule with a lozenge at its centre, under the bar. */
+.nav::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 9px;
+  height: 9px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--bg-sunken);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--brass)) 70%, transparent);
 }
 .brand {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
   color: var(--brass);
   text-decoration: none;
+  min-width: 0;
+}
+.emblem {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  color: var(--accent, var(--brass));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent, var(--brass)) 35%, transparent));
+}
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+  min-width: 0;
+  overflow: hidden;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  font-variant: small-caps;
+  color: var(--brass);
+  text-shadow: 0 1px 0 #000;
+  white-space: nowrap;
 }
 .sub {
   color: var(--ink-muted);
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  margin-left: 0.5rem;
+  white-space: nowrap;
 }
 .links {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-2);
   align-items: center;
+  flex: none;
 }
-.links a {
-  color: var(--ink);
+.ghost,
+.primary {
+  padding: 0.35rem 0.85rem;
+  border-radius: 2px;
   text-decoration: none;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+}
+.ghost {
+  color: var(--ink);
+  border: 1px solid transparent;
+}
+.ghost:hover {
+  border-color: var(--line-strong);
 }
 .primary {
-  padding: 0.3rem 0.8rem;
+  color: var(--bg-sunken);
+  background: linear-gradient(180deg, var(--brass), var(--brass-dim));
   border: 1px solid var(--brass);
-  border-radius: 3px;
-  color: var(--brass) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 0 #000;
+  font-weight: 600;
+}
+.primary:hover {
+  filter: brightness(1.08);
+}
+.current {
+  pointer-events: none;
+}
+.ghost.current {
+  border-color: var(--brass-dim);
+  color: var(--brass);
 }
 .main {
   flex: 1;
-  padding: 1.25rem;
+  padding: 1.5rem 1.25rem 1.25rem;
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
+}
+@media (max-width: 560px) {
+  .nav {
+    padding: 0.5rem 0.75rem;
+    gap: var(--space-2);
+  }
+  .emblem {
+    width: 28px;
+    height: 28px;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .sub {
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+  }
+  .ghost,
+  .primary {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.9rem;
+  }
+  .main {
+    padding: 1.25rem 0.75rem 1rem;
+  }
+}
+/* Import is also offered on the home and New screens, so the narrowest bar keeps only the brand and New warband. */
+@media (max-width: 440px) {
+  .ghost {
+    display: none;
+  }
+  .title {
+    letter-spacing: 0.03em;
+  }
 }

@@ -19,14 +19,6 @@ export function HomePage() {
     <div className={styles.home}>
       <header className={styles.head}>
         <h1>Warbands</h1>
-        <div className={styles.headActions}>
-          <Link to="/import">
-            <button>Import from NewRecruit</button>
-          </Link>
-          <Link to="/new">
-            <button className="primary">New warband</button>
-          </Link>
-        </div>
       </header>
 
       {draft && (
@@ -37,7 +29,9 @@ export function HomePage() {
       )}
 
       {saved.length === 0 ? (
-        <p className="muted">No warbands saved from this browser yet.</p>
+        <p className="muted">
+          No warbands saved from this browser yet. Start a <Link to="/new">new warband</Link> or <Link to="/import">import one from NewRecruit</Link>.
+        </p>
       ) : (
         <table className={styles.table}>
           <thead>

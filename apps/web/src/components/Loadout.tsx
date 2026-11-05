@@ -42,7 +42,7 @@ export function Loadout({ member, unit, before, after, issues, dispatch, stats, 
         onBlur={(e) => dispatch({ type: "rename-member", memberId: member.id, name: e.target.value.trim() })}
       />
       <p className={styles.stats}>
-        Mov {s.movement.raw} · Rng {s.ranged} · Mel {s.melee} · Arm {s.armour} · {s.base}
+        Mov{"\u00a0"}{s.movement.raw} · Rng{"\u00a0"}{s.ranged} · Mel{"\u00a0"}{s.melee} · Arm{"\u00a0"}{s.armour} · {s.base}
         {keywords.length > 0 && <span className="muted"> · {keywords.join(", ")}</span>}
       </p>
       <div className={styles.total}>

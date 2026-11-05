@@ -149,3 +149,11 @@ label > select {
   color: var(--ink-muted);
   margin: 0.6rem 0 0;
 }
+/* iOS Safari zooms the page into any field under 16px when it takes focus, and leaves it zoomed. */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em) !important;
+  }
+}

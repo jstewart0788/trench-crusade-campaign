@@ -203,7 +203,6 @@ function Shell({ rules, initial, code, draftKey, onSaved }: ShellProps) {
         threshold={threshold}
         validation={validation}
         code={code}
-        base={base}
         dirty={dirty}
         busy={save.busy}
         error={save.error}
