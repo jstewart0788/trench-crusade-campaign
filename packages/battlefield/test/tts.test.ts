@@ -15,13 +15,16 @@ const urlToAsset = new Map(catalog.assets.map((a) => [a.urls.primary, a]));
 const byPiece = (states: TtsObjectState[]) => new Map(states.map((s) => [s.Description.split(" ")[1]!, s]));
 
 describe("layoutToObjectStates", () => {
-  it("emits one locked, tagged object per piece with a known asset and a quarter-turn rotation", () => {
+  it("emits one locked, tagged object per piece with a known asset, quarter turns for cell-aligned pieces", () => {
     expect(states.length).toBe(layout.pieces.length);
     for (const s of states) {
       const url = s.CustomAssetbundle?.AssetbundleURL ?? s.CustomMesh?.MeshURL ?? s.CustomImage?.ImageURL;
       expect(url, s.Nickname).toBeDefined();
       expect(urlToAsset.has(url!), `${s.Nickname} url unknown`).toBe(true);
-      expect([0, 90, 180, 270]).toContain(s.Transform.rotY);
+      // Cell-aligned pieces turn by quarters; free pieces stand at any yaw.
+      const piece = layout.pieces.find((p) => p.id === s.Description.split(" ")[1])!;
+      if (piece.cells) expect([0, 90, 180, 270]).toContain(s.Transform.rotY);
+      else expect(s.Transform.rotY >= 0 && s.Transform.rotY < 360).toBe(true);
       expect(s.Transform.rotX).toBe(0);
       expect(s.Transform.rotZ).toBe(0);
       expect(s.Locked).toBe(true);

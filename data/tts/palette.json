@@ -498,9 +498,9 @@
         0.0
       ],
       "topIn": 2.1,
-      "enabled": true,
+      "enabled": false,
       "verified": true,
-      "note": "2.1in block that sits directly on what it is dropped on (0.00 above a Landscape tile or another H4x4, live). Stacked two high as stepped hills in Armoured Train #1."
+      "note": "Out of the generator (TC-021f): its top is a grass texture that does not match the Landscape tiles around it (Jonathan, live review of seed 4). Hills are stacked Landscape tiles now, top 5.00 like a plateau. Kept for its measured numbers (2.1 tall, rest 0)."
     },
     {
       "id": "plank-floor",

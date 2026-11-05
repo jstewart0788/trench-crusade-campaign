@@ -110,6 +110,11 @@ describe("palette", () => {
     expect(rotateOffset([0, 2], 180, "cw")).toEqual([0, -2]);
     expect(rotateOffset([0, 2], 90, "ccw")).toEqual([-2, 0]);
     expect(rotateOffset([2, 2], 0, "cw")).toEqual([2, 2]);
+    // Between quarter turns it turns the same way (checked live on Ruins Large A at 30 and 330).
+    const at = (v: [number, number]) => v.map((x) => +x.toFixed(3));
+    expect(at(rotateOffset([0, 2], 30, "cw"))).toEqual([1, 1.732]);
+    expect(at(rotateOffset([0, 2], 89.999, "cw"))).toEqual([2, 0]);
+    expect(at(rotateOffset([0, 2], 30, "ccw"))).toEqual([-1, 1.732]);
   });
 
   it("builds a group's footprint from its members and centres them on it", () => {

@@ -109,11 +109,12 @@ function main(): void {
         .filter(([role]) => role !== "ground")
         .map(([role, n]) => `${role}=${n}`)
         .join(" ");
-      const lines = layout.trench.deploymentLines.map((l) => `${l.player}:${l.cells.length}+${l.commCells.length}`).join(" ");
+      const lines = layout.trench.deploymentLines.map((l) => `${l.player}:${l.cells.length}(${l.insideCells} inside)+${l.commCells.length}`).join(" ");
       const plateau = layout.plateaus.length ? layout.plateaus.map((p) => `${p.id} ${p.cells.length}c/${p.ramps.length}r${p.raisedTrench ? "+trench" : ""}${p.tallPieceId ? "+tall" : ""}`).join(", ") : "no plateau";
       console.log(`seed ${seed}: ${s.trenchCells} trench cells (cross ${layout.trench.mainPathLength}, lines ${lines || "none"}, ${layout.trench.branches} branches), ${plateau}, ${layout.hills.length} hill(s), ${s.tallPieces} tall, ${s.dressingPieces} terrain pieces, ${s.scatterPieces} scatter, ${s.totalPieces} objects; parity ${layout.parity.kind}, look ${layout.aesthetic.primary}${layout.aesthetic.secondary ? `+${layout.aesthetic.secondary}` : ""} | ${roles}${s.shortfalls.length ? ` | shortfalls ${s.shortfalls.map((f) => `${f.typeId}=${f.placed}/${f.target}`).join(" ")}` : ""}`);
       console.log(`  objects by category: ${Object.entries(s.objectsByCategory).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join(", ")}`);
       console.log(`  dressing share: ${(s.dressingShare * 100).toFixed(1)}% (${Math.round(s.dressingShare * s.totalPieces)} of ${s.totalPieces} objects fill terrain or scatter slots)`);
+      console.log(`  scatter by role: ${Object.entries(s.scatterByRole).sort((a, b) => b[1] - a[1]).map(([r, n]) => `${r} ${n}`).join(", ") || "none"}`);
     }
     return;
   }

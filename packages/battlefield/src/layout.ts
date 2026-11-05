@@ -4,12 +4,13 @@ import { Layer, Role } from "./palette.js";
 // The generator's output contract. Everything the preview, the TTS emitter and
 // the mod need is here in board inches; nothing refers back to the rng.
 
-export const LAYOUT_VERSION = "tc-battlefield-layout-v3";
+export const LAYOUT_VERSION = "tc-battlefield-layout-v4";
 
 const DirSchema = z.enum(["N", "E", "S", "W"]);
 const CellRef = z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]);
 const Point = z.tuple([z.number(), z.number()]);
-const RotY = z.union([z.literal(0), z.literal(90), z.literal(180), z.literal(270)]);
+/** Yaw in degrees, [0, 360): quarter turns for cell-aligned pieces, any angle for free ones. */
+const RotY = z.number().min(0).lt(360);
 
 export const WallLining = z.object({ side: DirSchema, kind: z.enum(["ledge", "logs", "revetment"]) });
 
@@ -23,7 +24,7 @@ export const LayoutCell = z.object({
   openings: z.array(DirSchema).optional(),
   /** Trench cells (and a raised trench): how each full-length wall is lined. */
   walls: z.array(WallLining).optional(),
-  /** Raised ground in the cell: a plateau of stacked tiles, a ramp onto it, an H4x4 hill, or a trench dug into the plateau. */
+  /** Raised ground in the cell: a plateau or hill of stacked tiles, a ramp onto one, or a trench dug into a plateau. */
   feature: z.enum(["plateau", "ramp", "hill", "raised-trench"]).nullable(),
   /** Ramps only: the side the slope climbs toward. */
   rampUp: DirSchema.nullable(),
@@ -47,6 +48,8 @@ export const SlotRef = z.object({
   fill: z.string(),
   /** Dressing set against a raised feature's face (its id), which it may touch. */
   against: z.string().nullable(),
+  /** Scattered terrain only: why it stands where it does (cover, trench, objective, raised, lane, open). */
+  placement: z.string().nullable(),
 });
 export type SlotRef = z.infer<typeof SlotRef>;
 
@@ -61,8 +64,10 @@ export const LayoutPiece = z.object({
   cells: z.array(CellRef).nullable(),
   /** Visual footprint centre in board inches. */
   position: Point,
-  /** Visual footprint extents in board inches after rotation. */
+  /** Visual footprint extents in board inches after rotation (the bounding box, at a non-quarter yaw). */
   footprintIn: z.tuple([z.number().positive(), z.number().positive()]),
+  /** The palette footprint before rotation. */
+  sizeIn: z.tuple([z.number().positive(), z.number().positive()]),
   rotY: RotY,
   /** Stack depth: 0 on the mat, 1 on what stands on the mat, and so on; the spawn order. */
   zOrder: z.number().int(),
@@ -110,9 +115,15 @@ export const Layout = z.object({
         side: DirSchema,
         variant: z.enum(["full", "from-low", "from-high"]),
         cells: z.array(CellRef),
+        /** Track index of the line's jog into the next column in; null for a straight line (No Man's Land). */
+        jog: z.number().int().nullable(),
+        /** Line cells wholly inside the zone (the jog's bay straddles the zone's edge). */
+        insideCells: z.number().int(),
         commCells: z.array(CellRef),
       }),
     ),
+    /** No jog fitted between the covers, so the cross trench runs straight. */
+    straightCross: z.boolean(),
   }),
   plateaus: z.array(
     z.object({
@@ -123,7 +134,8 @@ export const Layout = z.object({
       tallPieceId: z.string().nullable(),
     }),
   ),
-  hills: z.array(z.object({ id: z.string(), cells: z.array(CellRef), stepped: z.array(CellRef) })),
+  /** Raised ground of stacked Landscape tiles (top 5.00 like a plateau), with ramps up to any cover standing on it. */
+  hills: z.array(z.object({ id: z.string(), cells: z.array(CellRef), ramps: z.array(z.object({ cell: CellRef, up: z.enum(["N", "E", "S", "W"]) })) })),
   objectives: z.array(
     z.object({
       id: z.string(),
@@ -159,6 +171,8 @@ export const Layout = z.object({
     scatterPieces: z.number().int(),
     /** Objects by slot category, structural pieces under their own names. */
     objectsByCategory: CountByRole,
+    /** Scattered terrain objects by why they stand where they do (cover, trench, objective, raised, lane, open). */
+    scatterByRole: CountByRole,
     /** Share of objects that fill slots (terrain and scatter) rather than build the ground and trenches. */
     dressingShare: z.number(),
     /** The seeded draw for hills on this board, and the scenario's rate. */

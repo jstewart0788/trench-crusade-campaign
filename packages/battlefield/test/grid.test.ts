@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cellAt, cellCentre, cellRect, createGrid, Mask, pointInPolygon, rectDistance, rotateDir } from "../src/index.js";
+import { cellAt, cellCentre, cellRect, createGrid, Mask, pointInPolygon, rectArea, rectContains, rectDistance, rectOverlapArea, rectPointDistance, rectsOverlap, rectsWithin, rotateDir, turnedRect } from "../src/index.js";
 
 describe("grid", () => {
   const grid = createGrid(36, 4);
@@ -60,5 +60,27 @@ describe("grid", () => {
     expect(rectDistance(a, { x0: 7, y0: 0, x1: 8, y1: 4 })).toBe(3);
     expect(rectDistance(a, { x0: 7, y0: 8, x1: 8, y1: 9 })).toBe(5);
     expect(rectDistance(a, { x0: 1, y0: 1, x1: 2, y1: 2 })).toBe(0);
+  });
+
+  it("measures a box turned off the axes by its outline, not by the bounds round it", () => {
+    // A 4x1 plank turned 45 degrees clockwise lies from north-west to south-east; its bounds fill the north-east corner it never reaches.
+    const plank = turnedRect(0, 0, { footprintIn: [4, 1] }, 45, "cw");
+    const corner = { x0: 1, y0: 1, x1: 1.5, y1: 1.5 };
+    expect(rectDistance({ x0: plank.x0, y0: plank.y0, x1: plank.x1, y1: plank.y1 }, corner)).toBe(0);
+    expect(rectDistance(plank, corner)).toBeCloseTo(Math.SQRT2 - 0.5, 6);
+    expect(rectsOverlap(plank, corner)).toBe(false);
+    expect(rectsWithin(plank, corner, 1)).toBe(true);
+    expect(rectsWithin(plank, corner, 0.9)).toBe(false);
+    expect(rectPointDistance(plank, 1, 1)).toBeCloseTo(Math.SQRT2 - 0.5, 6);
+    expect(rectContains(plank, 1, 1)).toBe(false);
+    expect(rectContains(plank, 1, -1)).toBe(true);
+    expect(rectArea(plank)).toBeCloseTo(4, 6);
+    expect(rectOverlapArea(plank, plank)).toBeCloseTo(4, 6);
+    // Its south-east half, less the two corners of it the axes cut off at the middle.
+    expect(rectOverlapArea(plank, { x0: 0, y0: -2, x1: 2, y1: 0 })).toBeCloseTo(1.75, 6);
+    // Turned the other way it crosses that corner.
+    expect(rectDistance(turnedRect(0, 0, { footprintIn: [4, 1] }, 45, "ccw"), corner)).toBe(0);
+    // On a quarter turn the bounds are the box.
+    expect(turnedRect(0, 0, { footprintIn: [4, 1] }, 90, "cw")).toEqual({ x0: -0.5, y0: -2, x1: 0.5, y1: 2 });
   });
 });

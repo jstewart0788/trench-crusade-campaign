@@ -13,6 +13,8 @@ export interface PreviewOptions {
   title?: string;
   /** Piece heights by palette id, so tall pieces are labelled with their real top height. */
   heights?: Readonly<Record<string, number>>;
+  /** The palette's yaw sense, so turned pieces are drawn the way they stand on the table. */
+  rotYSense?: "cw" | "ccw";
 }
 
 const ROLE_STYLE: Record<Role, { fill: string; stroke: string; label: string; name: string }> = {
@@ -22,7 +24,7 @@ const ROLE_STYLE: Record<Role, { fill: string; stroke: string; label: string; na
   "trench-t": { fill: "#6b5a3e", stroke: "#3f3425", label: "", name: "Trench T" },
   "trench-entrance": { fill: "#6b5a3e", stroke: "#3f3425", label: "", name: "Trench entrance" },
   ramp: { fill: "#b8a67a", stroke: "#6d5c34", label: "", name: "Ramp" },
-  hill: { fill: "#8fb97a", stroke: "#4f7a3c", label: "H", name: "Hill (H4x4)" },
+  hill: { fill: "#8fb97a", stroke: "#4f7a3c", label: "H", name: "Hill" },
   crater: { fill: "#b9a67c", stroke: "#7a6a47", label: "C", name: "Crater" },
   difficult: { fill: "#c4c08f", stroke: "#7d7a4a", label: "D", name: "Difficult" },
   dangerous: { fill: "#e5a04a", stroke: "#9a5f14", label: "X", name: "Dangerous" },
@@ -81,17 +83,14 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
     out.push(`<text x="${fmt(X(lx) + 4)}" y="${fmt(Y(ly) - 6)}" font-size="11" fill="#55504a">${escapeXml(zone.player)}</text>`);
   });
 
-  // Height: plateau cells hatched with their top height, hills green with tiers, ramps with an arrow up the slope.
+  // Height: plateau and hill cells (both stacked tiles) hatched with their top height, hills edged green, ramps with an arrow up the slope.
   for (const cell of layout.cells) {
     if (!cell.feature) continue;
     const { x, y, size } = cellBox(cell);
-    if (cell.feature === "plateau" || cell.feature === "raised-trench") {
-      out.push(`<rect x="${fmt(x)}" y="${fmt(y)}" width="${size}" height="${size}" fill="url(#raised)" stroke="#6d5c34" stroke-width="1.5"><title>${escapeXml(`plateau, top ${cell.topIn}in`)}</title></rect>`);
-      if (cell.feature === "plateau") out.push(`<text x="${fmt(x + 4)}" y="${fmt(y + 12)}" font-size="10" fill="#3f3425">+${fmt(Math.round(cell.topIn * 10) / 10)}</text>`);
-    } else if (cell.feature === "hill") {
-      const tiers = cell.upperPieceIds.filter((id) => byId.get(id)?.role === "hill").length;
-      out.push(`<rect x="${fmt(x + 2)}" y="${fmt(y + 2)}" width="${size - 4}" height="${size - 4}" fill="${tiers > 1 ? "#6f9e5a" : "#8fb97a"}" stroke="#4f7a3c" stroke-width="1.5"><title>${escapeXml(`H4x4 hill, ${tiers} tier(s), top ${cell.topIn}in`)}</title></rect>`);
-      out.push(`<text x="${fmt(x + size / 2)}" y="${fmt(y + size / 2 + 4)}" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">H${tiers}</text>`);
+    if (cell.feature === "plateau" || cell.feature === "raised-trench" || cell.feature === "hill") {
+      const hill = cell.feature === "hill";
+      out.push(`<rect x="${fmt(x)}" y="${fmt(y)}" width="${size}" height="${size}" fill="url(#raised)" stroke="${hill ? "#4f7a3c" : "#6d5c34"}" stroke-width="${hill ? 2.5 : 1.5}"><title>${escapeXml(`${hill ? "hill" : "plateau"}, top ${cell.topIn}in`)}</title></rect>`);
+      if (cell.feature !== "raised-trench") out.push(`<text x="${fmt(x + 4)}" y="${fmt(y + 12)}" font-size="10" fill="#3f3425">${hill ? "hill " : ""}+${fmt(Math.round(cell.topIn * 10) / 10)}</text>`);
     } else if (cell.feature === "ramp" && cell.rampUp) {
       out.push(`<rect x="${fmt(x)}" y="${fmt(y)}" width="${size}" height="${size}" fill="#d8c9a0" stroke="#6d5c34" stroke-width="1.5"><title>${escapeXml(`ramp, climbs ${cell.rampUp}`)}</title></rect>`);
       const [dx, dy] = DELTA[cell.rampUp as Dir];
@@ -172,12 +171,18 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
     const gy1 = Math.max(...rs.map((r) => r.y + r.h));
     out.push(`<rect x="${fmt(gx0 - 2)}" y="${fmt(gy0 - 2)}" width="${fmt(gx1 - gx0 + 4)}" height="${fmt(gy1 - gy0 + 4)}" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>${escapeXml(`group ${id}`)}</title></rect>`);
   }
+  // Free pieces are drawn at their own size turned to their yaw (clockwise from above, as on the table).
+  const turn = options.rotYSense === "ccw" ? -1 : 1;
   for (const p of free) {
     const style = ROLE_STYLE[p.role];
-    const r = rectOf(p);
+    const [w, d] = p.rotY % 90 === 0 && (p.rotY / 90) % 2 === 1 ? [p.sizeIn[1], p.sizeIn[0]] : p.sizeIn;
+    const quarter = p.rotY % 90 === 0;
+    const cx = X(p.position[0]);
+    const cy = Y(p.position[1]);
+    const transform = quarter ? "" : ` transform="rotate(${fmt(turn * p.rotY)} ${fmt(cx)} ${fmt(cy)})"`;
     const entryTall = p.role === "tower" || p.role === "building";
-    out.push(`<rect x="${fmt(r.x)}" y="${fmt(r.y)}" width="${fmt(r.w)}" height="${fmt(r.h)}" fill="${style.fill}" fill-opacity="0.85" stroke="${style.stroke}" stroke-width="${entryTall ? 2.5 : 1.5}"><title>${escapeXml(`${p.id} ${p.paletteId} rotY ${p.rotY}, rests at ${p.baseIn}in${p.objectiveId ? ` covers ${p.objectiveId}` : ""}`)}</title></rect>`);
-    if (style.label) out.push(`<text x="${fmt(r.x + r.w / 2)}" y="${fmt(r.y + r.h / 2 + 4)}" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">${style.label}</text>`);
+    out.push(`<rect x="${fmt(cx - (w * s) / 2)}" y="${fmt(cy - (d * s) / 2)}" width="${fmt(w * s)}" height="${fmt(d * s)}"${transform} fill="${style.fill}" fill-opacity="0.85" stroke="${style.stroke}" stroke-width="${entryTall ? 2.5 : 1.5}"><title>${escapeXml(`${p.id} ${p.paletteId} rotY ${p.rotY}, rests at ${p.baseIn}in${p.objectiveId ? ` covers ${p.objectiveId}` : ""}${p.slot?.placement ? `, ${p.slot.placement}` : ""}`)}</title></rect>`);
+    if (style.label) out.push(`<text x="${fmt(cx)}" y="${fmt(cy + 4)}" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">${style.label}</text>`);
   }
   for (const p of free.filter((p) => p.role === "tower" || p.role === "building")) {
     const r = rectOf(p);
@@ -241,7 +246,8 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
   ly += 8;
   line("Height", { bold: true, size: 16 });
   for (const p of layout.plateaus) line(`${p.id === "plateau" ? "centre plateau" : p.id} ${p.cells.length} cells, ${p.ramps.length} ramp(s)${p.raisedTrench ? ", trench dug in" : ""}${p.tallPieceId ? ", tall piece on top" : ""}`);
-  line(`${layout.hills.length} H4x4 hill(s); ${layout.stats.tallPieces} tall piece(s) (▲ = top height)`);
+  for (const h of layout.hills) line(`${h.id} ${h.cells.length} cells of stacked tiles, ${h.ramps.length} ramp(s)`);
+  line(`${layout.stats.tallPieces} tall piece(s) (▲ = top height)`);
   ly += 8;
   line("Board", { bold: true, size: 16 });
   line(`${layout.boardIn}in square, ${layout.cellIn}in cells (${layout.grid.cols}x${layout.grid.rows}); north is up`);

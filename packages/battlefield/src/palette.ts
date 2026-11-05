@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DIRS, rotateDir, type Dir } from "./grid.js";
+import { DIRS, rectFromCentre, rotateDir, type Dir, type Point, type Rect } from "./grid.js";
 
 // The curated piece palette (data/tts/palette.json): what each TTS asset is
 // for, how big it looks, where its pivot sits, how high it rests on whatever
@@ -285,10 +285,28 @@ export function decoratedSides(piece: PalettePiece, rotY: number, sense: RotYSen
 
 const swapsAxes = (rotY: number): boolean => quarterTurns(rotY, "cw") % 2 === 1;
 
-/** Footprint in inches after rotation ([x extent, y extent]). */
+const isQuarterTurn = (rotY: number): boolean => Math.abs(rotY / 90 - Math.round(rotY / 90)) < 1e-9;
+
+/** Footprint in inches after rotation ([x extent, y extent]): exact at quarter turns, the bounding box of the turned footprint otherwise. */
 export function rotatedFootprint(piece: { footprintIn: readonly [number, number] }, rotY: number): [number, number] {
   const [w, d] = piece.footprintIn;
-  return swapsAxes(rotY) ? [d, w] : [w, d];
+  if (isQuarterTurn(rotY)) return swapsAxes(rotY) ? [d, w] : [w, d];
+  const t = (rotY * Math.PI) / 180;
+  const [c, s] = [Math.abs(Math.cos(t)), Math.abs(Math.sin(t))];
+  return [w * c + d * s, w * s + d * c];
+}
+
+/** A piece's footprint turned to rotY about (cx, cy): its bounding box, carrying the exact outline when turned off the axes. */
+export function turnedRect(cx: number, cy: number, piece: { footprintIn: readonly [number, number] }, rotY: number, sense: RotYSense): Rect {
+  const [w, d] = rotatedFootprint(piece, rotY);
+  const rect = rectFromCentre(cx, cy, w, d);
+  if (isQuarterTurn(rotY)) return rect;
+  const [hw, hd] = [piece.footprintIn[0] / 2, piece.footprintIn[1] / 2];
+  const corners: Point[] = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
+  return { ...rect, poly: corners.map((v): Point => {
+    const [x, y] = rotateVector(v, rotY, sense);
+    return [cx + x, cy + y];
+  }) };
 }
 
 /** Cells covered after rotation ([across x, along y]); null for free pieces. */
@@ -301,6 +319,12 @@ export function rotatedCells(piece: PalettePiece, rotY: number): [number, number
 /** Rotates a board-plane offset ([x, y], y = north) by rotY under the palette's sense. */
 export function rotateVector(v: readonly [number, number], rotY: number, sense: RotYSense): [number, number] {
   let [x, y] = v;
+  if (!isQuarterTurn(rotY)) {
+    // A quarter turn of the sense maps (x, y) to (y, -x); any angle turns the same way.
+    const t = ((sense === "cw" ? 1 : -1) * rotY * Math.PI) / 180;
+    const [c, s] = [Math.cos(t), Math.sin(t)];
+    return [x * c + y * s + 0, -x * s + y * c + 0];
+  }
   for (let i = 0; i < quarterTurns(rotY, sense); i++) [x, y] = [y, -x];
   return [x + 0, y + 0];
 }

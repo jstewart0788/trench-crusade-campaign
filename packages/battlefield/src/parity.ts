@@ -36,7 +36,8 @@ export function mapPoint(p: Parity, x: number, y: number): [number, number] {
 export function mapRect(p: Parity, r: Rect): Rect {
   const [ax, ay] = mapPoint(p, r.x0, r.y0);
   const [bx, by] = mapPoint(p, r.x1, r.y1);
-  return { x0: Math.min(ax, bx), y0: Math.min(ay, by), x1: Math.max(ax, bx), y1: Math.max(ay, by) };
+  const out: Rect = { x0: Math.min(ax, bx), y0: Math.min(ay, by), x1: Math.max(ax, bx), y1: Math.max(ay, by) };
+  return r.poly ? { ...out, poly: r.poly.map(([x, y]) => mapPoint(p, x, y)) } : out;
 }
 
 export function mapCell(p: Parity, g: Grid, cell: Cell): Cell {

@@ -17,15 +17,20 @@ import {
   placeablesIn,
   pointInPolygon,
   rectContains,
+  rectArea,
   rectDistance,
   rectFromCentre,
   rectInside,
+  rectOverlapArea,
   rotateSides,
   scenarioOverlay,
+  SCATTER_ROLES,
   sideOf,
   STRUCTURAL_ROLES,
+  TERRAIN_YAW_JITTER_DEG,
   trenchComponents,
   trenchConnectsEdges,
+  turnedRect,
   type Dir,
   type Layout,
   type LayoutPiece,
@@ -42,7 +47,8 @@ const grid = createGrid(36, 4);
 const gen = (scenarioId: string, seed: number, archetype: "trench-lines" | "no-mans-land" = "trench-lines"): Layout => generateBattlefield({ scenarioId, archetype, seed }, env);
 
 const entry = (p: LayoutPiece) => pieceById(palette, p.paletteId);
-const rectOf = (p: LayoutPiece): Rect => rectFromCentre(p.position[0], p.position[1], p.footprintIn[0], p.footprintIn[1]);
+/** A piece's footprint as it stands: turned off the axes, its exact outline. */
+const rectOf = (p: LayoutPiece): Rect => turnedRect(p.position[0], p.position[1], { footprintIn: p.sizeIn }, p.rotY, sense);
 const trenchCells = (layout: Layout) => layout.cells.filter((c) => c.kind === "trench").map((c) => ({ c: c.c, r: c.r, openings: c.openings! }));
 const isFree = (p: LayoutPiece) => p.cells === null && p.role !== "revetment" && p.role !== "decor";
 const isScatter = (p: LayoutPiece) => (p.slot ? palette.categories[p.slot.category]!.scatter : p.role === "scatter");
@@ -68,6 +74,8 @@ const parityOf = (layout: Layout): Parity => ({ kind: layout.parity.kind, boardI
 const raisedCells = (layout: Layout) => layout.cells.filter((c) => c.feature === "plateau" || c.feature === "ramp" || c.feature === "hill" || c.feature === "raised-trench");
 const trenchRects = (layout: Layout) => layout.cells.filter((c) => c.kind === "trench" || c.feature === "raised-trench").map((c) => cellRect(grid, c.c, c.r));
 const dist = (a: Rect[], b: Rect[]) => Math.min(...a.flatMap((x) => b.map((y) => rectDistance(x, y))));
+/** Layout positions and footprints are rounded to thousandths of an inch. */
+const ROUNDING = 2e-3;
 
 /** The trench piece in a cell: the network piece, or the one dug into the plateau. */
 function trenchPieceAt(layout: Layout, c: number, r: number): LayoutPiece | undefined {
@@ -143,19 +151,55 @@ describe("generateBattlefield", () => {
       }
     });
 
-    it("runs a trench line of at least four cells wholly inside each deployment zone, joined to the network", () => {
+    it("runs a trench line in each deployment zone, joined to the network: mostly inside the zone, with an occasional jog out of it", () => {
       for (const layout of layouts) {
         const network = new Set(trenchCells(layout).map((c) => cellKey(c.c, c.r)));
         for (const zone of overlay.zones.filter((z) => z.isDeployment)) {
           const line = layout.trench.deploymentLines.find((l) => l.zoneLabel === zone.label);
           expect(line, `seed ${layout.seed} ${zone.label}`).toBeDefined();
-          expect(line!.cells.length).toBeGreaterThanOrEqual(4);
-          for (const [c, r] of line!.cells) {
-            expect(network.has(cellKey(c, r))).toBe(true);
+          expect(line!.jog, `seed ${layout.seed} ${zone.label} runs straight`).not.toBeNull();
+          const inside = line!.cells.map(([c, r]) => {
             const rect = cellRect(grid, c, r);
-            for (const corner of [[rect.x0, rect.y0], [rect.x1, rect.y0], [rect.x0, rect.y1], [rect.x1, rect.y1]] as const) expect(pointInPolygon(corner, zone.polygon), `seed ${layout.seed} cell ${c},${r}`).toBe(true);
+            return ([[rect.x0, rect.y0], [rect.x1, rect.y0], [rect.x0, rect.y1], [rect.x1, rect.y1]] as const).every((corner) => pointInPolygon(corner, zone.polygon));
+          });
+          for (const [c, r] of line!.cells) expect(network.has(cellKey(c, r))).toBe(true);
+          expect(inside.filter(Boolean).length).toBe(line!.insideCells);
+          // Mostly inside with an occasional jog: one single-bay jog on a nine-cell line leaves 8 of its 11 cells wholly inside.
+          expect(line!.insideCells / line!.cells.length, `seed ${layout.seed} ${zone.label}`).toBeGreaterThanOrEqual(8 / 11 - 1e-9);
+          let run = 0;
+          let longest = 0;
+          for (const ok of inside) longest = Math.max(longest, (run = ok ? run + 1 : 0));
+          expect(longest, `seed ${layout.seed} ${zone.label}`).toBeGreaterThanOrEqual(4);
+        }
+      }
+    });
+
+    it("moves the jog along the line from board to board, not always to the same bay", () => {
+      const at = new Map<number, number>();
+      for (const layout of layouts) for (const line of layout.trench.deploymentLines.slice(0, 1)) at.set(line.jog!, (at.get(line.jog!) ?? 0) + 1);
+      expect(at.size).toBeGreaterThanOrEqual(4);
+      expect(Math.max(...at.values()) / layouts.length).toBeLessThan(0.6);
+    });
+
+    it("keeps every straight run of trench to six cells or fewer and bends every line and the cross trench", () => {
+      for (const layout of layouts) {
+        const byKey = new Map(trenchCells(layout).map((c) => [cellKey(c.c, c.r), c]));
+        // A run is every cell the trench passes through in one direction, the corners at its ends and any T it runs through included.
+        const joined = (c: number, r: number, d: Dir) => byKey.get(cellKey(c, r))?.openings.includes(d) && byKey.get(cellKey(c + DELTA[d][0], r + DELTA[d][1]))?.openings.includes(OPPOSITE[d]);
+        for (const cell of byKey.values()) {
+          for (const d of ["E", "N"] as const) {
+            if (!joined(cell.c, cell.r, d) || joined(cell.c - DELTA[d][0], cell.r - DELTA[d][1], d)) continue;
+            let n = 1;
+            for (let [c, r] = [cell.c, cell.r]; joined(c, r, d); [c, r] = [c + DELTA[d][0], r + DELTA[d][1]]) n++;
+            expect(n, `seed ${layout.seed} run ${d} from ${cell.c},${cell.r}`).toBeLessThanOrEqual(6);
           }
         }
+        // A line bends when its cells do not all stand in one row or one column.
+        const bends = (cells: readonly (readonly [number, number])[]) => new Set(cells.map(([c]) => c)).size > 1 && new Set(cells.map(([, r]) => r)).size > 1;
+        for (const line of layout.trench.deploymentLines) expect(bends(line.cells), `seed ${layout.seed} ${line.zoneLabel}`).toBe(true);
+        const cross = layout.trench.deploymentLines.flatMap((l) => l.commCells);
+        expect(layout.trench.straightCross, `seed ${layout.seed}`).toBe(false);
+        expect(bends(cross), `seed ${layout.seed} cross trench`).toBe(true);
       }
     });
 
@@ -208,12 +252,12 @@ describe("generateBattlefield", () => {
       for (const layout of layouts) {
         const all = units(layout, "terrain");
         for (let i = 0; i < all.length; i++) {
-          for (let j = i + 1; j < all.length; j++) expect(dist(all[i]!.rects, all[j]!.rects), `seed ${layout.seed} ${all[i]!.id} vs ${all[j]!.id}`).toBeGreaterThanOrEqual(3 - 1e-9);
+          for (let j = i + 1; j < all.length; j++) expect(dist(all[i]!.rects, all[j]!.rects), `seed ${layout.seed} ${all[i]!.id} vs ${all[j]!.id}`).toBeGreaterThanOrEqual(3 - ROUNDING);
         }
         const raised = raisedCells(layout).map((c) => cellRect(grid, c.c, c.r));
         for (const u of all) {
           if (u.pieces.some((p) => onRaised(layout, p))) continue;
-          if (raised.length) expect(dist(u.rects, raised), `seed ${layout.seed} ${u.id}`).toBeGreaterThanOrEqual(3 - 1e-9);
+          if (raised.length) expect(dist(u.rects, raised), `seed ${layout.seed} ${u.id}`).toBeGreaterThanOrEqual(3 - ROUNDING);
         }
       }
     });
@@ -221,7 +265,7 @@ describe("generateBattlefield", () => {
     it("keeps terrain pieces and scattered terrain at least 1in from every trench, including one dug into a plateau", () => {
       for (const layout of layouts) {
         const trench = trenchRects(layout);
-        for (const u of [...units(layout, "terrain"), ...units(layout, "scatter")]) expect(dist(u.rects, trench), `seed ${layout.seed} ${u.id}`).toBeGreaterThanOrEqual(1 - 1e-9);
+        for (const u of [...units(layout, "terrain"), ...units(layout, "scatter")]) expect(dist(u.rects, trench), `seed ${layout.seed} ${u.id}`).toBeGreaterThanOrEqual(1 - ROUNDING);
       }
     });
 
@@ -229,21 +273,29 @@ describe("generateBattlefield", () => {
       for (const layout of layouts) {
         const scatter = units(layout, "scatter");
         const terrain = units(layout, "terrain");
-        const raisedBy = new Map<string, Rect[]>([...layout.plateaus.map((x) => [x.id, [...x.cells, ...x.ramps.map((r) => r.cell)].map(([c, r]) => cellRect(grid, c, r))] as const), ...layout.hills.map((h) => [h.id, h.cells.map(([c, r]) => cellRect(grid, c, r))] as const)]);
+        const raisedBy = new Map<string, Rect[]>([...layout.plateaus.map((x) => [x.id, [...x.cells, ...x.ramps.map((r) => r.cell)].map(([c, r]) => cellRect(grid, c, r))] as const), ...layout.hills.map((h) => [h.id, [...h.cells, ...h.ramps.map((r) => r.cell)].map(([c, r]) => cellRect(grid, c, r))] as const)]);
         for (let i = 0; i < scatter.length; i++) {
           const u = scatter[i]!;
-          for (let a = 0; a < u.rects.length; a++) for (let b = a + 1; b < u.rects.length; b++) expect(rectDistance(u.rects[a]!, u.rects[b]!), `seed ${layout.seed} ${u.id} members overlap`).toBeGreaterThan(0);
-          for (let j = i + 1; j < scatter.length; j++) expect(dist(u.rects, scatter[j]!.rects), `seed ${layout.seed} ${u.id} vs ${scatter[j]!.id}`).toBeGreaterThanOrEqual(1 - 1e-9);
-          for (const t of terrain) expect(dist(u.rects, t.rects), `seed ${layout.seed} ${u.id} vs ${t.id}`).toBeGreaterThanOrEqual(1 - 1e-9);
+          // Inside a heap the pieces may touch and lean on each other, but none swallows another.
+          for (let a = 0; a < u.rects.length; a++) {
+            for (let b = a + 1; b < u.rects.length; b++) {
+              const [ra, rb] = [u.rects[a]!, u.rects[b]!];
+              const shared = rectOverlapArea(ra, rb);
+              const smaller = Math.min(rectArea(ra), rectArea(rb));
+              expect(shared, `seed ${layout.seed} ${u.id} members pile into each other`).toBeLessThanOrEqual(0.3 * smaller + ROUNDING);
+            }
+          }
+          for (let j = i + 1; j < scatter.length; j++) expect(dist(u.rects, scatter[j]!.rects), `seed ${layout.seed} ${u.id} vs ${scatter[j]!.id}`).toBeGreaterThanOrEqual(1 - ROUNDING);
+          for (const t of terrain) expect(dist(u.rects, t.rects), `seed ${layout.seed} ${u.id} vs ${t.id}`).toBeGreaterThanOrEqual(1 - ROUNDING);
           const against = u.pieces[0]!.slot?.against ?? null;
-          for (const [id, rects] of raisedBy) expect(dist(u.rects, rects), `seed ${layout.seed} ${u.id} vs ${id}`).toBeGreaterThanOrEqual(id === against ? 0 : 1 - 1e-9);
+          for (const [id, rects] of raisedBy) expect(dist(u.rects, rects), `seed ${layout.seed} ${u.id} vs ${id}`).toBeGreaterThanOrEqual(id === against ? 0 : 1 - ROUNDING);
         }
       }
     });
 
     it("keeps every footprint inside the board, free pieces 0.5in in from the edge", () => {
       const board: Rect = { x0: 0, y0: 0, x1: 36, y1: 36 };
-      const inset: Rect = { x0: 0.5 - 1e-9, y0: 0.5 - 1e-9, x1: 35.5 + 1e-9, y1: 35.5 + 1e-9 };
+      const inset: Rect = { x0: 0.5 - ROUNDING, y0: 0.5 - ROUNDING, x1: 35.5 + ROUNDING, y1: 35.5 + ROUNDING };
       const loose: Rect = { x0: -0.05, y0: -0.05, x1: 36.05, y1: 36.05 };
       for (const layout of layouts) {
         for (const p of layout.pieces) {
@@ -310,16 +362,22 @@ describe("generateBattlefield", () => {
       }
     });
 
-    it("builds hills from H4x4 blocks on the ground tiles, a stepped one with a second block on top", () => {
-      for (const layout of layouts.filter((l) => l.hills.length)) {
+    it("builds hills from stacked Landscape tiles whose tops sit at 5.00 like a plateau's, and never uses an H4x4", () => {
+      for (const layout of layouts) {
+        expect(layout.pieces.some((p) => p.paletteId === "h4x4"), `seed ${layout.seed}`).toBe(false);
         for (const hill of layout.hills) {
           for (const [c, r] of hill.cells) {
             const cell = layout.cells.find((x) => x.c === c && x.r === r)!;
             expect(cell.feature).toBe("hill");
-            const blocks = cell.upperPieceIds.map((id) => layout.pieces.find((p) => p.id === id)!).filter((p) => p.paletteId === "h4x4");
-            const stepped = hill.stepped.some(([x, y]) => x === c && y === r);
-            expect(blocks.map((b) => b.baseIn)).toEqual(stepped ? [2.5, 4.6] : [2.5]);
-            expect(cell.topIn).toBeCloseTo(stepped ? 6.7 : 4.6, 6);
+            expect(cell.kind).not.toBe("trench");
+            const tiles = cell.upperPieceIds.map((id) => layout.pieces.find((p) => p.id === id)!).filter((p) => p.role === "ground");
+            expect(tiles.length, `seed ${layout.seed} ${hill.id} ${c},${r}`).toBe(1);
+            expect(tiles[0]!.baseIn).toBeCloseTo(2.5, 6);
+            expect(cell.topIn).toBeCloseTo(5, 6);
+          }
+          for (const ramp of hill.ramps) {
+            const [dc, dr] = DELTA[ramp.up];
+            expect(hill.cells.some(([x, y]) => x === ramp.cell[0] + dc && y === ramp.cell[1] + dr), `seed ${layout.seed} ${hill.id} ramp climbs onto nothing`).toBe(true);
           }
         }
       }
@@ -380,6 +438,15 @@ describe("generateBattlefield", () => {
       }
     });
 
+    it("lays the whole trench network under a mirror as its own image, the bent cross trench included", () => {
+      for (const layout of boards.filter((l) => l.parity.kind.startsWith("mirror"))) {
+        const p = parityOf(layout);
+        const trench = layout.cells.filter((c) => c.kind === "trench" || c.feature === "raised-trench");
+        const mapped = trench.map(({ c, r }) => mapCell(p, grid, { c, r })).map(({ c, r }): [number, number] => [c, r]);
+        expect(keys(mapped), `seed ${layout.seed}`).toEqual(keys(trench.map(({ c, r }): [number, number] => [c, r])));
+      }
+    });
+
     // The role a slot's filling plays: its palette piece's or group's role (a scatter heap is scatter).
     const roleOf = (fill: string) => palette.pieces.find((x) => x.id === fill)?.role ?? palette.groups.find((g) => g.id === fill)?.role ?? "scatter";
 
@@ -414,7 +481,7 @@ describe("generateBattlefield", () => {
     });
   });
 
-  it("holds the repeat cap: no piece or group fills more than three terrain slots on a board until every variant of its category has three", () => {
+  it("holds the repeat cap: no piece or group fills more than three terrain slots on a board until every variant of its category and role has three", () => {
     const capped = (layout: Layout) => {
       const count = new Map<string, number>();
       const categoryOf = new Map<string, string>();
@@ -425,18 +492,17 @@ describe("generateBattlefield", () => {
       }
       return { count, categoryOf };
     };
-    let repeats = 0;
     for (const layout of [...LAYOUTS.values()].flat().concat(HILL_GROUPS[0]!.boards)) {
       const { count, categoryOf } = capped(layout);
       for (const [fill, n] of count) {
         if (n <= 3) continue;
-        repeats++;
-        const variants = placeablesIn(palette, categoryOf.get(fill)!).map((p) => p.key);
+        // Twins share a role, so a category's variants count by role: one ruin-role corner repeats in mirrored pairs.
+        const role = placeablesIn(palette, categoryOf.get(fill)!).find((p) => p.key === fill)!.role;
+        const variants = placeablesIn(palette, categoryOf.get(fill)!).filter((p) => p.role === role).map((p) => p.key);
         for (const v of variants) expect(count.get(v) ?? 0, `seed ${layout.seed} ${layout.scenarioId}: ${fill} x${n} while ${v} has fewer than 3`).toBeGreaterThanOrEqual(3);
       }
       expect(Math.max(...count.values())).toBeGreaterThanOrEqual(1);
     }
-    expect(repeats).toBe(0);
   });
 
   describe("hills", () => {
@@ -456,11 +522,134 @@ describe("generateBattlefield", () => {
     });
 
     it("meets the archetype minimums and keeps every footprint on the board across the hill groups' scenarios", () => {
-      const inset: Rect = { x0: 0.5 - 1e-9, y0: 0.5 - 1e-9, x1: 35.5 + 1e-9, y1: 35.5 + 1e-9 };
+      const inset: Rect = { x0: 0.5 - ROUNDING, y0: 0.5 - ROUNDING, x1: 35.5 + ROUNDING, y1: 35.5 + ROUNDING };
       for (const layout of HILL_GROUPS.flatMap((g) => g.boards)) {
         for (const sf of layout.stats.shortfalls) expect(sf.placed, `${layout.scenarioId} seed ${layout.seed} ${sf.typeId}`).toBeGreaterThanOrEqual(sf.min);
         for (const p of layout.pieces.filter(isFree)) expect(rectInside(rectOf(p), inset), `${layout.scenarioId} seed ${layout.seed} ${p.id}`).toBe(true);
       }
+    });
+  });
+
+  it("ramps up to every plateau or hill that carries a building, a tower or an objective's cover, over 600 boards", () => {
+    let carrying = 0;
+    for (const layout of [...[...LAYOUTS.values()].flat(), ...HILL_GROUPS.flatMap((g) => g.boards)]) {
+      const byId = new Map(layout.pieces.map((p) => [p.id, p]));
+      for (const group of [...layout.plateaus, ...layout.hills]) {
+        const tops = new Set(group.cells.map(([c, r]) => cellKey(c, r)));
+        // Standing on the group: supported by one of its stacked tiles.
+        const carried = layout.pieces.filter((p) => (p.role === "building" || p.role === "tower" || p.objectiveId) && p.supportIds.some((id) => {
+          const s = byId.get(id)!;
+          return s.role === "ground" && s.baseIn > 0 && s.cells!.some(([c, r]) => tops.has(cellKey(c, r)));
+        }));
+        if (!carried.length) continue;
+        carrying++;
+        expect(group.ramps.length, `${layout.scenarioId} seed ${layout.seed} ${group.id} carries ${carried.map((p) => p.paletteId).join(",")} with no ramp`).toBeGreaterThanOrEqual(1);
+        for (const ramp of group.ramps) {
+          const cell = layout.cells.find((x) => x.c === ramp.cell[0] && x.r === ramp.cell[1])!;
+          expect(cell.upperPieceIds.some((id) => byId.get(id)!.role === "ramp"), `${layout.scenarioId} seed ${layout.seed} ${group.id} ramp at ${ramp.cell.join(",")} has no ramp piece`).toBe(true);
+          const [dc, dr] = DELTA[ramp.up];
+          expect(tops.has(cellKey(ramp.cell[0] + dc, ramp.cell[1] + dr))).toBe(true);
+          const foot = layout.cells.find((x) => x.c === ramp.cell[0] - dc && x.r === ramp.cell[1] - dr)!;
+          expect(foot.kind, `${layout.scenarioId} seed ${layout.seed} ${group.id} ramp foot`).not.toBe("trench");
+          expect(foot.feature, `${layout.scenarioId} seed ${layout.seed} ${group.id} ramp foot`).toBeNull();
+        }
+      }
+    }
+    expect(carrying).toBeGreaterThan(200);
+  });
+
+  it("gives raised ground two ramps where a pair fits, as on every Claim and Fields board", () => {
+    for (const layout of [...LAYOUTS.values()].flat()) {
+      for (const group of [...layout.plateaus, ...layout.hills]) expect(group.ramps.length, `${layout.scenarioId} seed ${layout.seed} ${group.id}`).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  describe("scattered terrain laid by hand", () => {
+    const boards = [...LAYOUTS.values()].flat();
+    const scatterPieces = boards.flatMap((l) => l.pieces.filter(isScatter));
+    const heapsOf = (l: Layout): LayoutPiece[][] => {
+      const by = new Map<string, LayoutPiece[]>();
+      for (const p of l.pieces) if (isScatter(p) && p.groupId) by.set(p.groupId, [...(by.get(p.groupId) ?? []), p]);
+      return [...by.values()];
+    };
+    const heaps = boards.flatMap(heapsOf);
+
+    it("stands off any grid: positions on a half-inch grid no more often than chance", () => {
+      expect(scatterPieces.length).toBeGreaterThan(2000);
+      const onGrid = (v: number) => Math.abs(v * 2 - Math.round(v * 2)) < 0.02;
+      const share = scatterPieces.filter((p) => onGrid(p.position[0]) && onGrid(p.position[1])).length / scatterPieces.length;
+      // Chance: 0.04 per axis, 0.0016 for both.
+      expect(share).toBeLessThan(0.01);
+    });
+
+    it("turns to any angle, not to quarter turns", () => {
+      const nearQuarter = scatterPieces.filter((p) => {
+        const off = p.rotY % 90;
+        return Math.min(off, 90 - off) < 1;
+      }).length / scatterPieces.length;
+      // Chance: 8 degrees in 360; face dressing leans up to 18 degrees off its face.
+      expect(nearQuarter).toBeLessThan(0.08);
+      const octants = new Set(scatterPieces.map((p) => Math.floor(p.rotY / 45)));
+      expect(octants.size).toBe(8);
+    });
+
+    it("heaps irregularly: spacing inside a heap varies, and no two heaps are laid out alike", () => {
+      const big = heaps.filter((h) => h.length >= 3);
+      expect(big.length).toBeGreaterThan(40);
+      const spread = (h: LayoutPiece[]) => {
+        const d: number[] = [];
+        for (let i = 0; i < h.length; i++) for (let j = i + 1; j < h.length; j++) d.push(Math.hypot(h[i]!.position[0] - h[j]!.position[0], h[i]!.position[1] - h[j]!.position[1]));
+        const mean = d.reduce((a, b) => a + b, 0) / d.length;
+        return { d, cv: Math.sqrt(d.reduce((a, b) => a + (b - mean) ** 2, 0) / d.length) / mean };
+      };
+      const irregular = big.filter((h) => spread(h).cv > 0.1).length / big.length;
+      expect(irregular).toBeGreaterThan(0.8);
+      for (const layout of boards) {
+        const shapes = heapsOf(layout).filter((h) => h.length >= 3).map((h) => spread(h).d.map((v) => v.toFixed(2)).sort().join(","));
+        // A heap and its mirrored twin share a shape; no third heap does.
+        const counts = new Map<string, number>();
+        for (const k of shapes) counts.set(k, (counts.get(k) ?? 0) + 1);
+        for (const [k, n] of counts) expect(n, `seed ${layout.seed} heap shape ${k}`).toBeLessThanOrEqual(2);
+      }
+    });
+
+    it("lays the scatter before the house fill: Fields keeps a12a0d8's 36 a board and Claim its measured ceiling, most of it in heaps of two to five, under 200 objects a board", () => {
+      // Claim's minimums, five objective covers, its trench lines and the raised centre leave room for about 29 (a12a0d8 laid 30.9 round a straighter, smaller network).
+      for (const [id, least] of [["claim-no-mans-land", 28], ["fields-of-glory", 36.3]] as const) {
+        const set = LAYOUTS.get(id)!;
+        const pieces = set.flatMap((l) => l.pieces.filter(isScatter)).length;
+        const inHeaps = set.flatMap(heapsOf).filter((h) => h.length >= 2 && h.length <= 5).reduce((n, h) => n + h.length, 0);
+        expect(pieces / set.length, id).toBeGreaterThanOrEqual(least);
+        expect(inHeaps / pieces, id).toBeGreaterThanOrEqual(0.5);
+        for (const layout of set) expect(layout.stats.totalPieces, `${id} seed ${layout.seed}`).toBeLessThanOrEqual(200);
+      }
+    });
+
+    it("gives every scatter piece a placement role, counted in the stats, and uses every role somewhere", () => {
+      const seen = new Set<string>();
+      for (const layout of boards) {
+        const counted: Record<string, number> = {};
+        for (const p of layout.pieces.filter(isScatter)) {
+          expect(SCATTER_ROLES, `seed ${layout.seed} ${p.id}`).toContain(p.slot!.placement);
+          counted[p.slot!.placement!] = (counted[p.slot!.placement!] ?? 0) + 1;
+          seen.add(p.slot!.placement!);
+        }
+        expect(layout.stats.scatterByRole, `seed ${layout.seed}`).toEqual(counted);
+      }
+      expect([...seen].sort()).toEqual([...SCATTER_ROLES].sort());
+    });
+
+    it("turns free terrain pieces a few degrees off the quarter turn, keeping square the cell-aligned and those on the mirror line", () => {
+      const terrain = boards.flatMap((l) => l.pieces.filter((p) => p.slot && !isScatter(p) && !p.cells && !p.objectiveId));
+      for (const p of terrain) {
+        const off = p.rotY % 90;
+        expect(Math.min(off, 90 - off), p.id).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 1e-6);
+        // A piece on the mirror line is its own twin, so it stays square to stay mirror-true.
+        if (p.slot!.side === "centre") expect(off, p.id).toBe(0);
+      }
+      const paired = terrain.filter((p) => p.slot!.side !== "centre" && !p.groupId);
+      expect(paired.filter((p) => p.rotY % 90 !== 0).length / paired.length).toBeGreaterThan(0.95);
+      for (const p of boards.flatMap((l) => l.pieces.filter((x) => x.cells))) expect(p.rotY % 90, p.id).toBe(0);
     });
   });
 

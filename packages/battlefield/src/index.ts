@@ -5,6 +5,7 @@ export * from "./scenario.js";
 export * from "./trench.js";
 export * from "./parity.js";
 export * from "./tiles.js";
+export * from "./scatter.js";
 export * from "./dressing.js";
 export * from "./generate.js";
 export * from "./preview.js";

@@ -1,6 +1,6 @@
-import { cellKey, cellRect, cellsInRect, DELTA, DIRS, inGrid, Mask, rectContains, rectDistance, rectFromCentre, rectInside, rectPointDistance, type Cell, type Dir, type Grid, type Rect } from "./grid.js";
+import { cellKey, cellRect, cellsInRect, DELTA, DIRS, inGrid, Mask, OPPOSITE, rectContains, rectDistance, rectFromCentre, rectInside, rectPointDistance, rectsOverlap, rectsWithin, type Cell, type Dir, type Grid, type Rect } from "./grid.js";
 import { mapCell, mapDir, mapPoint, mapRotY, sideOf, type Parity } from "./parity.js";
-import { pieceById, rotatedFootprint, STRUCTURAL_ROLES, type Palette, type PalettePiece, type Role } from "./palette.js";
+import { pieceById, rotatedFootprint, STRUCTURAL_ROLES, turnedRect, type Palette, type PalettePiece, type Role } from "./palette.js";
 import type { Rng } from "./rng.js";
 import type { ObjectiveSpec, ZoneSpec } from "./scenario.js";
 import type { Axis } from "./trench.js";
@@ -155,6 +155,8 @@ export interface SlotInfo {
   fill: string;
   /** The raised feature whose face it dresses. */
   against: string | null;
+  /** Scattered terrain: the reason it stands where it does. */
+  placement: string | null;
 }
 
 export type PlacedKind = "cover" | "feature" | "tall" | "terrain" | "scatter" | "face" | "crater-tile";
@@ -177,6 +179,8 @@ export interface Placed {
   scatter: boolean;
   /** Face dressing: the raised feature it stands against. */
   faceOf: string | null;
+  /** Scattered terrain: the reason it stands where it does. */
+  placement: string | null;
 }
 
 export interface Aesthetic {
@@ -234,8 +238,11 @@ export interface AllowOptions {
 /** The placement rules for one rectangle. */
 export function rectAllowed(ctx: PlacementContext, rect: Rect, role: Role, opts: AllowOptions = {}): boolean {
   if (!rectInside(rect, boardRect(ctx.grid, ctx.edgeMarginIn))) return false;
-  for (const t of ctx.trenchRects) if (rectDistance(rect, t) < ctx.trenchClearanceIn) return false;
-  const cells = cellsInRect(ctx.grid, rect);
+  for (const t of ctx.trenchRects) if (rectsWithin(rect, t, ctx.trenchClearanceIn)) return false;
+  // Cells under the bounds, then under the turned outline itself where a mask asks.
+  const bounded = cellsInRect(ctx.grid, { x0: rect.x0, y0: rect.y0, x1: rect.x1, y1: rect.y1 });
+  const under = (cell: Cell) => !rect.poly || rectsOverlap(cellRect(ctx.grid, cell.c, cell.r), rect);
+  const cells = rect.poly ? bounded.filter(under) : bounded;
   if (opts.onPlateau) {
     if (!cells.every((cell) => ctx.plateauTop.get(cell.c, cell.r))) return false;
   } else if (cells.some((cell) => ctx.featureMask.get(cell.c, cell.r))) return false;
@@ -243,7 +250,7 @@ export function rectAllowed(ctx: PlacementContext, rect: Rect, role: Role, opts:
   for (const p of ctx.placed) {
     if (opts.onPlateau && p.kind === "feature" && p.id.startsWith("plateau")) continue;
     const gap = opts.faceOf === p.id ? 0 : opts.scatter || p.scatter ? ctx.scatterGapIn : ctx.spacingIn;
-    for (const r of p.rects) if (rectDistance(rect, r) < gap) return false;
+    for (const r of p.rects) if (rectsWithin(rect, r, gap)) return false;
   }
   for (const o of ctx.objectives) {
     if (o.id !== opts.coverFor && rectContains(rect, o.position[0], o.position[1])) return false;
@@ -319,7 +326,7 @@ function rotationOrder(ctx: PlacementContext, placeable: Placeable): number[] {
 
 // ---- picking ----------------------------------------------------------------
 
-const looksOf = (a: Aesthetic): Set<string> => new Set(["any", a.primary, ...(a.secondary ? [a.secondary] : [])]);
+export const looksOf = (a: Aesthetic): Set<string> => new Set(["any", a.primary, ...(a.secondary ? [a.secondary] : [])]);
 
 /**
  * A seeded pick from a category: pieces that suit the board's aesthetic and
@@ -394,15 +401,91 @@ export function pickTwin(ctx: PlacementContext, category: string, first: Placeab
  */
 export function twinFacing(parity: Parity, first: Placeable, rotY: number, twin: Placeable): number {
   const trot = mapRotY(parity, rotY);
-  const [w, d] = rotatedFootprint(first, rotY);
-  const [tw, td] = rotatedFootprint(twin, trot);
+  // Judged at the nearest quarter turn, so a slight yaw does not flip the decision.
+  const quarter = Math.round(rotY / 90) * 90;
+  const [w, d] = rotatedFootprint(first, quarter);
+  const [tw, td] = rotatedFootprint(twin, mapRotY(parity, quarter));
   const lie = (a: number, b: number) => Math.sign(Math.round((a - b) * 100));
   return lie(w, d) !== 0 && lie(tw, td) !== 0 && lie(w, d) !== lie(tw, td) ? (trot + 90) % 360 : trot;
 }
 
+/** Terrain that is not cell-aligned stands a few degrees off the quarter turn, as a person setting up a table would leave it. */
+export const TERRAIN_YAW_JITTER_DEG = 7;
+
+const jitteredYaw = (ctx: PlacementContext, placeable: Placeable, quarter: number): number =>
+  placeable.cells || placeable.scatter ? quarter : (quarter + (ctx.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
+
+/**
+ * Centres where a w x d footprint can stand clear of the trench, of what is
+ * already placed and of raised cells: along each row of snug y coordinates,
+ * the free x intervals left by everything within the gap of that row, and
+ * their ends and a point between. Candidates only: the full rules still
+ * decide.
+ */
+function openSpots(ctx: PlacementContext, w: number, d: number, scatter: boolean): [number, number][] {
+  const obstacles: { r: Rect; gap: number }[] = [
+    ...ctx.trenchRects.map((r) => ({ r, gap: ctx.trenchClearanceIn })),
+    ...ctx.placed.flatMap((p) => p.rects.map((r) => ({ r, gap: scatter || p.scatter ? ctx.scatterGapIn : ctx.spacingIn }))),
+  ];
+  for (let c = 0; c < ctx.grid.cols; c++) for (let r = 0; r < ctx.grid.rows; r++) if (ctx.featureMask.get(c, r) || ctx.keepClear.get(c, r)) obstacles.push({ r: cellRect(ctx.grid, c, r), gap: 0.001 });
+  const lo = ctx.edgeMarginIn + w / 2;
+  const hi = ctx.grid.boardIn - ctx.edgeMarginIn - w / 2;
+  const out: [number, number][] = [];
+  for (const cy of snugCoords(ctx, d, scatter, "y")) {
+    const y0 = cy - d / 2;
+    const y1 = cy + d / 2;
+    const blocked: [number, number][] = [];
+    for (const { r, gap } of obstacles) {
+      const sepY = Math.max(0, r.y0 - y1, y0 - r.y1);
+      if (sepY >= gap) continue;
+      const sepX = Math.sqrt(gap * gap - sepY * sepY);
+      blocked.push([r.x0 - sepX - w / 2, r.x1 + sepX + w / 2]);
+    }
+    blocked.sort((a, b) => a[0] - b[0]);
+    let x = lo;
+    const free: [number, number][] = [];
+    for (const [a, b] of blocked) {
+      if (a > x) free.push([x, Math.min(a, hi)]);
+      x = Math.max(x, b);
+      if (x > hi) break;
+    }
+    if (x <= hi) free.push([x, hi]);
+    for (const [a, b] of free) {
+      if (b < a) continue;
+      out.push([a + 0.005, cy], [b - 0.005, cy]);
+      if (b - a > 0.5) out.push([a + ctx.rng.next() * (b - a), cy]);
+    }
+  }
+  return out;
+}
+
+/**
+ * Centre coordinates along one axis where a footprint of `size` sits snug
+ * against something (a piece, a trench, the board's margin) at the gap the
+ * rules ask, plus a coarse sweep: tight spots a random or lattice search
+ * steps over.
+ */
+function snugCoords(ctx: PlacementContext, size: number, scatter: boolean, axis: "x" | "y"): number[] {
+  const lo = ctx.edgeMarginIn + size / 2;
+  const hi = ctx.grid.boardIn - ctx.edgeMarginIn - size / 2;
+  const out = new Set<number>([lo, hi]);
+  const add = (v: number) => {
+    if (v >= lo - 1e-9 && v <= hi + 1e-9) out.add(Math.round(v * 1000) / 1000);
+  };
+  const edges = (r: Rect, gap: number) => {
+    const [a, b] = axis === "x" ? [r.x0, r.x1] : [r.y0, r.y1];
+    add(b + gap + size / 2 + 0.01);
+    add(a - gap - size / 2 - 0.01);
+  };
+  for (const t of ctx.trenchRects) edges(t, ctx.trenchClearanceIn);
+  for (const p of ctx.placed) for (const r of p.rects) edges(r, scatter || p.scatter ? ctx.scatterGapIn : ctx.spacingIn);
+  for (let v = lo; v <= hi; v += 1.5) add(v + ctx.rng.next() * 0.5);
+  return [...out];
+}
+
 // ---- twin placement -----------------------------------------------------------
 
-function makePlaced(ctx: PlacementContext, id: string, placeable: Placeable, rect: Rect, rotY: number, kind: PlacedKind, extra: Partial<Placed> = {}): Placed {
+export function makePlaced(ctx: PlacementContext, id: string, placeable: Placeable, rect: Rect, rotY: number, kind: PlacedKind, extra: Partial<Placed> = {}): Placed {
   return {
     id,
     role: placeable.role,
@@ -418,22 +501,23 @@ function makePlaced(ctx: PlacementContext, id: string, placeable: Placeable, rec
     slot: null,
     scatter: placeable.scatter,
     faceOf: null,
+    placement: null,
     ...extra,
   };
 }
 
-function commitPair(ctx: PlacementContext, kind: PlacedKind, a: { placeable: Placeable; rect: Rect; rotY: number }, b: { placeable: Placeable; rect: Rect; rotY: number } | null, extra: Partial<Placed> = {}): Placed[] {
+export function commitPair(ctx: PlacementContext, kind: PlacedKind, a: { placeable: Placeable; rect: Rect; rotY: number }, b: { placeable: Placeable; rect: Rect; rotY: number } | null, extra: Partial<Placed> = {}): Placed[] {
   const prefix = kind === "scatter" || kind === "face" ? "x" : "d";
   const idA = `${prefix}-${ctx.nextId++}`;
   const idB = b ? `${prefix}-${ctx.nextId++}` : null;
   const at = (r: Rect): [number, number] => [(r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2];
   const single: SlotSide = ctx.parity.kind === "none" ? "A" : "centre";
   const sideA = b ? sideOf(ctx.parity, ...at(a.rect)) : single;
-  const out = [makePlaced(ctx, idA, a.placeable, a.rect, a.rotY, kind, { ...extra, slot: { id: idA, category: a.placeable.category, side: sideA, twin: idB, at: at(a.rect), fill: a.placeable.key, against: extra.faceOf ?? null } })];
-  if (b) out.push(makePlaced(ctx, idB!, b.placeable, b.rect, b.rotY, kind, { ...extra, slot: { id: idB!, category: b.placeable.category, side: sideOf(ctx.parity, ...at(b.rect)), twin: idA, at: at(b.rect), fill: b.placeable.key, against: extra.faceOf ?? null } }));
+  const out = [makePlaced(ctx, idA, a.placeable, a.rect, a.rotY, kind, { ...extra, slot: { id: idA, category: a.placeable.category, side: sideA, twin: idB, at: at(a.rect), fill: a.placeable.key, against: extra.faceOf ?? null, placement: extra.placement ?? null } })];
+  if (b) out.push(makePlaced(ctx, idB!, b.placeable, b.rect, b.rotY, kind, { ...extra, slot: { id: idB!, category: b.placeable.category, side: sideOf(ctx.parity, ...at(b.rect)), twin: idA, at: at(b.rect), fill: b.placeable.key, against: extra.faceOf ?? null, placement: extra.placement ?? null } }));
   for (const p of out) {
     ctx.placed.push(p);
-    const keys = p.placeable!.key.startsWith(CLUSTER_PREFIX) ? p.placeable!.members.map((m) => m.pieceId) : [p.placeable!.key];
+    const keys = p.placeable!.key.startsWith(HEAP_PREFIX) ? p.placeable!.members.map((m) => m.pieceId) : [p.placeable!.key];
     for (const key of keys) ctx.usage.set(key, (ctx.usage.get(key) ?? 0) + 1);
   }
   return out;
@@ -472,16 +556,14 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
     const span = ctx.grid.boardIn - 2 * margin;
     const consider = (rotY: number, cx: number, cy: number) => {
       if (twinned && sideOf(ctx.parity, cx, cy) !== "A") return;
-      const [w, d] = rotatedFootprint(pa, rotY);
-      const rect = rectFromCentre(cx, cy, w, d);
+      const rect = turnedRect(cx, cy, pa, rotY, ctx.palette.rotation.rotYSense);
       if (opts.where && !opts.where(rect)) return;
       if (!rectAllowed(ctx, rect, pa.role, allow)) return;
       let twin: { placeable: Placeable; rect: Rect; rotY: number } | null = null;
       if (pb) {
         const [tx, ty] = mapPoint(ctx.parity, cx, cy);
         const trot = twinFacing(ctx.parity, pa, rotY, pb);
-        const [tw, td] = rotatedFootprint(pb, trot);
-        const trect = rectFromCentre(tx, ty, tw, td);
+        const trect = turnedRect(tx, ty, pb, trot, ctx.palette.rotation.rotYSense);
         const gap = scatter ? ctx.scatterGapIn : ctx.spacingIn;
         if (rectDistance(rect, trect) < gap) return;
         if (!rectAllowed(ctx, trect, pb.role, allow)) return;
@@ -493,19 +575,20 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
     const rotations = rotationOrder(ctx, pa);
     const samples = opts.samples ?? (scatter ? 40 : 120);
     for (let i = 0; i < samples && candidates.length < keep; i++) {
-      const rotY = rotations[i % rotations.length]!;
+      const rotY = jitteredYaw(ctx, pa, rotations[i % rotations.length]!);
       const [w, d] = rotatedFootprint(pa, rotY);
-      const cx = margin + w / 2 + ctx.rng.int(Math.floor((span - w) * 2) + 1) / 2;
-      const cy = margin + d / 2 + ctx.rng.int(Math.floor((span - d) * 2) + 1) / 2;
-      consider(rotY, cx, cy);
+      if (w > span || d > span) continue;
+      consider(rotY, margin + w / 2 + ctx.rng.next() * (span - w), margin + d / 2 + ctx.rng.next() * (span - d));
     }
     if (candidates.length < keep && !scatter) {
-      for (const rotY of rotations.filter((r, i) => rotations.findIndex((o) => o % 180 === r % 180) === i)) {
+      // Snug against what is already down: the spots a random search misses.
+      for (const quarter of rotations.filter((r, i) => rotations.findIndex((o) => o % 180 === r % 180) === i)) {
+        const rotY = jitteredYaw(ctx, pa, quarter);
         const [w, d] = rotatedFootprint(pa, rotY);
-        const spots: [number, number][] = [];
-        for (let cx = margin + w / 2; cx <= ctx.grid.boardIn - margin - w / 2; cx += 1) for (let cy = margin + d / 2; cy <= ctx.grid.boardIn - margin - d / 2; cy += 1) if (!twinned || sideOf(ctx.parity, cx, cy) === "A") spots.push([cx, cy]);
-        const start = spots.length ? ctx.rng.int(spots.length) : 0;
-        for (let i = 0; i < spots.length && candidates.length < keep; i++) consider(rotY, ...spots[(start + i) % spots.length]!);
+        for (const spot of ctx.rng.shuffle(openSpots(ctx, w, d, scatter))) {
+          if (candidates.length >= keep) break;
+          if (!twinned || sideOf(ctx.parity, ...spot) === "A") consider(rotY, ...spot);
+        }
       }
     }
     if (!candidates.length) continue;
@@ -762,7 +845,7 @@ export function registerCovers(ctx: PlacementContext, covers: readonly CoverChoi
     const entry = makePlaced(ctx, idOf(cover), cover.placeable, cover.rect, cover.rotY, "cover", {
       objectiveId: cover.objectiveId,
       base: cover.base,
-      slot: { id: idOf(cover), category: cover.placeable.category, side, twin: twinCover ? idOf(twinCover) : null, at, fill: cover.placeable.key, against: null },
+      slot: { id: idOf(cover), category: cover.placeable.category, side, twin: twinCover ? idOf(twinCover) : null, at, fill: cover.placeable.key, against: null, placement: null },
     });
     ctx.placed.push(entry);
     ctx.usage.set(cover.placeable.key, (ctx.usage.get(cover.placeable.key) ?? 0) + 1);
@@ -789,8 +872,8 @@ export interface Plateau {
 export interface Hill {
   id: string;
   cells: Cell[];
-  /** Cells carrying a second H4x4 on top (Armoured Train's stepped hills). */
-  stepped: Cell[];
+  /** Ramps up from open ground; every hill carrying a cover has at least one. */
+  ramps: Ramp[];
 }
 
 export interface RaisedPlan {
@@ -809,6 +892,8 @@ interface PlanInputs {
   objectives: readonly ObjectiveSpec[];
   blocked: Mask;
   reserved: Mask;
+  /** Cells a deployment line may jog into; ramps keep off them where another way up fits. */
+  jogRoom: Mask;
   noTerrain: Mask;
   edgeMarginIn: number;
   trenchClearanceIn: number;
@@ -897,35 +982,50 @@ export function planCentrePlateaus(p: PlanInputs, sightAxis: Axis | null = null)
   const others = p.objectives.filter((o) => o !== objective);
   const usable = usableFor(p, objective ? [centre] : [], others);
   const at = (dc: number, dr: number): Cell => ({ c: centre.c + dc, r: centre.r + dr });
-  const shapes: { cells: Cell[]; rampSets: Ramp[][] }[] = [
-    { cells: [at(-1, 0), at(0, 0), at(1, 0)], rampSets: [[{ cell: at(-2, 0), up: "E" }, { cell: at(2, 0), up: "W" }], [{ cell: at(-1, 1), up: "S" }, { cell: at(1, -1), up: "N" }]] },
-    { cells: [at(0, -1), at(0, 0), at(0, 1)], rampSets: [[{ cell: at(0, -2), up: "N" }, { cell: at(0, 2), up: "S" }], [{ cell: at(1, -1), up: "W" }, { cell: at(-1, 1), up: "E" }]] },
-    {
-      cells: [at(0, 0), at(-1, 0), at(1, 0), at(0, -1), at(0, 1)],
-      rampSets: [
-        [{ cell: at(-2, 0), up: "E" }, { cell: at(2, 0), up: "W" }],
-        [{ cell: at(0, -2), up: "N" }, { cell: at(0, 2), up: "S" }],
-      ],
-    },
-  ];
+  // Every ramp onto a shape with its twin under the parity (a ramp on the mirror line is its own twin):
+  // pairs first; then ramps whose foot leaves the column a deployment line jogs into; then ramps at a
+  // line's ends, which lie along it and close no crossing.
+  const rampSetsOf = (cells: Cell[]): Ramp[][] => {
+    const inShape = (c: number, r: number) => cells.some((x) => x.c === c && x.r === r);
+    const sets = new Map<string, { ramps: Ramp[]; end: boolean }>();
+    const along = cells.length > 1 ? (cells[0]!.r === cells[1]!.r ? "x" : "y") : null;
+    for (const cell of cells) {
+      for (const dir of DIRS) {
+        const ramp: Ramp = { cell: { c: cell.c + DELTA[dir][0], r: cell.r + DELTA[dir][1] }, up: OPPOSITE[dir] };
+        if (inShape(ramp.cell.c, ramp.cell.r)) continue;
+        const twin: Ramp = { cell: mapCell(p.parity, g, ramp.cell), up: mapDir(p.parity, ramp.up) };
+        const same = twin.cell.c === ramp.cell.c && twin.cell.r === ramp.cell.r;
+        if (same && twin.up !== ramp.up) continue;
+        const set = same ? [ramp] : [ramp, twin];
+        const k = set.map((x) => `${x.cell.c},${x.cell.r},${x.up}`).sort().join("|");
+        sets.set(k, { ramps: set, end: along === "x" ? dir === "E" || dir === "W" : along === "y" ? dir === "N" || dir === "S" : false });
+      }
+    }
+    const onJog = (ramps: Ramp[]) => ramps.some((r) => p.jogRoom.get(r.cell.c, r.cell.r) || p.jogRoom.get(rampFoot(r).c, rampFoot(r).r));
+    return [...sets.values()].sort((a, b) => b.ramps.length - a.ramps.length || Number(onJog(a.ramps)) - Number(onJog(b.ramps)) || Number(b.end) - Number(a.end)).map((x) => x.ramps);
+  };
+  const shapes: { cells: Cell[]; rampSets: Ramp[][] }[] = [[at(-1, 0), at(0, 0), at(1, 0)], [at(0, -1), at(0, 0), at(0, 1)], [at(0, 0), at(-1, 0), at(1, 0), at(0, -1), at(0, 1)], [at(0, 0)]].map((cells) => ({ cells, rampSets: rampSetsOf(cells) }));
   const plans: RaisedPlan[] = [];
   const pool = tallCoverPool(p.palette);
   // A shape lying across the line between the deployment zones would cut every
   // trench crossing no man's land, so the line along that axis comes first and
   // the plus last.
-  const order = sightAxis === "x" ? [shapes[0]!, shapes[1]!, shapes[2]!] : sightAxis === "y" ? [shapes[1]!, shapes[0]!, shapes[2]!] : p.rng.shuffle(shapes);
+  const order = sightAxis === "x" ? [shapes[0]!, shapes[1]!, shapes[2]!, shapes[3]!] : sightAxis === "y" ? [shapes[1]!, shapes[0]!, shapes[2]!, shapes[3]!] : [...p.rng.shuffle(shapes.slice(0, 3)), shapes[3]!];
   for (const shape of order) {
     if (!shape.cells.every((cell) => usable(cell.c, cell.r))) continue;
     const inShape = (c: number, r: number) => shape.cells.some((x) => x.c === c && x.r === r);
-    // Ramps at the ends of a line lie along it and close no crossing; ramps on its sides come second.
+    const fitsShape = (ramps: Ramp[]) =>
+      ramps.every((r) => inShape(r.cell.c + DELTA[r.up][0], r.cell.r + DELTA[r.up][1]) && usable(r.cell.c, r.cell.r) && !p.blocked.get(r.cell.c, r.cell.r)) &&
+      ramps.every((r) => inGrid(g, rampFoot(r).c, rampFoot(r).r) && !p.reserved.get(rampFoot(r).c, rampFoot(r).r) && !inShape(rampFoot(r).c, rampFoot(r).r));
+    // Two ramps (a ramp and its twin) where any pair fits; one on the mirror line only where none does.
+    const most = Math.max(0, ...shape.rampSets.filter((ramps) => fitsShape(ramps)).map((ramps) => ramps.length));
     for (const ramps of shape.rampSets) {
+      if (ramps.length < most) continue;
       const twinOk = ramps.every((r) => {
         const twin = { cell: mapCell(p.parity, g, r.cell), up: mapDir(p.parity, r.up) };
         return ramps.some((x) => x.cell.c === twin.cell.c && x.cell.r === twin.cell.r && x.up === twin.up);
       });
-      if (!twinOk) continue;
-      if (!ramps.every((r) => inShape(r.cell.c + DELTA[r.up][0], r.cell.r + DELTA[r.up][1]) && usable(r.cell.c, r.cell.r) && !p.blocked.get(r.cell.c, r.cell.r))) continue;
-      if (!ramps.every((r) => inGrid(g, rampFoot(r).c, rampFoot(r).r) && !p.reserved.get(rampFoot(r).c, rampFoot(r).r) && !inShape(rampFoot(r).c, rampFoot(r).r))) continue;
+      if (!twinOk || !fitsShape(ramps)) continue;
       let covers: CoverChoice[] = [];
       if (objective) {
         const cover = coverOnTop(p, objective, insideCells(g, shape.cells), pool, [], lineSideClear(g, shape.cells, p.trenchClearanceIn));
@@ -942,47 +1042,73 @@ export function planCentrePlateaus(p: PlanInputs, sightAxis: Axis | null = null)
 }
 
 /**
- * A hill of H4x4 blocks on the centre (Armoured Train's pattern), as a line
- * along the axis between the deployment zones or a single block: climbable on
- * every side, so it needs no ramps. The midpoint's ruin stands on top when an
- * objective sits there; blocks it leaves bare may carry a second H4x4 step.
+ * A hill on the centre: raised ground of stacked Landscape tiles, whose tops
+ * match the board (Jonathan: the H4x4 tops did not), with ramps up from open
+ * ground, the same shapes and ramp sets as the centre plateau. The midpoint's
+ * cover stands on top when an objective sits there.
  */
-export function planCentreHills(p: PlanInputs, sightAxis: Axis | null, stepChance: number): RaisedPlan[] {
-  const g = p.grid;
-  if (p.parity.kind === "none" || g.cols % 2 === 0 || g.rows % 2 === 0) return [];
-  const centre = { c: (g.cols - 1) / 2, r: (g.rows - 1) / 2 };
-  const [mx, my] = [g.boardIn / 2, g.boardIn / 2];
-  const objective = p.objectives.find((o) => Math.abs(o.position[0] - mx) < 1e-6 && Math.abs(o.position[1] - my) < 1e-6 && o.requiresCover) ?? null;
-  const usable = usableFor(p, objective ? [centre] : [], p.objectives.filter((o) => o !== objective));
-  const at = (dc: number, dr: number): Cell => ({ c: centre.c + dc, r: centre.r + dr });
-  const along = sightAxis === "y" ? [at(0, -1), at(0, 0), at(0, 1)] : [at(-1, 0), at(0, 0), at(1, 0)];
-  const plans: RaisedPlan[] = [];
-  const pool = tallCoverPool(p.palette);
-  for (const cells of [along, [at(0, 0)]]) {
-    if (!cells.every((cell) => usable(cell.c, cell.r))) continue;
-    let covers: CoverChoice[] = [];
-    if (objective) {
-      const cover = coverOnTop(p, objective, insideCells(g, cells), pool, [], lineSideClear(g, cells, p.trenchClearanceIn));
-      if (!cover) continue;
-      covers = [{ ...cover, base: "hill" }];
-    }
-    // A step goes on a bare block and its twin together, never under the ruin.
-    const under = new Set(covers.flatMap((c) => cellsInRect(g, c.rect).map((cell) => cellKey(cell.c, cell.r))));
-    const stepped: Cell[] = [];
-    for (const cell of cells) {
-      const twin = mapCell(p.parity, g, cell);
-      if (under.has(cellKey(cell.c, cell.r)) || under.has(cellKey(twin.c, twin.r)) || stepped.some((x) => x.c === cell.c && x.r === cell.r)) continue;
-      if (p.rng.chance(stepChance)) stepped.push(...(twin.c === cell.c && twin.r === cell.r ? [cell] : [cell, twin]));
-    }
-    plans.push({ plateaus: [], hills: [{ id: "hill-c", cells, stepped }], covers, keepOut: Mask.fromCells(g, [...cells, ...raisedCoverKeepOut(g, covers, cells, p.trenchClearanceIn)]) });
-  }
-  return plans;
+export function planCentreHills(p: PlanInputs, sightAxis: Axis | null): RaisedPlan[] {
+  return planCentrePlateaus(p, sightAxis).map((plan) => ({
+    plateaus: [],
+    hills: plan.plateaus.map((x) => ({ id: "hill-c", cells: x.cells, ramps: x.ramps })),
+    covers: plan.covers.map((c) => ({ ...c, base: "hill" as const })),
+    keepOut: plan.keepOut,
+  }));
 }
 
 /**
- * Twin objectives raised on 2x2 hills of H4x4 blocks (Armoured Train's
- * pattern), each with its ruined building or tower on top covering the marker,
- * the twin a different piece of the same category.
+ * Ramps onto a group of raised cells: a ramp stands on the open cell beside a
+ * group cell and climbs onto it, with open ground at its foot. Under parity the
+ * twin group's ramps are the images of these. Up to `count` ramps on different
+ * sides, seeded; [] when none fits.
+ */
+function plannedRamps(p: PlanInputs, cells: readonly Cell[], twinCells: readonly Cell[] | null, usableA: (c: number, r: number) => boolean, usableB: (c: number, r: number) => boolean, avoid: Mask, count: number): { a: Ramp[]; b: Ramp[] } {
+  const g = p.grid;
+  const inGroup = (cell: Cell, group: readonly Cell[]) => group.some((x) => x.c === cell.c && x.r === cell.r);
+  const fits = (r: Ramp, group: readonly Cell[], other: readonly Cell[], usable: (c: number, r: number) => boolean) => {
+    const foot = rampFoot(r);
+    return (
+      inGrid(g, r.cell.c, r.cell.r) &&
+      inGrid(g, foot.c, foot.r) &&
+      !inGroup(r.cell, group) &&
+      !inGroup(foot, group) &&
+      !inGroup(r.cell, other) &&
+      !inGroup(foot, other) &&
+      usable(r.cell.c, r.cell.r) &&
+      !p.blocked.get(r.cell.c, r.cell.r) &&
+      !avoid.get(r.cell.c, r.cell.r) &&
+      !p.reserved.get(foot.c, foot.r) &&
+      !p.blocked.get(foot.c, foot.r)
+    );
+  };
+  const options: Ramp[] = [];
+  for (const cell of cells) {
+    for (const dir of DIRS) {
+      const ramp: Ramp = { cell: { c: cell.c + DELTA[dir][0], r: cell.r + DELTA[dir][1] }, up: OPPOSITE[dir] };
+      if (!fits(ramp, cells, twinCells ?? [], usableA)) continue;
+      if (twinCells) {
+        const twin: Ramp = { cell: mapCell(p.parity, g, ramp.cell), up: mapDir(p.parity, ramp.up) };
+        if (!fits(twin, twinCells, cells, usableB) || inGroup(twin.cell, [ramp.cell])) continue;
+      }
+      options.push(ramp);
+    }
+  }
+  const chosen: Ramp[] = [];
+  const onJog = (r: Ramp) => p.jogRoom.get(r.cell.c, r.cell.r) || p.jogRoom.get(rampFoot(r).c, rampFoot(r).r);
+  for (const ramp of p.rng.shuffle(options).sort((x, y) => Number(onJog(x)) - Number(onJog(y)))) {
+    if (chosen.length >= count) break;
+    // A second ramp climbs from another side and keeps clear of the first.
+    if (chosen.some((x) => x.up === ramp.up || Math.abs(x.cell.c - ramp.cell.c) + Math.abs(x.cell.r - ramp.cell.r) <= 1)) continue;
+    chosen.push(ramp);
+  }
+  const b = twinCells ? chosen.map((r) => ({ cell: mapCell(p.parity, g, r.cell), up: mapDir(p.parity, r.up) })) : [];
+  return { a: chosen, b };
+}
+
+/**
+ * Twin objectives raised on 2x2 hills of stacked Landscape tiles, each with its
+ * ruined building or tower on top covering the marker (the twin a different
+ * piece of the same category) and ramps up to it.
  */
 export function planObjectiveHills(p: PlanInputs, avoid: Mask, sightAxis: Axis | null = null): RaisedPlan[] {
   const g = p.grid;
@@ -1024,8 +1150,12 @@ export function planObjectiveHills(p: PlanInputs, avoid: Mask, sightAxis: Axis |
       if (!coverA) continue;
       const coverB = twinCoverOnTop(p, t, coverA, cellsB, pool);
       if (!coverB) continue;
-      const keepOut = Mask.fromCells(g, [...cellsA, ...cellsB, ...raisedCoverKeepOut(g, [coverA, coverB], [...cellsA, ...cellsB], p.trenchClearanceIn)]);
-      plans.push({ plateaus: [], hills: [{ id: "hill-a", cells: cellsA, stepped: [] }, { id: "hill-b", cells: cellsB, stepped: [] }], covers: [{ ...coverA, base: "hill" }, { ...coverB, base: "hill" }], keepOut });
+      // The ruins on top are reached by ramps: two where there is room, one at least.
+      const ramps = plannedRamps(p, cellsA, cellsB, usableA, usableB, avoid, 2);
+      if (!ramps.a.length) continue;
+      const raised = [...cellsA, ...cellsB, ...ramps.a.map((r) => r.cell), ...ramps.b.map((r) => r.cell)];
+      const keepOut = Mask.fromCells(g, [...raised, ...ramps.a.map(rampFoot), ...ramps.b.map(rampFoot), ...raisedCoverKeepOut(g, [coverA, coverB], raised, p.trenchClearanceIn)]);
+      plans.push({ plateaus: [], hills: [{ id: "hill-a", cells: cellsA, ramps: ramps.a }, { id: "hill-b", cells: cellsB, ramps: ramps.b }], covers: [{ ...coverA, base: "hill" }, { ...coverB, base: "hill" }], keepOut });
       break;
     }
   }
@@ -1075,7 +1205,7 @@ export function registerFeature(ctx: PlacementContext, id: string, cells: Cell[]
   const y1 = Math.max(...rects.map((r) => r.y1));
   for (const cell of cells) ctx.featureMask.set(cell.c, cell.r);
   for (const cell of keepClear) if (inGrid(ctx.grid, cell.c, cell.r)) ctx.keepClear.set(cell.c, cell.r);
-  const placed: Placed = { id, role: "hill", kind: "feature", rects, placeable: null, centre: [(x0 + x1) / 2, (y0 + y1) / 2], rotY: 0, cells, objectiveId: null, base: "ground", typeId, slot: null, scatter: false, faceOf: null };
+  const placed: Placed = { id, role: "hill", kind: "feature", rects, placeable: null, centre: [(x0 + x1) / 2, (y0 + y1) / 2], rotY: 0, cells, objectiveId: null, base: "ground", typeId, slot: null, scatter: false, faceOf: null, placement: null };
   ctx.placed.push(placed);
   return placed;
 }
@@ -1152,8 +1282,12 @@ export function placeTwinPlateaus(ctx: PlacementContext, size: number, raisedTre
 
 const cellCentre = (g: Grid, cell: Cell): [number, number] => [cell.c * g.cellIn + g.cellIn / 2, cell.r * g.cellIn + g.cellIn / 2];
 
-/** Twin hills of one or two H4x4 blocks, near the objectives where there are any, stepped in pairs. */
-export function placeTwinHills(ctx: PlacementContext, cellsWanted: number, stepChance: number): Hill[] {
+/**
+ * Twin hills of stacked Landscape tiles, near the objectives where there are
+ * any: one to three cells, three as an L so the outline steps, with a ramp up
+ * where there is room.
+ */
+export function placeTwinHills(ctx: PlacementContext, cellsWanted: number): Hill[] {
   const g = ctx.grid;
   const twinned = ctx.parity.kind !== "none";
   const all: Cell[] = [];
@@ -1161,23 +1295,55 @@ export function placeTwinHills(ctx: PlacementContext, cellsWanted: number, stepC
   const near = (cell: Cell) => (ctx.objectives.length ? Math.min(...ctx.objectives.map((o) => Math.hypot(cellCentre(g, cell)[0] - o.position[0], cellCentre(g, cell)[1] - o.position[1]))) : Math.abs(cellCentre(g, cell)[0] - g.boardIn / 2));
   const ok = (cell: Cell) => raisableCell(ctx, cell.c, cell.r) && (!twinned || sideOf(ctx.parity, ...cellCentre(g, cell)) === "A");
   const seeds = ctx.rng.weightedOrder(all.filter(ok).map((cell) => ({ item: cell, weight: 1 / (1 + near(cell)) })));
+  const has = (group: readonly Cell[], cell: Cell) => group.some((x) => x.c === cell.c && x.r === cell.r);
   for (const seed of seeds.slice(0, 30)) {
     const cells = [seed];
-    if (cellsWanted > 1) {
-      const next = ctx.rng.shuffle(DIRS).map((d) => ({ c: seed.c + DELTA[d][0], r: seed.r + DELTA[d][1] })).find(ok);
+    for (let k = 1; k < cellsWanted; k++) {
+      // A third cell turns the corner of the first two, so the outline steps.
+      const from = cells[cells.length - 1]!;
+      const straight = cells.length === 2 ? [cells[1]!.c - cells[0]!.c, cells[1]!.r - cells[0]!.r] : null;
+      const next = ctx.rng
+        .shuffle(DIRS)
+        .filter((d) => !straight || DELTA[d][0] !== straight[0] || DELTA[d][1] !== straight[1])
+        .map((d) => ({ c: from.c + DELTA[d][0], r: from.r + DELTA[d][1] }))
+        .find((cell) => ok(cell) && !has(cells, cell));
       if (next) cells.push(next);
     }
     const twinCells = twinned ? cells.map((cell) => mapCell(ctx.parity, g, cell)) : [];
     if (twinCells.some((t) => !raisableCell(ctx, t.c, t.r) || cells.some((a) => rectDistance(cellRect(g, a.c, a.r), cellRect(g, t.c, t.r)) < ctx.spacingIn))) continue;
-    const stepped = ctx.rng.chance(stepChance) ? [ctx.rng.pick(cells)] : [];
-    const a: Hill = { id: "hill-a", cells, stepped };
-    registerFeature(ctx, a.id, a.cells, "hill");
+    const ramps = twinRamps(ctx, cells, twinned ? twinCells : null);
+    const a: Hill = { id: "hill-a", cells, ramps: ramps.a };
+    registerRaised(ctx, a.id, a.cells, a.ramps);
     if (!twinned) return [a];
-    const b: Hill = { id: "hill-b", cells: twinCells, stepped: stepped.map((cell) => mapCell(ctx.parity, g, cell)) };
-    registerFeature(ctx, b.id, b.cells, "hill");
+    const b: Hill = { id: "hill-b", cells: twinCells, ramps: ramps.b };
+    registerRaised(ctx, b.id, b.cells, b.ramps);
     return [a, b];
   }
   return [];
+}
+
+/** A ramp onto a group laid after the trench: on a raisable cell, its foot open ground nothing stands on; the twin group's ramp mirrors it. */
+function twinRamps(ctx: PlacementContext, cells: readonly Cell[], twinCells: readonly Cell[] | null): { a: Ramp[]; b: Ramp[] } {
+  const g = ctx.grid;
+  const has = (group: readonly Cell[], cell: Cell) => group.some((x) => x.c === cell.c && x.r === cell.r);
+  const footOpen = (cell: Cell) => inGrid(g, cell.c, cell.r) && !ctx.occupiedGround.get(cell.c, cell.r) && !ctx.featureMask.get(cell.c, cell.r) && !ctx.placed.some((p) => !p.scatter && p.rects.some((r) => rectDistance(r, cellRect(g, cell.c, cell.r)) < 1e-9));
+  const fits = (r: Ramp, group: readonly Cell[]) => raisableCell(ctx, r.cell.c, r.cell.r) && !has(group, r.cell) && !has(group, rampFoot(r)) && footOpen(rampFoot(r));
+  for (const cell of ctx.rng.shuffle([...cells])) {
+    for (const dir of ctx.rng.shuffle(DIRS)) {
+      const ramp: Ramp = { cell: { c: cell.c + DELTA[dir][0], r: cell.r + DELTA[dir][1] }, up: OPPOSITE[dir] };
+      if (!fits(ramp, cells)) continue;
+      if (!twinCells) return { a: [ramp], b: [] };
+      const twin: Ramp = { cell: mapCell(ctx.parity, g, ramp.cell), up: mapDir(ctx.parity, ramp.up) };
+      if (fits(twin, twinCells) && !(twin.cell.c === ramp.cell.c && twin.cell.r === ramp.cell.r)) return { a: [ramp], b: [twin] };
+    }
+  }
+  return { a: [], b: [] };
+}
+
+/** Registers raised cells and their ramps: nothing else stands on them, ramp feet stay clear, the tops take what is placed on them. */
+export function registerRaised(ctx: PlacementContext, id: string, cells: Cell[], ramps: Ramp[]): void {
+  registerFeature(ctx, id, [...cells, ...ramps.map((r) => r.cell)], "hill", ramps.map(rampFoot));
+  for (const cell of cells) ctx.plateauTop.set(cell.c, cell.r);
 }
 
 // ---- face dressing -------------------------------------------------------------
@@ -1216,26 +1382,31 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
     const a = pickPlaceable(ctx, category, [], fits);
     if (!a) continue;
     const b = twin && twin !== face ? (pickPlaceable(ctx, category, [a.key], fits) ?? a) : null;
-    const place = (f: { plateau: Plateau; cell: Cell; dir: Dir }, piece: Placeable) => {
+    // Laid along the face at a slight angle and anywhere along it, as dressing dropped against a wall lies.
+    const lean = (ctx.rng.next() * 2 - 1) * 18;
+    const slide = ctx.rng.next() * 2 - 1;
+    const place = (f: { plateau: Plateau; cell: Cell; dir: Dir }, piece: Placeable, mirrored: boolean) => {
       const alongX = f.dir === "N" || f.dir === "S";
-      const rotY = (alongX ? piece.footprintIn[0] >= piece.footprintIn[1] : piece.footprintIn[1] >= piece.footprintIn[0]) ? 0 : 90;
+      const quarter = (alongX ? piece.footprintIn[0] >= piece.footprintIn[1] : piece.footprintIn[1] >= piece.footprintIn[0]) ? 0 : 90;
+      const rotY = mirrored ? mapRotY(ctx.parity, (quarter + lean + 360) % 360) : (quarter + lean + 360) % 360;
       const [w, d] = rotatedFootprint(piece, rotY);
       const [cx, cy] = cellCentre(g, f.cell);
       const half = g.cellIn / 2 + 0.05;
       const [dx, dy] = DELTA[f.dir];
       const centre: [number, number] = [cx + dx * (half + w / 2), cy + dy * (half + d / 2)];
-      if (alongX) centre[0] = cx;
-      else centre[1] = cy;
-      return { placeable: piece, rect: rectFromCentre(centre[0], centre[1], w, d), rotY };
+      const room = Math.max(0, (g.cellIn - (alongX ? w : d)) / 2);
+      if (alongX) centre[0] = cx + (mirrored ? mapPoint(ctx.parity, slide, 0)[0] - mapPoint(ctx.parity, 0, 0)[0] : slide) * room;
+      else centre[1] = cy + (mirrored ? mapPoint(ctx.parity, 0, slide)[1] - mapPoint(ctx.parity, 0, 0)[1] : slide) * room;
+      return { placeable: piece, rect: turnedRect(centre[0], centre[1], piece, rotY, ctx.palette.rotation.rotYSense), rotY };
     };
-    const pa = place(face, a);
+    const pa = place(face, a, false);
     if (!rectAllowed(ctx, pa.rect, a.role, { scatter: true, faceOf: face.plateau.id })) continue;
     let pb: ReturnType<typeof place> | null = null;
     if (b && twin) {
-      pb = place(twin, b);
+      pb = place(twin, b, true);
       if (!rectAllowed(ctx, pb.rect, b.role, { scatter: true, faceOf: twin.plateau.id }) || rectDistance(pa.rect, pb.rect) < ctx.scatterGapIn) continue;
     }
-    const pair = commitPair(ctx, "face", pa, pb, { faceOf: face.plateau.id });
+    const pair = commitPair(ctx, "face", pa, pb, { faceOf: face.plateau.id, placement: "raised" });
     // A face slot stands at the middle of the face it dresses, so twins mirror exactly whatever their depth.
     const anchor = (f: { cell: Cell; dir: Dir }): [number, number] => {
       const [cx, cy] = cellCentre(g, f.cell);
@@ -1390,6 +1561,9 @@ export function placeTallOnPlateau(ctx: PlacementContext, plateau: Plateau): Pla
   return null;
 }
 
+/** A heap of scattered terrain is one placeable whose key starts so; its members count toward their own pieces' usage. */
+export const HEAP_PREFIX = "heap:";
+
 export const SCATTER_WEIGHTS: Record<string, number> = {
   "scatter-crate": 3,
   "scatter-sandbag": 3,
@@ -1400,153 +1574,3 @@ export const SCATTER_WEIGHTS: Record<string, number> = {
   "scatter-wire": 1,
   "scatter-foliage": 1,
 };
-
-// Scatter that belongs together sits together: a heap of crates with a barrel
-// or two, sandbags end to end, rubble with debris. A heap is one piece of
-// scattered terrain; the model-base gap is kept around it, not inside it.
-const CLUSTER_PREFIX = "heap:";
-const HEAP_COMPANIONS: Record<string, string[]> = {
-  "scatter-crate": ["scatter-crate", "scatter-crate", "scatter-barrel"],
-  "scatter-barrel": ["scatter-barrel", "scatter-barrel", "scatter-crate"],
-  "scatter-sandbag": ["scatter-sandbag"],
-  "scatter-rubble": ["scatter-rubble", "scatter-debris"],
-  "scatter-debris": ["scatter-debris", "scatter-rubble"],
-};
-const HEAP_GAP_IN = 0.15;
-const HEAP_MEMBER_MAX_IN = 2.8;
-
-/** Two to four small scatter pieces packed edge to edge around a first one, as one placeable at rotY 0. */
-function buildHeap(ctx: PlacementContext, category: string): Placeable | null {
-  const looks = looksOf(ctx.aesthetic);
-  const small = (p: Placeable) => Math.max(...p.footprintIn) <= HEAP_MEMBER_MAX_IN && p.members.length === 1 && p.aesthetics.some((a) => looks.has(a));
-  const first = pickPlaceable(ctx, category, [], small);
-  if (!first) return null;
-  const boxes: { piece: Placeable; rotY: number; rect: Rect }[] = [];
-  const firstRot = ctx.rng.pick(ROTATIONS);
-  const [fw, fd] = rotatedFootprint(first, firstRot);
-  boxes.push({ piece: first, rotY: firstRot, rect: rectFromCentre(0, 0, fw, fd) });
-  const want = ctx.rng.intBetween(2, 4);
-  const companions = HEAP_COMPANIONS[category] ?? [category];
-  for (let tries = 0; boxes.length < want && tries < 8; tries++) {
-    const piece = pickPlaceable(ctx, ctx.rng.pick(companions), boxes.map((b) => b.piece.key), small);
-    if (!piece) continue;
-    const rotY = ctx.rng.pick(ROTATIONS);
-    const [w, d] = rotatedFootprint(piece, rotY);
-    const bx = { x0: Math.min(...boxes.map((b) => b.rect.x0)), y0: Math.min(...boxes.map((b) => b.rect.y0)), x1: Math.max(...boxes.map((b) => b.rect.x1)), y1: Math.max(...boxes.map((b) => b.rect.y1)) };
-    for (const side of ctx.rng.shuffle(DIRS)) {
-      const along = side === "N" || side === "S" ? [bx.x0 + w / 2, bx.x1 - w / 2] : [bx.y0 + d / 2, bx.y1 - d / 2];
-      const t = along[0]! <= along[1]! ? along[0]! + ctx.rng.next() * (along[1]! - along[0]!) : (along[0]! + along[1]!) / 2;
-      const centre: [number, number] =
-        side === "N" ? [t, bx.y1 + HEAP_GAP_IN + d / 2] : side === "S" ? [t, bx.y0 - HEAP_GAP_IN - d / 2] : side === "E" ? [bx.x1 + HEAP_GAP_IN + w / 2, t] : [bx.x0 - HEAP_GAP_IN - w / 2, t];
-      const rect = rectFromCentre(centre[0], centre[1], w, d);
-      if (boxes.some((b) => rectDistance(b.rect, rect) < HEAP_GAP_IN - 1e-9)) continue;
-      // Keep the heap compact: no side longer than three of its members' widths.
-      const next = { x0: Math.min(bx.x0, rect.x0), y0: Math.min(bx.y0, rect.y0), x1: Math.max(bx.x1, rect.x1), y1: Math.max(bx.y1, rect.y1) };
-      if (Math.max(next.x1 - next.x0, next.y1 - next.y0) > 5) continue;
-      boxes.push({ piece, rotY, rect });
-      break;
-    }
-  }
-  if (boxes.length < 2) return null;
-  const x0 = Math.min(...boxes.map((b) => b.rect.x0));
-  const y0 = Math.min(...boxes.map((b) => b.rect.y0));
-  const x1 = Math.max(...boxes.map((b) => b.rect.x1));
-  const y1 = Math.max(...boxes.map((b) => b.rect.y1));
-  const [cx, cy] = [(x0 + x1) / 2, (y0 + y1) / 2];
-  return {
-    key: `${CLUSTER_PREFIX}${boxes.map((b) => b.piece.key).join("+")}`,
-    role: "scatter",
-    category,
-    aesthetics: first.aesthetics,
-    scatter: true,
-    footprintIn: [x1 - x0, y1 - y0],
-    heightIn: Math.max(...boxes.map((b) => b.piece.heightIn)),
-    members: boxes.map((b) => ({ pieceId: b.piece.members[0]!.pieceId, at: [(b.rect.x0 + b.rect.x1) / 2 - cx, (b.rect.y0 + b.rect.y1) / 2 - cy] as [number, number], rotY: b.rotY })),
-    cells: null,
-  };
-}
-
-/** A heap as the other half sees it: each member at its mirrored offset and facing. */
-function mirrorHeap(ctx: PlacementContext, heap: Placeable): Placeable {
-  const mid = ctx.grid.boardIn / 2;
-  return {
-    ...heap,
-    members: heap.members.map((m) => {
-      const [x, y] = mapPoint(ctx.parity, mid + m.at[0], mid + m.at[1]);
-      return { ...m, at: [x - mid, y - mid] as [number, number], rotY: mapRotY(ctx.parity, m.rotY) };
-    }),
-  };
-}
-
-/**
- * Scattered terrain in twin pairs up to `pieces` objects: crates, sandbags,
- * barrels, rubble and debris at model height between the terrain pieces, single
- * or heaped, each keeping a model-base gap from everything so lanes stay
- * walkable. Spots are walked on a jittered lattice over one half, those beside
- * standing pieces and trench lips first, so the clutter gathers where there is
- * cover to gather at; each twin lands at the mirrored spot. Ecclesiastic boards
- * lean on graves and candles, industrial ones on barrels and crates.
- */
-export function placeScatter(ctx: PlacementContext, pieces: number, heapChance = 0.6): Placed[] {
-  const out: Placed[] = [];
-  const looks = looksOf(ctx.aesthetic);
-  // Scatter keeps to the board's look: a category of pieces from other looks only
-  // (graves and candles on an industrial board) is left out, and within a category
-  // only pieces that suit the look, or suit any, are drawn.
-  const fits = (p: Placeable) => p.aesthetics.some((a) => looks.has(a));
-  const weights = Object.entries(SCATTER_WEIGHTS)
-    .filter(([category]) => placeablesIn(ctx.palette, category).some(fits))
-    .map(([category, w]) => {
-      const suited = placeablesIn(ctx.palette, category).some((p) => p.aesthetics.some((a) => a !== "any" && looks.has(a)));
-      return { item: category, weight: w * (suited ? 2 : 1) };
-    });
-  const g = ctx.grid;
-  const twinned = ctx.parity.kind !== "none";
-  const margin = ctx.edgeMarginIn;
-  const objects = () => out.reduce((n, p) => n + p.placeable!.members.length, 0);
-  const solid = [...ctx.trenchRects, ...ctx.placed.filter((p) => !p.scatter).flatMap((p) => p.rects)];
-  const spots: { item: [number, number]; weight: number }[] = [];
-  for (let x = margin + 0.5; x <= g.boardIn - margin - 0.5; x += 1) {
-    for (let y = margin + 0.5; y <= g.boardIn - margin - 0.5; y += 1) {
-      const at: [number, number] = [x + (ctx.rng.next() - 0.5), y + (ctx.rng.next() - 0.5)];
-      if (twinned && sideOf(ctx.parity, ...at) !== "A") continue;
-      const near = Math.min(...solid.map((r) => rectPointDistance(r, at[0], at[1])), Number.POSITIVE_INFINITY);
-      spots.push({ item: at, weight: near < 2.5 ? 4 : near < 5 ? 2 : 1 });
-    }
-  }
-  for (const [x, y] of ctx.rng.weightedOrder(spots)) {
-    if (objects() >= pieces) break;
-    let placedHere = false;
-    for (const category of ctx.rng.weightedOrder(weights)) {
-      if (placedHere) break;
-      // A heap that does not fit gives way to a single piece of its kind.
-      const heaped = HEAP_COMPANIONS[category] && ctx.rng.chance(heapChance) ? buildHeap(ctx, category) : null;
-      for (const heap of heaped ? [heaped, null] : [null]) {
-        const a = heap ?? pickPlaceable(ctx, category, [], fits);
-        if (!a) continue;
-        const rotY = heap ? 0 : ctx.rng.pick(ROTATIONS);
-        const [w, d] = rotatedFootprint(a, rotY);
-        const rect = rectFromCentre(x, y, w, d);
-        if (!rectAllowed(ctx, rect, a.role, { scatter: true })) continue;
-        let twin: { placeable: Placeable; rect: Rect; rotY: number } | null = null;
-        if (twinned) {
-          const [tx, ty] = mapPoint(ctx.parity, x, y);
-          const options = heap ? [{ piece: mirrorHeap(ctx, heap), rotY: 0 }] : [...new Set([pickTwin(ctx, category, a, fits) ?? a, a])].map((piece) => ({ piece, rotY: twinFacing(ctx.parity, a, rotY, piece) }));
-          for (const { piece, rotY: trot } of options) {
-            const [tw, td] = rotatedFootprint(piece, trot);
-            const trect = rectFromCentre(tx, ty, tw, td);
-            if (rectDistance(rect, trect) >= ctx.scatterGapIn && rectAllowed(ctx, trect, piece.role, { scatter: true })) {
-              twin = { placeable: piece, rect: trect, rotY: trot };
-              break;
-            }
-          }
-          if (!twin) continue;
-        }
-        out.push(...commitPair(ctx, "scatter", { placeable: a, rect, rotY }, twin));
-        placedHere = true;
-        break;
-      }
-    }
-  }
-  return out;
-}

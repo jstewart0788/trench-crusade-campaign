@@ -58,6 +58,8 @@ export interface TrenchOptions {
   maxCommCells: number;
   /** Lay the two deployment lines as twins under this parity. */
   parity?: Parity;
+  /** Longest run of straight pieces anywhere in the network (fire bays between jogs). */
+  maxStraightRun: number;
 }
 
 export const DEFAULT_TRENCH_OPTIONS: Omit<TrenchOptions, "mode" | "axis" | "fromLowEdge" | "branches" | "tracks"> = {
@@ -67,8 +69,9 @@ export const DEFAULT_TRENCH_OPTIONS: Omit<TrenchOptions, "mode" | "axis" | "from
   allowBranchExits: true,
   allowLoops: true,
   budget: 20000,
-  minLineCells: 4,
+  minLineCells: 5,
   maxCommCells: 10,
+  maxStraightRun: 6,
 };
 
 export interface TrenchCell extends Cell {
@@ -83,8 +86,11 @@ export interface DeploymentLine {
   zoneLabel: string;
   player: string;
   side: Dir;
+  /** Path order from the low end; a jog leaves the board-edge column for a bay in the next one in. */
   cells: Cell[];
   variant: "full" | "from-low" | "from-high";
+  /** Track index where the line jogs inward, or null for a straight line. */
+  jog: number | null;
   /** Cells of the communication trench joining this line to the rest. */
   commCells: Cell[];
 }
@@ -101,6 +107,8 @@ export interface TrenchNetwork {
   branches: number;
   loops: number;
   deploymentLines: DeploymentLine[];
+  /** The cross trench between the deployment lines runs straight: no jog fitted. */
+  straightCross: boolean;
   warnings: string[];
 }
 
@@ -114,6 +122,8 @@ export class TrenchError extends Error {
 class Network {
   private readonly set = new Map<string, Cell>();
   readonly exits: EdgeOpening[] = [];
+  /** Set when no bending cross trench fitted and a straight one joins the lines. */
+  straightCross = false;
   constructor(
     readonly grid: Grid,
     readonly blocked: Mask,
@@ -176,19 +186,58 @@ interface Search {
 
 // ---- deployment lines ---------------------------------------------------
 
-type LinePlan = { variant: DeploymentLine["variant"]; from: number; to: number };
+type LinePlan = { variant: DeploymentLine["variant"]; from: number; to: number; jog: number | null };
 
-/** Every line shape the track allows, in seeded order: full length, or a run from one board edge. */
+// A deployment line runs along its zone's board-edge column and jogs once into
+// the next column in for a single bay (Jonathan: real fire trenches bend; most
+// of the line stays wholly inside the zone, which the edge column is). The jog
+// at track index s takes the line from the edge column at s, through the inner
+// column at s..s+2, back to the edge column at s+2.
+const JOG_SPAN = 2;
+
+const inwardOf = (track: DeploymentTrack): Dir => OPPOSITE[track.side];
+
+function innerCell(track: DeploymentTrack, i: number): Cell {
+  const [dc, dr] = DELTA[inwardOf(track)];
+  return { c: track.cells[i]!.c + dc, r: track.cells[i]!.r + dr };
+}
+
+/** The line's cells in path order from its low end. */
+function lineCells(track: DeploymentTrack, plan: LinePlan): Cell[] {
+  const out: Cell[] = [];
+  for (let i = plan.from; i <= plan.to; i++) {
+    if (plan.jog !== null && i >= plan.jog && i <= plan.jog + JOG_SPAN) {
+      if (i === plan.jog) out.push(track.cells[i]!, innerCell(track, i));
+      else if (i === plan.jog + JOG_SPAN) out.push(innerCell(track, i), track.cells[i]!);
+      else out.push(innerCell(track, i));
+    } else out.push(track.cells[i]!);
+  }
+  return out;
+}
+
+/** Jog positions that keep each straight stretch of the line within the run cap. */
+function jogsFor(from: number, to: number, opts: TrenchOptions): number[] {
+  const out: number[] = [];
+  for (let s = from + 1; s + JOG_SPAN <= to - 1; s++) if (s - from <= opts.maxStraightRun && to - (s + JOG_SPAN) <= opts.maxStraightRun) out.push(s);
+  return out;
+}
+
+/** Every line shape the track allows, in seeded order: full length, or a run from one board edge, each with a seeded jog. */
 function linePlans(net: Network, rng: Rng, track: DeploymentTrack, opts: TrenchOptions): LinePlan[] {
   const n = track.cells.length;
-  const usable = track.cells.map((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0);
-  const freeRun = (from: number, to: number) => usable.slice(from, to + 1).every(Boolean);
+  const fits = (plan: LinePlan) => lineCells(track, plan).every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0);
   const options: { item: LinePlan; weight: number }[] = [];
-  if (n >= opts.minLineCells && freeRun(0, n - 1)) options.push({ item: { variant: "full", from: 0, to: n - 1 }, weight: opts.mode === "deployment-only" ? 1 : 2 });
+  const add = (variant: LinePlan["variant"], from: number, to: number, weight: number) => {
+    // No Man's Land keeps its trenches wholly inside the zones, so its lines stay in the edge column.
+    const jogs = opts.mode === "deployment-only" ? [null] : rng.shuffle(jogsFor(from, to, opts));
+    const plan = jogs.map((jog) => ({ variant, from, to, jog })).find(fits);
+    if (plan) options.push({ item: plan, weight });
+  };
+  if (n >= opts.minLineCells) add("full", 0, n - 1, opts.mode === "deployment-only" ? 1 : 2);
   if (opts.mode === "trench-lines") {
     const each = 2 / Math.max(1, n - opts.minLineCells);
-    for (let k = opts.minLineCells - 1; k <= n - 2; k++) if (freeRun(0, k)) options.push({ item: { variant: "from-low", from: 0, to: k }, weight: each });
-    for (let k = n - opts.minLineCells; k >= 1; k--) if (freeRun(k, n - 1)) options.push({ item: { variant: "from-high", from: k, to: n - 1 }, weight: each });
+    for (let k = opts.minLineCells - 1; k <= n - 2; k++) add("from-low", 0, k, each);
+    for (let k = n - opts.minLineCells; k >= 1; k--) add("from-high", k, n - 1, each);
   }
   return rng.weightedOrder(options);
 }
@@ -200,7 +249,7 @@ function linePlans(net: Network, rng: Rng, track: DeploymentTrack, opts: TrenchO
 function layDeploymentLine(net: Network, rng: Rng, track: DeploymentTrack, opts: TrenchOptions): DeploymentLine | null {
   for (const plan of linePlans(net, rng, track, opts)) {
     const laid = addLine(net, track, plan);
-    if (opts.mode === "deployment-only" || connectLine(net, rng, laid.line, opts.maxCommCells)) return laid.line;
+    if (opts.mode === "deployment-only" || connectLine(net, rng, laid.line, opts.maxCommCells, opts)) return laid.line;
     removeLine(net, laid);
   }
   return null;
@@ -208,9 +257,10 @@ function layDeploymentLine(net: Network, rng: Rng, track: DeploymentTrack, opts:
 
 // ---- the spine ----------------------------------------------------------
 
-function mainPathStep(net: Network, rng: Rng, opts: TrenchOptions, forward: Dir, path: Cell[], lateral: { dir: Dir | null; run: number }, search: Search): boolean {
+function mainPathStep(net: Network, rng: Rng, opts: TrenchOptions, forward: Dir, path: Cell[], lateral: { dir: Dir | null; run: number }, search: Search, straight: { dir: Dir; run: number } = { dir: forward, run: 1 }): boolean {
   const cur = path[path.length - 1]!;
-  if (path.length > 1 && edgeInDir(net.grid, cur.c, cur.r, forward)) return true;
+  // The exit off the far edge is one more forward move.
+  if (path.length > 1 && edgeInDir(net.grid, cur.c, cur.r, forward)) return !(straight.dir === forward && straight.run + 1 > opts.maxStraightRun + 1);
   if (++search.expansions > search.budget) return false;
   const left = rotateDir(forward, -1);
   const right = rotateDir(forward, 1);
@@ -222,6 +272,8 @@ function mainPathStep(net: Network, rng: Rng, opts: TrenchOptions, forward: Dir,
   for (const dir of order) {
     if (path.length === 1 && dir !== forward) continue;
     if (isLateral(dir, forward) && lateral.dir === dir && lateral.run >= opts.maxLateralRun) continue;
+    const nextStraight = { dir, run: dir === straight.dir ? straight.run + 1 : 1 };
+    if (nextStraight.run > opts.maxStraightRun + 1) continue;
     const [dc, dr] = DELTA[dir];
     const c = cur.c + dc;
     const r = cur.r + dr;
@@ -233,7 +285,7 @@ function mainPathStep(net: Network, rng: Rng, opts: TrenchOptions, forward: Dir,
     net.add(c, r);
     path.push({ c, r });
     const nextLateral = isLateral(dir, forward) ? { dir, run: lateral.dir === dir ? lateral.run + 1 : 1 } : { dir: null, run: 0 };
-    if (mainPathStep(net, rng, opts, forward, path, nextLateral, search)) return true;
+    if (mainPathStep(net, rng, opts, forward, path, nextLateral, search, nextStraight)) return true;
     path.pop();
     net.remove(c, r);
     if (search.expansions > search.budget) return false;
@@ -242,21 +294,39 @@ function mainPathStep(net: Network, rng: Rng, opts: TrenchOptions, forward: Dir,
 }
 
 /**
- * On a mirrored board whose mirror line runs along the spine's axis, a spine
- * straight down that line is its own twin and leaves both halves the same
- * room; it is laid when every cell on the line is free.
+ * On a mirrored board whose mirror line runs along the spine's axis, the spine
+ * runs down that line, so both halves keep the same room, with one jog of a
+ * single bay to one side (a trench never runs dead straight; that bay is the
+ * one place the spine is not its own twin). Laid when the cells are free.
  */
-function layMirrorSpine(net: Network, opts: TrenchOptions): Cell[] | null {
+function layMirrorSpine(net: Network, rng: Rng, opts: TrenchOptions): Cell[] | null {
   const g = net.grid;
   const kind = opts.parity?.kind;
   if (!(kind === "mirror-x" && opts.axis === "y" && g.cols % 2 === 1) && !(kind === "mirror-y" && opts.axis === "x" && g.rows % 2 === 1)) return null;
   const forward = forwardDir(opts.axis, opts.fromLowEdge);
   const n = opts.axis === "y" ? g.rows : g.cols;
-  const line = Array.from({ length: n }, (_, i): Cell => (opts.axis === "y" ? { c: (g.cols - 1) / 2, r: i } : { c: i, r: (g.rows - 1) / 2 }));
-  const path = forward === "N" || forward === "E" ? line : [...line].reverse();
-  if (!path.every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) return null;
-  for (const cell of path) net.add(cell.c, cell.r);
-  return path;
+  const centre = ((opts.axis === "y" ? g.cols : g.rows) - 1) / 2;
+  const at = (i: number, off: number): Cell => (opts.axis === "y" ? { c: centre + off, r: i } : { c: i, r: centre + off });
+  const options: Cell[][] = [];
+  for (let s = 1; s + JOG_SPAN <= n - 2; s++) {
+    if (s > opts.maxStraightRun || n - 1 - (s + JOG_SPAN) > opts.maxStraightRun) continue;
+    for (const side of [1, -1]) {
+      const line: Cell[] = [];
+      for (let i = 0; i < n; i++) {
+        if (i === s) line.push(at(i, 0), at(i, side));
+        else if (i === s + JOG_SPAN) line.push(at(i, side), at(i, 0));
+        else line.push(at(i, i > s && i < s + JOG_SPAN ? side : 0));
+      }
+      options.push(line);
+    }
+  }
+  for (const line of rng.shuffle(options)) {
+    if (!line.every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) continue;
+    const path = forward === "N" || forward === "E" ? line : [...line].reverse();
+    for (const cell of path) net.add(cell.c, cell.r);
+    return path;
+  }
+  return null;
 }
 
 function layMainPath(net: Network, rng: Rng, opts: TrenchOptions): Cell[] | null {
@@ -283,57 +353,94 @@ function layMainPath(net: Network, rng: Rng, opts: TrenchOptions): Cell[] | null
 
 // ---- communication trenches ---------------------------------------------
 
+interface PathRules {
+  /** Longest run of straight cells the path may form. */
+  maxStraight: number;
+  /** The path must bend at least once (a jog), so no trench runs dead straight. */
+  needTurn: boolean;
+}
+
 /**
  * Shortest seeded path from the cell beside `junction` (on the `inward` side)
- * to any trench cell outside `ownCells` that can take one more opening. Path
- * cells touch no trench except their predecessor, and the last one touches
- * exactly one target, so no 2x2 block and no fourth opening can form.
+ * to any trench cell outside `ownCells` that can take one more opening, that
+ * keeps every straight run within the cap and, when asked, bends at least
+ * once. Path cells touch no trench except their predecessor and never each
+ * other out of turn; the last one touches exactly one target, so no 2x2 block
+ * and no fourth opening can form.
  */
-function connect(net: Network, rng: Rng, junction: Cell, inward: Dir, ownCells: Set<string>, maxCells: number, isTarget: (t: Cell) => boolean = (t) => net.openingCount(t.c, t.r) === 2): Cell[] | null {
+function connect(net: Network, rng: Rng, junction: Cell, inward: Dir, ownCells: Set<string>, maxCells: number, isTarget: (t: Cell) => boolean = (t) => net.openingCount(t.c, t.r) === 2, rules: PathRules = { maxStraight: 6, needTurn: false }): Cell[] | null {
   if (net.openingCount(junction.c, junction.r) >= 3) return null;
   const [ic, ir] = DELTA[inward];
   const first = { c: junction.c + ic, r: junction.r + ir };
   // Like the spine, these trenches keep off the board edge: a run along it is dead ground.
   if (!net.free(first.c, first.r) || isEdgeCell(net.grid, first.c, first.r)) return null;
-  const targetOf = (c: number, r: number, from: Cell | null): { ok: boolean; joins: boolean } => {
-    const touching = net.trenchNeighbours(c, r).filter((n) => !(from && n.c === from.c && n.r === from.r));
-    if (touching.length === 0) return { ok: true, joins: false };
-    if (touching.length > 1) return { ok: false, joins: false };
-    const t = touching[0]!;
-    if (ownCells.has(cellKey(t.c, t.r))) return { ok: false, joins: false };
-    return { ok: net.openingCount(t.c, t.r) <= 2 && isTarget(t), joins: true };
+  const touching = (c: number, r: number, from: Cell | null) => net.trenchNeighbours(c, r).filter((n) => !(from && n.c === from.c && n.r === from.r));
+  const joinOf = (c: number, r: number, from: Cell | null): { ok: boolean; target: Cell | null } => {
+    const t = touching(c, r, from);
+    if (t.length === 0) return { ok: true, target: null };
+    if (t.length > 1) return { ok: false, target: null };
+    const target = t[0]!;
+    if (ownCells.has(cellKey(target.c, target.r))) return { ok: false, target: null };
+    return { ok: net.openingCount(target.c, target.r) <= 2 && isTarget(target), target };
   };
-  const firstState = targetOf(first.c, first.r, junction);
-  if (!firstState.ok) return null;
-  if (firstState.joins) return [first];
-  const parent = new Map<string, Cell | null>([[cellKey(first.c, first.r), null]]);
-  const depth = new Map<string, number>([[cellKey(first.c, first.r), 1]]);
-  const queue: Cell[] = [first];
+  type State = { cell: Cell; dir: Dir; run: number; turned: boolean; depth: number; parent: State | null };
+  const pathOf = (st: State): Cell[] => {
+    const out: Cell[] = [];
+    for (let at: State | null = st; at; at = at.parent) out.unshift(at.cell);
+    return out;
+  };
+  // Self-avoiding and never alongside itself, so no piece gains an opening the path did not mean.
+  const clean = (path: Cell[]) => {
+    const keys = new Set(path.map((cell) => cellKey(cell.c, cell.r)));
+    if (keys.size !== path.length) return false;
+    for (let i = 0; i < path.length; i++) for (let k = i + 2; k < path.length; k++) if (Math.abs(path[i]!.c - path[k]!.c) + Math.abs(path[i]!.r - path[k]!.r) === 1) return false;
+    return true;
+  };
+  const finish = (st: State, target: Cell): Cell[] | null => {
+    const jd = DIRS.find((d) => st.cell.c + DELTA[d][0] === target.c && st.cell.r + DELTA[d][1] === target.r)!;
+    const run = jd === st.dir ? st.run + 1 : 1;
+    if (run > rules.maxStraight + 1) return null;
+    if (rules.needTurn && !(st.turned || jd !== st.dir)) return null;
+    const path = pathOf(st);
+    return clean(path) ? path : null;
+  };
+  const firstJoin = joinOf(first.c, first.r, junction);
+  if (!firstJoin.ok) return null;
+  const root: State = { cell: first, dir: inward, run: 1, turned: false, depth: 1, parent: null };
+  if (firstJoin.target) return finish(root, firstJoin.target);
+  const seen = new Set<string>([`${first.c},${first.r},${inward},1,0`]);
+  const queue: State[] = [root];
   while (queue.length) {
     const cur = queue.shift()!;
-    const d = depth.get(cellKey(cur.c, cur.r))!;
-    if (d >= maxCells) continue;
+    if (cur.depth >= maxCells) continue;
     for (const dir of rng.shuffle(DIRS)) {
+      if (dir === OPPOSITE[cur.dir]) continue;
+      const run = dir === cur.dir ? cur.run + 1 : 1;
+      if (run > rules.maxStraight + 1) continue;
       const [dc, dr] = DELTA[dir];
-      const next = { c: cur.c + dc, r: cur.r + dr };
-      const key = cellKey(next.c, next.r);
-      if (parent.has(key) || !net.free(next.c, next.r) || isEdgeCell(net.grid, next.c, next.r)) continue;
-      const state = targetOf(next.c, next.r, null);
-      if (!state.ok) continue;
-      parent.set(key, cur);
-      depth.set(key, d + 1);
-      if (state.joins) {
-        const path: Cell[] = [];
-        for (let at: Cell | null = next; at; at = parent.get(cellKey(at.c, at.r)) ?? null) path.unshift(at);
-        return path;
+      const next = { c: cur.cell.c + dc, r: cur.cell.r + dr };
+      if (!net.free(next.c, next.r) || isEdgeCell(net.grid, next.c, next.r)) continue;
+      const turned = cur.turned || dir !== cur.dir;
+      const stateKey = `${next.c},${next.r},${dir},${run},${turned ? 1 : 0}`;
+      if (seen.has(stateKey)) continue;
+      const join = joinOf(next.c, next.r, null);
+      if (!join.ok) continue;
+      seen.add(stateKey);
+      const st: State = { cell: next, dir, run, turned, depth: cur.depth + 1, parent: cur };
+      if (join.target) {
+        const path = finish(st, join.target);
+        if (path) return path;
+        continue;
       }
-      queue.push(next);
+      queue.push(st);
     }
   }
   return null;
 }
 
-function connectLine(net: Network, rng: Rng, line: DeploymentLine, maxCells: number): boolean {
+const pathRules = (opts: TrenchOptions, needTurn = true): PathRules => ({ maxStraight: opts.maxStraightRun, needTurn });
+
+function connectLine(net: Network, rng: Rng, line: DeploymentLine, maxCells: number, opts: TrenchOptions): boolean {
   const inward = OPPOSITE[line.side];
   const own = new Set(line.cells.map((cell) => cellKey(cell.c, cell.r)));
   const junctions =
@@ -341,7 +448,7 @@ function connectLine(net: Network, rng: Rng, line: DeploymentLine, maxCells: num
       ? rng.shuffle(line.cells.slice(1, -1))
       : [line.variant === "from-low" ? line.cells[line.cells.length - 1]! : line.cells[0]!];
   for (const junction of junctions) {
-    const path = connect(net, rng, junction, inward, own, maxCells);
+    const path = connect(net, rng, junction, inward, own, maxCells, undefined, pathRules(opts, false));
     if (!path) continue;
     for (const cell of path) net.add(cell.c, cell.r);
     line.commCells = path;
@@ -361,15 +468,23 @@ const spansEdges = (a: LinePlan, b: LinePlan): boolean => a.variant === "full" |
 const junctionsOf = (line: DeploymentLine): Cell[] =>
   line.variant === "full" ? line.cells.slice(1, -1) : [line.variant === "from-low" ? line.cells[line.cells.length - 1]! : line.cells[0]!];
 
+/** Line cells that can take a communication trench toward the zone's inside: the interior for a full line, the inner end otherwise. */
+const junctionCandidates = (net: Network, line: DeploymentLine): Cell[] => junctionsOf(line).filter((cell) => net.openingCount(cell.c, cell.r) < 3);
+
 function addLine(net: Network, track: DeploymentTrack, plan: LinePlan): { line: DeploymentLine; exits: EdgeOpening[] } {
+  return addCells(net, track, lineCells(track, plan), plan.variant, plan.jog);
+}
+
+/** Lays given line cells (path order from the track's low end) with exits where they reach the track's ends. */
+function addCells(net: Network, track: DeploymentTrack, cells: Cell[], variant: DeploymentLine["variant"], jog: number | null): { line: DeploymentLine; exits: EdgeOpening[] } {
   const n = track.cells.length;
-  const cells = track.cells.slice(plan.from, plan.to + 1);
   for (const cell of cells) net.add(cell.c, cell.r);
   const exits: EdgeOpening[] = [];
-  if (plan.from === 0) exits.push({ ...track.cells[0]!, dir: lowDir(track.along) });
-  if (plan.to === n - 1) exits.push({ ...track.cells[n - 1]!, dir: highDir(track.along) });
+  const at = (i: number) => cells.some((cell) => cell.c === track.cells[i]!.c && cell.r === track.cells[i]!.r);
+  if (variant !== "from-high" && at(0)) exits.push({ ...track.cells[0]!, dir: lowDir(track.along) });
+  if (variant !== "from-low" && at(n - 1)) exits.push({ ...track.cells[n - 1]!, dir: highDir(track.along) });
   net.exits.push(...exits);
-  return { line: { zoneLabel: track.zoneLabel, player: track.player, side: track.side, cells, variant: plan.variant, commCells: [] }, exits };
+  return { line: { zoneLabel: track.zoneLabel, player: track.player, side: track.side, cells, variant, jog, commCells: [] }, exits };
 }
 
 function removeLine(net: Network, laid: { line: DeploymentLine; exits: EdgeOpening[] }): void {
@@ -399,7 +514,7 @@ function layPairedLines(net: Network, rng: Rng, opts: TrenchOptions, lines: Depl
     const width = Math.abs(ta.along === "y" ? ta.cells[0]!.c - tb.cells[0]!.c : ta.cells[0]!.r - tb.cells[0]!.r);
     let cross: Cell[] | null = null;
     for (const junction of rng.shuffle(junctionsOf(la.line)).slice(0, 6)) {
-      cross = connect(net, rng, junction, OPPOSITE[ta.side], own, width + 6, (t) => targets.has(cellKey(t.c, t.r)));
+      cross = connect(net, rng, junction, OPPOSITE[ta.side], own, width + 6, (t) => targets.has(cellKey(t.c, t.r)), pathRules(opts));
       if (cross) break;
     }
     if (!cross) {
@@ -412,7 +527,7 @@ function layPairedLines(net: Network, rng: Rng, opts: TrenchOptions, lines: Depl
     if (rng.chance(0.35)) {
       const second = rng
         .shuffle(la.line.cells.filter((cell) => net.openingCount(cell.c, cell.r) === 2 && !net.exitsAt(cell.c, cell.r).length))
-        .map((junction) => connect(net, rng, junction, OPPOSITE[ta.side], own, width + 2, (t) => lb.line.cells.some((x) => x.c === t.c && x.r === t.r)))
+        .map((junction) => connect(net, rng, junction, OPPOSITE[ta.side], own, width + 2, (t) => lb.line.cells.some((x) => x.c === t.c && x.r === t.r), pathRules(opts)))
         .find((path) => path !== null);
       if (second) {
         for (const cell of second) net.add(cell.c, cell.r);
@@ -429,10 +544,11 @@ const key = (cell: Cell) => cellKey(cell.c, cell.r);
 
 /**
  * Twin deployment lines: line B is line A's image under the parity, so both
- * players get the same length, shape and junctions. A pair of cross trenches,
- * each the other's image, joins them through no man's land; where the pair
- * cannot fit, one cross trench joins the two lines' ends (the cross trench may
- * stay single). A mirror needs full-length lines to reach both board edges.
+ * players get the same length, shape, jog and junctions. Under a mirror the
+ * cross trench is its own image (a meander with jogs at mirrored columns);
+ * under point symmetry a pair of cross trenches, each the other's image, joins
+ * them, or one where the pair cannot fit. A mirror needs full-length lines to
+ * reach both board edges.
  */
 function layTwinLines(net: Network, rng: Rng, opts: TrenchOptions, lines: DeploymentLine[], parity: Parity): number | null {
   const g = net.grid;
@@ -440,20 +556,27 @@ function layTwinLines(net: Network, rng: Rng, opts: TrenchOptions, lines: Deploy
   const [ta, tb] = tracks as [DeploymentTrack, DeploymentTrack];
   const n = tb.cells.length;
   const width = Math.abs(ta.along === "y" ? ta.cells[0]!.c - tb.cells[0]!.c : ta.cells[0]!.r - tb.cells[0]!.r);
+  const indexIn = (track: DeploymentTrack, cell: Cell) => track.cells.findIndex((x) => x.c === cell.c && x.r === cell.r);
   for (const plan of linePlans(net, rng, ta, opts).filter((p) => parity.kind === "point" || p.variant === "full").slice(0, 12)) {
-    const twinIdx = ta.cells.slice(plan.from, plan.to + 1).map((cell) => {
-      const t = mapCell(parity, g, cell);
-      return tb.cells.findIndex((x) => x.c === t.c && x.r === t.r);
-    });
-    if (twinIdx.some((i) => i < 0)) continue;
-    const from = Math.min(...twinIdx);
-    const to = Math.max(...twinIdx);
-    const twinPlan: LinePlan = { variant: from === 0 && to === n - 1 ? "full" : from === 0 ? "from-low" : "from-high", from, to };
-    if (!tb.cells.slice(from, to + 1).every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) continue;
+    const cellsA = lineCells(ta, plan);
+    const mapped = cellsA.map((cell) => mapCell(parity, g, cell));
+    if (!mapped.every((cell) => net.free(cell.c, cell.r) && net.trenchNeighbours(cell.c, cell.r).length === 0)) continue;
+    // B's path runs from its own low end, which is A's high end under a point turn.
+    const onTrack = mapped.map((cell) => indexIn(tb, cell)).filter((i) => i >= 0);
+    const lo = Math.min(...onTrack);
+    const hi = Math.max(...onTrack);
+    const cellsB = indexIn(tb, mapped[0]!) === lo ? mapped : [...mapped].reverse();
+    const variant: DeploymentLine["variant"] = lo === 0 && hi === n - 1 ? "full" : lo === 0 ? "from-low" : "from-high";
+    const jogB = plan.jog === null ? null : Math.min(...[plan.jog, plan.jog + JOG_SPAN].map((i) => indexIn(tb, mapCell(parity, g, ta.cells[i]!))));
     const la = addLine(net, ta, plan);
-    const lb = addLine(net, tb, twinPlan);
-    const cross = layCrossPair(net, rng, la.line, lb.line, ta, parity, width) ?? layCrossSingle(net, rng, la.line, lb.line, ta, width, parity);
-    if (cross) {
+    const lb = addCells(net, tb, cellsB, variant, jogB);
+    let cross = parity.kind === "point" ? (layCrossPair(net, rng, la.line, lb.line, ta, parity, width, opts) ?? layCrossSingle(net, rng, la.line, lb.line, ta, width, opts, parity)) : layMeanderCross(net, rng, la.line, lb.line, ta, parity, false);
+    if (cross === null) {
+      // Where no bend fits between the covers, a straight cross trench still joins the lines; the board says so.
+      cross = parity.kind === "point" ? layCrossSingle(net, rng, la.line, lb.line, ta, width, opts, parity, false) : layMeanderCross(net, rng, la.line, lb.line, ta, parity, true);
+      if (cross !== null) net.straightCross = true;
+    }
+    if (cross !== null) {
       lines.push(la.line, lb.line);
       return cross;
     }
@@ -463,15 +586,105 @@ function layTwinLines(net: Network, rng: Rng, opts: TrenchOptions, lines: Deploy
   return null;
 }
 
+/**
+ * The cross trench under a mirror: from a junction on line A it runs inward,
+ * jogging one cell aside now and then, to the centre column, and on as its own
+ * mirror image to the matching junction on line B. Every candidate (junction,
+ * jog pattern) that fits is weighed, more jogs a little more often, so it
+ * meanders rather than running dead straight; `straight` asks for the one
+ * pattern without a jog instead. Null when none fits.
+ */
+function layMeanderCross(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, parity: Parity, straight: boolean): number | null {
+  const g = net.grid;
+  const inward = OPPOSITE[ta.side];
+  const alongX = inward === "E" || inward === "W";
+  const span = alongX ? g.cols : g.rows;
+  const across = alongX ? g.rows : g.cols;
+  const mid = (span - 1) / 2;
+  if (!Number.isInteger(mid)) return null;
+  // Local coordinates: u steps inward from A's edge, v runs across.
+  const uOf = (cell: Cell) => (alongX ? (inward === "E" ? cell.c : g.cols - 1 - cell.c) : inward === "N" ? cell.r : g.rows - 1 - cell.r);
+  const vOf = (cell: Cell) => (alongX ? cell.r : cell.c);
+  const cellAt = (u: number, v: number): Cell => (alongX ? { c: inward === "E" ? u : g.cols - 1 - u, r: v } : { c: v, r: inward === "N" ? u : g.rows - 1 - u });
+  const lineB = new Set(lb.cells.map(key));
+  const candidates: { item: Cell[]; weight: number }[] = [];
+  for (const j of junctionCandidates(net, la)) {
+    const u0 = uOf(j) + 1;
+    const v0 = vOf(j);
+    if (u0 > mid) continue;
+    const steps = mid - u0; // columns before the centre that may jog
+    const patterns: number[][] = [[]];
+    for (let i = 0; i < steps; i++) patterns.splice(0, patterns.length, ...patterns.flatMap((p) => [0, 1, -1].map((d) => [...p, d])));
+    for (const pattern of patterns) {
+      if (pattern.some((d) => d !== 0) === straight) continue;
+      const half: Cell[] = [];
+      let v = v0;
+      let ok = true;
+      for (let i = 0; i < steps && ok; i++) {
+        const u = u0 + i;
+        half.push(cellAt(u, v));
+        if (pattern[i] !== 0) {
+          v += pattern[i]!;
+          if (v < 1 || v > across - 2) ok = false;
+          half.push(cellAt(u, v));
+        }
+      }
+      if (!ok) continue;
+      const centre = cellAt(mid, v);
+      const path = [...half, centre, ...[...half].reverse().map((cell) => mapCell(parity, g, cell))];
+      const end = mapCell(parity, g, j);
+      if (!lineB.has(key(end))) continue;
+      if (!crossFits(net, path, j, end)) continue;
+      candidates.push({ item: path, weight: 1 + pattern.filter((d) => d !== 0).length });
+    }
+  }
+  const pick = rng.weightedOrder(candidates)[0];
+  if (!pick) return null;
+  for (const cell of pick) net.add(cell.c, cell.r);
+  la.commCells = pick;
+  return pick.length;
+}
+
+/** A cross trench path fits when its cells are free, touch only their path neighbours and its two junctions, and form no 2x2 block. */
+function crossFits(net: Network, path: Cell[], from: Cell, to: Cell): boolean {
+  const keys = new Set(path.map(key));
+  if (keys.size !== path.length) return false;
+  for (let i = 0; i < path.length; i++) {
+    const cell = path[i]!;
+    if (!net.free(cell.c, cell.r) || isEdgeCell(net.grid, cell.c, cell.r)) return false;
+    const allowed = new Set([...(i > 0 ? [key(path[i - 1]!)] : [key(from)]), ...(i < path.length - 1 ? [key(path[i + 1]!)] : [key(to)])]);
+    for (const n of neighbours(net.grid, cell.c, cell.r)) {
+      const k = cellKey(n.c, n.r);
+      if ((net.has(n.c, n.r) || keys.has(k)) && !allowed.has(k)) return false;
+    }
+  }
+  if (Math.abs(path[0]!.c - from.c) + Math.abs(path[0]!.r - from.r) !== 1) return false;
+  const last = path[path.length - 1]!;
+  if (Math.abs(last.c - to.c) + Math.abs(last.r - to.r) !== 1) return false;
+  if (net.openingCount(from.c, from.r) >= 3 || net.openingCount(to.c, to.r) >= 3) return false;
+  const added: Cell[] = [];
+  let ok = true;
+  for (const cell of path) {
+    if (net.makes2x2(cell.c, cell.r)) {
+      ok = false;
+      break;
+    }
+    net.add(cell.c, cell.r);
+    added.push(cell);
+  }
+  for (const cell of added) net.remove(cell.c, cell.r);
+  return ok;
+}
+
 const interior = (net: Network, line: DeploymentLine): Cell[] => line.cells.filter((cell) => net.openingCount(cell.c, cell.r) === 2 && !net.exitsAt(cell.c, cell.r).length);
 
-function layCrossPair(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, parity: Parity, width: number): number | null {
+function layCrossPair(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, parity: Parity, width: number, opts: TrenchOptions): number | null {
   const g = net.grid;
   const own = new Set(la.cells.map(key));
   for (const j of rng.shuffle(junctionsOf(la)).slice(0, 6)) {
     const tj = mapCell(parity, g, j);
     const targets = new Set(interior(net, lb).filter((t) => !(t.c === tj.c && t.r === tj.r)).map(key));
-    const path = connect(net, rng, j, OPPOSITE[ta.side], own, width + 6, (t) => targets.has(key(t)));
+    const path = connect(net, rng, j, OPPOSITE[ta.side], own, width + 6, (t) => targets.has(key(t)), pathRules(opts));
     if (!path) continue;
     for (const cell of path) net.add(cell.c, cell.r);
     const last = path[path.length - 1]!;
@@ -505,27 +718,17 @@ function layCrossPair(net: Network, rng: Rng, la: DeploymentLine, lb: Deployment
   return null;
 }
 
-function layCrossSingle(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, width: number, parity: Parity | null = null): number | null {
+function layCrossSingle(net: Network, rng: Rng, la: DeploymentLine, lb: DeploymentLine, ta: DeploymentTrack, width: number, opts: TrenchOptions, parity: Parity | null = null, needTurn = true): number | null {
   const own = new Set(la.cells.map(key));
   const ends = (line: DeploymentLine) => (line.variant === "full" ? [] : junctionsOf(line));
   const needB = ends(lb);
   const targets = new Set((needB.length ? needB : interior(net, lb)).map(key));
   // Twin lines meet the cross trench at mirrored cells, so their junctions match as their cells do.
   const meets = (j: Cell): Set<string> => (parity && parity.kind !== "none" ? new Set([key(mapCell(parity, net.grid, j))].filter((k) => targets.has(k))) : targets);
-  // A straight run across is its own mirror image, so junctions that have one go first.
-  const [ic, ir] = DELTA[OPPOSITE[ta.side]];
-  const straight = (j: Cell): boolean => {
-    const wanted = meets(j);
-    for (let at = { c: j.c + ic, r: j.r + ir }; inGrid(net.grid, at.c, at.r); at = { c: at.c + ic, r: at.r + ir }) {
-      if (wanted.has(key(at))) return true;
-      if (!net.free(at.c, at.r)) return false;
-    }
-    return false;
-  };
   const junctions = rng.shuffle(junctionsOf(la)).filter((j) => meets(j).size > 0);
-  for (const j of [...junctions.filter(straight), ...junctions.filter((x) => !straight(x))].slice(0, 6)) {
+  for (const j of junctions.slice(0, 8)) {
     const wanted = meets(j);
-    const path = connect(net, rng, j, OPPOSITE[ta.side], own, width + 6, (t) => wanted.has(key(t)));
+    const path = connect(net, rng, j, OPPOSITE[ta.side], own, width + 6, (t) => wanted.has(key(t)), pathRules(opts, needTurn));
     if (!path) continue;
     for (const cell of path) net.add(cell.c, cell.r);
     la.commCells = path;
@@ -538,7 +741,7 @@ function layCrossSingle(net: Network, rng: Rng, la: DeploymentLine, lb: Deployme
 
 type BranchEnd = { kind: "exit"; exit: EdgeOpening } | { kind: "loop" };
 
-function branchStep(net: Network, rng: Rng, opts: TrenchOptions, path: Cell[], lastDir: Dir, search: Search): BranchEnd | null {
+function branchStep(net: Network, rng: Rng, opts: TrenchOptions, path: Cell[], lastDir: Dir, search: Search, run = 1): BranchEnd | null {
   const cur = path[path.length - 1]!;
   if (path.length >= opts.branchMaxLen) return null;
   if (++search.expansions > search.budget) return null;
@@ -548,6 +751,8 @@ function branchStep(net: Network, rng: Rng, opts: TrenchOptions, path: Cell[], l
     { item: rotateDir(lastDir, 1), weight: 0.25 },
   ]);
   for (const dir of order) {
+    const nextRun = dir === lastDir ? run + 1 : 1;
+    if (nextRun > opts.maxStraightRun + 1) continue;
     const [dc, dr] = DELTA[dir];
     const c = cur.c + dc;
     const r = cur.r + dr;
@@ -566,7 +771,7 @@ function branchStep(net: Network, rng: Rng, opts: TrenchOptions, path: Cell[], l
       }
       net.add(c, r);
       path.push({ c, r });
-      const end = branchStep(net, rng, opts, path, dir, search);
+      const end = branchStep(net, rng, opts, path, dir, search, nextRun);
       if (end) return end;
       path.pop();
       net.remove(c, r);
@@ -624,7 +829,7 @@ export function layTrenchNetwork(grid: Grid, blocked: Mask, rng: Rng, opts: Tren
   let mainPathLength = 0;
   const paired = opts.mode === "trench-lines" && opposedTracks(opts.tracks);
   if (opts.mode === "trench-lines" && !paired) {
-    const path = layMirrorSpine(net, opts) ?? layMainPath(net, rng, opts);
+    const path = layMirrorSpine(net, rng, opts) ?? layMainPath(net, rng, opts);
     if (!path) return null;
     const forward = forwardDir(opts.axis, opts.fromLowEdge);
     const first = path[0]!;
@@ -681,7 +886,8 @@ export function layTrenchNetwork(grid: Grid, blocked: Mask, rng: Rng, opts: Tren
       return { c: cell.c, r: cell.r, openings };
     });
   const axis = opts.tracks[0]?.along ?? opts.axis;
-  return { axis, mode: opts.mode, cells, start, end, exits: [...net.exits], mainPathLength, branches, loops, deploymentLines: lines, warnings };
+  if (net.straightCross) warnings.push("the cross trench runs straight: no jog fits between the covers");
+  return { axis, mode: opts.mode, cells, start, end, exits: [...net.exits], mainPathLength, branches, loops, deploymentLines: lines, straightCross: net.straightCross, warnings };
 }
 
 /**
