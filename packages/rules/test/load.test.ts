@@ -95,7 +95,7 @@ describe("loadRulesData", () => {
   });
 
   it("loads the TTS model map alongside the rules data", () => {
-    expect(data().models?.byUnitId.size).toBe(92);
+    expect(data().models?.byUnitId.size).toBe(120);
   });
 
   it("RulesDataError names the file and carries the issues", () => {
@@ -108,7 +108,7 @@ describe("loadRulesData", () => {
 describe("loadModelMap", () => {
   it("resolves each unit's chosen default by modId + guid + nickname and skips unmapped units and fireteam wrappers", () => {
     const map = loadModelMap(repoRoot);
-    expect(map.byUnitId.size).toBe(92);
+    expect(map.byUnitId.size).toBe(120);
     const lieutenant = map.byUnitId.get("new-antioch/lieutenant")!;
     expect(lieutenant).toMatchObject({ modId: "3700111403", guid: "15e05f", nickname: "Lieutenant" });
     expect(lieutenant.parts).toHaveLength(1);
@@ -121,3 +121,16 @@ describe("loadModelMap", () => {
     expect(() => loadModelMap(resolve(repoRoot, "packages"))).toThrow();
   });
 });
+
+describe("model map covers the rules data", () => {
+  // A unit without a default model imports as a bare base. These ten have no model
+  // in the cached mods (data/tts/MODELS-COVERAGE.md); anything else unmapped means the
+  // map is stale against units.json, which is how a whole subfaction once spawned bare.
+  const KNOWN_WITHOUT_MODEL = new Set(["black-grail/cradle-thrall", "iron-sultanate/archeologist", "iron-sultanate/bedu-sharpshooter", "iron-sultanate/disciple-of-st-roch", "iron-sultanate/pairika", "iron-sultanate/shirdal", "iron-sultanate/tegmen", "iron-sultanate/zamburak-weapon-platform", "new-antioch/disciple-of-st-roch", "trench-pilgrims/disciple-of-st-roch"]);
+  it("maps every unit except the known ones without a model", () => {
+    const d = data();
+    const missing = d.units.filter((u) => !d.models?.byUnitId.has(u.id) && !KNOWN_WITHOUT_MODEL.has(u.id)).map((u) => u.id);
+    expect(missing).toEqual([]);
+  });
+});
+
