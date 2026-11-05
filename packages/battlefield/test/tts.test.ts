@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateBattlefield, layoutToObjectStates, pieceById, pieceToObjectState, resolvePalette, rotatedFootprint, rotateOffset, TERRAIN_TAG, terrainName, terrainOf, terrainReminder, type Catalog, type Layout, type TtsObjectState } from "../src/index.js";
+import { generateBattlefield, layoutToObjectStates, objectiveMarkers, OBJECTIVE_CONTROL_IN, OBJECTIVE_MARKER_IN, turnedRect, pieceById, pieceToObjectState, resolvePalette, rotatedFootprint, rotateOffset, TERRAIN_TAG, terrainName, terrainOf, terrainReminder, type Catalog, type Layout, type TtsObjectState } from "../src/index.js";
 import { fixtureCatalog, fixtureEnv } from "./fixtures.js";
 
 const env = fixtureEnv();
@@ -174,5 +174,48 @@ describe("layoutToObjectStates", () => {
     const bare = emitter({ ...catalog, assets: catalog.assets.map(({ spawn: _spawn, ...a }) => a) });
     expect(bare("crates-group").CustomMesh).toMatchObject({ MaterialIndex: 0, TypeIndex: 0, Convex: true });
     expect(bare("ruins-medium-b").CustomAssetbundle).toMatchObject({ MaterialIndex: 0, TypeIndex: 0 });
+  });
+});
+
+describe("objectiveMarkers", () => {
+  const withObjectives = boards.filter((l) => l.objectives.length);
+  it("gives every scenario objective one marker on the board, in the same world frame as the terrain", () => {
+    expect(withObjectives.length).toBeGreaterThan(0);
+    for (const l of withObjectives) {
+      const markers = objectiveMarkers(l, palette, catalog, { matTopY: MAT_TOP, matCenter: [0, 0] });
+      expect(markers.map((m) => m.id)).toEqual(l.objectives.map((o) => o.id));
+      for (const [i, m] of markers.entries()) {
+        const o = l.objectives[i]!;
+        expect(m.posX).toBeCloseTo(o.position[0] - l.boardIn / 2, 3);
+        expect(m.posZ).toBeCloseTo(o.position[1] - l.boardIn / 2, 3);
+        expect(Math.abs(m.posX) <= l.boardIn / 2 && Math.abs(m.posZ) <= l.boardIn / 2).toBe(true);
+      }
+      const shifted = objectiveMarkers(l, palette, catalog, { matTopY: MAT_TOP, matCenter: [5, -3] });
+      expect(shifted[0]!.posX - markers[0]!.posX).toBeCloseTo(5, 3);
+      expect(shifted[0]!.posZ - markers[0]!.posZ).toBeCloseTo(-3, 3);
+    }
+  });
+
+  it("rings an open objective 1in beyond its 40mm marker and a covered one 1in beyond every corner of its piece", () => {
+    let covered = 0;
+    for (const l of withObjectives) {
+      const resolved = resolvePalette(palette, catalog);
+      for (const [i, m] of objectiveMarkers(l, palette, catalog).entries()) {
+        const o = l.objectives[i]!;
+        if (!o.coverPieceId) {
+          expect(m.ringIn).toBeCloseTo(OBJECTIVE_MARKER_IN / 2 + OBJECTIVE_CONTROL_IN, 3);
+          continue;
+        }
+        covered++;
+        const piece = l.pieces.find((p) => p.id === o.coverPieceId)!;
+        const r = turnedRect(piece.position[0], piece.position[1], resolved.byId.get(piece.paletteId)!, piece.rotY, sense);
+        const corners = r.poly ?? [[r.x0, r.y0], [r.x1, r.y0], [r.x1, r.y1], [r.x0, r.y1]];
+        const far = Math.max(...corners.map(([x, y]) => Math.hypot(x - o.position[0], y - o.position[1])));
+        expect(m.ringIn).toBeGreaterThanOrEqual(far + OBJECTIVE_CONTROL_IN - 0.001);
+        expect(m.ringIn).toBeLessThanOrEqual(far + OBJECTIVE_CONTROL_IN + 0.001);
+        expect(m.ringIn).toBeGreaterThan(OBJECTIVE_MARKER_IN / 2 + OBJECTIVE_CONTROL_IN);
+      }
+    }
+    expect(covered).toBeGreaterThan(0);
   });
 });

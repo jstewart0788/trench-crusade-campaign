@@ -565,3 +565,40 @@ in the XML, so both were edited: `phases` is now Initiative / Activation / Moral
 die / crossed swords / skull with tooltips, and the panel widths drop by the two removed
 buttons (1280 -> 1200, 1224 -> 1144 in the XML for Red, Blue and Grey, and in
 `HUD_FULL`).
+
+### Objective markers (TC-023u)
+
+The content of both Objective bags (`a18feb` in Red `70d18f`, `8f0c3a` in Blue `2d4b7e`;
+Scripted Table `ba7eaf`, a `Custom_Assetbundle` at scale 0.8, tag `tc-token:objective`)
+now carries `mod/scripts/a18feb.lua` (identical copy in `8f0c3a.lua`), so every marker drawn
+from a bag runs it:
+
+- **No physics.** On load (and again once the asset finishes loading) it locks itself,
+  turns gravity off and sets every Box / Mesh / Sphere / Capsule collider in it and its
+  children to a trigger (mesh colliders made convex first, as Unity requires). A trigger
+  blocks nothing and nothing rests on it, but the cursor still hits it, so it can be hovered,
+  right-clicked and deleted. This is the recipe LCT's objective manager used for its markers
+  (removed in TC-023s); the TTS docs list `Component.set(name, value)` but not the collider
+  vars, so the var names come from that working code, not the docs.
+- **Spot and bubble.** Two object vector lines: a 40mm circle (the rulebook's largest Marker,
+  p146) and a control ring 1" beyond it (control is "on, in, or within 1"", p152 / p154 /
+  p193; scoring "within 1"", p156). Vector lines have no collider, so models pass through
+  the ring. They are drawn in the object's local space with the dice tray's measuring-bubble
+  recipe (points / scale, rotation {270, 0, 0}); the docs do not state the space, the
+  bubbles prove it live.
+- **Seated, not resting.** It sets its height from a downward `Physics.cast`, onto the
+  highest `tc-terrain` piece or the mat under it, never onto a model or another marker.
+- **Deliberate move / delete.** Right-click > **Move objective** unlocks it for one drag; on
+  drop it seats and relocks. Right-click > **Delete objective** (or Delete) removes it.
+- **Save / load.** The ring radius is the only state (`onSave`); everything else is
+  re-applied in `onLoad`.
+
+Generator side: `objectiveMarkers(layout, palette, catalog, opts)` in
+`packages/battlefield/src/tts.ts` returns, per scenario objective, its world x / z (same
+frame as the terrain states) and `ringIn`: 1" beyond the 40mm marker, or for an objective
+whose `coverPieceId` names a terrain piece, 1" beyond the farthest corner of that piece's
+turned footprint, because the whole piece is the Objective (p152). That ring is a circle
+enclosing the true 1" band around a rectangular piece, so it reads generous at the piece's
+sides. **TC-022 needs to:** for each spec, `takeObject({position = {posX, high, posZ}})`
+from an Objective bag, then `call("setRingRadius", {ringIn = spec.ringIn})` on it; the marker
+seats itself.

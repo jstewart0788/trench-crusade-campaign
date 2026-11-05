@@ -308,6 +308,19 @@ Offline first: `pnpm mod:test`.
 - The two loose d6 now sit on the trays at (±9.7, ±30.4).
 - Stopwatch: the HUD clocks start, pause and switch per side on their own.
 
+## 12. Objective markers (TC-023u)
+
+- Draw an Objective from either bag onto open ground: it sits on the mat with a green 40mm
+  circle and a white ring of about 1.8" radius. Push a model through it and across
+  the ring: nothing moves, the model does not ride up. Drop a model on it: the model lands on
+  the mat. Hover shows its tooltip; right-click shows **Move objective** / **Delete
+  objective**.
+- Drop one onto a generated ruin: Move objective, drag over the ruin, let go - it seats on
+  the ruin's top (or the highest `tc-terrain` surface under it) and relocks. Delete removes it.
+- Save and reload: the markers stay put, still pass-through, rings drawn.
+- If the Scripted Table asset reads as a tall object rather than a spot, its look can change
+  without touching the script: rescale or swap the content object of `70d18f` / `2d4b7e`.
+
 ## Reporting
 
 Record every error line and every item above that did not behave, with the object GUID

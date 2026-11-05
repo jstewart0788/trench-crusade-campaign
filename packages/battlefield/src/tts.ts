@@ -1,5 +1,5 @@
 import type { Layout, LayoutPiece } from "./layout.js";
-import { PaletteError, resolvePalette, rotateVector, type Catalog, type CatalogAsset, type Palette, type ResolvedPalette } from "./palette.js";
+import { PaletteError, resolvePalette, rotateVector, turnedRect, type Catalog, type CatalogAsset, type Palette, type ResolvedPalette } from "./palette.js";
 import { terrainName, terrainOf, terrainReminder } from "./terrain.js";
 
 // Turns a layout into the object-state tables spawnObjectData accepts, the
@@ -110,4 +110,46 @@ export function layoutToObjectStates(layout: Layout, palette: Palette, catalog: 
   const resolved = resolvePalette(palette, catalog);
   const ordered = [...layout.pieces].sort((a, b) => a.zOrder - b.zOrder);
   return ordered.map((piece) => pieceToObjectState(piece, layout, resolved, opts));
+}
+
+/** Markers are up to 40mm across (rulebook p146). */
+export const OBJECTIVE_MARKER_IN = 40 / 25.4;
+/** A player controls an Objective with models on, in or within 1" of it (p152). */
+export const OBJECTIVE_CONTROL_IN = 1;
+
+/** Where the mod sets up an objective marker (world x/z; it seats itself on the surface) and the radius of its control ring. */
+export interface ObjectiveMarkerSpec {
+  id: string;
+  label: string;
+  posX: number;
+  posZ: number;
+  ringIn: number;
+}
+
+/**
+ * One marker per scenario objective. A covered objective's whole terrain piece is the
+ * Objective (p152), so its ring reaches 1" beyond the farthest corner of that piece.
+ */
+export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Catalog, options: Partial<TtsEmitOptions> = {}): ObjectiveMarkerSpec[] {
+  const opts = { ...DEFAULT_TTS_OPTIONS, ...options };
+  const resolved = resolvePalette(palette, catalog);
+  const half = layout.boardIn / 2;
+  return layout.objectives.map((o) => {
+    let reach = OBJECTIVE_MARKER_IN / 2;
+    const cover = o.coverPieceId ? layout.pieces.find((p) => p.id === o.coverPieceId) : undefined;
+    if (cover) {
+      const entry = resolved.byId.get(cover.paletteId);
+      if (!entry) throw new PaletteError(`objective ${o.id} cover ${cover.id} uses unknown palette piece ${cover.paletteId}`);
+      const r = turnedRect(cover.position[0], cover.position[1], entry, cover.rotY, resolved.rotation.rotYSense);
+      const corners = r.poly ?? [[r.x0, r.y0], [r.x1, r.y0], [r.x1, r.y1], [r.x0, r.y1]];
+      for (const [x, y] of corners) reach = Math.max(reach, Math.hypot(x - o.position[0], y - o.position[1]));
+    }
+    return {
+      id: o.id,
+      label: o.label,
+      posX: round(opts.matCenter[0] + (o.position[0] - half)),
+      posZ: round(opts.matCenter[1] + (o.position[1] - half)),
+      ringIn: round(reach + OBJECTIVE_CONTROL_IN),
+    };
+  });
 }
