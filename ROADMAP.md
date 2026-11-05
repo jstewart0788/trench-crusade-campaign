@@ -155,6 +155,13 @@ TC-020 palette measured live (footprint, pivot, rest height, trench connectors) 
 (pure TS, seeded, plan-view preview) · TC-022 spawner (editor-API push for review; Battle code in the
 mod for play) · TC-023 Battle code (scenario + archetype + two warbands) · TC-024 ten-board review loop
 with screenshots against Square Off / Urban Brawl / Armoured Train.
+
+**First live board 2026-11-04 (seed 7, Claim No Man's Land):** connected network, solid ground after a
+live-measured pivot fix; rotation sense verified. Jonathan's review → TC-021b: trench lines inside both
+deployment zones joined to the centre network; a third height layer (raised plateaus of stacked
+landscape tiles with ramps, hills, outpost towers, ruins with upper floors) derived from how the
+reference maps stack pieces; more upright dressing; ruined buildings on objectives; nothing past the
+board edge.
 - Trench Lines archetype. Scenario overlays for Claim No Man's Land, Trench Warfare, Relic
   Hunt, Supply Raid (the one-off staples). 3–4 templates.
 - Generator → TTS object JSON → mod spawns from `/api/tts/battle/{code}`; for one-offs the
