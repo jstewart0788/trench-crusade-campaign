@@ -192,7 +192,7 @@ asset overlap at identical scale between TC:Map and the reference mods, so no gl
 
 **Phase 1 progress 2026-11-04:** TC-012 ✅ export contract + TTS description renderer (fixture in
 `mod/fixtures/`) · TC-013 ✅ LCT fork stripped to 2.9 MB with unpack/pack tooling (`pnpm mod:build`,
-`pnpm mod:install`; loaded in TTS and signed off by Jonathan 2026-11-04) · TC-016 ✅ in-mod importer (offline Lua tests; in-TTS import not yet exercised) · TC-015 ✅ model map, 92/102
+`pnpm mod:install`; loaded in TTS and signed off by Jonathan 2026-11-04) · TC-016 ✅ in-mod importer, rebuilt on 3D widgets after Jonathan's first TTS look (unresponsive XML fields, grainy, wrong facing); in-TTS import still to be exercised · TC-014 ✅ rules shelf (6 PDFs), TC dice rollers, Points/Turn/Glory counters, HUD phases Initiative/Activation/Morale · TC-017 ✅ 12 token bags (Blood, Blessing, Activated, Down, Tough, Objective ×2 sides) + Turn Tracker; build 1.2 MB. Still to do in Phase 1: TC-010b, TC-011, TC-018 playtest. · TC-015 ✅ model map, 92/102
 units, defaults only · TC-003b ✅ (744 unavailable rows dropped, overrides 174 → 163; one PDF
 disagreement left: Death Commando Binoculars missing upstream). Next: TC-014, TC-016, TC-017, TC-010.
 
