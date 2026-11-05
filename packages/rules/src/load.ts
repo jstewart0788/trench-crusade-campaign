@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "zod";
 import {
@@ -87,6 +87,64 @@ export interface ThresholdRow {
   fieldStrength: number;
 }
 
+// TTS model map (data/tts/models.json, written by scripts/map_tts_models.py).
+// A unit's chosen candidate is only a default: players bind their own models
+// in the mod (ROADMAP TC-016), so a unit without one is not an error. The
+// top-level mesh of a candidate is the base; the figure is in `parts`.
+
+const Vec3 = z.tuple([z.number(), z.number(), z.number()]);
+export type Vec3 = z.infer<typeof Vec3>;
+
+export const ModelPart = z
+  .object({
+    kind: z.enum(["Custom_Model", "Custom_Assetbundle"]),
+    guid: z.string(),
+    nickname: z.string(),
+    meshUrl: z.string().nullable().optional(),
+    diffuseUrl: z.string().nullable().optional(),
+    colliderUrl: z.string().nullable().optional(),
+    assetBundleUrl: z.string().nullable().optional(),
+    position: Vec3,
+    rotation: Vec3,
+    scale: Vec3,
+  })
+  .passthrough();
+export type ModelPart = z.infer<typeof ModelPart>;
+
+export const ModelCandidate = z
+  .object({
+    modId: z.string(),
+    guid: z.string(),
+    nickname: z.string(),
+    meshUrl: z.string(),
+    diffuseUrl: z.string().nullable(),
+    colliderUrl: z.string().nullable(),
+    rotation: Vec3,
+    scale: Vec3,
+    parts: z.array(ModelPart),
+  })
+  .passthrough();
+export type ModelCandidate = z.infer<typeof ModelCandidate>;
+
+const ModelUnit = z
+  .object({
+    kind: z.enum(["model", "fireteam"]),
+    candidates: z.array(ModelCandidate),
+    chosen: z.string().nullable().optional(),
+    chosenModId: z.string().optional(),
+    chosenNickname: z.string().optional(),
+  })
+  .passthrough();
+
+export const ModelMapFile = z.object({ $schema: z.literal("tc-tts-models-v1"), units: z.record(ModelUnit) }).passthrough();
+
+export const MODEL_MAP_FILE = "data/tts/models.json";
+
+export interface ModelMap {
+  /** The chosen default candidate per unit id; unmapped units and fireteam wrappers are absent. */
+  byUnitId: Map<string, ModelCandidate>;
+}
+
 export interface RulesData {
   factions: RosterFaction[];
   units: RosterUnit[];
@@ -100,6 +158,8 @@ export interface RulesData {
   equipmentById: Map<string, EquipmentItem>;
   variantsById: Map<string, { factionId: string; id: string; name: string }>;
   thresholdTable: ThresholdRow[];
+  /** Present when data/tts/models.json exists under rootDir. */
+  models?: ModelMap;
 }
 
 export class RulesDataError extends Error {
@@ -170,7 +230,24 @@ export function loadRulesData(rootDir: string): RulesData {
     equipmentById: new Map(equipment.map((e) => [e.id, e])),
     variantsById,
     thresholdTable: [...table.data].sort((a, b) => a.game - b.game),
+    models: existsSync(resolve(rootDir, MODEL_MAP_FILE)) ? loadModelMap(rootDir) : undefined,
   };
+}
+
+/**
+ * GUIDs repeat inside a TTS save, so a unit's chosen model is addressed by
+ * modId + guid + nickname (see data/tts/MODELS-COVERAGE.md).
+ */
+export function loadModelMap(rootDir: string): ModelMap {
+  const file = readJson(rootDir, MODEL_MAP_FILE, ModelMapFile);
+  const byUnitId = new Map<string, ModelCandidate>();
+  for (const [unitId, unit] of Object.entries(file.units)) {
+    if (unit.chosen === null || unit.chosen === undefined) continue;
+    const chosen = unit.candidates.find((c) => c.guid === unit.chosen && c.modId === unit.chosenModId && c.nickname === unit.chosenNickname);
+    if (!chosen) throw new RulesDataError(MODEL_MAP_FILE, [`units.${unitId}: chosen ${unit.chosen} is not among its candidates`]);
+    byUnitId.set(unitId, chosen);
+  }
+  return { byUnitId };
 }
 
 /**

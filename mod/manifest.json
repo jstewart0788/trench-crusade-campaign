@@ -15856,6 +15856,18 @@
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0
+    },
+    {
+      "key": "b91983",
+      "guid": "b91983",
+      "nickname": "Warband Importer",
+      "name": "Custom_Tile",
+      "path": [],
+      "via": "top",
+      "lua_bytes": 17742,
+      "xml_bytes": 8408,
+      "state_bytes": 79,
+      "nested": 0
     }
   ]
 }

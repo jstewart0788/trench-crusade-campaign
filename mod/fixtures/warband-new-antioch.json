@@ -117,7 +117,49 @@
       "upgrades": [],
       "skills": [],
       "injuries": [],
-      "notes": null
+      "notes": null,
+      "model": {
+        "source": "default",
+        "modId": "3700111403",
+        "guid": "15e05f",
+        "nickname": "Lieutenant",
+        "base": {
+          "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685510/A59749C4A41CBE16BBAE3BD69B441EBEC20180CA/",
+          "diffuseUrl": null,
+          "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685510/A59749C4A41CBE16BBAE3BD69B441EBEC20180CA/",
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "parts": [
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/17755182930768080243/457BE3AF70006B2992F9D08E88D2B8CB1835F061/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/10106203973473022068/D165CBFF401D093C144B7332BF031454B2443A7D/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2285075815268697056/AACEE19582EB4493BED3A3B88D5EBCB246D14361/",
+            "assetBundleUrl": null,
+            "position": [
+              0,
+              0.1274,
+              0
+            ],
+            "rotation": [
+              -0.0005,
+              15.0059,
+              -0.0003
+            ],
+            "scale": [
+              1,
+              1.05,
+              1
+            ]
+          }
+        ]
+      },
+      "ttsDescription": "[d9b352][b]Lieutenant[/b][-]\n[b]Mov[/b] 6\"/Infantry  [b]Rng[/b] +2  [b]Mel[/b] +2  [b]Arm[/b] -1  [b]Base[/b] 32mm\n[i]Elite, Leader, New Antioch, Tough[/i]\nSword/Axe (Melee) CRITICAL\nPistol (12\"/Melee) PISTOL\nStandard Armour -1 INJURY MODIFIER\n[b]Abilities:[/b] Hold Your Fire!, Tough, Leader",
+      "ttsGmNotes": "Lieutenant\nMov 6\"/Infantry | Rng +2 | Mel +2 | Arm -1 | Base 32mm\nArmour: 0 base, Standard Armour -1\nKeywords: Elite, Leader, New Antioch, Tough\n\nEquipment\nSword/Axe (Melee) CRITICAL\nPistol (12\"/Melee) PISTOL\nStandard Armour -1 INJURY MODIFIER\n\nAbilities\nHold Your Fire!: ACTION: The Lieutenant orders their warband to stop shooting, forcing the enemy to move first. To represent this, a Lieutenant can take a Hold Your Fire! ACTION. If they do so, pick 1 enemy model that is in the Lieutenant’s Line of Sight and that the opponent is allowed to Activate. The Lieutenant’s Activation then ends, and the opponent must Activate the model you picked.\nTough: The first time a model with this Keyword suffers an Out of Action result on the Injury Table, it is treated as a Down result instead.\nLeader: Add +1 DICE to Morale Checks if your Warband has at least 1 model with this Keyword on the battlefield that is not Down or Out of Action."
     },
     {
       "id": "m2",
@@ -178,7 +220,71 @@
       "upgrades": [],
       "skills": [],
       "injuries": [],
-      "notes": null
+      "notes": null,
+      "model": {
+        "source": "default",
+        "modId": "3700111403",
+        "guid": "07f0a2",
+        "nickname": "Yeoman",
+        "base": {
+          "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "diffuseUrl": null,
+          "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "parts": [
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683064/26BE70092A75A7A8D8D420B4AE2E23BE9BC1CF20/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909682652/92A1987B3A1FB8EE6B2B0EB3CC12ACBA64C84DF9/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683189/D852F9B3F75BFD33F353E7EC8B23FD7AF9AF2BF0/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1274,
+              0
+            ],
+            "rotation": [
+              0.0007,
+              0.004,
+              -0.0006
+            ],
+            "scale": [
+              1,
+              0.5,
+              1
+            ]
+          },
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/16863089227062088030/6BE1C41C7DC9DF7BF0E425105BB088E46C9C38F6/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/11732331023504769540/E639564A6F75D81C1469BBE07B49D134573D9C92/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2285075815268697056/AACEE19582EB4493BED3A3B88D5EBCB246D14361/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1522,
+              0
+            ],
+            "rotation": [
+              0.0005,
+              0.001,
+              -0.0002
+            ],
+            "scale": [
+              0.925,
+              0.925,
+              0.925
+            ]
+          }
+        ]
+      },
+      "ttsDescription": "[d9b352][b]Yeoman[/b][-]\n[b]Mov[/b] 6\"/Infantry  [b]Rng[/b] +0  [b]Mel[/b] +0  [b]Arm[/b] 0  [b]Base[/b] 25mm\n[i]New Antioch, Troop[/i]\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME",
+      "ttsGmNotes": "Yeoman\nMov 6\"/Infantry | Rng +0 | Mel +0 | Arm 0 | Base 25mm\nKeywords: New Antioch, Troop\n\nEquipment\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME"
     },
     {
       "id": "m3",
@@ -239,7 +345,71 @@
       "upgrades": [],
       "skills": [],
       "injuries": [],
-      "notes": null
+      "notes": null,
+      "model": {
+        "source": "default",
+        "modId": "3700111403",
+        "guid": "07f0a2",
+        "nickname": "Yeoman",
+        "base": {
+          "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "diffuseUrl": null,
+          "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "parts": [
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683064/26BE70092A75A7A8D8D420B4AE2E23BE9BC1CF20/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909682652/92A1987B3A1FB8EE6B2B0EB3CC12ACBA64C84DF9/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683189/D852F9B3F75BFD33F353E7EC8B23FD7AF9AF2BF0/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1274,
+              0
+            ],
+            "rotation": [
+              0.0007,
+              0.004,
+              -0.0006
+            ],
+            "scale": [
+              1,
+              0.5,
+              1
+            ]
+          },
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/16863089227062088030/6BE1C41C7DC9DF7BF0E425105BB088E46C9C38F6/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/11732331023504769540/E639564A6F75D81C1469BBE07B49D134573D9C92/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2285075815268697056/AACEE19582EB4493BED3A3B88D5EBCB246D14361/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1522,
+              0
+            ],
+            "rotation": [
+              0.0005,
+              0.001,
+              -0.0002
+            ],
+            "scale": [
+              0.925,
+              0.925,
+              0.925
+            ]
+          }
+        ]
+      },
+      "ttsDescription": "[d9b352][b]Yeoman[/b][-]\n[b]Mov[/b] 6\"/Infantry  [b]Rng[/b] +0  [b]Mel[/b] +0  [b]Arm[/b] 0  [b]Base[/b] 25mm\n[i]New Antioch, Troop[/i]\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME",
+      "ttsGmNotes": "Yeoman\nMov 6\"/Infantry | Rng +0 | Mel +0 | Arm 0 | Base 25mm\nKeywords: New Antioch, Troop\n\nEquipment\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME"
     },
     {
       "id": "m4",
@@ -300,7 +470,71 @@
       "upgrades": [],
       "skills": [],
       "injuries": [],
-      "notes": null
+      "notes": null,
+      "model": {
+        "source": "default",
+        "modId": "3700111403",
+        "guid": "07f0a2",
+        "nickname": "Yeoman",
+        "base": {
+          "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "diffuseUrl": null,
+          "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "parts": [
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683064/26BE70092A75A7A8D8D420B4AE2E23BE9BC1CF20/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909682652/92A1987B3A1FB8EE6B2B0EB3CC12ACBA64C84DF9/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683189/D852F9B3F75BFD33F353E7EC8B23FD7AF9AF2BF0/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1274,
+              0
+            ],
+            "rotation": [
+              0.0007,
+              0.004,
+              -0.0006
+            ],
+            "scale": [
+              1,
+              0.5,
+              1
+            ]
+          },
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/16863089227062088030/6BE1C41C7DC9DF7BF0E425105BB088E46C9C38F6/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/11732331023504769540/E639564A6F75D81C1469BBE07B49D134573D9C92/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2285075815268697056/AACEE19582EB4493BED3A3B88D5EBCB246D14361/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1522,
+              0
+            ],
+            "rotation": [
+              0.0005,
+              0.001,
+              -0.0002
+            ],
+            "scale": [
+              0.925,
+              0.925,
+              0.925
+            ]
+          }
+        ]
+      },
+      "ttsDescription": "[d9b352][b]Yeoman[/b][-]\n[b]Mov[/b] 6\"/Infantry  [b]Rng[/b] +0  [b]Mel[/b] +0  [b]Arm[/b] 0  [b]Base[/b] 25mm\n[i]New Antioch, Troop[/i]\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME",
+      "ttsGmNotes": "Yeoman\nMov 6\"/Infantry | Rng +0 | Mel +0 | Arm 0 | Base 25mm\nKeywords: New Antioch, Troop\n\nEquipment\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME"
     },
     {
       "id": "m5",
@@ -361,7 +595,71 @@
       "upgrades": [],
       "skills": [],
       "injuries": [],
-      "notes": null
+      "notes": null,
+      "model": {
+        "source": "default",
+        "modId": "3700111403",
+        "guid": "07f0a2",
+        "nickname": "Yeoman",
+        "base": {
+          "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "diffuseUrl": null,
+          "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "parts": [
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683064/26BE70092A75A7A8D8D420B4AE2E23BE9BC1CF20/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909682652/92A1987B3A1FB8EE6B2B0EB3CC12ACBA64C84DF9/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2283952543909683189/D852F9B3F75BFD33F353E7EC8B23FD7AF9AF2BF0/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1274,
+              0
+            ],
+            "rotation": [
+              0.0007,
+              0.004,
+              -0.0006
+            ],
+            "scale": [
+              1,
+              0.5,
+              1
+            ]
+          },
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/16863089227062088030/6BE1C41C7DC9DF7BF0E425105BB088E46C9C38F6/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/11732331023504769540/E639564A6F75D81C1469BBE07B49D134573D9C92/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2285075815268697056/AACEE19582EB4493BED3A3B88D5EBCB246D14361/",
+            "assetBundleUrl": null,
+            "position": [
+              0.0002,
+              0.1522,
+              0
+            ],
+            "rotation": [
+              0.0005,
+              0.001,
+              -0.0002
+            ],
+            "scale": [
+              0.925,
+              0.925,
+              0.925
+            ]
+          }
+        ]
+      },
+      "ttsDescription": "[d9b352][b]Yeoman[/b][-]\n[b]Mov[/b] 6\"/Infantry  [b]Rng[/b] +0  [b]Mel[/b] +0  [b]Arm[/b] 0  [b]Base[/b] 25mm\n[i]New Antioch, Troop[/i]\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME",
+      "ttsGmNotes": "Yeoman\nMov 6\"/Infantry | Rng +0 | Mel +0 | Arm 0 | Base 25mm\nKeywords: New Antioch, Troop\n\nEquipment\nBolt-Action Rifle (24\")\nBayonet (Melee) CUMBERSOME"
     },
     {
       "id": "m6",
@@ -418,7 +716,49 @@
       "upgrades": [],
       "skills": [],
       "injuries": [],
-      "notes": null
+      "notes": null,
+      "model": {
+        "source": "default",
+        "modId": "3700111403",
+        "guid": "03472b",
+        "nickname": "Shocktrooper",
+        "base": {
+          "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "diffuseUrl": null,
+          "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/10789802620685497/E769B6A6D7CDF0726DA6E97581218D526F1A414D/",
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        "parts": [
+          {
+            "kind": "Custom_Model",
+            "meshUrl": "https://steamusercontent-a.akamaihd.net/ugc/13939147962615676396/8FDED4E1A3807FE8A6759667D0E944DB81BD1AAE/",
+            "diffuseUrl": "https://steamusercontent-a.akamaihd.net/ugc/11458348693044806882/C7D30D978B8FA7EE7D0EA9ABD888F0C443EAE49F/",
+            "colliderUrl": "https://steamusercontent-a.akamaihd.net/ugc/2285075815268697056/AACEE19582EB4493BED3A3B88D5EBCB246D14361/",
+            "assetBundleUrl": null,
+            "position": [
+              0,
+              0.1274,
+              0
+            ],
+            "rotation": [
+              0.0002,
+              14.966,
+              -0.0009
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      "ttsDescription": "[d9b352][b]Shocktrooper[/b][-]\n[b]Mov[/b] 6\"/Infantry  [b]Rng[/b] +0  [b]Mel[/b] +1  [b]Arm[/b] 0  [b]Base[/b] 25mm\n[i]New Antioch, Troop[/i]\nSubmachine Gun (16\") ASSAULT\n[b]Abilities:[/b] Shock Charge, Assault Drill",
+      "ttsGmNotes": "Shocktrooper\nMov 6\"/Infantry | Rng +0 | Mel +1 | Arm 0 | Base 25mm\nKeywords: New Antioch, Troop\n\nEquipment\nSubmachine Gun (16\") ASSAULT: **Quick Bursts: A model armed with a Submachine Gun can take two Shoot ACTIONS during the same Activation, as long as the Submachine Gun is used to make both attacks. The Shoot ACTIONS can be taken one after the other, or other ACTIONS can be taken between the Shoot ACTIONS.**\n\nAbilities\nShock Charge: When you roll the Charge Bonus for a Shock Trooper, roll 1 extra D6 and use the single highest die to determine the bonus.\nAssault Drill: You can ignore the Effect of the HEAVY Keyword for 1 Melee Weapon that a Shock Trooper has. A Shock Trooper still cannot have more than 1 Weapon (of any type) with the HEAVY Keyword."
     }
   ]
 }

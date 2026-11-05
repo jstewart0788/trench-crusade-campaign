@@ -19,7 +19,8 @@ Classification used here:
 
 Counts over the 218 top-level objects: **KEEP 85, UNSURE 23, STRIP 110**. Every nested
 object follows its top-level parent. The stripped table keeps 108 top-level / 1,100 total
-objects and packs to about 2.9 MB.
+objects and packs to about 2.9 MB. Objects this repo adds on top of the fork are classed
+**ADDED** (one so far: the Warband Importer, TC-016), for 109 top-level / 1,101 total.
 
 ## Top-level objects
 
@@ -245,6 +246,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP | Tournament Companion 1.0 | `5ac9e2` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
 | STRIP | TwistSlot | `d1e006` | ScriptingTrigger | 0 | 0 | scripting zone for a primary / deployment / twist mission card slot |
 | STRIP | Warhammer Open FAQ | `47587b` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
+| ADDED | Warband Importer | `b91983` | Custom_Tile | 17,742 | 0 | TC-016: code entry, `WebRequest` fetch of `/api/tts/warband/{code}`, spawn of bound models, Bind mode, re-import; see below |
 
 
 ## global.lua (128,527 bytes, 151 functions) by system
@@ -313,3 +315,41 @@ changelog constants (KEEP).
 - Token bags (`7aca71`, `10a26a`, `446a11`, `9d6b2f`, `3f26fa`, `58d30b`, `5549a7`) share
   the memory-bag script family (place / recall / setup). Engine KEEP; `5549a7` ("40K items")
   STRIP; the others UNSURE on content only.
+
+## Added: Warband Importer `b91983` (TC-016)
+
+A locked 12"x12" Custom_Tile at (-22, 1, 0), left of the mat between the two hand zones,
+with a flat XML panel (`mod/ui/b91983.xml`): API base URL and code fields, a "Use my
+colour" toggle with a colour cycle button, Import and Bind buttons, a status line and a
+30-row member list. `mod/state/b91983.json` persists the base URL, code and colour choice
+through `onSave`/`onLoad`.
+
+`mod/scripts/b91983.lua` is split in two. Above the `TTS glue` line nothing touches a TTS
+global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`):
+
+- `validatePayload` accepts only `version == "tc-warband-export-v1"` payloads with a code,
+  a warband and members with ids (`packages/rules/src/export.ts` is the contract).
+- `buildSpawnSpecs` turns the payload into one object-state table per member, laid out by
+  `gridPosition` on the colour's anchor (`ANCHORS`: Red starts at (13.75, 44) and grows +x
+  then +z, Blue at (26.25, -44) mirrored, six per row 2.5" apart; any other colour gets a
+  grid 8" in front of the tile). Each state mirrors a Gannel's Model Corner miniature
+  (3700111403, Lieutenant `15e05f`): a base `Custom_Model` (TypeIndex 1, the candidate's
+  `base` mesh/collider, `ColorDiffuse` tinted 60% from Gannel's dark grey toward the player
+  colour) with the figure parts as `ChildObjects` carrying their own `CustomMesh` (Gannel's)
+  or `CustomAssetbundle` (Scripted Table) and child `Transform`. Nickname is the display
+  name, Description and GMNotes are the payload's prebuilt `ttsDescription` / `ttsGmNotes`,
+  Tags are `tc-warband:<code>`, `tc-member:<id>`, `tc-spawned`. A member with `model ==
+  null` gets Gannel's bare 32mm base with the same binding.
+- `mergeTags` / `memberTags` / `memberIdFromTags` keep foreign tags and replace the
+  importer's own.
+
+The glue: `onImport` checks `getObjectsWithTag("tc-warband:<code>")`; if the code is already
+on the table it shows a confirm row, and Replace deletes the `tc-spawned` objects while
+`tc-bound` ones (the player's own models) are kept and re-bound from the fresh payload. The
+fetch is `WebRequest.get(base .. "/api/tts/warband/" .. code)`, decoded with `JSON.decode`
+and spawned with `spawnObjectData`. Bind mode arms the clicking player's colour on the
+selected member; `onObjectPickUp(colour, object)`, which fires in object scripts for any
+object a player grabs (the moment ForceOrg's importer also binds on, via `onPlayerAction`),
+copies the member's name, description, GM notes and tags onto that object and deletes the
+member's spawned default. Nothing in the glue has been run in TTS yet (`mod/TESTING.md`
+step 8).

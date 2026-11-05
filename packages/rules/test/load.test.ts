@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolve } from "node:path";
-import { findUnit, loadRulesData, RulesDataError, thresholdFor } from "../src/load.js";
+import { findUnit, loadModelMap, loadRulesData, RulesDataError, thresholdFor } from "../src/load.js";
 import { data, repoRoot } from "./fixtures.js";
 
 describe("loadRulesData", () => {
@@ -52,9 +52,30 @@ describe("loadRulesData", () => {
     expect(() => loadRulesData(resolve(repoRoot, "packages"))).toThrow();
   });
 
+  it("loads the TTS model map alongside the rules data", () => {
+    expect(data().models?.byUnitId.size).toBe(92);
+  });
+
   it("RulesDataError names the file and carries the issues", () => {
     const err = new RulesDataError("x.json", ["a: bad"]);
     expect(err.message).toContain("x.json");
     expect(err.issues).toEqual(["a: bad"]);
+  });
+});
+
+describe("loadModelMap", () => {
+  it("resolves each unit's chosen default by modId + guid + nickname and skips unmapped units and fireteam wrappers", () => {
+    const map = loadModelMap(repoRoot);
+    expect(map.byUnitId.size).toBe(92);
+    const lieutenant = map.byUnitId.get("new-antioch/lieutenant")!;
+    expect(lieutenant).toMatchObject({ modId: "3700111403", guid: "15e05f", nickname: "Lieutenant" });
+    expect(lieutenant.parts).toHaveLength(1);
+    expect(lieutenant.parts[0]!.kind).toBe("Custom_Model");
+    expect(map.byUnitId.has("black-grail/cradle-thrall")).toBe(false);
+    expect(map.byUnitId.has("new-antioch/fireteam")).toBe(false);
+  });
+
+  it("throws when the map is missing", () => {
+    expect(() => loadModelMap(resolve(repoRoot, "packages"))).toThrow();
   });
 });

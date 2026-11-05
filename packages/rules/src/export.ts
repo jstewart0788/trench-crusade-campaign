@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { itemCost, warbandCost } from "./cost.js";
 import { normaliseName } from "./limits.js";
-import { findUnit, upgradeFor, type RosterAbility, type RulesData } from "./load.js";
+import { findUnit, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./load.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import { EquipmentCategory, Movement } from "./schema.js";
 import { validateWarband } from "./validate.js";
@@ -27,7 +27,39 @@ export const ExportEquipment = z.object({
 });
 export type ExportEquipment = z.infer<typeof ExportEquipment>;
 
-export const ExportMember = z.object({
+// The default TTS model for a member, lifted from data/tts/models.json. The
+// mod spawns a Custom_Model from `base` with one ChildObject per part, the
+// shape Gannel's Model Corner uses (base mesh on top, figure attached).
+const Vec3 = z.tuple([z.number(), z.number(), z.number()]);
+
+export const ExportModelPart = z.object({
+  kind: z.enum(["Custom_Model", "Custom_Assetbundle"]),
+  meshUrl: z.string().nullable(),
+  diffuseUrl: z.string().nullable(),
+  colliderUrl: z.string().nullable(),
+  assetBundleUrl: z.string().nullable(),
+  position: Vec3,
+  rotation: Vec3,
+  scale: Vec3,
+});
+export type ExportModelPart = z.infer<typeof ExportModelPart>;
+
+export const ExportModel = z.object({
+  source: z.literal("default"),
+  modId: z.string(),
+  guid: z.string(),
+  nickname: z.string(),
+  base: z.object({
+    meshUrl: z.string(),
+    diffuseUrl: z.string().nullable(),
+    colliderUrl: z.string().nullable(),
+    scale: Vec3,
+  }),
+  parts: z.array(ExportModelPart),
+});
+export type ExportModel = z.infer<typeof ExportModel>;
+
+const ExportMemberCore = z.object({
   id: z.string(),
   displayName: z.string(),
   unit: z.object({
@@ -54,6 +86,17 @@ export const ExportMember = z.object({
   injuries: z.array(z.object({ name: z.string(), text: z.string() })),
   notes: z.string().nullable(),
 });
+/** Everything the TTS text renderers need; an ExportMember is a superset. */
+export type ExportMemberCore = z.infer<typeof ExportMemberCore>;
+
+export const ExportMember = ExportMemberCore.extend({
+  // null when the unit has no default in data/tts/models.json; the mod then
+  // spawns a plain base. Players bind their own models either way.
+  model: ExportModel.nullable(),
+  // Prebuilt object text so the mod does no formatting of its own.
+  ttsDescription: z.string(),
+  ttsGmNotes: z.string(),
+});
 export type ExportMember = z.infer<typeof ExportMember>;
 
 export const WarbandExport = z.object({
@@ -78,6 +121,8 @@ export type WarbandExport = z.infer<typeof WarbandExport>;
 export interface ExportOptions {
   code: string;
   now?: Date | string;
+  /** Overrides the model map loaded with the rules data. */
+  models?: ModelMap;
 }
 
 export class WarbandExportError extends Error {
@@ -114,11 +159,46 @@ export function toWarbandExport(warband: Warband, data: RulesData, opts: ExportO
       valid: validation.ok,
       errorCount: validation.errors.length,
     },
-    members: warband.members.map((m) => exportMember(m, warband, data, variant?.name)),
+    members: warband.members.map((m) => exportMember(m, warband, data, variant?.name, opts.models ?? data.models)),
   };
 }
 
-function exportMember(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined): ExportMember {
+function exportMember(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined, models: ModelMap | undefined): ExportMember {
+  const core = exportMemberCore(member, warband, data, variantName);
+  return {
+    ...core,
+    model: exportModel(models?.byUnitId.get(core.unit.id)),
+    ttsDescription: renderTtsDescription(core),
+    ttsGmNotes: renderTtsGmNotes(core),
+  };
+}
+
+// models.json carries Python's -0.0, which JSON.stringify flattens to 0; emit
+// the canonical form so the payload survives a JSON round-trip unchanged.
+const vec3 = (v: [number, number, number]): [number, number, number] => [v[0] + 0, v[1] + 0, v[2] + 0];
+
+function exportModel(candidate: ModelCandidate | undefined): ExportModel | null {
+  if (!candidate) return null;
+  return {
+    source: "default",
+    modId: candidate.modId,
+    guid: candidate.guid,
+    nickname: candidate.nickname,
+    base: { meshUrl: candidate.meshUrl, diffuseUrl: candidate.diffuseUrl, colliderUrl: candidate.colliderUrl, scale: vec3(candidate.scale) },
+    parts: candidate.parts.map((p) => ({
+      kind: p.kind,
+      meshUrl: p.meshUrl ?? null,
+      diffuseUrl: p.diffuseUrl ?? null,
+      colliderUrl: p.colliderUrl ?? null,
+      assetBundleUrl: p.assetBundleUrl ?? null,
+      position: vec3(p.position),
+      rotation: vec3(p.rotation),
+      scale: vec3(p.scale),
+    })),
+  };
+}
+
+function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined): ExportMemberCore {
   const unit = findUnit(data, warband.factionId, member.unitId);
   if (!unit) throw new WarbandExportError(`Unknown unit "${member.unitId}" on member ${member.id}`);
 
@@ -198,7 +278,7 @@ const HEADER_COLOUR = "d9b352";
 
 const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 
-export function renderStatLine(member: ExportMember): string {
+export function renderStatLine(member: ExportMemberCore): string {
   const s = member.stats;
   return `[b]Mov[/b] ${s.movement.raw}  [b]Rng[/b] ${s.ranged}  [b]Mel[/b] ${s.melee}  [b]Arm[/b] ${signed(s.armour)}  [b]Base[/b] ${s.base}`;
 }
@@ -210,7 +290,7 @@ function equipmentLabel(e: ExportEquipment): string {
   return parts.join(" ");
 }
 
-export function renderTtsDescription(member: ExportMember): string {
+export function renderTtsDescription(member: ExportMemberCore): string {
   const title = member.displayName === member.unit.name ? member.displayName : `${member.displayName} — ${member.unit.name}`;
   const lines = [`[${HEADER_COLOUR}][b]${title}[/b][-]`, renderStatLine(member)];
   if (member.unit.keywords.length) lines.push(`[i]${member.unit.keywords.join(", ")}[/i]`);
@@ -222,7 +302,7 @@ export function renderTtsDescription(member: ExportMember): string {
   return lines.join("\n");
 }
 
-export function renderTtsGmNotes(member: ExportMember): string {
+export function renderTtsGmNotes(member: ExportMemberCore): string {
   const s = member.stats;
   const lines = [
     member.displayName === member.unit.name ? member.displayName : `${member.displayName} (${member.unit.name})`,

@@ -10,6 +10,7 @@ import {
   renderTtsGmNotes,
   toWarbandExport,
 } from "../src/export.js";
+import { loadModelMap } from "../src/load.js";
 import type { Warband } from "../src/roster.js";
 import { data, member, newAntioch, repoRoot, warband } from "./fixtures.js";
 
@@ -123,6 +124,41 @@ describe("toWarbandExport", () => {
     expect(() => toWarbandExport(warband("new-antioch", [member("new-antioch/yeoman", ["laser"])]), d, { code: CODE })).toThrow(/Unknown item "laser"/);
     expect(() => toWarbandExport(warband("new-antioch", [member("new-antioch/yeoman", [], ["nope"])]), d, { code: CODE })).toThrow(/Unknown upgrade "nope"/);
     expect(() => toWarbandExport(warband("atlantis", []), d, { code: CODE })).toThrow(/Unknown faction/);
+  });
+});
+
+describe("member.model and prebuilt TTS text", () => {
+  it("carries the default model from data/tts/models.json for every mapped unit, the Lieutenant's being Gannel's 15e05f", () => {
+    const out = fixtureExport();
+    const map = loadModelMap(repoRoot);
+    for (const m of out.members) {
+      expect(m.model !== null, `${m.displayName} (${m.unit.id})`).toBe(map.byUnitId.has(m.unit.id));
+    }
+    expect(out.members.every((m) => m.model !== null)).toBe(true);
+
+    const lieutenant = out.members[0]!.model!;
+    expect(lieutenant).toMatchObject({ source: "default", modId: "3700111403", guid: "15e05f", nickname: "Lieutenant" });
+    expect(lieutenant.base.meshUrl).toMatch(/^https:\/\//);
+    expect(lieutenant.base.scale).toEqual([1, 1, 1]);
+    expect(lieutenant.parts).toHaveLength(1);
+    expect(lieutenant.parts[0]).toMatchObject({ kind: "Custom_Model", assetBundleUrl: null });
+    expect(lieutenant.parts[0]!.meshUrl).toMatch(/^https:\/\//);
+    expect(lieutenant.parts[0]!.meshUrl).not.toBe(lieutenant.base.meshUrl);
+    expect(lieutenant.parts[0]!.diffuseUrl).toMatch(/^https:\/\//);
+    expect(lieutenant.parts[0]!.position[1]).toBeGreaterThan(0);
+  });
+
+  it("is null for every member when no model map is loaded", () => {
+    const out = toWarbandExport(fixtureWarband(), { ...data(), models: undefined }, { code: CODE, now: NOW });
+    expect(out.members.every((m) => m.model === null)).toBe(true);
+    expect(WarbandExport.parse(out)).toEqual(out);
+  });
+
+  it("prebuilds ttsDescription and ttsGmNotes from the renderers", () => {
+    for (const m of fixtureExport().members) {
+      expect(m.ttsDescription).toBe(renderTtsDescription(m));
+      expect(m.ttsGmNotes).toBe(renderTtsGmNotes(m));
+    }
   });
 });
 

@@ -1,0 +1,76 @@
+<!-- Warband Importer. Object UI units are 1/100 of the tile's local unit, so a 200 x 230
+     panel covers the tile at scale 6; z=-22 floats it just above the face. If it renders
+     off the tile or upside down for the seat in front of it, tune position/rotation here
+     (mod/TESTING.md step 8). -->
+<Panel id="importer" position="0 0 -22" rotation="0 0 0" width="200" height="230" color="#1b1b1bEE">
+  <VerticalLayout padding="6 6 6 6" spacing="3" childForceExpandHeight="false" childAlignment="UpperCenter">
+    <Text preferredHeight="12" fontSize="10" fontStyle="Bold" color="#d9b352" alignment="MiddleCenter">WARBAND IMPORTER</Text>
+
+    <HorizontalLayout preferredHeight="14" spacing="3" childForceExpandWidth="false">
+      <Text preferredWidth="26" fontSize="7" color="#bbbbbb" alignment="MiddleLeft">API</Text>
+      <InputField id="baseUrl" preferredWidth="160" preferredHeight="14" fontSize="7" lineType="SingleLine"
+                  onEndEdit="onBaseUrlChanged" text="http://127.0.0.1:3001" placeholder="http://127.0.0.1:3001"/>
+    </HorizontalLayout>
+
+    <HorizontalLayout preferredHeight="14" spacing="3" childForceExpandWidth="false">
+      <Text preferredWidth="26" fontSize="7" color="#bbbbbb" alignment="MiddleLeft">Code</Text>
+      <InputField id="code" preferredWidth="160" preferredHeight="14" fontSize="8" lineType="SingleLine"
+                  onEndEdit="onCodeChanged" text="" placeholder="NA-TEST-01"/>
+    </HorizontalLayout>
+
+    <HorizontalLayout preferredHeight="14" spacing="3" childForceExpandWidth="false">
+      <Toggle id="useMyColour" isOn="true" preferredWidth="96" preferredHeight="14" fontSize="7" textColor="#e6e6e6"
+              onValueChanged="onUseMyColourChanged">Use my colour</Toggle>
+      <Button id="colourBtn" active="false" preferredWidth="90" preferredHeight="14" fontSize="7"
+              color="#333333" textColor="#e6e6e6" onClick="onCycleColour">Colour: Red</Button>
+    </HorizontalLayout>
+
+    <HorizontalLayout preferredHeight="16" spacing="3">
+      <Button id="importBtn" preferredHeight="16" fontSize="8" fontStyle="Bold" color="#2e7d32" textColor="#ffffff" onClick="onImport">Import</Button>
+      <Button id="bindBtn" preferredHeight="16" fontSize="8" fontStyle="Bold" color="#555555" textColor="#ffffff" onClick="onBind">Bind</Button>
+    </HorizontalLayout>
+
+    <HorizontalLayout id="confirmRow" active="false" preferredHeight="16" spacing="3" childForceExpandWidth="false">
+      <Text id="confirmText" preferredWidth="118" fontSize="5" color="#ffcc66" alignment="MiddleLeft" resizeTextForBestFit="true" resizeTextMinSize="4" resizeTextMaxSize="6">Replace?</Text>
+      <Button id="confirmYes" preferredWidth="34" preferredHeight="16" fontSize="7" color="#8b2222" textColor="#ffffff" onClick="onConfirmReplace">Replace</Button>
+      <Button id="confirmNo" preferredWidth="30" preferredHeight="16" fontSize="7" color="#444444" textColor="#ffffff" onClick="onConfirmCancel">Cancel</Button>
+    </HorizontalLayout>
+
+    <Text id="status" preferredHeight="16" fontSize="6" color="#dddddd" alignment="UpperLeft" resizeTextForBestFit="true" resizeTextMinSize="4" resizeTextMaxSize="6">Start the API, type a code, press Import.</Text>
+
+    <VerticalScrollView preferredHeight="96" color="#111111" scrollSensitivity="6">
+      <VerticalLayout id="members" padding="2 2 2 2" spacing="1" childForceExpandHeight="false">
+        <Button id="row1" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row2" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row3" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row4" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row5" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row6" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row7" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row8" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row9" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row10" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row11" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row12" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row13" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row14" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row15" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row16" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row17" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row18" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row19" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row20" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row21" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row22" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row23" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row24" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row25" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row26" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row27" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row28" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row29" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+        <Button id="row30" active="false" preferredHeight="9" fontSize="6" color="#333333" textColor="#e6e6e6" textAlignment="MiddleLeft" onClick="onSelectMember"/>
+      </VerticalLayout>
+    </VerticalScrollView>
+  </VerticalLayout>
+</Panel>
