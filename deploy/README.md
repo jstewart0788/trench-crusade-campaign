@@ -1,4 +1,9 @@
-# Deploying to ryn-main (staged, not yet run)
+# Deploying to ryn-main
+
+**Status 2026-11-04:** steps 2–4 run; `tc-web` healthy on the internal `tc` network with only
+`kamal-proxy` beside it; route `tc.rynfin.org → tc-web:3001` registered with TLS; from inside the
+container both `ryn-financial-db` and the internet are unreachable (verified). Waiting on the DNS
+record (step 1) for the certificate to issue.
 
 Host: `ryn-main` (Hetzner, 178.104.139.55), the box that runs ryn-financial under Kamal 2.
 Hostname: `tc.rynfin.org` — **needs an A record to 178.104.139.55 before `setup-host.sh`**
@@ -34,8 +39,7 @@ Remove: `docker compose -f deploy/docker-compose.yml down`, `docker exec kamal-p
 
 ## To verify on the host before running
 
-- kamal-proxy's container name is `kamal-proxy` and its CLI accepts `deploy --target --host --tls
-  --health-check-path` (basecamp/kamal-proxy README); whether registered routes persist across a
+- Verified on the host: kamal-proxy v0.9.2, container `kamal-proxy`, CLI accepts the flags used. Whether registered routes persist across a
   proxy restart (Kamal re-registers its own on `kamal deploy`; ours may need `setup-host.sh` after a
   proxy restart — check `kamal-proxy list` then).
 - `pnpm deploy` output layout in the Dockerfile builds on this pnpm version.
