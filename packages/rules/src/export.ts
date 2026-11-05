@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { itemCost, warbandCost } from "./cost.js";
 import { normaliseName } from "./limits.js";
-import { findUnit, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
+import { findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import { EquipmentCategory, Movement } from "./schema.js";
 import { validateWarband } from "./validate.js";
@@ -108,6 +108,7 @@ export const WarbandExport = z.object({
     name: z.string(),
     gameNumber: z.number().int().positive(),
     faction: Named,
+    subfaction: Named.nullable(),
     variant: Named.nullable(),
     patron: Named.nullable(),
     totals: ExportCost,
@@ -135,7 +136,9 @@ export class WarbandExportError extends Error {
 export function toWarbandExport(warband: Warband, data: RulesData, opts: ExportOptions): WarbandExport {
   const faction = data.factionsById.get(warband.factionId);
   if (!faction) throw new WarbandExportError(`Unknown faction "${warband.factionId}"`);
-  const variant = faction.variants.find((v) => v.id === warband.variantId);
+  const subfaction = findSubfaction(data, warband);
+  if (warband.subfactionId !== undefined && !subfaction) throw new WarbandExportError(`Unknown subfaction "${warband.subfactionId}"`);
+  const variant = rosterVariants(data, warband).find((v) => v.id === warband.variantId);
   if (warband.variantId !== undefined && !variant) throw new WarbandExportError(`Unknown variant "${warband.variantId}"`);
   const patron = data.campaign.patrons.find((p) => p.id === warband.patronId);
   if (warband.patronId !== undefined && !patron) throw new WarbandExportError(`Unknown patron "${warband.patronId}"`);
@@ -153,6 +156,7 @@ export function toWarbandExport(warband: Warband, data: RulesData, opts: ExportO
       name: warband.name,
       gameNumber: warband.gameNumber,
       faction: { id: faction.id, name: faction.name },
+      subfaction: subfaction ? { id: subfaction.id, name: subfaction.name } : null,
       variant: variant ? { id: variant.id, name: variant.name } : null,
       patron: patron ? { id: patron.id, name: patron.name } : null,
       totals: { ducats: cost.ducats, glory: cost.glory },
@@ -199,13 +203,13 @@ function exportModel(candidate: ModelCandidate | undefined): ExportModel | null 
 }
 
 function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined): ExportMemberCore {
-  const unit = findUnit(data, warband.factionId, member.unitId);
+  const unit = findUnit(data, warband, member.unitId);
   if (!unit) throw new WarbandExportError(`Unknown unit "${member.unitId}" on member ${member.id}`);
 
   const equipment: ExportEquipment[] = member.equipmentItemIds.map((itemId) => {
     const item = data.equipmentById.get(itemId);
     if (!item) throw new WarbandExportError(`Unknown item "${itemId}" on member ${member.id}`);
-    const { ducats, glory } = itemCost(data, warband.factionId, member.unitId, itemId);
+    const { ducats, glory } = itemCost(data, warband, member.unitId, itemId);
     return {
       id: item.id,
       name: item.name,

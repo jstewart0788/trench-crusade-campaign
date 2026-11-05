@@ -3,7 +3,14 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86"
+    "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86",
+    "compendia": {
+      "Heretic-Naval-Raiders-Warband.pdf": {
+        "edition": "1.0.2",
+        "covers": "heretic-legion subfaction heretic-naval-raiders",
+        "note": "overrides citing it carry source: Heretic-Naval-Raiders-Warband.pdf; their page numbers are that PDF's"
+      }
+    }
   },
   "overrides": [
     {
@@ -100,42 +107,6 @@
       "page": 35,
       "confidence": "high",
       "note": "Specialist Force: 500 ducats and 11 glory; +4 glory each time it calls for Reinforcements"
-    },
-    {
-      "file": "units.json",
-      "id": "new-antioch/combat-medic",
-      "path": "cost.ducats",
-      "upstream": 40,
-      "pdf": 65,
-      "page": 34,
-      "confidence": "high",
-      "note": "Warband Entry cost is 65 with Standard Armour, Gas Mask, Medi-kit and Misericordia included; upstream prices the fixed kit at 0 and leaves the Misericordia as a 15-ducat purchase"
-    },
-    {
-      "file": "units.json",
-      "id": "new-antioch/combat-medic",
-      "path": "equipmentAccess[itemId=misericordia].cost",
-      "upstream": {
-        "ducats": 15,
-        "glory": 0
-      },
-      "pdf": {
-        "ducats": 0,
-        "glory": 0
-      },
-      "page": 34,
-      "confidence": "high",
-      "note": "included in the 65-ducat entry cost; the 15-ducat Armoury line is the replacement price"
-    },
-    {
-      "file": "units.json",
-      "id": "new-antioch/combat-medic",
-      "path": "equipmentAccess[itemId=misericordia].fixed",
-      "upstream": null,
-      "pdf": true,
-      "page": 34,
-      "confidence": "high",
-      "note": "'A Combat Medic always has ... a Misericordia'"
     },
     {
       "file": "units.json",
@@ -260,52 +231,14 @@
     },
     {
       "file": "units.json",
-      "id": "new-antioch/shocktrooper",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "group": "armour",
-        "groupPath": "armour",
-        "max": 1,
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "limitsText": "max 1 per model; max increment 1 per model when repeat per Knowledge of the Machine Armour (roster); repeat per Entitled to Machine Armour (roster)",
-        "onlyWithout": [
-          "upgrade:Berserker"
-        ],
-        "itemId": "reinforced-armour"
-      },
-      "pdf": null,
-      "page": 25,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE & Mechanized Heavy Infantry only"
-    },
-    {
-      "file": "units.json",
-      "id": "new-antioch/yeoman",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "group": "armour",
-        "groupPath": "armour",
-        "max": 1,
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "limitsText": "max 1 per model; max increment 1 per model when repeat per Knowledge of the Machine Armour (roster); repeat per Entitled to Machine Armour (roster)",
-        "itemId": "reinforced-armour"
-      },
-      "pdf": null,
-      "page": 25,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE & Mechanized Heavy Infantry only"
-    },
-    {
-      "file": "units.json",
       "id": "new-antioch/sniper-priest",
       "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
-      "upstream": null,
+      "upstream": [
+        "Remnants of Byzantium [New Antioch]",
+        "new-antioch/eire-rangers",
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
       "pdf": [
         "new-antioch/eire-rangers",
         "new-antioch/kingdom-of-alba-assault-detachment",
@@ -313,7 +246,7 @@
       ],
       "page": 38,
       "confidence": "high",
-      "note": "Eire: only MHI may have Reinforced/Machine Armour (p38); Alba and Stosstruppen: only the Lieutenant and MHI (p40, p41)"
+      "note": "Eire: only MHI may have Reinforced/Machine Armour (p38); Alba and Stosstruppen: only the Lieutenant and MHI (p40, p41). TC-002b: Upstream now carries this value; the remaining third-party gate \"Remnants of Byzantium [New Antioch]\" (a homebrew variant under \"Third Party\", not in Warbands 1.0.2) is dropped."
     },
     {
       "file": "units.json",
@@ -348,7 +281,12 @@
       "file": "units.json",
       "id": "new-antioch/trench-cleric",
       "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
-      "upstream": null,
+      "upstream": [
+        "Remnants of Byzantium [New Antioch]",
+        "new-antioch/eire-rangers",
+        "new-antioch/kingdom-of-alba-assault-detachment",
+        "new-antioch/stosstruppen-of-the-free-state-of-prussia"
+      ],
       "pdf": [
         "new-antioch/eire-rangers",
         "new-antioch/kingdom-of-alba-assault-detachment",
@@ -356,7 +294,7 @@
       ],
       "page": 38,
       "confidence": "high",
-      "note": "Eire: only MHI may have Reinforced/Machine Armour (p38); Alba and Stosstruppen: only the Lieutenant and MHI (p40, p41)"
+      "note": "Eire: only MHI may have Reinforced/Machine Armour (p38); Alba and Stosstruppen: only the Lieutenant and MHI (p40, p41). TC-002b: Upstream now carries this value; the remaining third-party gate \"Remnants of Byzantium [New Antioch]\" (a homebrew variant under \"Third Party\", not in Warbands 1.0.2) is dropped."
     },
     {
       "file": "units.json",
@@ -386,23 +324,6 @@
       "page": 41,
       "confidence": "high",
       "note": "Stosstruppen Specialised Equipment: models cannot have Grenade Launchers or Martyrdom Pills"
-    },
-    {
-      "file": "units.json",
-      "id": "new-antioch/lieutenant",
-      "path": "equipmentAccess[itemId=reinforced-armour].onlyWithout",
-      "upstream": [
-        "upgrade:Berserker",
-        "upgrade:Varangian Warlord"
-      ],
-      "pdf": [
-        "new-antioch/eire-rangers",
-        "upgrade:Berserker",
-        "upgrade:Varangian Warlord"
-      ],
-      "page": 38,
-      "confidence": "high",
-      "note": "Eire Rangers Light Infantry: only Mechanized Heavy Infantry can have Reinforced Armour or Machine Armour; the Berserker exclusion (p38: 'A Berserker cannot have Armour') and the Varangian Warlord one come from upstream and are kept"
     },
     {
       "file": "units.json",
@@ -568,81 +489,6 @@
     },
     {
       "file": "units.json",
-      "id": "trench-pilgrims/stigmatic-nun",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "group": "armour",
-        "groupPath": "armour",
-        "max": 1,
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "limitsText": "max 1 per model",
-        "itemId": "reinforced-armour"
-      },
-      "pdf": null,
-      "page": 50,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE only"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/stigmatic-nun",
-      "path": "equipmentAccess[itemId=holy-icon-shield].cost",
-      "upstream": {
-        "ducats": 0,
-        "glory": 2
-      },
-      "pdf": {
-        "ducats": 20,
-        "glory": 0
-      },
-      "page": 61,
-      "confidence": "high",
-      "note": "Procession of the Sacred Affliction 'Reliquary Armoury': Holy Icon Shields cost 20 ducats and lose the ELITE only stipulation (this access entry only exists under that variant)"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/trench-pilgrim",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "group": "armour",
-        "groupPath": "armour",
-        "max": 1,
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "limitsText": "max 1 per model",
-        "onlyWithout": [
-          "upgrade:Wrath of God"
-        ],
-        "itemId": "reinforced-armour"
-      },
-      "pdf": null,
-      "page": 50,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE only"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/trench-pilgrim",
-      "path": "equipmentAccess[itemId=holy-icon-shield].cost",
-      "upstream": {
-        "ducats": 0,
-        "glory": 2
-      },
-      "pdf": {
-        "ducats": 20,
-        "glory": 0
-      },
-      "page": 61,
-      "confidence": "high",
-      "note": "Procession of the Sacred Affliction 'Reliquary Armoury': Holy Icon Shields cost 20 ducats and lose the ELITE only stipulation (this access entry only exists under that variant)"
-    },
-    {
-      "file": "units.json",
       "id": "trench-pilgrims/ecclesiastic-prisoner",
       "path": "abilities",
       "upstream": [
@@ -684,6 +530,7 @@
       "id": "trench-pilgrims/anchorite-shrine",
       "path": "keywords",
       "upstream": [
+        "Negate Shrapnel",
         "Pilgrim",
         "Troop"
       ],
@@ -697,31 +544,7 @@
       ],
       "page": 59,
       "confidence": "high",
-      "note": "keyword(s) Fear, Negate Shrapnel, Strong, Tough listed on the Warband Entry but absent upstream"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/anchorite-shrine",
-      "path": "equipmentAccess[itemId=heavy-flamethrower].onlyWith",
-      "upstream": null,
-      "pdf": [
-        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-      ],
-      "page": 64,
-      "confidence": "high",
-      "note": "Anchorite Ranged Weapons (45 ducats) are War Pilgrimage of Saint Methodius armoury only"
-    },
-    {
-      "file": "units.json",
-      "id": "trench-pilgrims/anchorite-shrine",
-      "path": "equipmentAccess[itemId=anti-material-rifle].onlyWith",
-      "upstream": null,
-      "pdf": [
-        "trench-pilgrims/war-pilgrimage-of-saint-methodius"
-      ],
-      "page": 64,
-      "confidence": "high",
-      "note": "Anchorite Ranged Weapons (40 ducats) are War Pilgrimage of Saint Methodius armoury only"
+      "note": "keyword(s) Fear, Strong, Tough listed on the Warband Entry but absent upstream (TC-002b: upstream now has Negate Shrapnel)"
     },
     {
       "file": "units.json",
@@ -1025,86 +848,6 @@
       "page": 75,
       "confidence": "high",
       "note": "Armoury: Alchemist Armour is ELITE only, Limit: 1"
-    },
-    {
-      "file": "units.json",
-      "id": "iron-sultanate/azeb",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
-        "limitsText": "max 1 per model",
-        "max": 1
-      },
-      "pdf": null,
-      "page": 75,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
-    },
-    {
-      "file": "units.json",
-      "id": "iron-sultanate/brazen-bull",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
-        "limitsText": "max 1 per model",
-        "max": 1
-      },
-      "pdf": null,
-      "page": 75,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
-    },
-    {
-      "file": "units.json",
-      "id": "iron-sultanate/lion-of-jabir",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
-        "limitsText": "max 1 per model",
-        "max": 1
-      },
-      "pdf": null,
-      "page": 75,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
-    },
-    {
-      "file": "units.json",
-      "id": "iron-sultanate/sultanate-sapper",
-      "path": "equipmentAccess[itemId=reinforced-armour]",
-      "upstream": {
-        "cost": {
-          "ducats": 40,
-          "glory": 0
-        },
-        "group": "armour",
-        "groupPath": "armour",
-        "itemId": "reinforced-armour",
-        "limitsText": "max 1 per model",
-        "max": 1
-      },
-      "pdf": null,
-      "page": 75,
-      "confidence": "high",
-      "note": "Armoury: Reinforced Armour is ELITE & Janissaries only"
     },
     {
       "file": "units.json",
@@ -1704,66 +1447,6 @@
     },
     {
       "file": "units.json",
-      "id": "heretic-legion/anointed-heavy-infantry",
-      "path": "equipmentAccess[itemId=silenced-pistol]",
-      "upstream": {
-        "cost": {
-          "ducats": 15,
-          "glory": 0
-        },
-        "group": "ranged-one-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
-        "itemId": "silenced-pistol",
-        "max": null
-      },
-      "pdf": null,
-      "page": 105,
-      "confidence": "high",
-      "note": "Armoury: Silenced Pistol is ELITE only"
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-legion/heretic-trooper",
-      "path": "equipmentAccess[itemId=silenced-pistol]",
-      "upstream": {
-        "group": "ranged-one-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
-        "max": null,
-        "cost": {
-          "ducats": 15,
-          "glory": 0
-        },
-        "onlyWithout": [
-          "upgrade:Sarcophagus Mine"
-        ],
-        "itemId": "silenced-pistol"
-      },
-      "pdf": null,
-      "page": 105,
-      "confidence": "high",
-      "note": "Armoury: Silenced Pistol is ELITE only"
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-legion/wretched",
-      "path": "equipmentAccess[itemId=silenced-pistol]",
-      "upstream": {
-        "cost": {
-          "ducats": 15,
-          "glory": 0
-        },
-        "group": "ranged-one-handed",
-        "groupPath": "weapons/ranged-weapons/ranged-one-handed",
-        "itemId": "silenced-pistol",
-        "max": null
-      },
-      "pdf": null,
-      "page": 105,
-      "confidence": "high",
-      "note": "Armoury: Silenced Pistol is ELITE only"
-    },
-    {
-      "file": "units.json",
       "id": "heretic-legion/heretic-trooper",
       "path": "equipmentAccess[itemId=hellbound-soul-contract].onlyWithout",
       "upstream": [
@@ -1786,30 +1469,6 @@
       "page": 106,
       "confidence": "high",
       "note": "Armoury: Limit: 3"
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-legion/chorister",
-      "path": "equipmentAccess[itemId=blasphemous-staff].onlyWithout",
-      "upstream": null,
-      "pdf": [
-        "heretic-legion/knights-of-avarice"
-      ],
-      "page": 120,
-      "confidence": "high",
-      "note": "Preserve the Loot: Knights of Avarice cannot have Battlekit with the FIRE Keyword (Blasphemous Staff: CRITICAL, FIRE)"
-    },
-    {
-      "file": "units.json",
-      "id": "heretic-legion/heretic-priest",
-      "path": "equipmentAccess[itemId=blasphemous-staff].onlyWithout",
-      "upstream": null,
-      "pdf": [
-        "heretic-legion/knights-of-avarice"
-      ],
-      "page": 120,
-      "confidence": "high",
-      "note": "Preserve the Loot: Knights of Avarice cannot have Battlekit with the FIRE Keyword (Blasphemous Staff: CRITICAL, FIRE)"
     },
     {
       "file": "units.json",
@@ -1904,86 +1563,6 @@
       "page": 113,
       "confidence": "high",
       "note": "Assault Beast ability missing upstream"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/corpse-guard",
-      "path": "equipmentAccess[itemId=troop-flag].cost",
-      "upstream": {
-        "ducats": 10,
-        "glory": 0
-      },
-      "pdf": {
-        "ducats": 0,
-        "glory": 1
-      },
-      "page": 130,
-      "confidence": "high",
-      "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/lord-of-tumours",
-      "path": "equipmentAccess[itemId=troop-flag].cost",
-      "upstream": {
-        "ducats": 10,
-        "glory": 0
-      },
-      "pdf": {
-        "ducats": 0,
-        "glory": 1
-      },
-      "page": 130,
-      "confidence": "high",
-      "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/plague-knight",
-      "path": "equipmentAccess[itemId=troop-flag].cost",
-      "upstream": {
-        "ducats": 10,
-        "glory": 0
-      },
-      "pdf": {
-        "ducats": 0,
-        "glory": 1
-      },
-      "page": 130,
-      "confidence": "high",
-      "note": "Armoury: Troop Flag 1 glory (upstream 10 ducats)"
-    },
-    {
-      "file": "units.json",
-      "id": "black-grail/grail-thrall",
-      "path": "equipmentAccess[itemId=troop-flag].cost",
-      "upstream": {
-        "ducats": 10,
-        "glory": 0
-      },
-      "pdf": {
-        "ducats": 0,
-        "glory": 1
-      },
-      "page": 130,
-      "confidence": "high",
-      "note": "Armoury: Troop Flag 1 glory (Dirge Bereaved may carry one, p142)"
-    },
-    {
-      "file": "equipment.json",
-      "id": "troop-flag",
-      "path": "cost",
-      "upstream": {
-        "ducats": 10,
-        "glory": 1
-      },
-      "pdf": {
-        "ducats": 0,
-        "glory": 1
-      },
-      "page": 130,
-      "confidence": "high",
-      "note": "Troop Flag is 1 glory in every Armoury table; the 10-ducat figure is the Black Grail link's error"
     },
     {
       "file": "units.json",
@@ -2508,6 +2087,30 @@
     },
     {
       "file": "units.json",
+      "id": "black-grail/lord-of-tumours",
+      "path": "onlyWith",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 134,
+      "confidence": "high",
+      "note": "Warband Entry 0-1 Lord of Tumours (a Cult of the Black Grail Warband must include a Lord of Tumours or a Plague Knight). Upstream now unhides it under The Great Hunger only at 1,000+ ducats, after hiding it under Dirge or The Great Hunger; read as gates that becomes 'only with The Great Hunger' and 'never with The Great Hunger', which locks it out of the base list. The 1,000-ducat Great Hunger exception is not modelled"
+    },
+    {
+      "file": "units.json",
+      "id": "black-grail/lord-of-tumours",
+      "path": "variantIds",
+      "upstream": [
+        "black-grail/the-great-hunger"
+      ],
+      "pdf": null,
+      "page": 134,
+      "confidence": "high",
+      "note": "follows the onlyWith removal above"
+    },
+    {
+      "file": "units.json",
       "id": "court-of-the-seven-headed-serpent/sin-eater",
       "path": "keywords",
       "upstream": [
@@ -2628,6 +2231,256 @@
       "page": 185,
       "confidence": "high",
       "note": "keyword(s) Negate Fear listed on the Warband Entry but absent upstream"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/heretic-captain",
+      "path": "keywords",
+      "upstream": [
+        "Elite",
+        "Heretic"
+      ],
+      "pdf": [
+        "Elite",
+        "Heretic",
+        "Leader",
+        "Tough"
+      ],
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 21,
+      "confidence": "high",
+      "note": "Warband Entry keywords HERETIC, ELITE, LEADER, TOUGH; upstream carries Leader and Tough only as rule links (the Heretic Priest lists them as keywords)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/abyssal-commando",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/anointed-heretic-raider",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/drowned-chorister",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/heretic-captain",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/heretic-raider",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/sea-hag",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/wretched",
+      "path": "equipmentAccess[itemId=byzantinium-hearth]",
+      "upstream": {
+        "cost": {
+          "ducats": 10,
+          "glory": 0
+        },
+        "group": "equipment",
+        "groupPath": "equipment",
+        "itemId": "byzantinium-hearth",
+        "limitsText": "max 1 per model; max 2 per warband",
+        "max": 1,
+        "maxPerWarband": 2
+      },
+      "pdf": null,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 15,
+      "confidence": "high",
+      "note": "Not in the Heretic Naval Raiders Armoury Tables (p13-15); reached through the Heretic Legion Equipment group, where it is upstream-only Cadaver Corps content"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/abyssal-commando",
+      "path": "equipmentAccess[itemId=sacrificial-blade].limitsText",
+      "upstream": "max 2 per warband; max increment 1 per warband when repeat per Leveraged on Sacrificial Blades (roster); max increment 1 per warband when atLeast 1 Sacrificial Blade (roster); max increment 1 per warband when atLeast 1 Entitled to Sacrificial Blades (roster)",
+      "pdf": "max 2 per warband; max increment 1 per warband when repeat per Leveraged on Sacrificial Blades (roster); max increment 1 per warband when atLeast 1 Sacrificial Blade (roster); max increment 1 per warband when atLeast 1 Entitled to Sacrificial Blades (roster); max set 4 per warband when atLeast 1 The Leviathan Shoal (roster)",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 39,
+      "confidence": "high",
+      "note": "Leviathan Shoal 'Charge and Rend': Sacrificial Blades in this Warband are Limit: 4 (base Limit: 2, p14); upstream raises the limit only on the Anointed Heretic Raider's own Shoal entry"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/drowned-chorister",
+      "path": "equipmentAccess[itemId=sacrificial-blade].limitsText",
+      "upstream": "max 2 per warband; max increment 1 per warband when repeat per Leveraged on Sacrificial Blades (roster); max increment 1 per warband when atLeast 1 Sacrificial Blade (roster); max increment 1 per warband when atLeast 1 Entitled to Sacrificial Blades (roster)",
+      "pdf": "max 2 per warband; max increment 1 per warband when repeat per Leveraged on Sacrificial Blades (roster); max increment 1 per warband when atLeast 1 Sacrificial Blade (roster); max increment 1 per warband when atLeast 1 Entitled to Sacrificial Blades (roster); max set 4 per warband when atLeast 1 The Leviathan Shoal (roster)",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 39,
+      "confidence": "high",
+      "note": "Leviathan Shoal 'Charge and Rend': Sacrificial Blades in this Warband are Limit: 4 (base Limit: 2, p14); upstream raises the limit only on the Anointed Heretic Raider's own Shoal entry"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/heretic-captain",
+      "path": "equipmentAccess[itemId=sacrificial-blade].limitsText",
+      "upstream": "max 2 per warband; max increment 1 per warband when repeat per Leveraged on Sacrificial Blades (roster); max increment 1 per warband when atLeast 1 Sacrificial Blade (roster); max increment 1 per warband when atLeast 1 Entitled to Sacrificial Blades (roster)",
+      "pdf": "max 2 per warband; max increment 1 per warband when repeat per Leveraged on Sacrificial Blades (roster); max increment 1 per warband when atLeast 1 Sacrificial Blade (roster); max increment 1 per warband when atLeast 1 Entitled to Sacrificial Blades (roster); max set 4 per warband when atLeast 1 The Leviathan Shoal (roster)",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 39,
+      "confidence": "high",
+      "note": "Leviathan Shoal 'Charge and Rend': Sacrificial Blades in this Warband are Limit: 4 (base Limit: 2, p14); upstream raises the limit only on the Anointed Heretic Raider's own Shoal entry"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/abyssal-commando",
+      "path": "equipmentAccess[itemId=wrecker-s-torch].group",
+      "upstream": "naval-battlekit",
+      "pdf": "shield-combo",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 14,
+      "confidence": "high",
+      "note": "Armoury: Wrecker's Torch is 'ELITE only, Shield Combo' (also p19). The engine reads Shield Combo from the access group (battlekit.ts SHIELD_COMBO_GROUPS); upstream files the torch under Naval Battlekit, so a Torch with a Trench Shield was refused"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/drowned-chorister",
+      "path": "equipmentAccess[itemId=wrecker-s-torch].group",
+      "upstream": "naval-battlekit",
+      "pdf": "shield-combo",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 14,
+      "confidence": "high",
+      "note": "Armoury: Wrecker's Torch is 'ELITE only, Shield Combo' (also p19). The engine reads Shield Combo from the access group (battlekit.ts SHIELD_COMBO_GROUPS); upstream files the torch under Naval Battlekit, so a Torch with a Trench Shield was refused"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/heretic-captain",
+      "path": "equipmentAccess[itemId=wrecker-s-torch].group",
+      "upstream": "naval-battlekit",
+      "pdf": "shield-combo",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 14,
+      "confidence": "high",
+      "note": "Armoury: Wrecker's Torch is 'ELITE only, Shield Combo' (also p19). The engine reads Shield Combo from the access group (battlekit.ts SHIELD_COMBO_GROUPS); upstream files the torch under Naval Battlekit, so a Torch with a Trench Shield was refused"
+    },
+    {
+      "file": "factions.json",
+      "id": "heretic-legion",
+      "path": "subfactions[id=heretic-naval-raiders].startingDucats",
+      "upstream": null,
+      "pdf": 700,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 11,
+      "confidence": "high",
+      "note": "Warband Creation: 'You have 700 ducats to recruit a Heretic Naval Raiders Warband'"
     }
   ],
   "unresolved": [
@@ -2687,12 +2540,6 @@
     },
     {
       "file": "units.json",
-      "id": "heretic-legion/heretic-trooper",
-      "issue": "Heretic Naval Raiders 'Close Assault Weapons': Submachine Guns cost 25 ducats (base: 2 glory); variant-conditional price",
-      "page": 124
-    },
-    {
-      "file": "units.json",
       "id": "heretic-legion/wretched",
       "issue": "Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error, not by filtering the access list (glory-priced items remain listed)",
       "page": 114
@@ -2714,6 +2561,41 @@
       "id": "heretic-legion/goetic-warlock",
       "issue": "Goetic Warlock limits.max is 1 everywhere; Knights of Avarice may include up to 2 (p120)",
       "page": 120
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/wretched",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 30,
+      "issue": "Wretched may only have Battlekit costing up to 10 ducats; upstream enforces it with a roster error rather than by filtering the access list (as for the Heretic Legion and Court Wretched)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/wretched",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 37,
+      "issue": "Drowned Choir 'A Wretched Chorus': Wretched cost 30 ducats and have Melee +0 DICE (+1 within 8\" of a Chorister); variant-conditional price and profile have no slot in the schema (recorded in the unit notes)"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/heretic-raider",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 28,
+      "issue": "Heretic Raider Legionnaires may never outnumber un-upgraded Heretic Raiders; upstream encodes it as one Legionnaire per two Heretic Raiders (repeat value=2), which limitsText cannot express, so the engine allows one per Heretic Raider"
+    },
+    {
+      "file": "units.json",
+      "id": "heretic-naval-raiders/abyssal-commando",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 23,
+      "issue": "The entry allows Tormentor Chains but the Heretic Naval Raiders Armoury Tables do not price them; upstream uses the Heretic Legion price (3 glory)"
+    },
+    {
+      "file": "factions.json",
+      "id": "heretic-legion",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 39,
+      "issue": "Leviathan Shoal 'Charge and Rend' (no more Ranged than Melee Weapons in the Warband, no HEAVY Ranged Weapons) is a roster-wide rule the engine does not model"
     }
   ],
   "missingFromUpstream": [
@@ -2723,13 +2605,6 @@
       "page": 64,
       "kind": "item",
       "detail": "War Pilgrimage of Saint Methodius armoury replacement for the 2-glory Submachine Gun; upstream only hides the base entry under the variant"
-    },
-    {
-      "faction": "trench-pilgrims",
-      "name": "Holy Icon Armour for Stigmatic Nuns / Trench Pilgrims",
-      "page": 62,
-      "kind": "item",
-      "detail": "Procession armoury lists Holy Icon Armour (30 ducats) with no stipulation; upstream only links it to the Castigator, Communicant and War Prophet (and the non-PDF Chieftain)"
     },
     {
       "faction": "black-grail",
@@ -2744,6 +2619,15 @@
       "page": 180,
       "kind": "unit",
       "detail": "2 glory, 0-1, Faithful; New Antioch and Trench Pilgrim warbands may hire it. Upstream hides the entry for every faction except the Trench Pilgrims' War Pilgrimage of Saint Methodius"
+    },
+    {
+      "faction": "heretic-legion",
+      "subfaction": "heretic-naval-raiders",
+      "name": "Unseen Infiltrator for Wretched",
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "page": 12,
+      "kind": "upgrade",
+      "detail": "'Unseen Advance': up to 3 models without the ELITE Keyword can buy INFILTRATOR for 10 ducats; upstream offers it to Heretic Raiders, Anointed Heretic Raiders and the Sea Hag but not to Wretched"
     }
   ],
   "missingFromPdf": [

@@ -50,6 +50,8 @@ export const Unit = z
   .object({
     id: z.string(),
     factionId: z.string(),
+    /** Set on a subfaction's units; factionId is then the parent faction. */
+    subfactionId: z.string().optional(),
     name: z.string(),
     kind: z.enum(["model", "fireteam"]),
     elite: z.boolean(),
@@ -104,16 +106,32 @@ export const EquipmentItem = z
   .passthrough();
 export type EquipmentItem = z.infer<typeof EquipmentItem>;
 
+const Variant = z.object({ id: z.string(), name: z.string(), text: z.string(), rules: z.array(NamedText) }).passthrough();
+
+// A subfaction (Heretic Naval Raiders under the Heretic Legion) is its own
+// roster list: its units, variants and rules replace the parent's, while
+// patrons and the faction itself stay the parent's.
+export const Subfaction = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    keywords: z.array(z.string()),
+    rules: z.array(NamedText),
+    variants: z.array(Variant),
+    unitIds: z.array(z.string()),
+  })
+  .passthrough();
+export type Subfaction = z.infer<typeof Subfaction>;
+
 export const Faction = z
   .object({
     id: z.string(),
     name: z.string(),
     keywords: z.array(z.string()),
     rules: z.array(NamedText),
-    variants: z.array(
-      z.object({ id: z.string(), name: z.string(), text: z.string(), rules: z.array(NamedText) }).passthrough(),
-    ),
+    variants: z.array(Variant),
     unitIds: z.array(z.string()),
+    subfactions: z.array(Subfaction).optional(),
     page: z.number().int().positive().optional(),
   })
   .passthrough();

@@ -1,4 +1,4 @@
-import { patronsForFaction } from "@tc/rules/browser";
+import { patronsForFaction, rosterVariants } from "@tc/rules/browser";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createWarband } from "../roster/reducer.js";
@@ -11,6 +11,7 @@ export function NewPage() {
   const { rules, error } = useRules();
   const [name, setName] = useState("");
   const [factionId, setFactionId] = useState("");
+  const [subfactionId, setSubfactionId] = useState("");
   const [variantId, setVariantId] = useState("");
   const [patronId, setPatronId] = useState("");
   const [gameNumber, setGameNumber] = useState(1);
@@ -18,20 +19,36 @@ export function NewPage() {
   if (error) return <p className="error">Could not load the rules data: {error}</p>;
   if (!rules) return <p className="muted">Loading rules…</p>;
 
+  // Faction -> optional subfaction -> variant: each list is filtered by the choice before it.
+  // Patrons belong to the faction, so a subfaction takes its faction's.
   const faction = rules.factionsById.get(factionId);
-  const variants = faction?.variants ?? [];
+  const subfactions = faction?.subfactions ?? [];
+  const variants = faction ? rosterVariants(rules, { factionId: faction.id, subfactionId: subfactionId || undefined }) : [];
   const patrons = faction ? patronsForFaction(rules, faction.id) : [];
 
   function pickFaction(id: string) {
     setFactionId(id);
+    setSubfactionId("");
     setVariantId("");
     setPatronId("");
+  }
+
+  function pickSubfaction(id: string) {
+    setSubfactionId(id);
+    setVariantId("");
   }
 
   function submit(e: FormEvent) {
     e.preventDefault();
     if (!faction) return;
-    const warband = createWarband({ name: name.trim(), factionId: faction.id, variantId: variantId || undefined, patronId: patronId || undefined, gameNumber });
+    const warband = createWarband({
+      name: name.trim(),
+      factionId: faction.id,
+      subfactionId: subfactionId || undefined,
+      variantId: variantId || undefined,
+      patronId: patronId || undefined,
+      gameNumber,
+    });
     saveDraft(warband);
     navigate("/w/draft/barracks");
   }
@@ -54,6 +71,19 @@ export function NewPage() {
           ))}
         </select>
       </label>
+      {subfactions.length > 0 && (
+        <label>
+          Subfaction
+          <select value={subfactionId} onChange={(e) => pickSubfaction(e.target.value)}>
+            <option value="">None (core list)</option>
+            {subfactions.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <label>
         Variant
         <select value={variantId} onChange={(e) => setVariantId(e.target.value)} disabled={!faction || variants.length === 0}>

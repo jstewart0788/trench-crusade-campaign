@@ -17,7 +17,7 @@ fixture server) is still running it holds that port and the api exits with
 elsewhere with `PORT=3002 pnpm --filter @tc/api dev` and `API_URL=http://127.0.0.1:3002
 pnpm --filter @tc/web dev`.
 
-The api line should print `rules: .../data/rules (103 units, 213 items)` and
+The api line should print `rules: .../data/rules (130 units, 225 items)` and
 `db: .../apps/api/data/roster.sqlite`. Open http://localhost:5173.
 
 - Network: `GET /api/rules` is 200, `content-encoding: gzip`, about 200 KB on the wire.
@@ -30,12 +30,37 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
 
 ## 2. New warband
 
-- **New warband**. Name "The Fifth Lantern". Faction: six listed. Pick **New Antioch**: the
-  Variant select fills with six variants; Patron offers Temporal Lord, Warrior Saint, Learned
-  Saint and nothing else. Pick Court of the Seven-Headed Serpent: Variant reads "No variants"
+- **New warband**. Name "The Fifth Lantern". Faction: six listed, and neither Heretic Naval
+  Raiders nor Procession of the Sacred Affliction is among them. Pick **New Antioch**: no
+  Subfaction select appears; the Variant select fills with six variants; Patron offers Temporal
+  Lord, Warrior Saint, Learned Saint and nothing else. Pick Court of the Seven-Headed Serpent: Variant reads "No variants"
   and is disabled; Patron offers Infernal Noble and Mammon. Back to **New Antioch**, Variant
   none, Patron **Temporal Lord**, Game 1.
 - **Start building**. URL is `/w/draft/barracks`.
+
+## 2b. Subfactions are chosen under their faction
+
+- Pick **Heretic Legion**: a **Subfaction** select appears between Faction and Variant, reading
+  "None (core list)", with **Heretic Naval Raiders** as its only other option. Variant offers
+  Knights of Avarice and Trench Ghosts (no "Heretic Naval Raiders"); Patron offers Infernal Noble
+  and Mammon.
+- Pick Variant **Trench Ghosts**, then Subfaction **Heretic Naval Raiders**: the Variant resets to
+  "None (standard list)" and now offers **The Drowned Choir** and **The Leviathan Shoal** only;
+  Patron is unchanged (a subfaction takes its faction's patrons). Back to "None (core list)": the
+  Heretic Legion variants return.
+- Pick **Trench Pilgrims**: the Subfaction select offers **Procession of the Sacred Affliction**.
+  Pick **Court of the Seven-Headed Serpent** or **Black Grail**: no Subfaction select.
+- Make a throwaway warband: Heretic Legion, **Heretic Naval Raiders**, Variant **The Leviathan
+  Shoal**, Patron Infernal Noble, **Start building**. Header meta reads "HERETIC LEGION · HERETIC
+  NAVAL RAIDERS · THE LEVIATHAN SHOAL · INFERNAL NOBLE · GAME 1". The Barracks Recruit list shows
+  Heretic Captain, Heretic Raider, Anointed Heretic Raider ("0 of 0–4" under the Shoal), Abyssal
+  Commando, Heretic Captain "0 of 1", Heretic Raider "0 of any" and the Fallen mercenaries (Goetic
+  Warlock, Scripture Guardian, Sin Eater); Drowned Chorister, Sea Hag and Wretched read "0 of 0"
+  (the Shoal bars them); **no** Heretic Priest or Heretic Trooper. Add a Heretic Captain, Confirm, open the
+  Armoury: a Submachine Gun is offered at 25d. The Warband screen's locked facts show **Subfaction
+  Heretic Naval Raiders**. Save it: the TTS URL's JSON has
+  `"subfaction": {"id": "heretic-naval-raiders", "name": "Heretic Naval Raiders"}` next to
+  `"faction"`. Forget it on Home before going on.
 
 ## 3. The shell (every warband screen)
 
@@ -141,7 +166,7 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
 ## 6. Warband screen
 
 - Click the **Warband** tab (or the Legal badge). Left "Campaign" panel: Name editable, then
-  locked facts: Faction New Antioch, Variant None, Patron Temporal Lord, Game 1, Ducats
+  locked facts: Faction New Antioch (no Subfaction row: New Antioch has none), Variant None, Patron Temporal Lord, Game 1, Ducats
   "318 of 700", Glory "0 spent of 0", and the note that these are fixed at creation. There are
   **no** selects or number inputs for faction, variant, patron or game.
 - Right "TTS import" panel: "Unsaved draft … Save (top right) to get a code".
@@ -186,6 +211,12 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
   Bayonet, Old Tom (Yeoman) with Trench Mole, Shocktrooper with Submachine Gun), and
   **Not mapped · 2**: "Allow Third-Party Mercenaries?" and "Lieutenant > Lucky Charm" with their
   reasons and entry ids.
+- Drop a NewRecruit JSON export of a **Heretic Naval Raiders** roster (force catalogue "Heretic
+  Naval Raiders"): the preview reads Faction **Heretic Legion** (catalogue "Heretic Naval
+  Raiders"), **Subfaction Heretic Naval Raiders**, the variant it was built with, every model
+  mapped, and under Not mapped only "Campaign Rules" (the "Heretic Naval Raiders Rules" and
+  "Warband Variant" selections are consumed). A 799-ducat roster reads 1 error (over the
+  700-ducat Threshold for game 1).
 - Zip the same file as `anything.rosz` (`zip anything.rosz new-antioch.ros`) and drop it: the
   same preview. (The JSON export path is covered by the tests; drop one if you have a real
   NewRecruit JSON export and tell me what the preview says.)

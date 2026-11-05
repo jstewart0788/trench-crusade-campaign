@@ -17,6 +17,8 @@ export const Warband = z.object({
   id: z.string().min(1),
   name: z.string(),
   factionId: z.string().min(1),
+  /** A subfaction of factionId; its roster list replaces the faction's. */
+  subfactionId: z.string().optional(),
   variantId: z.string().optional(),
   patronId: z.string().optional(),
   gameNumber: z.number().int().positive(),

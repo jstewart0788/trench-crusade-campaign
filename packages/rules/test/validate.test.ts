@@ -499,3 +499,93 @@ describe("validateWarband: a legal starting warband for every faction", () => {
     expect(warbandCost(w, data()).ducats).toBeLessThanOrEqual(500);
   });
 });
+
+// Subfactions recruit from their own list (Heretic Naval Raiders: Heretic-Naval-Raiders-Warband.pdf 1.0.2).
+describe("validateWarband: subfactions", () => {
+  const RAIDERS = { subfactionId: "heretic-naval-raiders" } as const;
+  const LEGIONNAIRE = "332dc68d-9a98-5bc8-af04-e5d59f541e2d";
+  const RANGED = "f87051a2-6b9a-53d0-b319-7e60180d97c0";
+  const raiders = (members: WarbandMember[], extra: Partial<Warband> = {}) => warband("heretic-legion", members, { ...RAIDERS, ...extra });
+  const captain = () => member("heretic-naval-raiders/heretic-captain", ["sword-axe", "pistol"]);
+  const raider = () => member("heretic-naval-raiders/heretic-raider", ["bolt-action-rifle", "bayonet", "combat-helmet"]);
+  const anointed = () => member("heretic-naval-raiders/anointed-heretic-raider", ["reinforced-armour", "infernal-brand", "great-sword-axe"]);
+
+  // Sample list "Beachhead Assault Doctrine", p42-44: exactly 700 ducats.
+  const beachhead = () =>
+    raiders([
+      member("heretic-naval-raiders/heretic-captain", ["submachine-gun", "sacrificial-blade", "trench-shield", "reinforced-armour", "combat-helmet", "infernal-brand"]),
+      member("heretic-naval-raiders/drowned-chorister", ["sacrificial-blade", "sword-axe", "standard-armour", "combat-helmet"]),
+      member("heretic-naval-raiders/heretic-raider", ["submachine-gun", "bayonet", "combat-helmet"], [LEGIONNAIRE, RANGED]),
+      member("heretic-naval-raiders/heretic-raider", ["submachine-gun", "bayonet", "combat-helmet"], [LEGIONNAIRE, RANGED]),
+      raider(),
+      raider(),
+      member("heretic-naval-raiders/anointed-heretic-raider", ["reinforced-armour", "infernal-brand", "machine-gun", "great-sword-axe", "combat-helmet"]),
+    ]);
+
+  it("Heretic Naval Raiders: the Beachhead Assault Doctrine sample list (p42-44) is legal at exactly 700 ducats", () => {
+    const w = beachhead();
+    const result = validate(w);
+    expect(result.errors).toEqual([]);
+    expect(result.ok).toBe(true);
+    expect(warbandCost(w, data())).toMatchObject({ ducats: 700, glory: 0 });
+  });
+
+  it("Heretic Naval Raiders: a Heretic Captain must lead (p21), unless the Drowned Choir replaces them (p37)", () => {
+    expect(expectCode(raiders([raider(), raider()]), "unit-min").errors[0]?.unitId).toBe("heretic-naval-raiders/heretic-captain");
+    const chorister = (upgradeIds: string[] = []) => member("heretic-naval-raiders/drowned-chorister", ["sword-axe"], upgradeIds);
+    const choir = raiders([chorister(["92816847-3df0-4cbf-84d2-56599afea0f0"]), chorister(), raider()], { variantId: "heretic-naval-raiders/the-drowned-choir" });
+    expect(validate(choir).errors).toEqual([]);
+    expectCode(raiders([captain(), chorister(["92816847-3df0-4cbf-84d2-56599afea0f0"]), raider()], { variantId: "heretic-naval-raiders/the-drowned-choir" }), "unit-max");
+  });
+
+  it("Heretic Naval Raiders: 0-2 Anointed Heretic Raiders (p32), 0-4 in a Leviathan Shoal (p39)", () => {
+    expect(validate(raiders([captain(), anointed(), anointed()])).errors).toEqual([]);
+    expectCode(raiders([captain(), anointed(), anointed(), anointed()]), "unit-max");
+    const shoal = raiders([captain(), anointed(), anointed(), anointed(), anointed()], { variantId: "heretic-naval-raiders/the-leviathan-shoal" });
+    expect(validate(shoal).errors).toEqual([]);
+  });
+
+  it("recruits only from the subfaction's list, and takes only its own variants", () => {
+    const priest = member("heretic-legion/heretic-priest", ["sword-axe"]);
+    expect(expectCode(raiders([captain(), priest]), "unit-faction").errors[0]?.unitId).toBe("heretic-legion/heretic-priest");
+    expectCode(warband("heretic-legion", [member("heretic-legion/heretic-priest", ["sword-axe"]), captain()]), "unit-faction");
+    expectCode(raiders([captain()], { variantId: "heretic-legion/trench-ghosts" }), "variant-unknown");
+    expectCode(raiders([captain()], { subfactionId: "procession-of-the-sacred-affliction" }), "subfaction-unknown");
+    expectCode(raiders([captain()], { subfactionId: "atlantis" }), "subfaction-unknown");
+  });
+
+  it("takes the parent faction's patrons", () => {
+    expect(validate(raiders([captain()], { patronId: "infernal-noble" })).errors).toEqual([]);
+    expectCode(raiders([captain()], { patronId: "temporal-lord" }), "patron-faction");
+  });
+
+  it("Wrecker's Torch is ELITE only, Shield Combo (p14): a Captain may pair it with a Trench Shield", () => {
+    const torch = raiders([member("heretic-naval-raiders/heretic-captain", ["wrecker-s-torch", "trench-shield"])]);
+    expect(validate(torch).errors).toEqual([]);
+    expectCode(raiders([captain(), member("heretic-naval-raiders/heretic-raider", ["wrecker-s-torch"])]), "item-not-available");
+  });
+
+  it("prices kit from the subfaction's armoury (Submachine Gun 25 ducats, p13; base Heretic Legion 2 glory)", () => {
+    const smg = (w: Warband) => warbandCost(w, data()).perMember[0]!.items[0]!;
+    expect(smg(raiders([member("heretic-naval-raiders/heretic-raider", ["submachine-gun"])]))).toMatchObject({ ducats: 25, glory: 0 });
+  });
+
+  // No local copy of the Procession of the Sacred Affliction compendium: this
+  // starter is built from the converted data only and is UNVERIFIED against the PDF.
+  it("Procession of the Sacred Affliction (unverified, from data): a Lazarist Prophet leads", () => {
+    const w = warband(
+      "trench-pilgrims",
+      [
+        member("procession-of-the-sacred-affliction/lazarist-prophet", ["sword-axe", "pistol", "standard-armour"]),
+        member("procession-of-the-sacred-affliction/leper-pilgrim", ["sword-axe"]),
+        member("procession-of-the-sacred-affliction/leper-pilgrim", ["sword-axe"]),
+        member("procession-of-the-sacred-affliction/leper-pilgrim", ["sword-axe"]),
+      ],
+      { subfactionId: "procession-of-the-sacred-affliction" },
+    );
+    const result = validate(w);
+    expect(result.errors).toEqual([]);
+    expect(warbandCost(w, data()).ducats).toBeLessThanOrEqual(700);
+    expectCode({ ...w, members: w.members.slice(1) }, "unit-min");
+  });
+});

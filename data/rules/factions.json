@@ -281,6 +281,123 @@
       "name": "Heretic Legion",
       "rules": [],
       "startingDucats": 700,
+      "subfactions": [
+        {
+          "bsId": "6497-8a39-4f5c-9873",
+          "campaignLinks": [
+            "Advancement",
+            "Angelic Instrument",
+            "Battlefield Title",
+            "Blasphemous Banner",
+            "Curative Fluids",
+            "Executioner's Axe",
+            "Exploration Upgrades",
+            "Knighthood",
+            "Lock of Samson's Hair",
+            "Rocket-Propelled Grenade",
+            "Saints Reliquary",
+            "Sniper Scope",
+            "The Mark of Cain",
+            "Tormentor Chain"
+          ],
+          "configuration": [
+            {
+              "bsId": "4d05-603e-4b5a-aed4",
+              "choices": [],
+              "mandatory": true,
+              "name": "Heretic Naval Raiders Rules"
+            }
+          ],
+          "id": "heretic-naval-raiders",
+          "keywords": [
+            "Heretic"
+          ],
+          "name": "Heretic Naval Raiders",
+          "rules": [
+            {
+              "name": "Fast as Lightning",
+              "text": "Add +1 DICE to the Risky Success Roll for models from a Heretic Naval Raiders Warband that are taking a Dash ACTION."
+            },
+            {
+              "name": "Unseen Advance",
+              "text": "Up to 3 models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of 10 ducats each."
+            },
+            {
+              "name": "Mercenaries",
+              "text": "Heretic Naval Raiders Warbands can use any Fallen Mercenaries that can be taken by HERETIC Warbands."
+            }
+          ],
+          "startingDucats": 700,
+          "unitIds": [
+            "heretic-naval-raiders/abyssal-commando",
+            "heretic-naval-raiders/anointed-heretic-raider",
+            "heretic-naval-raiders/drowned-chorister",
+            "heretic-naval-raiders/goetic-warlock",
+            "heretic-naval-raiders/heretic-captain",
+            "heretic-naval-raiders/heretic-raider",
+            "heretic-naval-raiders/homunculus",
+            "heretic-naval-raiders/scripture-guardian",
+            "heretic-naval-raiders/sea-hag",
+            "heretic-naval-raiders/sin-eater",
+            "heretic-naval-raiders/trench-dog",
+            "heretic-naval-raiders/wretched"
+          ],
+          "variants": [
+            {
+              "bsId": "66d2abe9-5221-4754-830a-75be41711830",
+              "id": "heretic-naval-raiders/the-drowned-choir",
+              "name": "The Drowned Choir",
+              "rules": [
+                {
+                  "name": "A Song Within the Deep",
+                  "text": "Drowned Choir Warbands must include 1-3 Drowned Choristers. In addition, 1 Drowned Chorister must take the Leviathal Chorus upgrade at a cost of 20 ducats. The Drowned Chorister with the Leviathal Chorus upgrade increases its base size to 40mm, has the LEADER and TOUGH Keywords, and replaces their Unholy Hymns ability with the Dread Harmony ability."
+                },
+                {
+                  "name": "Dread Harmony",
+                  "text": "All Success Rolls made by enemy models within 8\" of a Leviathal Chorus become Risky Success Rolls. There is no additional effect if they are Risky Success Rolls already."
+                },
+                {
+                  "name": "A Wretched Chorus",
+                  "text": "Wretched models in a Drowned Choir cost 30 ducats and have a Melee Characteristic of +0 DICE. Wretched models within 8\" of any number of Drowned Chorister or Leviathal Chorus models have a Melee Characteristic of +1 DICE instead of +0 DICE."
+                },
+                {
+                  "name": "Mounting Madness",
+                  "text": "Increase the range of a Drowned Chorister's Unholy Hymns Ability by +4\" if it is within 8\" of another friendly Drowned Chorister or Leviathal Chorus."
+                },
+                {
+                  "name": "To No Purpose Save Their Own",
+                  "text": "Drowned Choir Warbands cannot include Heretic Captains, Abyssal Commandos, Sea Hags, or Anointed Heretic Raiders."
+                }
+              ],
+              "text": "A Song Within the Deep: Drowned Choir Warbands must include 1-3 Drowned Choristers. In addition, 1 Drowned Chorister must take the Leviathal Chorus upgrade at a cost of 20 ducats. The Drowned Chorister with the Leviathal Chorus upgrade increases its base size to 40mm, has the LEADER and TOUGH Keywords, and replaces their Unholy Hymns ability with the Dread Harmony ability.\nDread Harmony: All Success Rolls made by enemy models within 8\" of a Leviathal Chorus become Risky Success Rolls. There is no additional effect if they are Risky Success Rolls already.\nA Wretched Chorus: Wretched models in a Drowned Choir cost 30 ducats and have a Melee Characteristic of +0 DICE. Wretched models within 8\" of any number of Drowned Chorister or Leviathal Chorus models have a Melee Characteristic of +1 DICE instead of +0 DICE.\nMounting Madness: Increase the range of a Drowned Chorister's Unholy Hymns Ability by +4\" if it is within 8\" of another friendly Drowned Chorister or Leviathal Chorus.\nTo No Purpose Save Their Own: Drowned Choir Warbands cannot include Heretic Captains, Abyssal Commandos, Sea Hags, or Anointed Heretic Raiders."
+            },
+            {
+              "bsId": "e41075bf-7b42-4a2f-9bf0-4318e6faa459",
+              "id": "heretic-naval-raiders/the-leviathan-shoal",
+              "name": "The Leviathan Shoal",
+              "rules": [
+                {
+                  "name": "Only the Strong Survive",
+                  "text": "Leviathan Shoal Warbands can include 0-4 Anointed Heretic Raiders, and up to 1 can be recruited with the ELITE Keyword at no extra cost. In addition, Heretic Captains in this Warband have the STRONG Keyword, but it cannot include any Drowned Choristers, Wretched, or Sea Hags."
+                },
+                {
+                  "name": "Charge and Rend",
+                  "text": "Models in a Leviathan Shoal Warband cannot have more Ranged Weapons than Melee Weapons. If they ever do, remove Ranged Weapons from the Warband Roster until there are no more Ranged Weapons than Melee Weapons. Models in this Warband cannot have Ranged Weapons with the HEAVY Keyword. Sacrificial Blades in this Warband are Limit: 4, and may be purchased for Anointed Heretic Raider models."
+                },
+                {
+                  "name": "Feeding Frenzy",
+                  "text": "Add +1 DICE to Success Rolls for Melee Attacks made by models from a Leviathan Shoal Warband for each model (friend or foe) with 1 or more BLOOD MARKERS within 1\" of the model making the Melee Attack, to a maximum of +3 DICE."
+                },
+                {
+                  "name": "Chosen Sons",
+                  "text": "The first time in a game that an Anointed Heretic Raider in a Leviathan Shoal Warband takes an enemy model Out of Action with a Melee Attack, that Anointed Heretic Raider gains the TOUGH Keyword for the rest of the game."
+                }
+              ],
+              "text": "Only the Strong Survive: Leviathan Shoal Warbands can include 0-4 Anointed Heretic Raiders, and up to 1 can be recruited with the ELITE Keyword at no extra cost. In addition, Heretic Captains in this Warband have the STRONG Keyword, but it cannot include any Drowned Choristers, Wretched, or Sea Hags.\nCharge and Rend: Models in a Leviathan Shoal Warband cannot have more Ranged Weapons than Melee Weapons. If they ever do, remove Ranged Weapons from the Warband Roster until there are no more Ranged Weapons than Melee Weapons. Models in this Warband cannot have Ranged Weapons with the HEAVY Keyword. Sacrificial Blades in this Warband are Limit: 4, and may be purchased for Anointed Heretic Raider models.\nFeeding Frenzy: Add +1 DICE to Success Rolls for Melee Attacks made by models from a Leviathan Shoal Warband for each model (friend or foe) with 1 or more BLOOD MARKERS within 1\" of the model making the Melee Attack, to a maximum of +3 DICE.\nChosen Sons: The first time in a game that an Anointed Heretic Raider in a Leviathan Shoal Warband takes an enemy model Out of Action with a Melee Attack, that Anointed Heretic Raider gains the TOUGH Keyword for the rest of the game."
+            }
+          ]
+        }
+      ],
       "unitIds": [
         "heretic-legion/anointed-heavy-infantry",
         "heretic-legion/artillery-witch",
@@ -299,39 +416,6 @@
         "heretic-legion/wretched"
       ],
       "variants": [
-        {
-          "bsId": "4d05-603e-4b5a-aed4",
-          "id": "heretic-legion/heretic-naval-raiders",
-          "name": "Heretic Naval Raiders",
-          "rules": [
-            {
-              "name": "Close Assault Weapons",
-              "text": "Submachine Guns cost 25 ducats for a Heretic Naval Raiders Warband."
-            },
-            {
-              "name": "Unseen Advance",
-              "text": "Up to three models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
-            },
-            {
-              "name": "Light Troops",
-              "text": "A Heretic Naval Raiders Warband cannot have more than two Anointed models or more than 1 Artillery Witch (even if the Warband has a value of 1,000 ducats or more)."
-            },
-            {
-              "name": "Let Sleeping Dogs Lie",
-              "text": "This Warband cannot include a War Wolf."
-            },
-            {
-              "name": "Fast as Lightning",
-              "text": "Add +1 DICE to the Risky Success Roll for models from a Heretic Naval Raiders Warband that are taking a Dash ACTION."
-            },
-            {
-              "name": "Infiltrator",
-              "sharedRule": true,
-              "text": "When a model with this Keyword is deployed for the first time in a game, it can be set up anywhere on the battlefield as long as it is out of the Line of Sight of all enemies and is at least 8\" away from the closest enemy. INFILTRATORS are deployed after models that do not have this Keyword. Any INFILTRATORS that cannot be deployed in this way are instead deployed normally in their deployment zone."
-            }
-          ],
-          "text": "Close Assault Weapons: Submachine Guns cost 25 ducats for a Heretic Naval Raiders Warband.\nUnseen Advance: Up to three models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each.\nLight Troops: A Heretic Naval Raiders Warband cannot have more than two Anointed models or more than 1 Artillery Witch (even if the Warband has a value of 1,000 ducats or more).\nLet Sleeping Dogs Lie: This Warband cannot include a War Wolf.\nFast as Lightning: Add +1 DICE to the Risky Success Roll for models from a Heretic Naval Raiders Warband that are taking a Dash ACTION.\nInfiltrator: When a model with this Keyword is deployed for the first time in a game, it can be set up anywhere on the battlefield as long as it is out of the Line of Sight of all enemies and is at least 8\" away from the closest enemy. INFILTRATORS are deployed after models that do not have this Keyword. Any INFILTRATORS that cannot be deployed in this way are instead deployed normally in their deployment zone."
-        },
         {
           "bsId": "c323-0c33-e628-56f0",
           "id": "heretic-legion/knights-of-avarice",
@@ -919,6 +1003,123 @@
       "name": "Trench Pilgrims",
       "rules": [],
       "startingDucats": 700,
+      "subfactions": [
+        {
+          "bsId": "c421-32f4-581e-9fb6",
+          "campaignLinks": [
+            "Advancement",
+            "Angelic Instrument",
+            "Blasphemous Banner",
+            "Curative Fluids",
+            "Donkey's Jawbone",
+            "Exploration Upgrades",
+            "Holy Grenade",
+            "Horn of Joshua",
+            "Lock of Samson's Hair",
+            "Rocket-Propelled Grenade",
+            "Saints Reliquary",
+            "Sniper Scope"
+          ],
+          "configuration": [
+            {
+              "bsId": "0d88-774c-22af-e2fc",
+              "choices": [],
+              "mandatory": true,
+              "name": "Procession of the Sacred Affliction Rules"
+            }
+          ],
+          "id": "procession-of-the-sacred-affliction",
+          "keywords": [
+            "Pilgrim"
+          ],
+          "name": "Procession of the Sacred Affliction",
+          "rules": [
+            {
+              "name": "Punishing Millstones",
+              "text": "Add +1 INJURY DICE for Melee Attacks made by models from a Procession of the Sacred Affliction if the target is Down. This bonus is in addition to the +1 INJURY DICE modifier that normally applies when a target is Down, giving a total of +2 INJURY DICE to the roll."
+            },
+            {
+              "name": "Wrath of God",
+              "text": "Up to 1 Lazarist Castigator, Leper-Pilgrim, or Martyr Penitent can have the Wrath of God special rule at a cost of 15 ducats. BLOOD MARKERS are never placed next to a model with the Wrath of God special rule, and it has the NEGATE FEAR Keyword. It cannot be Broken on the Wheel by an Anchorite Shrine. A model with the Wrath of God special rule cannot have Ranged Weapons or Armour (it can have a Shield). In addition, change the base size of the model to 32mm."
+            },
+            {
+              "name": "Mercenaries",
+              "text": "The Procession of the Sacred Affliction can use any Faithful Mercenaries that can be taken by PILGRIM Warbands."
+            }
+          ],
+          "unitIds": [
+            "procession-of-the-sacred-affliction/anchorite-shrine",
+            "procession-of-the-sacred-affliction/communicant-anti-tank-hunter",
+            "procession-of-the-sacred-affliction/ecclesiastic-prisoner",
+            "procession-of-the-sacred-affliction/homunculus",
+            "procession-of-the-sacred-affliction/lazarist-castigator",
+            "procession-of-the-sacred-affliction/lazarist-communicant",
+            "procession-of-the-sacred-affliction/lazarist-prophet",
+            "procession-of-the-sacred-affliction/leper-pilgrim",
+            "procession-of-the-sacred-affliction/mendelist-ammo-monk",
+            "procession-of-the-sacred-affliction/observer",
+            "procession-of-the-sacred-affliction/scripture-guardian",
+            "procession-of-the-sacred-affliction/sister-of-saint-cosmas",
+            "procession-of-the-sacred-affliction/stigmatic-nun",
+            "procession-of-the-sacred-affliction/trench-dog",
+            "procession-of-the-sacred-affliction/witchburner"
+          ],
+          "variants": [
+            {
+              "bsId": "1e805232-b08b-4b7f-b617-969e6bb9cf0f",
+              "id": "procession-of-the-sacred-affliction/procession-of-the-blessed-flock",
+              "name": "Procession of the Blessed Flock",
+              "rules": [
+                {
+                  "name": "Shepherds and Lambs",
+                  "text": "A Blessed Flock may include 1-3 Lazarist Castigators and 1-6 Lazarist Communicants. One Lazarist Castigator must be taken for every 2 Lazarist Communicants or part thereof. Lazarist Communicants do not have the ELITE Keyword and their cost is unchanged."
+                },
+                {
+                  "name": "Guidance",
+                  "text": "If a friendly Lazarist Communicant Activates while not within 6\" of a friendly Lazarist Castigator, all Success Rolls they make during that Activation are Risky. This has no additional effect if the rolls are already Risky."
+                },
+                {
+                  "name": "Dishevelled Procession",
+                  "text": "A Blessed Flock may include 0-2 Stigmatic Nuns and cannot include Anchorite Shrines or Leper-Pilgrims."
+                },
+                {
+                  "name": "Flagellant Flock",
+                  "text": "Ecclesiastic Prisoners have a Ranged Characteristic of -1 DICE at no extra cost. They may purchase Muskets, Blunderbusses, Warcrosses, Flails/Scourges, Ragged Vestments, and Trench Shields from the Procession armoury."
+                },
+                {
+                  "name": "Scavenged Armoury",
+                  "text": "A Blessed Flock cannot include Automatic Pistols, Semi-Automatic Rifles, Sniper Rifles, Submachine Guns, Incendiary Grenades, or Reinforced Armour."
+                }
+              ],
+              "text": "Shepherds and Lambs: A Blessed Flock may include 1-3 Lazarist Castigators and 1-6 Lazarist Communicants. One Lazarist Castigator must be taken for every 2 Lazarist Communicants or part thereof. Lazarist Communicants do not have the ELITE Keyword and their cost is unchanged.\nGuidance: If a friendly Lazarist Communicant Activates while not within 6\" of a friendly Lazarist Castigator, all Success Rolls they make during that Activation are Risky. This has no additional effect if the rolls are already Risky.\nDishevelled Procession: A Blessed Flock may include 0-2 Stigmatic Nuns and cannot include Anchorite Shrines or Leper-Pilgrims.\nFlagellant Flock: Ecclesiastic Prisoners have a Ranged Characteristic of -1 DICE at no extra cost. They may purchase Muskets, Blunderbusses, Warcrosses, Flails/Scourges, Ragged Vestments, and Trench Shields from the Procession armoury.\nScavenged Armoury: A Blessed Flock cannot include Automatic Pistols, Semi-Automatic Rifles, Sniper Rifles, Submachine Guns, Incendiary Grenades, or Reinforced Armour."
+            },
+            {
+              "bsId": "a1e1-b2e2-c3e3-d4e4",
+              "id": "procession-of-the-sacred-affliction/the-knights-of-saint-lazarus",
+              "name": "The Knights of Saint Lazarus",
+              "rules": [
+                {
+                  "name": "Sacred Code",
+                  "text": "A Knights of Saint Lazarus Warband must include 1-6 Stigmatic Nuns. It cannot include Lazarist Communicants or Lazarist Castigators, and its models cannot voluntarily take a Retreat ACTION."
+                },
+                {
+                  "name": "Knightly Order",
+                  "text": "A Knights of Saint Lazarus Warband must include 1-3 Leper-Knights. Leper-Knights use the Lazarist Castigator Warband entry, but must wear Armour, have a Melee Characteristic of +2 DICE, and replace Whip of God with Knightly Code."
+                },
+                {
+                  "name": "Blessed Armoury",
+                  "text": "Automatic Pistols cost 15 ducats and Great Swords cost 7 ducats. Models in this Warband cannot have Ranged Weapons that cost more than 15 ducats or any Glory."
+                },
+                {
+                  "name": "Followers of Saint Lazarus",
+                  "text": "A Knights of Saint Lazarus Warband may choose a Temporal Lord as its Patron in addition to the standard Patron options."
+                }
+              ],
+              "text": "Sacred Code: A Knights of Saint Lazarus Warband must include 1-6 Stigmatic Nuns. It cannot include Lazarist Communicants or Lazarist Castigators, and its models cannot voluntarily take a Retreat ACTION.\nKnightly Order: A Knights of Saint Lazarus Warband must include 1-3 Leper-Knights. Leper-Knights use the Lazarist Castigator Warband entry, but must wear Armour, have a Melee Characteristic of +2 DICE, and replace Whip of God with Knightly Code.\nBlessed Armoury: Automatic Pistols cost 15 ducats and Great Swords cost 7 ducats. Models in this Warband cannot have Ranged Weapons that cost more than 15 ducats or any Glory.\nFollowers of Saint Lazarus: A Knights of Saint Lazarus Warband may choose a Temporal Lord as its Patron in addition to the standard Patron options."
+            }
+          ]
+        }
+      ],
       "unitIds": [
         "trench-pilgrims/anchorite-shrine",
         "trench-pilgrims/captive-giant",
@@ -978,42 +1179,6 @@
           "text": "Day of His Wrath: The War Prophet of this Warband replaces their Laying on Hands ACTION with the following Day of his Wrath ACTION.\n* Day of His Wrath ACTION: A Cavalcade of the Tenth Plague War Prophet can take a Day of his Wrath ACTION. If they do so, take a Risky Success Roll for the model. If the roll is a Failure the War Prophet’s Activation ends immediately. If the roll is a Success, make an Injury Roll with the IGNORE ARMOUR Keyword for 1 enemy model within 3\" of the War Prophet. If the roll is a Critical Success, make an Injury Roll with +1 INJURY DICE and the IGNORE ARMOUR Keyword for 1 enemy model within 3\" of the War Prophet.\nStolen Communicants: Communicants cost 3 glory to recruit for a Cavalcade of the Tenth Plague Warband (they do not cost any ducats).\nHeaven Awaits: The Cavalcade rejects the doctrine of the Meta-Christ. Trench Pilgrims in a Cavalcade of the Tenth Plague Warband cannot be resurrected as Martyr-Penitents.\nThe Unclean: The Cavalcade detests using the unclean Ecclesiastic Prisoners. A Cavalcade of the Tenth Plague Warband can only have 0-2 Ecclesiastic Prisoners\nFavour of the Lord: At the start of each Turn, you can place 1 BLESSING MARKER next to a model from this Warband.\nBlood of the Lamb: Castigators in a Cavalcade of the Tenth Plague Warband have the TOUGH Keyword at no additional cost in ducats.\nOnly the Righteous: Any model with the PILGRIM Keyword in a Cavalcade of the Tenth Plague Warband (including an Anchorite Shrine) can have a Sacrifical Lamb at a cost of 5 ducats each, except for Ecclesiastic Prisoners."
         },
         {
-          "bsId": "0d88-774c-22af-e2fc",
-          "id": "trench-pilgrims/procession-of-the-sacred-affliction",
-          "name": "Procession of the Sacred Affliction",
-          "rules": [
-            {
-              "name": "Face Thy Fears",
-              "text": "Models in a Procession of the Sacred Affliction Warband cannot have Iron Capirotes. Ecclesiastic Prisoners in a Procession of the Sacred Affliction Warband do not have Iron Capirotes, but their cost remains the same."
-            },
-            {
-              "name": "Hammer and the Anvil",
-              "text": "Anti-Tank Hammers taken for a Procession of the Sacred Affliction Warband do not have the (ELITE only) restriction."
-            },
-            {
-              "name": "Reliquary Armoury",
-              "text": "Holy Icon Shields cost 20 ducats for a Procession of the Sacred Affliction Warband and do not have the (ELITE only) restriction."
-            },
-            {
-              "name": "Punishing Millstones",
-              "text": "Add +1 INJURY DICE for Melee Attacks made by models from a Procession of the Sacred Affliction if the target is Down. This special rule does not apply to attacks made by Ecclesiastic Prisoners."
-            },
-            {
-              "name": "Melee-Focused",
-              "text": "Models in a Procession of the Sacred Affliction Warband cannot have any Machine Guns, and Punt Guns have the (Limit: 1) stipulation."
-            },
-            {
-              "name": "Zealot Strength",
-              "text": "Up to three Trench Pilgrims and/or Martyr-Penitents in a Procession of the Sacred Affliction Warband can have Zealot Strength instead of only one."
-            },
-            {
-              "name": "Wrath of God",
-              "text": "Up to 1 Castigator, or Trench Pilgrim, or Martyr Penitent can have the Wrath of God special rule at a cost of 15 ducats. BLOOD MARKERS are never placed next to a model with the Wrath of God special rule, and it has the NEGATE FEAR Keyword. It cannot be Broken on the Wheel by an Anchorite Shrine. A model with the Wrath of God special rule cannot have Ranged Weapons or Armour (it can have a Shield). In addition, change the base size of the model to 32mm."
-            }
-          ],
-          "text": "Face Thy Fears: Models in a Procession of the Sacred Affliction Warband cannot have Iron Capirotes. Ecclesiastic Prisoners in a Procession of the Sacred Affliction Warband do not have Iron Capirotes, but their cost remains the same.\nHammer and the Anvil: Anti-Tank Hammers taken for a Procession of the Sacred Affliction Warband do not have the (ELITE only) restriction.\nReliquary Armoury: Holy Icon Shields cost 20 ducats for a Procession of the Sacred Affliction Warband and do not have the (ELITE only) restriction.\nPunishing Millstones: Add +1 INJURY DICE for Melee Attacks made by models from a Procession of the Sacred Affliction if the target is Down. This special rule does not apply to attacks made by Ecclesiastic Prisoners.\nMelee-Focused: Models in a Procession of the Sacred Affliction Warband cannot have any Machine Guns, and Punt Guns have the (Limit: 1) stipulation.\nZealot Strength: Up to three Trench Pilgrims and/or Martyr-Penitents in a Procession of the Sacred Affliction Warband can have Zealot Strength instead of only one.\nWrath of God: Up to 1 Castigator, or Trench Pilgrim, or Martyr Penitent can have the Wrath of God special rule at a cost of 15 ducats. BLOOD MARKERS are never placed next to a model with the Wrath of God special rule, and it has the NEGATE FEAR Keyword. It cannot be Broken on the Wheel by an Anchorite Shrine. A model with the Wrath of God special rule cannot have Ranged Weapons or Armour (it can have a Shield). In addition, change the base size of the model to 32mm."
-        },
-        {
           "bsId": "52bc-6b21-136a-608d",
           "id": "trench-pilgrims/war-pilgrimage-of-saint-methodius",
           "name": "War Pilgrimage of Saint Methodius",
@@ -1062,27 +1227,32 @@
       "Black Grail": {
         "bsId": "0b26-15c1-cebd-0077",
         "file": "Black Grail.cat",
-        "revision": "13"
+        "revision": "17"
       },
       "Campaign Rules": {
         "bsId": "ba52-3616-d7f9-8d0c",
         "file": "Campaign Rules.cat",
-        "revision": "5"
+        "revision": "11"
       },
       "Court of the Seven-Headed Serpent": {
         "bsId": "44b9-e92b-2dc0-6820",
         "file": "Court of the Seven-Headed Serpent.cat",
-        "revision": "10"
+        "revision": "11"
       },
       "Heretic Legion": {
         "bsId": "6941-ec54-3001-8288",
         "file": "Heretic Legion.cat",
-        "revision": "24"
+        "revision": "31"
+      },
+      "Heretic Naval Raiders": {
+        "bsId": "6497-8a39-4f5c-9873",
+        "file": "Heretic Naval Raiders.cat",
+        "revision": "7"
       },
       "Iron Sultanate": {
         "bsId": "72ab-daa4-80ee-e9a5",
         "file": "Iron Sultanate.cat",
-        "revision": "14"
+        "revision": "19"
       },
       "Melee Weapons": {
         "bsId": "7595-974a-7451-6c2e",
@@ -1092,38 +1262,50 @@
       "Mercenaries": {
         "bsId": "f569-e9dd-327a-5735",
         "file": "Mercenaries.cat",
-        "revision": "8"
+        "revision": "12"
       },
       "New Antioch": {
         "bsId": "707d-5bdf-586e-f704",
         "file": "New Antioch.cat",
-        "revision": "13"
+        "revision": "17"
+      },
+      "Procession of the Sacred Affliction": {
+        "bsId": "c421-32f4-581e-9fb6",
+        "file": "Procession of the Sacred Affliction.cat",
+        "revision": "12"
       },
       "Ranged Weapons": {
         "bsId": "8ef4-3a38-8adb-53ba",
         "file": "Ranged Weapons.cat",
-        "revision": "1"
+        "revision": "2"
       },
       "Trench Pilgrims": {
         "bsId": "d54d-055d-bbc0-a20f",
         "file": "Trench Pilgrims.cat",
-        "revision": "7"
+        "revision": "20"
       }
     },
-    "commit": "45d187c6fde12d6c073f620098f182681350d6c8",
-    "edition": "BattleScribe gameSystem 'Trench Crusade' revision 17",
+    "commit": "568e5abc5a87d4a068cb20612ad73af69f4f3696",
+    "edition": "BattleScribe gameSystem 'Trench Crusade' revision 18",
     "file": "Trench Crusade.gst",
     "gameSystem": {
       "bsId": "sys-4f3d-c5c9-7df1-ad01",
       "file": "Trench Crusade.gst",
-      "revision": "17"
+      "revision": "18"
     },
     "generator": "scripts/convert_newrecruit.py",
     "pdfOverrides": {
       "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86",
+      "compendia": {
+        "Heretic-Naval-Raiders-Warband.pdf": {
+          "covers": "heretic-legion subfaction heretic-naval-raiders",
+          "edition": "1.0.2",
+          "note": "overrides citing it carry source: Heretic-Naval-Raiders-Warband.pdf; their page numbers are that PDF's"
+        }
+      },
       "edition": "1.0.2",
       "file": "Warbands-of-Trench-Crusade.pdf"
     },
-    "repo": "https://github.com/Fawkstrot11/TrenchCrusade"
+    "repo": "https://github.com/TrenchCrusade-NewRecruit/TrenchCrusade"
   }
 }

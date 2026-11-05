@@ -1,4 +1,4 @@
-import type { RulesData, ValidationResult, Warband, WarbandCost, WarbandThreshold } from "@tc/rules/browser";
+import { findSubfaction, rosterVariants, type RulesData, type ValidationResult, type Warband, type WarbandCost, type WarbandThreshold } from "@tc/rules/browser";
 import type { Dispatch } from "react";
 import { Link } from "react-router-dom";
 import type { RosterAction } from "../roster/reducer.js";
@@ -30,7 +30,8 @@ const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 /** Shown above all three warband screens: the name (always editable), the fixed campaign facts, totals (current → after while purchases are pending), the legality badge, Confirm/Discard and Save. */
 export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, onConfirm, onDiscard, threshold, validation, code, base, dirty, busy, error, onSave, dispatch }: Props) {
   const faction = rules.factionsById.get(warband.factionId);
-  const variant = faction?.variants.find((v) => v.id === warband.variantId);
+  const subfaction = findSubfaction(rules, warband);
+  const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
   const pool = warband.glory ?? (warband.gameNumber === 1 ? (variant?.startingGlory ?? 0) : undefined);
   const over = cost.ducats > threshold.value;
@@ -50,6 +51,7 @@ export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, 
         />
         <div className={styles.meta}>
           {faction?.name ?? warband.factionId}
+          {subfaction && ` · ${subfaction.name}`}
           {variant && ` · ${variant.name}`}
           {patron && ` · ${patron.name}`}
           {` · Game ${warband.gameNumber}`}

@@ -36,6 +36,20 @@ describe("unitRows", () => {
     expect(names(antioch())).toContain("Sniper Priest");
   });
 
+  it("lists a subfaction's own units instead of its faction's core list", () => {
+    const raiders = createWarband({ name: "t", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" }, "w");
+    const listed = names(raiders);
+    expect(listed).toEqual(expect.arrayContaining(["Heretic Captain", "Heretic Raider", "Anointed Heretic Raider", "Sea Hag", "Abyssal Commando", "Drowned Chorister", "Wretched"]));
+    expect(listed).not.toContain("Heretic Priest");
+    expect(listed).not.toContain("Heretic Trooper");
+    const core = names(createWarband({ name: "t", factionId: "heretic-legion" }, "w"));
+    expect(core).toContain("Heretic Priest");
+    expect(core).not.toContain("Heretic Captain");
+    const shoal = createWarband({ name: "t", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders", variantId: "heretic-naval-raiders/the-leviathan-shoal" }, "w");
+    expect(unitRows(shoal, data, ctxFor(shoal)).rows.find((r) => r.unit.name === "Anointed Heretic Raider")).toMatchObject({ max: 4 });
+    expect(unitRows(raiders, data, ctxFor(raiders)).rows.find((r) => r.unit.name === "Anointed Heretic Raider")).toMatchObject({ max: 2 });
+  });
+
   it("leaves out units behind gates the data cannot count and only tallies them", () => {
     const listing = unitRows(antioch(), data, ctxFor(antioch()));
     const listed = listing.rows.map((r) => r.unit.name);

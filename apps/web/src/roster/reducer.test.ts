@@ -10,6 +10,10 @@ describe("createWarband", () => {
     expect(WarbandSchema.parse(w)).toEqual(w);
     expect(w).toEqual({ id: "w-test", name: "Lanterns", factionId: "new-antioch", gameNumber: 1, members: [] });
     expect(createWarband({ name: "x", factionId: "f", variantId: "f/v", patronId: "p", gameNumber: 3 }, "id")).toMatchObject({ variantId: "f/v", patronId: "p", gameNumber: 3 });
+    const sub = createWarband({ name: "x", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" }, "id");
+    expect(WarbandSchema.parse(sub)).toEqual(sub);
+    expect(sub).toMatchObject({ factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" });
+    expect("subfactionId" in w).toBe(false);
     expect(createWarband({ name: "x", factionId: "f" }).id).toMatch(/^[0-9a-f-]{36}$/);
   });
 });

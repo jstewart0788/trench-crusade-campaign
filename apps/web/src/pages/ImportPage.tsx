@@ -1,4 +1,4 @@
-import { findUnit, importNewRecruit, unzipRoster, upgradeFor, validateWarband, warbandCost, type ImportResult, type RulesData } from "@tc/rules/browser";
+import { findSubfaction, findUnit, importNewRecruit, rosterVariants, unzipRoster, upgradeFor, validateWarband, warbandCost, type ImportResult, type RulesData } from "@tc/rules/browser";
 import { useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { memberTitle, priceText } from "../roster/select.js";
@@ -94,7 +94,8 @@ export function ImportPage() {
 function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: RulesData; fileName: string; result: ImportResult; hadDraft: boolean; onCreate: () => void }) {
   const { warband, unresolved, source } = result;
   const faction = rules.factionsById.get(warband.factionId);
-  const variant = faction?.variants.find((v) => v.id === warband.variantId);
+  const subfaction = findSubfaction(rules, warband);
+  const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
   const cost = warbandCost(warband, rules);
   const validation = validateWarband(warband, rules);
@@ -111,8 +112,14 @@ function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: Rules
           <dt>Faction</dt>
           <dd>
             {faction?.name ?? warband.factionId}
-            {source.catalogue && source.catalogue !== faction?.name && <span className="muted"> (catalogue "{source.catalogue}")</span>}
+            {source.catalogue && source.catalogue !== (subfaction ?? faction)?.name && <span className="muted"> (catalogue "{source.catalogue}")</span>}
           </dd>
+          {subfaction && (
+            <>
+              <dt>Subfaction</dt>
+              <dd>{subfaction.name}</dd>
+            </>
+          )}
           <dt>Variant</dt>
           <dd>{variant?.name ?? <span className="muted">None</span>}</dd>
           <dt>Patron</dt>
@@ -136,7 +143,7 @@ function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: Rules
         </h2>
         <ul className={styles.members}>
           {warband.members.map((m) => {
-            const unit = findUnit(rules, warband.factionId, m.unitId);
+            const unit = findUnit(rules, warband, m.unitId);
             const kit = [...m.equipmentItemIds.map((id) => rules.equipmentById.get(id)?.name ?? id), ...(m.upgradeIds ?? []).map((id) => (unit && upgradeFor(unit, id)?.name) ?? id)];
             const perMember = cost.perMember.find((c) => c.memberId === m.id);
             return (

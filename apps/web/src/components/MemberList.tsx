@@ -1,4 +1,4 @@
-import { findUnit, upgradeFor, type MemberCost, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
+import { findUnit, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
 import { priceText } from "../roster/select.js";
@@ -7,7 +7,7 @@ import styles from "./MemberList.module.css";
 
 interface Props {
   rows: StagedMemberRow[];
-  factionId: string;
+  roster: RosterScope;
   rules: RulesData;
   cost: WarbandCost;
   validation: ValidationResult;
@@ -22,7 +22,7 @@ interface Props {
   };
 }
 
-export function MemberList({ rows, factionId, rules, cost, validation, base, onRename, manage }: Props) {
+export function MemberList({ rows, roster, rules, cost, validation, base, onRename, manage }: Props) {
   if (rows.length === 0) {
     return (
       <div className={`panel ${styles.empty}`}>
@@ -36,7 +36,7 @@ export function MemberList({ rows, factionId, rules, cost, validation, base, onR
         <MemberRow
           key={row.member.id}
           row={row}
-          unit={findUnit(rules, factionId, row.member.unitId)}
+          unit={findUnit(rules, roster, row.member.unitId)}
           cost={cost.perMember.find((c) => c.memberId === row.member.id)}
           issues={validation.errors.filter((e) => e.memberId === row.member.id).length}
           rules={rules}

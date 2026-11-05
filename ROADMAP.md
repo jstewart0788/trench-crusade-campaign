@@ -213,6 +213,12 @@ stored relative to the surface they settled on; one asset, 190e71cef1e2, is a 40
 units, defaults only · TC-003b ✅ (744 unavailable rows dropped, overrides 174 → 163; one PDF
 disagreement left: Death Commando Binoculars missing upstream). Next: TC-014, TC-016, TC-017, TC-010.
 
+**Data source moved 2026-11-04 (TC-002b):** NewRecruit now publishes from TrenchCrusade-NewRecruit/TrenchCrusade
+(@568e5abc), which adds subfaction catalogues (Heretic Naval Raiders, Procession of the Sacred Affliction).
+Modelled nested per Jonathan: faction → subfaction → variant; `Warband.subfactionId`. Overrides 163 → 154
+(+15 from the Naval Raiders PDF). Procession is data-only and unverified (no local PDF). Item id
+`anti-material-rifle` became `anti-materiel-rifle` upstream.
+
 **Follow-ups from the 2026-11-04 adversarial QA pass** (data correctness, not blocking Phase 1 start):
 - TC-003b Converter condition handling: "X only" items leak onto every unit as a `conditionNote`
   (Brazen Bull-only weapons on all Sultanate units, Heavy Ballistic Shield on Yeomen, Court

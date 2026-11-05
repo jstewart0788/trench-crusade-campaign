@@ -18,7 +18,7 @@ export function ValidationPanel({ warband, rules, validation, linkTo }: Props) {
 
   const subject = (memberId?: string, unitId?: string) => {
     const member = memberId ? warband.members.find((m) => m.id === memberId) : undefined;
-    if (member) return memberLabel(member, findUnit(rules, warband.factionId, member.unitId));
+    if (member) return memberLabel(member, findUnit(rules, warband, member.unitId));
     if (unitId) return rules.unitsById.get(unitId)?.name ?? unitId;
     return undefined;
   };

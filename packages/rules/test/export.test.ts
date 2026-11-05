@@ -47,6 +47,7 @@ describe("toWarbandExport", () => {
       name: "Test warband",
       gameNumber: 1,
       faction: { id: "new-antioch", name: "New Antioch" },
+      subfaction: null,
       variant: null,
       patron: null,
       totals: { ducats: 318, glory: 0 },
@@ -65,6 +66,20 @@ describe("toWarbandExport", () => {
     const broke = toWarbandExport(fixtureWarband({ members: [...fixtureWarband().members, member("new-antioch/lieutenant", [])] }), data(), { code: CODE, now: NOW });
     expect(broke.warband.valid).toBe(false);
     expect(broke.warband.errorCount).toBeGreaterThan(0);
+  });
+
+  it("names the subfaction next to the faction and takes its variant from the subfaction", () => {
+    const raiders = warband("heretic-legion", [member("heretic-naval-raiders/heretic-captain", ["submachine-gun"])], {
+      subfactionId: "heretic-naval-raiders",
+      variantId: "heretic-naval-raiders/the-leviathan-shoal",
+    });
+    const out = toWarbandExport(raiders, data(), { code: CODE, now: NOW });
+    expect(out.warband.faction).toEqual({ id: "heretic-legion", name: "Heretic Legion" });
+    expect(out.warband.subfaction).toEqual({ id: "heretic-naval-raiders", name: "Heretic Naval Raiders" });
+    expect(out.warband.variant).toEqual({ id: "heretic-naval-raiders/the-leviathan-shoal", name: "The Leviathan Shoal" });
+    expect(out.members[0]!.equipment[0]!.cost).toEqual({ ducats: 25, glory: 0 });
+    expect(WarbandExport.parse(out)).toEqual(out);
+    expect(() => toWarbandExport({ ...raiders, subfactionId: "atlantis" }, data(), { code: CODE })).toThrow(/Unknown subfaction/);
   });
 
   it("reports armour as base plus worn armour and shield, with the breakdown naming the items", () => {

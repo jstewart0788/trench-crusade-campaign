@@ -8,6 +8,7 @@ import {
   Faction,
   FactionsFile,
   ScenariosFile,
+  Subfaction,
   TerrainFile,
   Unit,
   UnitsFile,
@@ -51,7 +52,24 @@ export const RosterVariant = Faction.shape.variants.element.extend({
 });
 export type RosterVariant = z.infer<typeof RosterVariant>;
 
-export const RosterFaction = Faction.extend({ variants: z.array(RosterVariant) });
+// A configuration entry the roster always contains (a subfaction's "<Name> Rules"),
+// so limit text that counts it reads 1.
+const Configuration = z.object({ name: z.string(), bsId: z.string(), mandatory: z.boolean().optional() }).passthrough();
+
+// bsId is the BattleScribe catalogue id the list was converted from; the importer matches a roster's force by it.
+export const RosterSubfaction = Subfaction.extend({
+  bsId: z.string().optional(),
+  variants: z.array(RosterVariant),
+  configuration: z.array(Configuration).optional(),
+});
+export type RosterSubfaction = z.infer<typeof RosterSubfaction>;
+
+export const RosterFaction = Faction.extend({
+  bsId: z.string().optional(),
+  variants: z.array(RosterVariant),
+  configuration: z.array(Configuration).optional(),
+  subfactions: z.array(RosterSubfaction).optional(),
+});
 export type RosterFaction = z.infer<typeof RosterFaction>;
 
 export const RosterAccess = EquipmentAccess.extend({
@@ -153,10 +171,14 @@ export interface RulesData {
   scenarios: Scenarios;
   terrain: Terrain;
   factionsById: Map<string, RosterFaction>;
+  /** Subfaction id -> the subfaction and the faction it belongs to. */
+  subfactionsById: Map<string, { faction: RosterFaction; subfaction: RosterSubfaction }>;
   unitsById: Map<string, RosterUnit>;
+  /** A faction's core list: its units that belong to no subfaction. */
   unitsByFaction: Map<string, RosterUnit[]>;
+  unitsBySubfaction: Map<string, RosterUnit[]>;
   equipmentById: Map<string, EquipmentItem>;
-  variantsById: Map<string, { factionId: string; id: string; name: string }>;
+  variantsById: Map<string, { factionId: string; subfactionId?: string; id: string; name: string }>;
   thresholdTable: ThresholdRow[];
   /** Present when data/tts/models.json was supplied. */
   models?: ModelMap;
@@ -219,15 +241,22 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
   const equipment = equipmentFile.items;
 
   const unitsByFaction = new Map<string, RosterUnit[]>();
+  const unitsBySubfaction = new Map<string, RosterUnit[]>();
   for (const unit of units) {
-    const list = unitsByFaction.get(unit.factionId) ?? [];
+    const [map, key] = unit.subfactionId ? [unitsBySubfaction, unit.subfactionId] : [unitsByFaction, unit.factionId];
+    const list = map.get(key) ?? [];
     list.push(unit);
-    unitsByFaction.set(unit.factionId, list);
+    map.set(key, list);
   }
 
-  const variantsById = new Map<string, { factionId: string; id: string; name: string }>();
+  const subfactionsById = new Map<string, { faction: RosterFaction; subfaction: RosterSubfaction }>();
+  const variantsById = new Map<string, { factionId: string; subfactionId?: string; id: string; name: string }>();
   for (const faction of factions) {
     for (const v of faction.variants) variantsById.set(v.id, { factionId: faction.id, id: v.id, name: v.name });
+    for (const subfaction of faction.subfactions ?? []) {
+      subfactionsById.set(subfaction.id, { faction, subfaction });
+      for (const v of subfaction.variants) variantsById.set(v.id, { factionId: faction.id, subfactionId: subfaction.id, id: v.id, name: v.name });
+    }
   }
 
   return {
@@ -238,8 +267,10 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
     scenarios,
     terrain,
     factionsById: new Map(factions.map((f) => [f.id, f])),
+    subfactionsById,
     unitsById: new Map(units.map((u) => [u.id, u])),
     unitsByFaction,
+    unitsBySubfaction,
     equipmentById: new Map(equipment.map((e) => [e.id, e])),
     variantsById,
     thresholdTable: [...table.data].sort((a, b) => a.game - b.game),
@@ -266,15 +297,45 @@ export function buildModelMap(raw: unknown): ModelMap {
   return { byUnitId };
 }
 
+/** Which roster list a warband draws from: a faction's core list, or one of its subfactions. */
+export interface RosterScope {
+  factionId: string;
+  subfactionId?: string | undefined;
+}
+
+/** The subfaction a scope names, when it names one that belongs to its faction. */
+export function findSubfaction(data: RulesData, scope: RosterScope): RosterSubfaction | undefined {
+  if (scope.subfactionId === undefined) return undefined;
+  const entry = data.subfactionsById.get(scope.subfactionId);
+  return entry && entry.faction.id === scope.factionId ? entry.subfaction : undefined;
+}
+
+/** The units the warband can recruit: the subfaction's list when one is set, else the faction's core list. */
+export function rosterUnits(data: RulesData, scope: RosterScope): RosterUnit[] {
+  if (scope.subfactionId !== undefined) return data.unitsBySubfaction.get(scope.subfactionId) ?? [];
+  return data.unitsByFaction.get(scope.factionId) ?? [];
+}
+
+/** The Warband Variants on offer: the subfaction's own when one is set, else the faction's. */
+export function rosterVariants(data: RulesData, scope: RosterScope): RosterVariant[] {
+  if (scope.subfactionId !== undefined) return findSubfaction(data, scope)?.variants ?? [];
+  return data.factionsById.get(scope.factionId)?.variants ?? [];
+}
+
+/** True when the unit belongs to the scope's roster list. */
+export function inRosterList(unit: RosterUnit, scope: RosterScope): boolean {
+  return unit.factionId === scope.factionId && unit.subfactionId === scope.subfactionId;
+}
+
 /**
- * Looks a roster unitId up for a given faction. Mercenaries are stored once
- * per faction as `<faction>/<slug>` with a shared `mercenaryId`; a roster may
- * name either, and the faction's own row wins.
+ * Looks a roster unitId up for a given roster list. Mercenaries are stored
+ * once per list as `<list>/<slug>` with a shared `mercenaryId`; a roster may
+ * name either, and the list's own row wins.
  */
-export function findUnit(data: RulesData, factionId: string, unitId: string): RosterUnit | undefined {
+export function findUnit(data: RulesData, scope: RosterScope, unitId: string): RosterUnit | undefined {
   const direct = data.unitsById.get(unitId);
   if (direct) return direct;
-  return data.unitsByFaction.get(factionId)?.find((u) => u.mercenaryId === unitId);
+  return rosterUnits(data, scope).find((u) => u.mercenaryId === unitId);
 }
 
 export function accessFor(unit: RosterUnit, itemId: string): RosterAccess | undefined {

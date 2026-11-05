@@ -1,3 +1,4 @@
+import { findSubfaction, rosterVariants } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { MemberList } from "../components/MemberList.js";
 import { TtsCode } from "../components/TtsCode.js";
@@ -8,7 +9,8 @@ import styles from "./WarbandScreen.module.css";
 export function WarbandScreen() {
   const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage } = useWarband();
   const faction = rules.factionsById.get(warband.factionId);
-  const variant = faction?.variants.find((v) => v.id === warband.variantId);
+  const subfaction = findSubfaction(rules, warband);
+  const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
   const pool = warband.glory ?? (warband.gameNumber === 1 ? (variant?.startingGlory ?? 0) : undefined);
   const over = cost.ducats > threshold.value;
@@ -26,6 +28,12 @@ export function WarbandScreen() {
           <dl className={styles.facts}>
             <dt>Faction</dt>
             <dd>{faction?.name ?? warband.factionId}</dd>
+            {(subfaction || faction?.subfactions?.length) && (
+              <>
+                <dt>Subfaction</dt>
+                <dd>{subfaction?.name ?? <span className="muted">None (core list)</span>}</dd>
+              </>
+            )}
             <dt>Variant</dt>
             <dd>{variant?.name ?? <span className="muted">None</span>}</dd>
             <dt>Patron</dt>
@@ -42,7 +50,7 @@ export function WarbandScreen() {
               {cost.glory} spent{pool !== undefined ? ` of ${pool}` : ""}
             </dd>
           </dl>
-          <p className="quiet">Faction, variant, patron, game and purse are fixed at creation; campaign play will move them later.</p>
+          <p className="quiet">Faction, subfaction, variant, patron, game and purse are fixed at creation; campaign play will move them later.</p>
         </section>
         <section className="panel">
           <h2>TTS import</h2>
@@ -59,7 +67,7 @@ export function WarbandScreen() {
         </div>
         <MemberList
           rows={rows}
-          factionId={warband.factionId}
+          roster={warband}
           rules={rules}
           cost={cost}
           validation={validation}

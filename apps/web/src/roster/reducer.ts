@@ -26,6 +26,7 @@ export type RosterAction =
 export interface NewWarbandInit {
   name: string;
   factionId: string;
+  subfactionId?: string;
   variantId?: string;
   patronId?: string;
   gameNumber?: number;
@@ -33,6 +34,7 @@ export interface NewWarbandInit {
 
 export function createWarband(init: NewWarbandInit, id: string = crypto.randomUUID()): Warband {
   const warband: Warband = { id, name: init.name, factionId: init.factionId, gameNumber: init.gameNumber ?? 1, members: [] };
+  if (init.subfactionId) warband.subfactionId = init.subfactionId;
   if (init.variantId) warband.variantId = init.variantId;
   if (init.patronId) warband.patronId = init.patronId;
   return warband;

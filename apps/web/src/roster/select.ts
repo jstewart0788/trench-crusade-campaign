@@ -3,6 +3,7 @@ import {
   findUnit,
   itemCost,
   resolveLimit,
+  rosterUnits,
   unitLimits,
   upgradeFor,
   type EquipmentItem,
@@ -54,12 +55,12 @@ export interface UnitListing {
 export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): UnitListing {
   const counts = new Map<string, number>();
   for (const m of warband.members) {
-    const unit = findUnit(data, warband.factionId, m.unitId);
+    const unit = findUnit(data, warband, m.unitId);
     if (unit) counts.set(unit.id, (counts.get(unit.id) ?? 0) + 1);
   }
   const rows: UnitRow[] = [];
   let uncheckable = 0;
-  for (const unit of data.unitsByFaction.get(warband.factionId) ?? []) {
+  for (const unit of rosterUnits(data, warband)) {
     if (unit.kind === "fireteam") continue;
     const status = gateStatus(evaluateGates(unit.onlyWith, unit.onlyWithout, warband, data, ctx));
     if (status === "uncheckable") uncheckable += 1;
@@ -160,7 +161,7 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
     const row: AccessRow = {
       access,
       item,
-      cost: itemCost(data, warband.factionId, member.unitId, access.itemId),
+      cost: itemCost(data, warband, member.unitId, access.itemId),
       count,
       max,
       atMax: max !== null && count >= max,

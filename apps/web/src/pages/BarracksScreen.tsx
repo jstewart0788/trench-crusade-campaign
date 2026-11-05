@@ -19,7 +19,7 @@ export function BarracksScreen() {
         </h2>
         <MemberList
           rows={rows}
-          factionId={warband.factionId}
+          roster={warband}
           rules={rules}
           cost={cost}
           validation={validation}

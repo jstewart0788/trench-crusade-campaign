@@ -3,7 +3,11 @@ import { warbandCost } from "./cost.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
   accessFor,
+  findSubfaction,
   findUnit,
+  inRosterList,
+  rosterUnits,
+  rosterVariants,
   thresholdFor,
   upgradeFor,
   type Campaign,
@@ -19,6 +23,7 @@ import type { EquipmentItem } from "./schema.js";
 export const ROSTER_ERROR_CODES = [
   "roster-invalid",
   "faction-unknown",
+  "subfaction-unknown",
   "variant-unknown",
   "patron-unknown",
   "patron-faction",
@@ -118,8 +123,16 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     return done();
   }
 
-  if (warband.variantId !== undefined && !faction.variants.some((v) => v.id === warband.variantId)) {
-    fail({ code: "variant-unknown", message: `"${warband.variantId}" is not a variant of ${faction.name}` });
+  const subfaction = findSubfaction(data, warband);
+  if (warband.subfactionId !== undefined && !subfaction) {
+    fail({ code: "subfaction-unknown", message: `"${warband.subfactionId}" is not a subfaction of ${faction.name}` });
+    return done();
+  }
+  const listName = subfaction?.name ?? faction.name;
+
+  const variants = rosterVariants(data, warband);
+  if (warband.variantId !== undefined && !variants.some((v) => v.id === warband.variantId)) {
+    fail({ code: "variant-unknown", message: `"${warband.variantId}" is not a variant of ${listName}` });
   }
 
   if (warband.patronId !== undefined) {
@@ -132,17 +145,17 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
 
   const members: ResolvedMember[] = [];
   for (const member of warband.members) {
-    const unit = findUnit(data, warband.factionId, member.unitId);
+    const unit = findUnit(data, warband, member.unitId);
     if (!unit) {
       fail({ code: "unit-unknown", memberId: member.id, unitId: member.unitId, message: `Unknown unit "${member.unitId}"` });
       continue;
     }
-    if (unit.factionId !== warband.factionId) {
+    if (!inRosterList(unit, warband)) {
       fail({
         code: "unit-faction",
         memberId: member.id,
         unitId: unit.id,
-        message: `${unit.name} belongs to ${unit.factionId}, not ${faction.name}`,
+        message: `${unit.name} belongs to ${unit.subfactionId ?? unit.factionId}, not ${listName}`,
       });
       continue;
     }
@@ -153,7 +166,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   }
 
   const ctx = buildLimitContext(warband, data, members);
-  const variant = faction.variants.find((v) => v.id === warband.variantId);
+  const variant = variants.find((v) => v.id === warband.variantId);
 
   // Digital Rulebook p97–98: total cost (models, Battlekit, paid upgrades) must
   // not exceed the Threshold Value for the game being played. A variant that
@@ -179,7 +192,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     fail({ code: "over-glory", message: `Warband spends ${cost.glory} Glory Points but only ${glory} are available` });
   }
 
-  checkUnitCounts(warband, faction.id, data, members, ctx, fail, warn);
+  checkUnitCounts(warband, data, members, ctx, fail, warn);
 
   const elites = members.filter((m) => m.unit.elite).length;
   if (elites > MAX_ELITES) {
@@ -240,7 +253,7 @@ function sameFactionName(a: string, b: string): boolean {
   return norm(a) === norm(b);
 }
 
-/** Patrons that sponsor the faction (campaign.json spells faction names slightly differently from factions.json). */
+/** Patrons that sponsor the faction (campaign.json spells faction names slightly differently from factions.json). A subfaction takes its faction's patrons. */
 export function patronsForFaction(data: RulesData, factionId: string): Campaign["patrons"] {
   const faction = data.factionsById.get(factionId);
   if (!faction) return [];
@@ -260,10 +273,10 @@ export interface WarbandThreshold {
  * the shortfall of a variant that starts with a smaller purse (Papal States:
  * "Threshold Value is reduced by 200", Warbands p35).
  */
-export function warbandThreshold(warband: Pick<Warband, "factionId" | "variantId" | "gameNumber">, data: RulesData): WarbandThreshold {
+export function warbandThreshold(warband: Pick<Warband, "factionId" | "subfactionId" | "variantId" | "gameNumber">, data: RulesData): WarbandThreshold {
   const t = thresholdFor(data, warband.gameNumber);
   let value = t.row.threshold;
-  const variant = data.factionsById.get(warband.factionId)?.variants.find((v) => v.id === warband.variantId);
+  const variant = rosterVariants(data, warband).find((v) => v.id === warband.variantId);
   if (variant?.startingDucats !== undefined) value -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
   return { value, row: t.row, clamped: t.clamped };
 }
@@ -272,8 +285,8 @@ export function warbandThreshold(warband: Pick<Warband, "factionId" | "variantId
 export function limitContext(warband: Warband, data: RulesData): LimitContext {
   const members: ResolvedMember[] = [];
   for (const member of warband.members) {
-    const unit = findUnit(data, warband.factionId, member.unitId);
-    if (unit && unit.factionId === warband.factionId) members.push({ member, unit });
+    const unit = findUnit(data, warband, member.unitId);
+    if (unit && inRosterList(unit, warband)) members.push({ member, unit });
   }
   return buildLimitContext(warband, data, members);
 }
@@ -340,7 +353,9 @@ function warnUnresolved(
 
 function buildLimitContext(warband: Warband, data: RulesData, members: ResolvedMember[]): LimitContext {
   const variants = new Map<string, string>();
-  for (const v of data.factionsById.get(warband.factionId)?.variants ?? []) variants.set(normaliseName(v.name), v.id);
+  for (const v of rosterVariants(data, warband)) variants.set(normaliseName(v.name), v.id);
+  const list = findSubfaction(data, warband) ?? data.factionsById.get(warband.factionId);
+  const mandatory = new Set((list?.configuration ?? []).filter((c) => c.mandatory).map((c) => normaliseName(c.name)));
 
   const unitCounts = new Map<string, number>();
   const itemCounts = new Map<string, number>();
@@ -358,17 +373,17 @@ function buildLimitContext(warband: Warband, data: RulesData, members: ResolvedM
     }
   }
 
-  const knownUnits = new Set((data.unitsByFaction.get(warband.factionId) ?? []).map((u) => normaliseName(u.name)));
+  const units = rosterUnits(data, warband);
+  const knownUnits = new Set(units.map((u) => normaliseName(u.name)));
   const knownItems = new Set(data.equipment.map((e) => normaliseName(e.name)));
-  const knownUpgrades = new Set(
-    (data.unitsByFaction.get(warband.factionId) ?? []).flatMap((u) => (u.upgrades ?? []).map((g) => normaliseName(g.name))),
-  );
+  const knownUpgrades = new Set(units.flatMap((u) => (u.upgrades ?? []).map((g) => normaliseName(g.name))));
 
   return {
     count(name) {
       const key = normaliseName(name);
       const variantId = variants.get(key);
       if (variantId !== undefined) return warband.variantId === variantId ? 1 : 0;
+      if (mandatory.has(key)) return 1;
       let known = false;
       let total = 0;
       if (knownUnits.has(key)) (known = true), (total += unitCounts.get(key) ?? 0);
@@ -469,7 +484,6 @@ function unitAvailable(unit: RosterUnit, warband: Warband, data: RulesData, ctx:
 // Mercenaries (p172) are per-faction rows with their own 0-1 limits.
 function checkUnitCounts(
   warband: Warband,
-  factionId: string,
   data: RulesData,
   members: ResolvedMember[],
   ctx: LimitContext,
@@ -479,7 +493,7 @@ function checkUnitCounts(
   const counts = new Map<string, number>();
   for (const { unit } of members) counts.set(unit.id, (counts.get(unit.id) ?? 0) + 1);
 
-  for (const unit of data.unitsByFaction.get(factionId) ?? []) {
+  for (const unit of rosterUnits(data, warband)) {
     const count = counts.get(unit.id) ?? 0;
     const where = { unitId: unit.id };
 

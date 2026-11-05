@@ -1,4 +1,4 @@
-import { accessFor, findUnit, upgradeFor, type RulesData } from "./data.js";
+import { accessFor, findUnit, upgradeFor, type RosterScope, type RulesData } from "./data.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import type { Cost } from "./schema.js";
 
@@ -37,18 +37,18 @@ function line(id: string, cost: Cost | undefined): LineCost {
  * they arrive with), are built-in and never charged unless the row prices them.
  * Unknown units or items cost nothing here; validateWarband reports them.
  */
-export function itemCost(data: RulesData, factionId: string, unitId: string, itemId: string): LineCost {
-  const unit = findUnit(data, factionId, unitId);
+export function itemCost(data: RulesData, scope: RosterScope, unitId: string, itemId: string): LineCost {
+  const unit = findUnit(data, scope, unitId);
   const access = unit ? accessFor(unit, itemId) : undefined;
   if (access?.cost) return line(itemId, access.cost);
   if (access?.fixed || access?.group === "loadout") return { ...ZERO, id: itemId };
   return line(itemId, data.equipmentById.get(itemId)?.cost);
 }
 
-export function memberCost(data: RulesData, factionId: string, member: WarbandMember): MemberCost {
-  const unit = findUnit(data, factionId, member.unitId);
+export function memberCost(data: RulesData, scope: RosterScope, member: WarbandMember): MemberCost {
+  const unit = findUnit(data, scope, member.unitId);
   const unitLine = line(member.unitId, unit?.cost);
-  const items = member.equipmentItemIds.map((itemId) => itemCost(data, factionId, member.unitId, itemId));
+  const items = member.equipmentItemIds.map((itemId) => itemCost(data, scope, member.unitId, itemId));
   const upgrades = (member.upgradeIds ?? []).map((id) => line(id, unit ? upgradeFor(unit, id)?.cost : undefined));
   const all = [unitLine, ...items, ...upgrades];
   return {
@@ -63,7 +63,7 @@ export function memberCost(data: RulesData, factionId: string, member: WarbandMe
 }
 
 export function warbandCost(warband: Warband, data: RulesData): WarbandCost {
-  const perMember = warband.members.map((m) => memberCost(data, warband.factionId, m));
+  const perMember = warband.members.map((m) => memberCost(data, warband, m));
   return {
     ducats: perMember.reduce((n, m) => n + m.ducats, 0),
     glory: perMember.reduce((n, m) => n + m.glory, 0),

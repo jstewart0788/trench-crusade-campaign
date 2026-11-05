@@ -273,7 +273,7 @@
         "glory": 3
       },
       "hands": 2,
-      "id": "anti-material-rifle",
+      "id": "anti-materiel-rifle",
       "keywords": [
         "+1 INJURY DICE",
         "CRITICAL",
@@ -282,7 +282,7 @@
       ],
       "limits": null,
       "modifiers": [],
-      "name": "Anti-Material Rifle",
+      "name": "Anti-Materiel Rifle",
       "range": "36\"",
       "rules": "",
       "source": "Ranged Weapons",
@@ -609,6 +609,30 @@
       "type": "2-Handed"
     },
     {
+      "bsId": "6a05-c83f-71b2-9e44",
+      "category": "equipment",
+      "cost": {
+        "ducats": 0,
+        "glory": 2
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "bells-of-warding",
+      "keywords": [
+        "HELD",
+        "LEADER"
+      ],
+      "limits": "max 1 per model; max 1 per warband",
+      "modifiers": [],
+      "name": "Bells of Warding",
+      "range": null,
+      "rules": "Gathering Call: Add +1 DICE to Risky Success Rolls for friendly models that are taking a Dash ACTION and are within 4\" of one or more models with Bells of Warding or a Musical Instrument.",
+      "source": "Trench Pilgrims",
+      "type": "Equipment"
+    },
+    {
       "bsId": "e1cb-6d32-6315-eb1b",
       "category": "equipment",
       "cost": {
@@ -747,6 +771,27 @@
       "type": "Equipment"
     },
     {
+      "bsId": "2c77-e419-5db8-0a63",
+      "category": "equipment",
+      "cost": {
+        "ducats": 5,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "blessed-millstone",
+      "keywords": [],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Blessed Millstone",
+      "range": null,
+      "rules": "Weighted with Sin: Subtract 1\" from the Movement Characteristic of a model with a Blessed Millstone, but add +2 INJURY DICE because of the Crushing Millstones special rule instead of the usual +1 INJURY DICE. If the model takes an enemy Out of Action with a Melee Attack they can, at the option of the player, be freed of the crushing weight of the Blessed Millstone, regaining their full Movement Characteristic plus 1\" additional (the freedom of a lightened soul), and using the Punishing Millstones special rule normally from then on. After the battle you can return the Blessed Millstone to the model or bestow it on a different model in the Warband.",
+      "source": "Trench Pilgrims",
+      "type": "Equipment"
+    },
+    {
       "bsId": "3da5-afdc-ed33-d56a",
       "category": "equipment",
       "cost": {
@@ -788,6 +833,31 @@
       "rules": "",
       "source": "Ranged Weapons",
       "type": "2-Handed"
+    },
+    {
+      "bsId": "23f8-2b1b-2d77-f13b",
+      "category": "melee",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 1,
+      "id": "boarding-axe",
+      "keywords": [
+        "ARMOUR PIERCING",
+        "CRITICAL",
+        "RISKY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Boarding Axe",
+      "range": "Melee",
+      "rules": "Boarding: Add +1 DICE to Risky Success Rolls for friendly models with this special rule that are attempting to Climb a sheer surface.",
+      "source": "Heretic Naval Raiders",
+      "type": "1-Handed"
     },
     {
       "bsId": "4c87-312e-7aa1-4de0",
@@ -1981,6 +2051,32 @@
       "type": "Equipment"
     },
     {
+      "bsId": "7f31-a2c4-9d05-6e18",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": 2,
+      "id": "great-flail-scourge",
+      "keywords": [
+        "+1 DICE",
+        "+1 INJURY DICE",
+        "CUMBERSOME",
+        "HEAVY"
+      ],
+      "limits": "max 3 per warband",
+      "modifiers": [],
+      "name": "Great Flail/Scourge",
+      "range": "Melee",
+      "rules": "",
+      "source": "Trench Pilgrims",
+      "type": "2-Handed"
+    },
+    {
       "bsId": "df88-b7a2-1a01-1b56",
       "category": "melee",
       "cost": {
@@ -2552,6 +2648,32 @@
       "type": "Equipment"
     },
     {
+      "bsId": "5080-81aa-91b9-591e",
+      "category": "melee",
+      "cost": {
+        "ducats": 20,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 1,
+      "id": "hull-drill",
+      "keywords": [
+        "CRITICAL",
+        "HELD",
+        "IGNORE ARMOUR",
+        "RISKY"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Hull Drill",
+      "range": "Melee",
+      "rules": "",
+      "source": "Heretic Naval Raiders",
+      "type": "1-Handed"
+    },
+    {
       "bsId": "8adc-0183-0ef9-12a4",
       "category": "grenade",
       "cost": {
@@ -3031,6 +3153,57 @@
       "type": "Equipment"
     },
     {
+      "bsId": "a947-4d4f-bf77-cc21",
+      "bsName": "Beyond Death",
+      "category": "equipment",
+      "cost": {
+        "ducats": 45,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "martyr-penitent",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [
+        {
+          "delta": 1,
+          "stat": "melee"
+        }
+      ],
+      "name": "Martyr Penitent",
+      "range": null,
+      "rules": "Add -1 INJURY DICE to Injury Rolls for this model. Martyrdom Pills have no effect on a Martyr Penitent.",
+      "source": "Procession of the Sacred Affliction",
+      "type": "Ability"
+    },
+    {
+      "bsId": "239a-64ac-6630-4b01",
+      "category": "equipment",
+      "cost": {
+        "ducats": 25,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "martyrdom-device",
+      "keywords": [
+        "BLAST 3\"",
+        "SHRAPNEL"
+      ],
+      "limits": "max 1 per model; max 4 per warband",
+      "modifiers": [],
+      "name": "Martyrdom Device",
+      "range": null,
+      "rules": "Detonate ACTION: An Ecclesiastic Prisoner with a Martyrdom Device can take a Detonate ACTION. If they do so, the Martyrdom Device detonates and cannot be used again. When a Martyrdom Device detonates, all models (friend or foe) within 3\" of the Ecclesiastic Prisoner taking the Detonate ACTION and in its Line of Sight are hit by a Ranged Attack with the SHRAPNEL Keyword. Add +1 INJURY DICE to the Injury Rolls for models that are within 1\" of the Ecclesiastic Prisoner taking the Detonate ACTION. Seek Martyrdom: When an Ecclesiastic Prisoner takes a Detonate ACTION, make an Injury Roll for the Ecclesiastic Prisoner by rolling 4D6 and adding all 4 dice together. If an Ecclesiastic Prisoner detonates their Martyrdom Device and survives the game, you must either buy them a new Martyrdom Device for 25 ducats, or use them without one.",
+      "source": "Procession of the Sacred Affliction",
+      "type": "Equipment"
+    },
+    {
       "bsId": "6347-11b1-0c96-2803",
       "category": "equipment",
       "cost": {
@@ -3088,6 +3261,27 @@
       "range": null,
       "rules": "When a model equipped with a Melee Chassis makes a melee attack action, it can choose to either attack with two flails or a misericordia. These attacks must be resolved immediately, and ignore the penalty for attacking with an offhand weapon if the flails are chosen (The flail still loses its +1D to hit in the offhand as normal, however, leading to a +1D and a +0 to the attacks.)\nMelee Chassis counts as two one handed melee weapons for the purposes of equipping models.",
       "source": "Heretic Legion",
+      "type": "Equipment"
+    },
+    {
+      "bsId": "c4bc-74f7-e224-4b02",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "minenhelm",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Minenhelm",
+      "range": null,
+      "rules": "Last Act: Add +1 INJURY DICE to the Injury Rolls for models that are within 1\" of an Ecclesiastic Prisoner with a Minenhelm when it takes a Detonate ACTION (for a total of +2 INJURY DICE instead of +1). Ecclesiastic Prisoners that have a Minenhelm are automatically killed when their Martyrdom Device detonates. Minenhelm Slam: An Ecclesiastic Prisoner that has a Minenhelm can make a Melee Attack even though they do not have a Melee Weapon.",
+      "source": "Procession of the Sacred Affliction",
       "type": "Equipment"
     },
     {
@@ -3339,6 +3533,27 @@
       "type": "Grenades"
     },
     {
+      "bsId": "9b3d-6f21-c40e-7a52",
+      "category": "equipment",
+      "cost": {
+        "ducats": 12,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "penitent-s-phylactery",
+      "keywords": [],
+      "limits": "max 1 per model; max 2 per warband",
+      "modifiers": [],
+      "name": "Penitent's Phylactery",
+      "range": null,
+      "rules": "Repudiation of Sin: When a model with a Penitent's Phylactery makes a Melee Attack that targets a model with the HERETIC, THE COURT or BLACK GRAIL Keyword, place 1 extra BLOOD MARKER next to the target model after making the Injury Roll (even if the Injury Roll has No Effect).",
+      "source": "Trench Pilgrims",
+      "type": "Equipment"
+    },
+    {
       "bsId": "a595-aa3e-986e-edf0",
       "category": "melee",
       "cost": {
@@ -3536,6 +3751,27 @@
       "rules": "",
       "source": "Trench Crusade",
       "type": "2-Handed"
+    },
+    {
+      "bsId": "4d92-1b7e-3fa6-08c5",
+      "category": "armour",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "trench-pilgrims"
+      ],
+      "hands": null,
+      "id": "ragged-vestments",
+      "keywords": [],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Ragged Vestments",
+      "range": null,
+      "rules": "Leap of Faith: Add +1 DICE to Risky Success Roll whenever a model with Ragged Vestments Climbs, Jumps, or makes a Diving Charge, or takes a Dash ACTION, as long as the model does not have a Shield, or any Weapons with the HEAVY Keyword.",
+      "source": "Trench Pilgrims",
+      "type": "Armour"
     },
     {
       "bsId": "a535-4fb6-c587-691a",
@@ -3828,6 +4064,30 @@
       "rules": "",
       "source": "Trench Crusade",
       "type": "2-handed"
+    },
+    {
+      "bsId": "42af-579e-728a-4679",
+      "category": "equipment",
+      "cost": {
+        "ducats": 10,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": null,
+      "id": "shark-tooth-talisman",
+      "keywords": [
+        "CONSUMABLE",
+        "NEGATE FEAR"
+      ],
+      "limits": "max 1 per model",
+      "modifiers": [],
+      "name": "Shark Tooth Talisman",
+      "range": null,
+      "rules": "Blood Frenzy: Once during a game, a model with a Shark Tooth Talisman can invoke a Blood Frenzy. If they do so and any model (friend or foe) within 1\" of the model with the Shark Tooth Talisman has 1 or more BLOOD MARKERS, add +1 DICE to the Success Rolls for Melee Attacks made by the model with the Shark Tooth Talisman for the rest of their Activation.",
+      "source": "Heretic Naval Raiders",
+      "type": "Equipment"
     },
     {
       "bsId": "7f27-bb98-20d0-0a10",
@@ -4980,6 +5240,32 @@
       "rules": "Cower Before The Lord: An enemy model that does not have the FEAR keyword and that starts an Activation within 1\" of this Anchorite Shrine must take a Retreat ACTION as part of the Activation. It cannot take any ACTION that require a Risky Success Roll while it is within 1\" of this Anchorite Shrine.",
       "source": "Trench Pilgrims",
       "type": "Special"
+    },
+    {
+      "bsId": "0f47-b87e-7616-314e",
+      "category": "melee",
+      "cost": {
+        "ducats": 15,
+        "glory": 0
+      },
+      "factionIds": [
+        "heretic-legion"
+      ],
+      "hands": 2,
+      "id": "wrecker-s-torch",
+      "keywords": [
+        "ARMOUR PIERCING",
+        "BLOCK",
+        "CUMBERSOME",
+        "FIRE"
+      ],
+      "limits": null,
+      "modifiers": [],
+      "name": "Wrecker's Torch",
+      "range": "Melee",
+      "rules": "",
+      "source": "Heretic Naval Raiders",
+      "type": "2-Handed"
     }
   ],
   "source": {
@@ -4992,27 +5278,32 @@
       "Black Grail": {
         "bsId": "0b26-15c1-cebd-0077",
         "file": "Black Grail.cat",
-        "revision": "13"
+        "revision": "17"
       },
       "Campaign Rules": {
         "bsId": "ba52-3616-d7f9-8d0c",
         "file": "Campaign Rules.cat",
-        "revision": "5"
+        "revision": "11"
       },
       "Court of the Seven-Headed Serpent": {
         "bsId": "44b9-e92b-2dc0-6820",
         "file": "Court of the Seven-Headed Serpent.cat",
-        "revision": "10"
+        "revision": "11"
       },
       "Heretic Legion": {
         "bsId": "6941-ec54-3001-8288",
         "file": "Heretic Legion.cat",
-        "revision": "24"
+        "revision": "31"
+      },
+      "Heretic Naval Raiders": {
+        "bsId": "6497-8a39-4f5c-9873",
+        "file": "Heretic Naval Raiders.cat",
+        "revision": "7"
       },
       "Iron Sultanate": {
         "bsId": "72ab-daa4-80ee-e9a5",
         "file": "Iron Sultanate.cat",
-        "revision": "14"
+        "revision": "19"
       },
       "Melee Weapons": {
         "bsId": "7595-974a-7451-6c2e",
@@ -5022,38 +5313,50 @@
       "Mercenaries": {
         "bsId": "f569-e9dd-327a-5735",
         "file": "Mercenaries.cat",
-        "revision": "8"
+        "revision": "12"
       },
       "New Antioch": {
         "bsId": "707d-5bdf-586e-f704",
         "file": "New Antioch.cat",
-        "revision": "13"
+        "revision": "17"
+      },
+      "Procession of the Sacred Affliction": {
+        "bsId": "c421-32f4-581e-9fb6",
+        "file": "Procession of the Sacred Affliction.cat",
+        "revision": "12"
       },
       "Ranged Weapons": {
         "bsId": "8ef4-3a38-8adb-53ba",
         "file": "Ranged Weapons.cat",
-        "revision": "1"
+        "revision": "2"
       },
       "Trench Pilgrims": {
         "bsId": "d54d-055d-bbc0-a20f",
         "file": "Trench Pilgrims.cat",
-        "revision": "7"
+        "revision": "20"
       }
     },
-    "commit": "45d187c6fde12d6c073f620098f182681350d6c8",
-    "edition": "BattleScribe gameSystem 'Trench Crusade' revision 17",
+    "commit": "568e5abc5a87d4a068cb20612ad73af69f4f3696",
+    "edition": "BattleScribe gameSystem 'Trench Crusade' revision 18",
     "file": "Trench Crusade.gst",
     "gameSystem": {
       "bsId": "sys-4f3d-c5c9-7df1-ad01",
       "file": "Trench Crusade.gst",
-      "revision": "17"
+      "revision": "18"
     },
     "generator": "scripts/convert_newrecruit.py",
     "pdfOverrides": {
       "battlekit": "Trench-Crusade-Digital-Rulebook.pdf p68-86",
+      "compendia": {
+        "Heretic-Naval-Raiders-Warband.pdf": {
+          "covers": "heretic-legion subfaction heretic-naval-raiders",
+          "edition": "1.0.2",
+          "note": "overrides citing it carry source: Heretic-Naval-Raiders-Warband.pdf; their page numbers are that PDF's"
+        }
+      },
       "edition": "1.0.2",
       "file": "Warbands-of-Trench-Crusade.pdf"
     },
-    "repo": "https://github.com/Fawkstrot11/TrenchCrusade"
+    "repo": "https://github.com/TrenchCrusade-NewRecruit/TrenchCrusade"
   }
 }

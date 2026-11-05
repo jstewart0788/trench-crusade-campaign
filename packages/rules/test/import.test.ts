@@ -130,7 +130,7 @@ describe("importNewRecruit (.ros)", () => {
 
   it("refuses rosters that are not Trench Crusade, not a known faction, or not a roster at all", () => {
     expect(() => importNewRecruit(FIXTURE.replace('gameSystemName="Trench Crusade"', 'gameSystemName="Warhammer 40,000"'), data())).toThrow(/not Trench Crusade/);
-    expect(() => importNewRecruit(FIXTURE.replace('catalogueName="New Antioch"', 'catalogueName="Space Marines"'), data())).toThrow(/Could not tell the faction/);
+    expect(() => importNewRecruit(FIXTURE.replace('catalogueId="707d-5bdf-586e-f704" catalogueRevision="13" catalogueName="New Antioch"', 'catalogueId="0000" catalogueName="Space Marines"'), data())).toThrow(/Could not tell the faction/);
     expect(() => importNewRecruit("<catalogue/>", data())).toThrow(/Expected a <roster>/);
     expect(() => importNewRecruit("<roster><forces><force>", data())).toThrow(ImportError);
     expect(() => importNewRecruit("hello", data())).toThrow(/Not XML and not JSON/);
@@ -183,6 +183,76 @@ describe("importNewRecruit (NewRecruit JSON)", () => {
       },
     };
     expect(importNewRecruit(wrapped, data(), { id: "w" }).warband.members).toHaveLength(6);
+  });
+});
+
+// A synthetic NewRecruit JSON export of a Heretic Naval Raiders roster, shaped
+// like NewRecruit's (force catalogueId/catalogueName, the mandatory Rules
+// entry, the variant nested under "Warband Variant", "::"-chained entryIds).
+describe("importNewRecruit (subfaction catalogue)", () => {
+  const sel = (name: string, entryId: string, selections: unknown[] = [], extra: Record<string, unknown> = {}) => ({ name, entryId, number: 1, type: "upgrade", selections, ...extra });
+  const model = (name: string, entryId: string, kit: unknown[]) => sel(name, entryId, kit, { type: "model" });
+  const navalRaiders = (force: Record<string, unknown> = { catalogueId: "6497-8a39-4f5c-9873", catalogueName: "Heretic Naval Raiders" }) => ({
+    roster: {
+      name: "Synthetic Raiders",
+      gameSystemName: "Trench Crusade",
+      generatedBy: "https://newrecruit.eu",
+      costs: [{ name: "Ducats", value: 300 }],
+      forces: [
+        {
+          name: "Warband",
+          ...force,
+          selections: [
+            sel("Campaign Rules", "7346-84e3-dbbb-296d", [sel("Disabled", "7131-4bf6-d01a-d823")]),
+            sel("Heretic Naval Raiders Rules", "4d05-603e-4b5a-aed4"),
+            sel("Warband Variant", "ecbd39c5-1f66-4239-bf08-dcb6f322048a", [sel("The Leviathan Shoal", "e41075bf-7b42-4a2f-9bf0-4318e6faa459")]),
+            model("Heretic Captain", "2d34-a87b-bf44-89e9", [
+              sel("Submachine Gun", "x1::8f2f-2c59-b0bc-34fd::ae63-55f4-b047-9820::f350-1594-69d3-e36b::0754-f896-3f97-65c7"),
+              sel("Wrecker's Torch", "x2::0f47-b87e-7616-314e"),
+            ]),
+            model("Anointed Heretic Raider", "ebc6b73a-88a3-5e84-bee8-1298d812f419", [sel("Unseen Infiltrator", "x3::4d671f6e-5a78-4d0d-bbaa-ef0ce90e9cd7"), sel("Reinforced Armour", "x4::a535-4fb6-c587-691a")]),
+            { ...model("Heretic Raider", "18e1caca-219b-504d-aac1-d911715cc86c", [sel("Boarding Axe", "x5::23f8-2b1b-2d77-f13b", [], { number: 2 })]), number: 2 },
+            model("Sin Eater", "e4c97085-1d74-49d0-bc04-82b1f3c813cf::4703-d968-d52d-46b5", [sel("Tenderizer Maul", "e4c97085-1d74-49d0-bc04-82b1f3c813cf::4d1c-67e3-95cf-1169")]),
+          ],
+        },
+      ],
+    },
+  });
+
+  it("resolves the force by catalogueId to the subfaction, nested under its faction, with every model mapped", () => {
+    const { warband, unresolved, source } = importNewRecruit(navalRaiders(), data(), { id: "w" });
+    expect(warband.factionId).toBe("heretic-legion");
+    expect(warband.subfactionId).toBe("heretic-naval-raiders");
+    expect(warband.variantId).toBe("heretic-naval-raiders/the-leviathan-shoal");
+    expect(warband.members.map((m) => m.unitId)).toEqual([
+      "heretic-naval-raiders/heretic-captain",
+      "heretic-naval-raiders/anointed-heretic-raider",
+      "heretic-naval-raiders/heretic-raider",
+      "heretic-naval-raiders/heretic-raider",
+      "heretic-naval-raiders/sin-eater",
+    ]);
+    expect(warband.members[0]!.equipmentItemIds).toEqual(["submachine-gun", "wrecker-s-torch"]);
+    expect(warband.members[1]).toMatchObject({ equipmentItemIds: ["reinforced-armour"], upgradeIds: ["4d671f6e-5a78-4d0d-bbaa-ef0ce90e9cd7"] });
+    expect(warband.members[2]!.equipmentItemIds).toEqual(["boarding-axe"]);
+    expect(source.catalogue).toBe("Heretic Naval Raiders");
+    // The Rules entry and the variant are consumed; only the campaign toggle is left over.
+    expect(unresolved.map((u) => u.path)).toEqual(["Campaign Rules"]);
+  });
+
+  it("falls back to the catalogue name, then to the parent faction", () => {
+    const idWins = importNewRecruit(navalRaiders({ catalogueId: "6497-8a39-4f5c-9873", catalogueName: "Heretic Legion" }), data(), { id: "w" }).warband;
+    expect(idWins).toMatchObject({ factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" });
+    const byName = importNewRecruit(navalRaiders({ catalogueName: "Heretic Naval Raiders" }), data(), { id: "w" }).warband;
+    expect(byName).toMatchObject({ factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" });
+    const parent = importNewRecruit(navalRaiders({ catalogueId: "6941-ec54-3001-8288", catalogueName: "Heretic Legion" }), data(), { id: "w" });
+    expect(parent.warband.factionId).toBe("heretic-legion");
+    expect(parent.warband.subfactionId).toBeUndefined();
+    expect(parent.warband.members.map((m) => m.unitId)).toEqual(["heretic-legion/sin-eater"]);
+  });
+
+  it("validates the mapped warband against the subfaction's list", () => {
+    const { warband } = importNewRecruit(navalRaiders(), data(), { id: "w" });
+    expect(validateWarband(warband, data()).errors.map((e) => e.code)).not.toContain("unit-faction");
   });
 });
 

@@ -18,7 +18,7 @@ describe("warbandCost", () => {
   it("uses the equipmentAccess price over the library price", () => {
     const d = data();
     expect(d.equipmentById.get("machine-gun")?.cost).toEqual({ ducats: 50, glory: 2 });
-    expect(itemCost(d, "new-antioch", "new-antioch/lieutenant", "machine-gun")).toEqual({ id: "machine-gun", ducats: 50, glory: 0 });
+    expect(itemCost(d, { factionId: "new-antioch" }, "new-antioch/lieutenant", "machine-gun")).toEqual({ id: "machine-gun", ducats: 50, glory: 0 });
   });
 
   it("falls back to the library price when the access row has none, and to zero for fixed kit", () => {
@@ -27,10 +27,10 @@ describe("warbandCost", () => {
     const fixed = sinEater.equipmentAccess.find((a) => a.itemId === "reinforced-armour")!;
     expect(fixed.fixed).toBe(true);
     expect(fixed.cost).toBeUndefined();
-    expect(itemCost(d, "black-grail", "black-grail/sin-eater", "reinforced-armour").ducats).toBe(0);
+    expect(itemCost(d, { factionId: "black-grail" }, "black-grail/sin-eater", "reinforced-armour").ducats).toBe(0);
     const kalkan = d.equipmentById.get("iron-wall-kalkan")!.cost.ducats;
     expect(kalkan).toBeGreaterThan(0);
-    expect(itemCost(d, "new-antioch", "new-antioch/yeoman", "iron-wall-kalkan").ducats).toBe(kalkan);
+    expect(itemCost(d, { factionId: "new-antioch" }, "new-antioch/yeoman", "iron-wall-kalkan").ducats).toBe(kalkan);
   });
 
   it("charges nothing for a mercenary's loadout kit (Mamluk Faris, p179)", () => {
@@ -40,7 +40,7 @@ describe("warbandCost", () => {
     expect(row.cost).toBeUndefined();
     expect(row.fixed).toBeUndefined();
     expect(d.equipmentById.get("great-sword-axe")!.cost.ducats).toBe(12);
-    expect(itemCost(d, "new-antioch", "new-antioch/mamluk-faris", "great-sword-axe")).toEqual({ id: "great-sword-axe", ducats: 0, glory: 0 });
+    expect(itemCost(d, { factionId: "new-antioch" }, "new-antioch/mamluk-faris", "great-sword-axe")).toEqual({ id: "great-sword-axe", ducats: 0, glory: 0 });
     const w = newAntioch({ members: [member("new-antioch/lieutenant"), member("new-antioch/mamluk-faris", ["great-sword-axe"])], glory: 4 });
     expect(warbandCost(w, d)).toMatchObject({ ducats: 70, glory: 4 });
     expect(warbandCost({ ...w, members: [w.members[0]!, member("iron-sultanate/mamluk-faris", ["polearm", "shield"])], factionId: "iron-sultanate" }, d).perMember[1]?.ducats).toBe(0);

@@ -1,4 +1,4 @@
-import { findUnit, upgradeFor, type RosterUnit, type RulesData } from "../data.js";
+import { findSubfaction, rosterUnits, rosterVariants, upgradeFor, type RosterScope, type RosterUnit, type RulesData } from "../data.js";
 import { normaliseName } from "../limits.js";
 import type { Warband, WarbandMember } from "../roster.js";
 import type { EquipmentItem } from "../schema.js";
@@ -32,6 +32,7 @@ export interface RosterSelection {
 
 export interface RosterForce {
   name?: string;
+  catalogueId?: string;
   catalogueName?: string;
   selections: RosterSelection[];
 }
@@ -122,6 +123,7 @@ export function rosterFromXml(xml: string): RosterTree {
           selections: (f.children.find((c) => c.name === "selections")?.children ?? []).filter((c) => c.name === "selection").map(selectionFromXml),
         };
         if (f.attributes.name) force.name = f.attributes.name;
+        if (f.attributes.catalogueId) force.catalogueId = f.attributes.catalogueId;
         if (f.attributes.catalogueName) force.catalogueName = f.attributes.catalogueName;
         return force;
       }),
@@ -198,8 +200,10 @@ export function rosterFromJson(input: unknown): RosterTree {
         }),
       };
       const name = str(fo.name);
+      const catalogueId = str(fo.catalogueId);
       const catalogueName = str(fo.catalogueName);
       if (name) force.name = name;
+      if (catalogueId) force.catalogueId = catalogueId;
       if (catalogueName) force.catalogueName = catalogueName;
       return [force];
     }),
@@ -217,19 +221,32 @@ const segments = (entryId: string | undefined): string[] => (entryId ? entryId.s
 
 const factionNorm = (s: string) => normaliseName(s).replace(/^the/, "").replace(/s$/, "");
 
-function factionFor(tree: RosterTree, data: RulesData): { force: RosterForce; factionId: string } {
-  const force = tree.forces.find((f) => f.catalogueName || f.name) ?? tree.forces[0];
+// The force's catalogue decides the roster list: its BattleScribe id first
+// (each faction and subfaction keeps its catalogue id as bsId), then its name,
+// matching a subfaction before the faction names it might contain.
+function factionFor(tree: RosterTree, data: RulesData): { force: RosterForce; scope: RosterScope } {
+  const force = tree.forces.find((f) => f.catalogueId || f.catalogueName || f.name) ?? tree.forces[0];
   if (!force) throw new ImportError("The roster has no force");
+  if (force.catalogueId) {
+    for (const faction of data.factions) {
+      if (faction.bsId === force.catalogueId) return { force, scope: { factionId: faction.id } };
+      const sub = faction.subfactions?.find((s) => s.bsId === force.catalogueId);
+      if (sub) return { force, scope: { factionId: faction.id, subfactionId: sub.id } };
+    }
+  }
   for (const candidate of [force.catalogueName, force.name]) {
     if (!candidate) continue;
+    const sub = [...data.subfactionsById.values()].find((s) => factionNorm(s.subfaction.name) === factionNorm(candidate));
+    if (sub) return { force, scope: { factionId: sub.faction.id, subfactionId: sub.subfaction.id } };
     const faction = data.factions.find((f) => factionNorm(f.name) === factionNorm(candidate) || factionNorm(candidate).includes(factionNorm(f.name)));
-    if (faction) return { force, factionId: faction.id };
+    if (faction) return { force, scope: { factionId: faction.id } };
   }
-  throw new ImportError(`Could not tell the faction from "${force.catalogueName ?? force.name ?? "?"}"; expected one of ${data.factions.map((f) => f.name).join(", ")}`);
+  const known = data.factions.flatMap((f) => [f.name, ...(f.subfactions ?? []).map((s) => s.name)]);
+  throw new ImportError(`Could not tell the faction from "${force.catalogueName ?? force.name ?? "?"}"; expected one of ${known.join(", ")}`);
 }
 
-function unitFor(sel: RosterSelection, factionId: string, data: RulesData): RosterUnit | undefined {
-  const units = data.unitsByFaction.get(factionId) ?? [];
+function unitFor(sel: RosterSelection, scope: RosterScope, data: RulesData): RosterUnit | undefined {
+  const units = rosterUnits(data, scope);
   for (const seg of segments(sel.entryId)) {
     const byId = units.find((u) => u.bsId === seg || u.bsLinkId === seg);
     if (byId) return byId;
@@ -296,8 +313,12 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
   if (tree.gameSystemName && !normaliseName(tree.gameSystemName).includes("trenchcrusade")) {
     throw new ImportError(`This is a "${tree.gameSystemName}" roster, not Trench Crusade`);
   }
-  const { force, factionId } = factionFor(tree, data);
-  const faction = data.factionsById.get(factionId)!;
+  const { force, scope } = factionFor(tree, data);
+  const { factionId } = scope;
+  const variants = rosterVariants(data, scope);
+  const list = findSubfaction(data, scope) ?? data.factionsById.get(factionId)!;
+  // The subfaction's "<Name> Rules" entry: it is what makes the roster that subfaction.
+  const mandatoryConfig = new Set((list.configuration ?? []).filter((c) => c.mandatory).map((c) => c.bsId));
   const unresolved: UnresolvedSelection[] = [];
   const warband: Warband = {
     id: opts.id ?? crypto.randomUUID(),
@@ -306,6 +327,7 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
     gameNumber: 1,
     members: [],
   };
+  if (scope.subfactionId) warband.subfactionId = scope.subfactionId;
   const glory = tree.costs.find((c) => /glory/i.test(c.name));
   if (glory && glory.value > 0) warband.glory = Math.round(glory.value);
 
@@ -321,9 +343,13 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
   };
 
   const patrons = patronsForFaction(data, factionId);
+  const variantFor = (s: RosterSelection) =>
+    variants.find((v) => segments(s.entryId).includes(String((v as { bsId?: unknown }).bsId)) || normaliseName(v.name) === normaliseName(s.name));
   for (const sel of force.selections) {
     const path = sel.name;
-    const variant = faction.variants.find((v) => segments(sel.entryId).includes(String((v as { bsId?: unknown }).bsId)) || normaliseName(v.name) === normaliseName(sel.name));
+    if (segments(sel.entryId).some((seg) => mandatoryConfig.has(seg))) continue;
+    // NewRecruit nests the chosen variant under a "Warband Variant" selection.
+    const variant = variantFor(sel) ?? (sel.selections.length === 1 ? variantFor(sel.selections[0]!) : undefined);
     if (variant) {
       warband.variantId = variant.id;
       continue;
@@ -333,15 +359,15 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
       warband.patronId = patron.id;
       continue;
     }
-    const unit = unitFor(sel, factionId, data);
+    const unit = unitFor(sel, scope, data);
     if (unit) {
       addMember(sel, unit, path);
       continue;
     }
     if (sel.type === "unit") {
       // A wrapper (the deprecated Fireteams): its models are members, the wrapper itself is reported.
-      const models = sel.selections.filter((c) => c.type === "model" && unitFor(c, factionId, data));
-      for (const m of models) addMember(m, unitFor(m, factionId, data)!, `${path} > ${m.name}`);
+      const models = sel.selections.filter((c) => c.type === "model" && unitFor(c, scope, data));
+      for (const m of models) addMember(m, unitFor(m, scope, data)!, `${path} > ${m.name}`);
       const entry: UnresolvedSelection = { path, name: sel.name, reason: models.length ? "a wrapper; its models were imported on their own" : "not a unit of this faction" };
       if (sel.entryId) entry.entryId = sel.entryId;
       unresolved.push(entry);

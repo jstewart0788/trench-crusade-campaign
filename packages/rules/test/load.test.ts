@@ -7,13 +7,14 @@ describe("loadRulesData", () => {
   it("loads and indexes the six data files", () => {
     const d = data();
     expect(d.factions).toHaveLength(6);
-    expect(d.units).toHaveLength(103);
-    expect(d.equipment).toHaveLength(213);
+    expect(d.units).toHaveLength(130);
+    expect(d.equipment).toHaveLength(225);
     expect(d.factionsById.get("new-antioch")?.name).toBe("New Antioch");
     expect(d.unitsByFaction.get("new-antioch")).toHaveLength(20);
     expect(d.unitsById.get("new-antioch/yeoman")?.cost.ducats).toBe(30);
     expect(d.equipmentById.get("bolt-action-rifle")?.hands).toBe(2);
     expect(d.variantsById.get("new-antioch/the-red-brigade")?.factionId).toBe("new-antioch");
+    expect(d.unitsByFaction.get("heretic-legion")?.every((u) => u.subfactionId === undefined)).toBe(true);
     expect(d.scenarios.scenarios.length).toBeGreaterThanOrEqual(12);
     expect(d.terrain.types.length).toBeGreaterThan(0);
   });
@@ -26,7 +27,7 @@ describe("loadRulesData", () => {
     expect(guardian.mercenary).toBe(true);
     expect(guardian.mercenaryId).toBe("mercenary/scripture-guardian");
     const medic = d.unitsById.get("new-antioch/combat-medic")!;
-    expect(medic.equipmentAccess.find((a) => a.itemId === "misericordia")?.maxPerWarband).toBe(1);
+    expect(medic.equipmentAccess.find((a) => a.itemId === "misericordia")?.fixed).toBe(true);
     const yeoman = d.unitsById.get("new-antioch/yeoman")!;
     expect(yeoman.upgrades?.some((g) => g.name === "Trench Mole")).toBe(true);
   });
@@ -44,8 +45,49 @@ describe("loadRulesData", () => {
 
   it("resolves mercenaries by their shared mercenaryId within a faction", () => {
     const d = data();
-    expect(findUnit(d, "new-antioch", "mercenary/scripture-guardian")?.id).toBe("new-antioch/scripture-guardian");
-    expect(findUnit(d, "new-antioch", "mercenary/goetic-warlock")).toBeUndefined();
+    expect(findUnit(d, { factionId: "new-antioch" }, "mercenary/scripture-guardian")?.id).toBe("new-antioch/scripture-guardian");
+    expect(findUnit(d, { factionId: "new-antioch" }, "mercenary/goetic-warlock")).toBeUndefined();
+    const raiders = { factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" };
+    expect(findUnit(d, raiders, "mercenary/sin-eater")?.id).toBe("heretic-naval-raiders/sin-eater");
+    expect(findUnit(d, { factionId: "heretic-legion" }, "mercenary/sin-eater")?.id).toBe("heretic-legion/sin-eater");
+  });
+
+  it("nests subfactions under their faction, with their own units and variants", () => {
+    const d = data();
+    const legion = d.factionsById.get("heretic-legion")!;
+    expect(legion.subfactions?.map((s) => s.id)).toEqual(["heretic-naval-raiders"]);
+    expect(d.factionsById.get("trench-pilgrims")!.subfactions?.map((s) => s.id)).toEqual(["procession-of-the-sacred-affliction"]);
+    expect(d.factions.map((f) => f.id)).not.toContain("heretic-naval-raiders");
+    expect(legion.variants.map((v) => v.id)).not.toContain("heretic-legion/heretic-naval-raiders");
+
+    const raiders = d.subfactionsById.get("heretic-naval-raiders")!;
+    expect(raiders.faction.id).toBe("heretic-legion");
+    expect(raiders.subfaction.bsId).toBe("6497-8a39-4f5c-9873");
+    expect(raiders.subfaction.variants.map((v) => v.id)).toEqual(["heretic-naval-raiders/the-drowned-choir", "heretic-naval-raiders/the-leviathan-shoal"]);
+    expect(d.variantsById.get("heretic-naval-raiders/the-leviathan-shoal")).toMatchObject({ factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" });
+
+    const units = d.unitsBySubfaction.get("heretic-naval-raiders")!;
+    expect(units.map((u) => u.id).sort()).toEqual([...raiders.subfaction.unitIds].sort());
+    expect(units.every((u) => u.factionId === "heretic-legion" && u.subfactionId === "heretic-naval-raiders")).toBe(true);
+    expect(units.map((u) => u.name)).toEqual(expect.arrayContaining(["Heretic Captain", "Anointed Heretic Raider", "Heretic Raider", "Drowned Chorister", "Sea Hag", "Abyssal Commando", "Wretched"]));
+    // importRootEntries="false": none of the parent's own units come along
+    expect(units.some((u) => u.name === "Heretic Priest" || u.name === "Heretic Trooper")).toBe(false);
+  });
+
+  it("treats a subfaction's mandatory Rules entry as always taken, so nothing is gated on it", () => {
+    const d = data();
+    for (const { subfaction } of d.subfactionsById.values()) {
+      const rules = subfaction.configuration?.find((c) => c.mandatory);
+      expect(rules?.name, subfaction.id).toBe(`${subfaction.name} Rules`);
+      for (const unit of d.unitsBySubfaction.get(subfaction.id) ?? []) {
+        for (const row of [unit, ...unit.equipmentAccess, ...(unit.upgrades ?? []), ...unit.abilities]) {
+          const gates = [...(row.onlyWith ?? []), ...(row.onlyWithout ?? [])];
+          expect(gates.filter((g) => g.startsWith(rules!.name)), unit.id).toEqual([]);
+        }
+      }
+    }
+    // the Procession's own models are only unlocked by that entry upstream
+    expect(d.unitsById.get("procession-of-the-sacred-affliction/lazarist-prophet")?.onlyWith).toBeUndefined();
   });
 
   it("throws when a data file is missing", () => {

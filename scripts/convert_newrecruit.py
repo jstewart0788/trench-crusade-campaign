@@ -2,7 +2,7 @@
 """Convert the NewRecruit/BattleScribe Trench Crusade dataset into data/rules/*.json.
 
 Usage:
-    python3 -I scripts/convert_newrecruit.py --src <path-to-fawkstrot-clone> --out data/rules [--overrides data/rules/pdf-overrides.json]
+    python3 -I scripts/convert_newrecruit.py --src <path-to-TrenchCrusade-NewRecruit-clone> --out data/rules [--overrides data/rules/pdf-overrides.json]
 
 Reads `Trench Crusade.gst` plus every `*.cat` in --src and writes factions.json,
 units.json and equipment.json (contract: packages/rules/src/schema.ts) and a
@@ -20,10 +20,20 @@ import sys
 import unicodedata
 import xml.etree.ElementTree as ET
 
-REPO_URL = "https://github.com/Fawkstrot11/TrenchCrusade"
+REPO_URL = "https://github.com/TrenchCrusade-NewRecruit/TrenchCrusade"
 
 LIBRARY_NAMES = {"Battlekits", "Melee Weapons", "Ranged Weapons"}
 MERCENARY_NAME = "Mercenaries"
+# The top-level warbands. Any other non-library catalogue is a subfaction: it links exactly one of
+# these (importRootEntries="false") and is emitted nested under it, not as a faction of its own.
+TOP_LEVEL_FACTIONS = {
+    "Black Grail",
+    "Court of the Seven-Headed Serpent",
+    "Heretic Legion",
+    "Iron Sultanate",
+    "New Antioch",
+    "Trench Pilgrims",
+}
 CAMPAIGN_NAME = "Campaign Rules"
 FACTION_TAGS = {"New Antioch", "Heretic", "Pilgrim", "Sultanate", "Black Grail", "The Court"}
 SKIP_ENTRY_NAMES = {"Pile of Stuff", "Battlefield Title"}
@@ -246,6 +256,9 @@ class Ctx:
         self.self_labels = set()
         # names resolved as never selectable during the current visibility() call
         self.unavailable = []
+        # root entries the roster must contain exactly once (a subfaction's "<Name> Rules" entry):
+        # a condition counting one of these is known, not a roster dependency
+        self.always_ids = set()
 
 
 def count_eval(ctype, n, value):
@@ -305,6 +318,8 @@ def eval_condition(c, ctx, deps, tally):
             return not is_fac
         tally.add(("condition", ctype, scope))
         return None
+    if child in ctx.always_ids and scope in LOCAL_SCOPES | ROSTER_SCOPES:
+        return count_eval(ctype, 1, value)
     resolved = ctx.ds.resolve_target(child)
 
     def never_selected(why):
@@ -703,9 +718,37 @@ class Converter:
 
     def faction_catalogues(self):
         return sorted(
-            [c for c in self.ds.catalogues.values() if c["kind"] == "cat" and not c["library"]],
+            [c for c in self.ds.catalogues.values() if c["kind"] == "cat" and not c["library"] and c["name"] in TOP_LEVEL_FACTIONS],
             key=lambda c: c["name"],
         )
+
+    def subfaction_catalogues(self):
+        """[(catalogue, parent catalogue)] for every non-library catalogue that is not a top-level faction."""
+        out = []
+        for c in sorted(self.ds.catalogues.values(), key=lambda c: c["name"]):
+            if c["kind"] != "cat" or c["library"] or c["name"] in TOP_LEVEL_FACTIONS:
+                continue
+            parents = [
+                self.ds.catalogues[cl.attrib.get("targetId")]
+                for cl in kids(c["root"], "catalogueLinks")
+                if self.ds.catalogues.get(cl.attrib.get("targetId"), {}).get("name") in TOP_LEVEL_FACTIONS
+            ]
+            if len(parents) != 1:
+                raise SystemExit(f"{c['file']}: not a top-level faction and links {len(parents)} faction catalogues; add it to TOP_LEVEL_FACTIONS or teach the converter its parent")
+            out.append((c, parents[0]))
+        return out
+
+    @staticmethod
+    def mandatory_root_ids(cat):
+        """Root Configuration entries (not models) with a roster-scope minimum of at least one."""
+        ids = set()
+        for se in kids(cat["root"], "selectionEntries"):
+            if se.attrib.get("type") in ("model", "unit") or "Configuration" not in {cl.attrib.get("name") for cl in kids(se, "categoryLinks")}:
+                continue
+            for c in kids(se, "constraints"):
+                if c.attrib.get("type") == "min" and c.attrib.get("scope") in ROSTER_SCOPES and (first_int(c.attrib.get("value")) or 0) >= 1 and c.attrib.get("field") == "selections":
+                    ids.add(se.attrib["id"])
+        return ids
 
     def variant_entries(self, cat):
         """Return (variants, config_entries). Variants are selectionEntries under a 'Warband Variant' root entry."""
@@ -819,13 +862,27 @@ class Converter:
 
     def convert(self):
         self.register_library_items()
+        self.list_faction_id = {}  # catalogue id -> the top-level faction id its rows belong to
         for cat in self.faction_catalogues():
+            self.list_faction_id[cat["id"]] = slug(cat["name"])
             self.convert_faction(cat)
+        by_id = {f["id"]: f for f in self.factions}
+        for cat, parent in self.subfaction_catalogues():
+            self.list_faction_id[cat["id"]] = slug(parent["name"])
+            sub = self.convert_faction(cat, parent)
+            by_id[slug(parent["name"])].setdefault("subfactions", []).append(sub)
+        for f in self.factions:
+            if "subfactions" in f:
+                f["subfactions"].sort(key=lambda x: x["id"])
         self.finalise_items()
         self.finalise_units()
 
-    def convert_faction(self, cat):
+    def convert_faction(self, cat, parent=None):
+        """Convert one catalogue's roster list. A subfaction (parent set) is returned instead of
+        being added to self.factions; its units keep factionId = the parent and carry subfactionId."""
         fid = slug(cat["name"])
+        parent_fid = slug(parent["name"]) if parent is not None else None
+        always_ids = self.mandatory_root_ids(cat) if parent is not None else set()
         variants, configs = self.variant_entries(cat)
         self.variant_id_map = {}
         variant_ids = set()
@@ -882,9 +939,10 @@ class Converter:
                     for se in kids(sg, "selectionEntries"):
                         choice = {"name": clean(se.attrib.get("name", "")), "bsId": se.attrib["id"], "rules": self.named_texts(se), "group": clean(sg.attrib.get("name", ""))}
                         choices.append(choice)
-            faction.setdefault("configuration", []).append(
-                {"name": clean(cfg.attrib.get("name", "")), "bsId": cfg.attrib["id"], "choices": choices}
-            )
+            config = {"name": clean(cfg.attrib.get("name", "")), "bsId": cfg.attrib["id"], "choices": choices}
+            if cfg.attrib["id"] in always_ids:
+                config["mandatory"] = True
+            faction.setdefault("configuration", []).append(config)
         for il in kids(cat["root"], "infoLinks"):
             pass
         faction["rules"].extend(self.named_texts(cat["root"]))
@@ -943,6 +1001,7 @@ class Converter:
             tid = entry.attrib["id"]
             ctx = Ctx(self.ds, entry, link, cat["id"], variant_ids, variant_owner)
             ctx.roster_ids = roster_ids
+            ctx.always_ids = always_ids
             state, deps = visibility([entry, link], ctx, self.tally)
             rank = {"visible": 0, "conditional": 1, "hidden": 2}[state]
             if tid not in by_target:
@@ -973,6 +1032,9 @@ class Converter:
             unit = self.convert_unit(cat, fid, entry, link, ctx, state, deps, campaign_links)
             if unit is None:
                 continue
+            if parent_fid is not None:
+                unit["factionId"] = parent_fid
+                unit["subfactionId"] = fid
             if not unit.get("mercenary"):
                 for k in unit["keywords"]:
                     if k in FACTION_TAGS:
@@ -984,7 +1046,10 @@ class Converter:
         if not faction["keywords"]:
             faction["keywords"] = sorted(t for t in FACTION_TAGS if t.lower() in cat["name"].lower())
         faction["campaignLinks"] = sorted(campaign_links)
+        if parent is not None:
+            return faction
         self.factions.append(faction)
+        return faction
 
     # -- units -------------------------------------------------------------------
 
@@ -1650,7 +1715,7 @@ class Converter:
                 fids = set()
                 for d in defs:
                     for cid in self.item_faction_ids.get(d["key"], ()):
-                        fids.add(slug(self.ds.catalogues[cid]["name"]))
+                        fids.add(self.list_faction_id.get(cid, slug(self.ds.catalogues[cid]["name"])))
                 item["factionIds"] = sorted(fids)
             self.items.append(item)
         self.items.sort(key=lambda i: i["id"])
@@ -1753,10 +1818,12 @@ def write_notes(conv, out_dir, commit):
     lines.append("")
     lines.append(f"- factions: {len(conv.factions)}")
     lines.append(f"- units: {len(conv.units)} (one row per unit per faction; mercenaries repeat per faction)")
-    per_f = collections.Counter(u["factionId"] for u in conv.units)
-    merc_f = collections.Counter(u["factionId"] for u in conv.units if u.get("mercenary"))
+    per_f = collections.Counter(u.get("subfactionId", u["factionId"]) for u in conv.units)
+    merc_f = collections.Counter(u.get("subfactionId", u["factionId"]) for u in conv.units if u.get("mercenary"))
     for f in conv.factions:
         lines.append(f"  - {f['name']}: {per_f[f['id']]} units ({merc_f[f['id']]} mercenaries), {len(f['variants'])} variants")
+        for sf in f.get("subfactions", []):
+            lines.append(f"    - subfaction {sf['name']}: {per_f[sf['id']]} units ({merc_f[sf['id']]} mercenaries), {len(sf['variants'])} variants")
     lines.append(f"- equipment items: {len(conv.items)}")
     per_c = collections.Counter(i["category"] for i in conv.items)
     for c, n in sorted(per_c.items()):
@@ -1767,6 +1834,7 @@ def write_notes(conv, out_dir, commit):
     lines.append("## How the mapping works")
     lines.append("")
     lines.append("- Unit availability per faction = faction root `selectionEntries` (type model/unit) + faction root `entryLinks` to models + the Mercenaries catalogue root entries (imported with `importRootEntries=\"true\"`), each filtered through its `hidden` flag and `set hidden` modifiers evaluated with three-valued logic (known: this unit/its categories/the primary catalogue; unknown: roster selections such as variants).")
+    lines.append("- Subfactions (`TOP_LEVEL_FACTIONS` lists the six warbands; every other non-library catalogue must link exactly one of them) are converted as their own roster list with themselves as the primary catalogue, then nested in the parent's `subfactions` array. A subfaction catalogue links its parent with `importRootEntries=\"false\"`, so it inherits none of the parent's units or variants: its list is its own root models, its root entryLinks (into Mercenaries and the parent's shared entries) and the Mercenaries root entries. Its models reach the parent's shared armoury groups through entryLinks, and the parent gates subfaction-only kit on the subfaction's mandatory `<Name> Rules` root entry, which is therefore evaluated as always selected (`configuration[].mandatory`). Its units keep `factionId` = the parent and carry `subfactionId`; ids are `<subfaction-id>/<slug>`.")
     lines.append("- Entries that stay hidden with no reachable unhide path are dropped and listed below. Entries whose visibility depends on a roster selection are kept with `onlyWith` / `onlyWithout` (readable names; variant ids where the dependency is a Warband Variant) and `variantIds`.")
     lines.append("- `equipmentAccess` is the flattened walk of every selection group reachable from the unit (shared faction groups such as Weapons/Armour/Equipment/Grenades, plus unit-local groups). `group` is the innermost BS group slug, `groupPath` the full path. The cost on the link wins over the library entry's cost. Items hidden for this unit are omitted; conditionally hidden ones carry `onlyWith`/`onlyWithout` (any listed entry satisfies a gate) and, for conditions the engine cannot evaluate, `conditionNote`.")
     lines.append("- Gate entries are a variant id (`new-antioch/eire-rangers`), a selection on the same model (`item:<item-id>` for a Battlekit row, `upgrade:<name>` for one of the unit's own upgrades), or `Name [Catalogue]` for anything counted across the whole roster. An entry nested under a Warband Variant (Knights of Avarice loot) stands for that variant.")
@@ -1853,6 +1921,8 @@ def write_notes(conv, out_dir, commit):
 
 
 UPSTREAM_ODDITIES = [
+    "The Heretic Naval Raiders and Procession of the Sacred Affliction catalogues replace the former Heretic Legion and Trench Pilgrims Warband Variants of the same name, and their mandatory `<Name> Rules` entries reuse the retired variant ids (4d05-603e-4b5a-aed4, 0d88-774c-22af-e2fc): the Trench Pilgrims armoury still gates the Procession kit on that id, and Mercenaries/Campaign Rules gate on the subfaction catalogue id as primary catalogue.",
+    "`repeat` values other than 1 are not carried into `limits.text` / `limitsText` (`repeat per X`): the Heretic Raider Legionnaire cap is `repeat value=2` upstream (one per two Heretic Raiders) but reads as one per Heretic Raider here.",
     "The `Fireteam` (type=unit) entries are marked by the author as deprecated ('being phased out') and are hidden unless already on a roster; they carry no Unit profile and are not emitted (the New Antioch Fireteams rule comes from the PDF via an override).",
     "Several links are hidden and only unhide 'if at least 1 of itself is selected' (Court Misericordia/Flail/Halberd-Gun links, Heretic Musket): the author's way of retiring an entry without deleting it. The Court links actually point at the Envious Eyes 'Stolen Loot' upgrades and the Heretic Musket at the Knights of Avarice 'Corrupt Merchants' loot, which is how they are modelled; a genuinely self-referencing unhide is treated as never satisfiable.",
     "The Viscera Cannon's unhide carries an `atLeast 0 The Great Hunger` condition (always true) next to a `set hidden=true atLeast 1 The Great Hunger` modifier; read literally it is 'ELITE or Dirge of the Great Hegemon, never under The Great Hunger'.",
@@ -2008,7 +2078,7 @@ def apply_overrides(overrides_path, outputs):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--src", required=True, help="path to the Fawkstrot11/TrenchCrusade clone")
+    ap.add_argument("--src", required=True, help="path to the TrenchCrusade-NewRecruit/TrenchCrusade clone")
     ap.add_argument("--out", required=True, help="output directory (data/rules)")
     ap.add_argument(
         "--overrides",

@@ -29,7 +29,7 @@ export function ArmouryScreen() {
   const closePicker = useCallback(() => setPicker(undefined), []);
 
   const confirmedMember = member ? baseMember(confirmed, pending, member.id) : undefined;
-  const unit = member ? findUnit(rules, warband.factionId, member.unitId) : undefined;
+  const unit = member ? findUnit(rules, warband, member.unitId) : undefined;
   const pm = member ? pending.members[member.id] : undefined;
 
   const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm) : []), [member, confirmedMember, unit, rules, pm]);
@@ -82,7 +82,7 @@ export function ArmouryScreen() {
               .filter((r) => r.pending !== "remove")
               .map(({ member: m, pending: p }) => (
                 <option key={m.id} value={m.id}>
-                  {memberTitle(m, findUnit(rules, warband.factionId, m.unitId))}
+                  {memberTitle(m, findUnit(rules, warband, m.unitId))}
                   {p === "add" ? " (pending recruit)" : ""}
                 </option>
               ))}
