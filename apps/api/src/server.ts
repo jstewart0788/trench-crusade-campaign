@@ -7,12 +7,13 @@ import { loadRules } from "./rules.js";
 const config = configFromEnv();
 const rules = loadRules(config.rulesDir);
 const db = openDatabase(config.databaseFile);
-const app = createApp({ rules, store: new WarbandStore(db) });
+const app = createApp({ rules, store: new WarbandStore(db), staticDir: config.staticDir, rateLimitPerMinute: config.rateLimitPerMinute });
 
 const server = app.listen(config.port, config.host, () => {
   console.log(`tc-api listening on http://${config.host}:${config.port}`);
   console.log(`  rules: ${config.rulesDir} (${rules.data.units.length} units, ${rules.data.equipment.length} items)`);
   console.log(`  db:    ${config.databaseFile}`);
+  if (config.staticDir) console.log(`  web:   ${config.staticDir}`);
 });
 
 // The TTS mod fetches from 127.0.0.1:3001, which is also where the fixture

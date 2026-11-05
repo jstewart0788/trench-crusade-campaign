@@ -1,0 +1,38 @@
+# Trench Crusade on the shared ryn-main box. Isolation from everything else on the host:
+# its own internal Docker network (no route to the kamal network or the internet), a non-root
+# user, read-only root filesystem, no capabilities, no privilege escalation, memory/pid caps.
+# kamal-proxy is attached to the `tc` network by deploy/setup-host.sh and is the only way in.
+name: trench-crusade
+services:
+  web:
+    build:
+      context: ..
+    image: trench-crusade-campaign:local
+    container_name: tc-web
+    restart: unless-stopped
+    networks: [tc]
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    pids_limit: 256
+    volumes:
+      - tc-data:/data
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3001"
+      RATE_LIMIT_PER_MINUTE: "120"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+networks:
+  tc:
+    external: true
+volumes:
+  tc-data:

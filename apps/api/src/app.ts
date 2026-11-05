@@ -1,6 +1,8 @@
 import { toWarbandExport, validateWarband, warbandCost, Warband as WarbandSchema, WarbandExportError, type Warband } from "@tc/rules";
 import cors from "cors";
 import express, { type Request } from "express";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { generateCode, parseCode } from "./codes.js";
 import type { StoredWarband, WarbandStore } from "./db/warbands.js";
 import { ApiError, errorHandler } from "./errors.js";
@@ -10,11 +12,39 @@ export interface AppDeps {
   rules: LoadedRules;
   store: WarbandStore;
   now?: () => Date;
+  /** Built web app to serve at / (production only); unset in dev where Vite serves it. */
+  staticDir?: string;
+  /** Requests per minute per client IP on /api before 429; 0 disables. */
+  rateLimitPerMinute?: number;
 }
 
-export function createApp({ rules, store, now = () => new Date() }: AppDeps): express.Express {
+// Enough for a table of players building rosters; it exists so an unauthenticated
+// public endpoint cannot be hammered for free, not as a security boundary.
+function rateLimiter(perMinute: number): express.RequestHandler {
+  const buckets = new Map<string, { tokens: number; at: number }>();
+  return (req, res, next) => {
+    const now = Date.now();
+    const key = req.ip ?? "unknown";
+    const b = buckets.get(key) ?? { tokens: perMinute, at: now };
+    b.tokens = Math.min(perMinute, b.tokens + ((now - b.at) / 60_000) * perMinute);
+    b.at = now;
+    if (b.tokens < 1) {
+      buckets.set(key, b);
+      res.status(429).json({ error: { code: "rate-limited", message: "Too many requests; try again in a minute" } });
+      return;
+    }
+    b.tokens -= 1;
+    buckets.set(key, b);
+    if (buckets.size > 10_000) buckets.clear();
+    next();
+  };
+}
+
+export function createApp({ rules, store, now = () => new Date(), staticDir, rateLimitPerMinute = 0 }: AppDeps): express.Express {
   const app = express();
   app.disable("x-powered-by");
+  app.set("trust proxy", 1);
+  if (rateLimitPerMinute > 0) app.use("/api", rateLimiter(rateLimitPerMinute));
   // No auth and nothing private: the TTS mod fetches from inside Tabletop Simulator.
   app.use("/api", cors());
   app.use(express.json({ limit: "1mb" }));
@@ -109,6 +139,11 @@ export function createApp({ rules, store, now = () => new Date() }: AppDeps): ex
   app.use("/api", (_req, res) => {
     res.status(404).json({ error: { code: "not-found", message: "No such route" } });
   });
+
+  if (staticDir && existsSync(staticDir)) {
+    app.use(express.static(staticDir, { index: "index.html", maxAge: "1h" }));
+    app.get(/^\/(?!api\/).*/, (_req, res) => res.sendFile(join(staticDir, "index.html")));
+  }
 
   app.use(errorHandler);
   return app;

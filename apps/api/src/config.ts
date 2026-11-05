@@ -11,6 +11,9 @@ export interface Config {
   rulesDir: string;
   /** SQLite file; ":memory:" for a throwaway database. */
   databaseFile: string;
+  /** Built web app directory to serve at /; unset = API only. */
+  staticDir?: string;
+  rateLimitPerMinute: number;
 }
 
 export function configFromEnv(env: NodeJS.ProcessEnv = process.env): Config {
@@ -19,5 +22,7 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): Config {
     port: Number(env.PORT ?? 3001),
     rulesDir: env.RULES_DIR ? resolve(env.RULES_DIR) : resolve(repoRoot, "data/rules"),
     databaseFile: env.DATABASE_FILE ? resolve(env.DATABASE_FILE) : resolve(repoRoot, "apps/api/data/roster.sqlite"),
+    staticDir: env.STATIC_DIR ? resolve(env.STATIC_DIR) : undefined,
+    rateLimitPerMinute: Number(env.RATE_LIMIT_PER_MINUTE ?? 0),
   };
 }
