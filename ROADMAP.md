@@ -219,6 +219,15 @@ Modelled nested per Jonathan: faction → subfaction → variant; `Warband.subfa
 (+15 from the Naval Raiders PDF). Procession is data-only and unverified (no local PDF). Item id
 `anti-material-rifle` became `anti-materiel-rifle` upstream.
 
+**Generator status 2026-11-05 (TC-021b–e):** mirrored halves with role-matched slot twins, deployment-zone
+trench lines with fire steps outward and a straight cross trench, category slots with per-board aesthetics,
+hills on ~60% of objective/relic/supply scenarios (20% otherwise), scatter heaps at ~1/3 of objects
+(~160 objects on a 36in board, Square Off's density per area), log-fence revetments and duckboards,
+source material/type/convexity per asset, a Metal shader check (`scripts/check_bundle_shaders.py`).
+Reviewed live on seed 4 from both players' sides. **Open:** Jonathan's call on busier boards (scatter on
+hill/plateau tops, sandbag parapets, fewer fill pieces); live look at the new material settings; TC-022
+spawner and TC-023 Battle code (scenario + board + two warbands → one code in the mod).
+
 **Follow-ups from the 2026-11-04 adversarial QA pass** (data correctness, not blocking Phase 1 start):
 - TC-003b Converter condition handling: "X only" items leak onto every unit as a `conditionNote`
   (Brazen Bull-only weapons on all Sultanate units, Heavy Ballistic Shield on Yeomen, Court
