@@ -14,6 +14,14 @@ import type { EquipmentItem } from "./schema.js";
 // comes paired with a Trench Shield (p179).
 export const SHIELD_COMBO_GROUPS = new Set(["shield-combo", "shield-combos", "bayonet", "loadout"]);
 
+// The Shield's side of Shield Combo, from the armoury tables (Warbands of Trench
+// Crusade p24, p50, p74, p106, p129, p148, p201 and the Naval Raiders armoury):
+// these shields carry the stipulation; the Iron Wall Kalkan (p92) does not.
+// "shield" is the Mamluk Faris's loadout Trench Shield (p179). Shields missing
+// from both lists appear in no PDF here and are only warned.
+export const SHIELD_COMBO_SHIELDS = new Set(["trench-shield", "heavy-ballistic-shield", "holy-icon-shield", "fire-shield", "black-grail-shield", "shield"]);
+export const NO_SHIELD_COMBO_SHIELDS = new Set(["iron-wall-kalkan"]);
+
 export const hasKeyword = (keywords: string[], re: RegExp) => keywords.some((k) => re.test(k.trim()));
 
 export interface CarriedItem {
@@ -86,6 +94,7 @@ export interface BattlekitTally {
   strong: boolean;
   negateHeavy: boolean;
   shields: number;
+  shieldIds: string[];
   armour: number;
   headgear: number;
   heavy: number;
@@ -110,6 +119,7 @@ export function tallyBattlekit(unit: RosterUnit, carried: CarriedItem[], headgea
     strong,
     negateHeavy: strong || hasKeyword(unit.keywords, /^negate heavy$/i),
     shields: 0,
+    shieldIds: [],
     armour: 0,
     headgear: 0,
     heavy: 0,
@@ -134,6 +144,7 @@ export function tallyBattlekit(unit: RosterUnit, carried: CarriedItem[], headgea
     switch (c.kind) {
       case "shield":
         t.shields += count;
+        t.shieldIds.push(item.id);
         break;
       case "armour":
         t.armour += count;
@@ -228,8 +239,14 @@ export function checkBattlekit(unit: RosterUnit, carried: CarriedItem[], headgea
         errors.push({ code: "battlekit-hands", message: `${unit.name}: with a Shield or HELD Battlekit, at most one 1-Handed Melee and one 1-Handed Ranged Weapon` });
       }
       for (const w of [...t.ranged2, ...t.melee2]) {
-        if (t.shields > 0 && t.heldHands === 0 && w.combo) {
-          warnings.push({ message: `${w.name} with a Shield relies on Shield Combo; the Shield's own stipulation is not encoded in the data, so it is assumed` });
+        const shieldCombo = t.shieldIds.every((id) => SHIELD_COMBO_SHIELDS.has(id));
+        const shieldNoCombo = t.shieldIds.some((id) => NO_SHIELD_COMBO_SHIELDS.has(id));
+        if (t.shields > 0 && t.heldHands === 0 && w.combo && shieldCombo) {
+          // Both carry Shield Combo: legal, nothing to say.
+        } else if (t.shields > 0 && t.heldHands === 0 && w.combo && !shieldNoCombo) {
+          warnings.push({ message: `Check your rulebook: ${w.name} with this Shield is allowed only if the Shield has Shield Combo, and we couldn't confirm that it does` });
+        } else if (t.shields > 0 && t.heldHands === 0 && w.combo) {
+          errors.push({ code: "battlekit-hands", message: `${unit.name}: ${w.name} is 2-Handed and this Shield has no Shield Combo` });
         } else {
           errors.push({ code: "battlekit-hands", message: `${unit.name}: ${w.name} is 2-Handed and cannot be carried with a Shield or HELD Battlekit${w.combo ? "" : " (no Shield Combo)"}` });
         }

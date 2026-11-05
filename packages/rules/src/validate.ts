@@ -193,7 +193,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   let glory = warband.glory;
   if (glory === undefined && warband.gameNumber === 1) glory = variant?.startingGlory ?? 0;
   if (glory === undefined) {
-    if (cost.glory > 0) warnings.push({ code: "glory-unknown", message: `Warband spends ${cost.glory} Glory Points; set glory to check them against the pool` });
+    if (cost.glory > 0) warnings.push({ code: "glory-unknown", message: `This warband spends ${cost.glory} Glory, but the Glory it has isn't recorded yet, so it isn't checked` });
   } else if (cost.glory > glory) {
     fail({ code: "over-glory", message: `Warband spends ${cost.glory} Glory Points but only ${glory} are available` });
   }
@@ -357,7 +357,7 @@ function warnUnresolved(
   subject: string,
 ): void {
   for (const clause of unresolved) {
-    warn({ ...where, message: `${subject}: limit may be modified by "${clause}", which the data does not model` });
+    warn({ ...where, message: `Check your rulebook: how many ${subject} you may take can change ${plainClause(clause)}, which this tool can't check yet` });
   }
 }
 
@@ -461,7 +461,7 @@ function checkGates(
     const gate = evalGate(onlyWith, warband, data, ctx, model);
     if (!gate.matched) {
       if (gate.unresolved.length > 0) {
-        warn({ ...where, message: `${subject} requires one of ${gate.unresolved.map((u) => `"${u}"`).join(", ")}, which the data does not model` });
+        warn({ ...where, message: `Check your rulebook: ${subject} needs ${plainNames(gate.unresolved)}, which this tool can't check yet` });
       } else {
         fail({ ...where, code: codes.locked, message: `${subject} is only available with ${onlyWith.join(" or ")}` });
       }
@@ -472,7 +472,7 @@ function checkGates(
     if (gate.matched) {
       fail({ ...where, code: codes.excluded, message: `${subject} is not available with ${onlyWithout.join(" / ")}` });
     } else if (gate.unresolved.length > 0) {
-      warn({ ...where, message: `${subject} is unavailable with ${gate.unresolved.map((u) => `"${u}"`).join(", ")}, which the data does not model` });
+      warn({ ...where, message: `Check your rulebook: ${subject} isn't allowed with ${plainNames(gate.unresolved)}, which this tool can't check yet` });
     }
   }
 }
@@ -736,4 +736,25 @@ function checkMemberUpgrades(
     }
   }
   return [...taken.values()];
+}
+
+// "Remnants of Byzantium [New Antioch]" → "Remnants of Byzantium"; several read "A or B".
+function plainNames(names: readonly string[]): string {
+  const clean = [...new Set(names.map((n) => n.replace(/\s*\[[^\]]*\]\s*$/, "").replace(/\?$/, "").trim()))];
+  return clean.length <= 1 ? (clean[0] ?? "") : `${clean.slice(0, -1).join(", ")} or ${clean[clean.length - 1]}`;
+}
+
+// Limit clauses come from the converter as "max set 2 per warband when atLeast 1
+// Eire Rangers (roster)" or "max increment 1 per warband when repeat per Brazen
+// Bull (roster)"; say the condition, not the grammar.
+function plainClause(clause: string): string {
+  const per = /repeat per (.+?)\s*\(/.exec(clause);
+  if (per) return `with each ${plainNames([per[1]!])} (counted per ${plainNames([per[1]!])})`;
+  const over = /atLeast (\d+) any/.exec(clause);
+  if (over) return `when the warband is worth ${over[1]} ducats or more`;
+  const under = /lessThan (\d+)/.exec(clause);
+  if (under) return `when the warband is worth under ${under[1]} ducats`;
+  const when = /when (?:atLeast \d+ |equalTo \d+ )?(.+?)\s*\(/.exec(clause);
+  if (when) return `with ${plainNames([when[1]!])}`;
+  return "with your list's choices";
 }

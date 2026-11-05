@@ -40,12 +40,31 @@ describe("validateWarband: legal warbands", () => {
     expect(codes(validate(withMembers([weak])))).toEqual(expect.arrayContaining(["battlekit-melee", "battlekit-heavy"]));
   });
 
-  it("allows a Shield with a Shield Combo weapon, warning that the shield side is assumed", () => {
+  it("allows a Shield Combo weapon with a Shield that also has Shield Combo, without a warning", () => {
     const w = withMembers([member("new-antioch/yeoman", ["trench-shield", "shotgun", "bayonet"])]);
     const result = validate(w);
     expect(result.errors).toEqual([]);
-    expect(result.warnings.map((x) => x.code)).toEqual(["unmodelled", "unmodelled"]);
-    expect(result.warnings[0]?.message).toContain("Shield Combo");
+    expect(result.warnings.filter((x) => x.message.includes("Shield Combo"))).toEqual([]);
+  });
+
+  it("refuses a 2-Handed weapon with the Iron Wall Kalkan, which has no Shield Combo (p92)", async () => {
+    const { checkBattlekit } = await import("../src/battlekit.js");
+    const d = data();
+    const unit = d.units.find((u) => u.id === "new-antioch/yeoman")!;
+    const carried = ["iron-wall-kalkan", "shotgun"].map((id) => ({ itemId: id, item: d.equipmentById.get(id)!, access: unit.equipmentAccess.find((a) => a.itemId === "trench-shield")!, count: 1 }));
+    carried[1]!.access = unit.equipmentAccess.find((a) => a.itemId === "shotgun")!;
+    const r = checkBattlekit(unit, carried, d.headgearItemIds);
+    expect(r.errors.map((e) => e.message)).toContainEqual(expect.stringContaining("this Shield has no Shield Combo"));
+  });
+
+  it("warns in plain words when a Shield's Shield Combo cannot be confirmed", async () => {
+    const { checkBattlekit } = await import("../src/battlekit.js");
+    const d = data();
+    const unit = d.units.find((u) => u.id === "trench-pilgrims/trench-pilgrim")!;
+    const pick = (id: string) => ({ itemId: id, item: d.equipmentById.get(id)!, access: unit.equipmentAccess.find((a) => a.itemId === id)!, count: 1 });
+    const r = checkBattlekit(unit, [pick("trench-shield-nordic"), pick("shotgun")], d.headgearItemIds);
+    expect(r.errors).toEqual([]);
+    expect(r.warnings.map((w) => w.message)).toEqual([expect.stringMatching(/^Check your rulebook: Shotgun with this Shield/)]);
   });
 
   it("drops the Lieutenant minimum for the Papal States variant via the limits text", () => {
@@ -122,7 +141,7 @@ describe("validateWarband: one failing case per error code", () => {
     // Later in a campaign the pool is state the roster may not carry: skip the check, but say so.
     const later = validate({ ...w, gameNumber: 2 });
     expect(later.errors).toEqual([]);
-    expect(later.warnings).toEqual([{ code: "glory-unknown", message: expect.stringContaining("7 Glory Points") }]);
+    expect(later.warnings).toEqual([{ code: "glory-unknown", message: expect.stringContaining("spends 7 Glory") }]);
     expect(validate(newAntioch({ gameNumber: 2 })).warnings).toEqual([]);
   });
 
@@ -176,7 +195,7 @@ describe("validateWarband: one failing case per error code", () => {
     expect(validate(warband("iron-sultanate", [lead(), ...bulls(1)])).errors).toEqual([]);
     const result = expectCode(warband("iron-sultanate", [lead(), ...bulls(2)]), "unit-max");
     expect(result.errors[0]?.message).toContain("at most 1 per warband");
-    expect(result.warnings.some((x) => x.unitId === "iron-sultanate/brazen-bull" && x.message.includes("repeat per Brazen Bull"))).toBe(true);
+    expect(result.warnings.some((x) => x.unitId === "iron-sultanate/brazen-bull" && x.message.includes("with each Brazen Bull"))).toBe(true);
     expectCode(warband("iron-sultanate", [lead(), ...bulls(3)]), "unit-max");
   });
 
@@ -394,7 +413,7 @@ describe("validateWarband: one failing case per error code", () => {
     const faris = (kit: string[]) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"]), member("iron-sultanate/mamluk-faris", kit)], { glory: 4 });
     const result = validate(faris(["polearm", "shield"]));
     expect(result.errors).toEqual([]);
-    expect(result.warnings.map((x) => x.message)).toEqual([expect.stringContaining("Polearm with a Shield relies on Shield Combo")]);
+    expect(result.warnings.filter((x) => x.message.includes("Shield Combo"))).toEqual([]);
     expect(validate(faris(["great-sword-axe"])).errors).toEqual([]);
     expect(expectCode(faris(["polearm", "shield", "bolt-action-rifle"]), "item-not-available").errors[0]?.itemId).toBe("bolt-action-rifle");
   });
