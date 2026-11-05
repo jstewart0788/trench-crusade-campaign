@@ -12,3 +12,5 @@ export * from "./generate.js";
 export * from "./preview.js";
 export * from "./tts.js";
 export * from "./load.js";
+export * from "./compact.js";
+export * from "./seeds.js";

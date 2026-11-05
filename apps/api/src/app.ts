@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { generateCode, parseCode } from "./codes.js";
 import type { StoredWarband, WarbandStore } from "./db/warbands.js";
 import { ApiError, errorHandler } from "./errors.js";
+import { MAX_SEED, NoBoardError, UnknownScenarioError, type BattlefieldService } from "./battlefields.js";
 import type { LoadedRules } from "./rules.js";
 
 export interface AppDeps {
@@ -16,6 +17,8 @@ export interface AppDeps {
   staticDir?: string;
   /** Requests per minute per client IP on /api before 429; 0 disables. */
   rateLimitPerMinute?: number;
+  /** Generated battlefields for the mod's Battlefield panel; unset = those routes answer 404. */
+  battlefields?: BattlefieldService;
 }
 
 // Enough for a table of players building rosters; it exists so an unauthenticated
@@ -40,7 +43,7 @@ function rateLimiter(perMinute: number): express.RequestHandler {
   };
 }
 
-export function createApp({ rules, store, now = () => new Date(), staticDir, rateLimitPerMinute = 0 }: AppDeps): express.Express {
+export function createApp({ rules, store, now = () => new Date(), staticDir, rateLimitPerMinute = 0, battlefields }: AppDeps): express.Express {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
@@ -142,6 +145,31 @@ export function createApp({ rules, store, now = () => new Date(), staticDir, rat
     res.set("Cache-Control", "no-store");
     res.json(toWarbandExport(stored.warband, rules.data, { code: stored.code, now: now() }));
   });
+
+  if (battlefields) {
+    app.get("/api/battlefields", (_req, res) => {
+      res.set("Cache-Control", "public, max-age=300");
+      res.json({ maxSeed: MAX_SEED, scenarios: battlefields.list() });
+    });
+
+    app.get("/api/battlefields/:scenario/:seed", (req, res) => {
+      const scenario = String(req.params.scenario);
+      const seedRaw = String(req.params.seed);
+      if (!/^[a-z0-9-]{1,40}$/.test(scenario)) throw new ApiError(400, "invalid-scenario", "Scenario ids are lower-case words joined by hyphens");
+      if (!/^[0-9]{1,6}$/.test(seedRaw) || Number(seedRaw) < 1 || Number(seedRaw) > MAX_SEED) {
+        throw new ApiError(400, "invalid-seed", `Seed must be a whole number from 1 to ${MAX_SEED}`);
+      }
+      try {
+        const payload = battlefields.board(scenario, Number(seedRaw));
+        res.set("Cache-Control", "public, max-age=86400");
+        res.json(payload);
+      } catch (err) {
+        if (err instanceof UnknownScenarioError) throw new ApiError(404, "not-found", `No scenario ${scenario}`);
+        if (err instanceof NoBoardError) throw new ApiError(422, "no-board", `The generator could not lay ${scenario} seed ${seedRaw}; try another seed`);
+        throw err;
+      }
+    });
+  }
 
   app.use("/api", (_req, res) => {
     res.status(404).json({ error: { code: "not-found", message: "No such route" } });

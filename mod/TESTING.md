@@ -321,6 +321,24 @@ Offline first: `pnpm mod:test`.
 - If the Scripted Table asset reads as a tall object rather than a spot, its look can change
   without touching the script: rescale or swap the content object of `70d18f` / `2d4b7e`.
 
+## 13. Battlefield panel (TC-022a, object `47de64`)
+
+Needs the API with the battlefield routes (`pnpm --filter @tc/api dev` locally, or the
+deployed `https://tc.rynfin.org`); the panel uses the Warband Importer's API base URL.
+
+- The dark tile at (-22, -15), below the Warband Importer, reads `1/12  Claim No Man's Land
+  (36")`, `Board 1/5: seed 25` and `Pick a scenario and a board, then Spawn battlefield.`
+  With the API stopped it reads `Can't reach <url> for the scenario list: ...`; any button
+  retries.
+- **Scenario >** steps through the twelve and wraps; **Next board** cycles the five
+  recommended seeds; **Random board** shows `Random board: seed N`.
+- **Spawn battlefield**: any old generated terrain and objective markers vanish, the board
+  spawns (about 140-270 pieces), and once it has loaded the scenario's objective markers drop
+  onto their points with their control rings. Models, tokens, the importer, tracker and
+  trays are untouched. Hover a piece: its name has the `·` separators intact.
+- **Clear battlefield** removes the terrain and markers only.
+- Save and reload: the panel keeps the scenario and board.
+
 ## Reporting
 
 Record every error line and every item above that did not behave, with the object GUID

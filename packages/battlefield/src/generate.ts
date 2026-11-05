@@ -134,6 +134,11 @@ export class GenerateError extends Error {
 const BRANCHES_BY_DENSITY = { sparse: [0, 1], medium: [1, 3], dense: [2, 4] } as const;
 const ARCHETYPES: readonly Archetype[] = ["trench-lines", "no-mans-land"];
 
+/** The square board a scenario is laid on: its own size when its map is square, else 36in. */
+export function scenarioBoardIn(scenario: ScenarioGeometry): number {
+  return scenario.battlefield.widthIn === scenario.battlefield.depthIn ? scenario.battlefield.widthIn : 36;
+}
+
 /**
  * The archetype a scenario is laid as when none is asked for: the first one it
  * lists that the generator lays, Trench Lines for "any". A scenario that lists
@@ -380,8 +385,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
   const archetype = env.archetypes.find((a) => a.id === archetypeId);
   if (!archetype) throw new GenerateError(`archetype ${archetypeId} missing from terrain data`);
   const opts: GenerateOptions = { ...DEFAULT_GENERATE_OPTIONS, ...input.options };
-  const square = scenario.battlefield.widthIn === scenario.battlefield.depthIn;
-  const boardIn = input.boardIn ?? (square ? scenario.battlefield.widthIn : 36);
+  const boardIn = input.boardIn ?? scenarioBoardIn(scenario);
   const grid = createGrid(boardIn, env.palette.cellIn);
   const palette = env.palette;
   const sense = palette.rotation.rotYSense;

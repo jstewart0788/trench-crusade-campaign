@@ -23,6 +23,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@tc/battlefield':
+        specifier: workspace:*
+        version: link:../../packages/battlefield
       '@tc/rules':
         specifier: workspace:*
         version: link:../../packages/rules

@@ -284,6 +284,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | ADDED | Tough | `359c8c` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `afb1c2`, tag `tc-token:tough` |
 | ADDED | Objective | `2d4b7e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `8f0c3a`, tag `tc-token:objective` |
 | ADDED | Turn Tracker | `4ac9e3` | Custom_Tile | 14,076 | 0 | TC-017 turn helpers: initiative roll-off, Start turn, Morale reminder, Next turn, Shaken flags, rules-shelf camera; see below |
+| ADDED | Battlefield | `47de64` | Custom_Tile | ~14,000 | 0 | TC-022a: scenario / board chooser that fetches a generated battlefield from the API and spawns it with its objective markers; see below |
 
 
 ## global.lua (128,527 bytes, 151 functions) by system
@@ -566,39 +567,69 @@ die / crossed swords / skull with tooltips, and the panel widths drop by the two
 buttons (1280 -> 1200, 1224 -> 1144 in the XML for Red, Blue and Grey, and in
 `HUD_FULL`).
 
-### Objective markers (TC-023u)
+### Objective markers (TC-023u, reworked in TC-022a)
 
-The content of both Objective bags (`a18feb` in Red `70d18f`, `8f0c3a` in Blue `2d4b7e`;
-Scripted Table `ba7eaf`, a `Custom_Assetbundle` at scale 0.8, tag `tc-token:objective`)
-now carries `mod/scripts/a18feb.lua` (identical copy in `8f0c3a.lua`), so every marker drawn
-from a bag runs it:
+The content of both Objective bags (`a18feb` in Red `70d18f`, `8f0c3a` in Blue `2d4b7e`, tag
+`tc-token:objective`) is TTS's built-in poker chip `Chip_10`, tinted green, running
+`mod/scripts/a18feb.lua` (identical copy in `8f0c3a.lua`). TC-022a replaced the Scripted
+Table asset bundle that used to be there: its only mesh, `9thObjGreen(Clone)`, is LCT's 40k
+9th-edition objective with a ~6" ring baked into the model, so the "radius" was physical.
+The bags' attached icons are the same chip. No external asset.
 
-- **No physics.** On load (and again once the asset finishes loading) it locks itself,
-  turns gravity off and sets every Box / Mesh / Sphere / Capsule collider in it and its
-  children to a trigger (mesh colliders made convex first, as Unity requires). A trigger
-  blocks nothing and nothing rests on it, but the cursor still hits it, so it can be hovered,
-  right-clicked and deleted. This is the recipe LCT's objective manager used for its markers
-  (removed in TC-023s); the TTS docs list `Component.set(name, value)` but not the collider
-  vars, so the var names come from that working code, not the docs.
-- **Spot and bubble.** Two object vector lines: a 40mm circle (the rulebook's largest Marker,
-  p146) and a control ring 1" beyond it (control is "on, in, or within 1"", p152 / p154 /
-  p193; scoring "within 1"", p156). Vector lines have no collider, so models pass through
-  the ring. They are drawn in the object's local space with the dice tray's measuring-bubble
-  recipe (points / scale, rotation {270, 0, 0}); the docs do not state the space, the
-  bubbles prove it live.
-- **Seated, not resting.** It sets its height from a downward `Physics.cast`, onto the
-  highest `tc-terrain` piece or the mat under it, never onto a model or another marker.
-- **Deliberate move / delete.** Right-click > **Move objective** unlocks it for one drag; on
-  drop it seats and relocks. Right-click > **Delete objective** (or Delete) removes it.
-- **Save / load.** The ring radius is the only state (`onSave`); everything else is
-  re-applied in `onLoad`.
+- **No physics.** Once spawned the marker locks itself, turns gravity off and makes every
+  Box / Mesh / Sphere / Capsule collider in it a trigger (mesh colliders convex first): it
+  blocks nothing and nothing rests on it, but the cursor still hits it. The collider var
+  names come from LCT's working objective code, not the docs (which list
+  `Component.set(name, value)` only); whether a built-in chip accepts `isTrigger` is the
+  first live check.
+- **Rule size.** It levels itself and rescales x / z so `getBoundsNormalized()` is exactly
+  40mm (1.575") across, the rulebook's largest Marker (p146), whatever size the built-in chip
+  comes in at.
+- **Virtual spot and range**, as object vector lines 0.06" above the pivot on every marker:
+  a 40mm spot outline, and either a control ring 1" beyond it (1.787" radius; "on, in or
+  within 1"", p152 / p154 / p156 / p193) or, for an objective a terrain piece covers, the
+  band the spawner passes: the piece's turned footprint grown by 1" with rounded corners
+  (`grownOutline` in `packages/battlefield/src/tts.ts`; the whole piece is the Objective,
+  p152). Lines are local to the marker with the dice tray's measuring-bubble recipe
+  (rotation {270, 0, 0}); that local +y maps to world -z is inferred from Unity's rotation,
+  not measured: if a band reads mirrored across the piece, flip the sign of `y` in `line()`.
+- **Seating.** A downward ray onto the highest `tc-terrain` piece or the mat, never a model
+  or another marker. A ray that lands exactly on the seam between two ground tiles passes
+  through to the mat (measured live on Relic Hunt seed 32 at (-6, -12): 0.96 at x = -6, 3.45
+  at x = -5.7 / -6.3), so when the centre ray finds no terrain, four rays 0.3" off centre
+  decide.
+- **Move / delete**: right-click **Move objective** unlocks it for one drag and it reseats and
+  relocks on drop; **Delete objective** (or Delete) removes it. Ring radius and band are
+  saved; everything else is re-applied on load.
 
-Generator side: `objectiveMarkers(layout, palette, catalog, opts)` in
-`packages/battlefield/src/tts.ts` returns, per scenario objective, its world x / z (same
-frame as the terrain states) and `ringIn`: 1" beyond the 40mm marker, or for an objective
-whose `coverPieceId` names a terrain piece, 1" beyond the farthest corner of that piece's
-turned footprint, because the whole piece is the Objective (p152). That ring is a circle
-enclosing the true 1" band around a rectangular piece, so it reads generous at the piece's
-sides. **TC-022 needs to:** for each spec, `takeObject({position = {posX, high, posZ}})`
-from an Objective bag, then `call("setRingRadius", {ringIn = spec.ringIn})` on it; the marker
-seats itself.
+`objectiveMarkers(layout, palette, catalog, opts)` returns per objective its world x / z,
+`ringIn` and `band` (empty for an open objective); the Battlefield panel takes a marker from
+the Red bag at the point and calls `setRingRadius({ringIn, band})`.
+
+## Added: Battlefield panel `47de64` (TC-022a)
+
+A copy of the Turn Tracker's tile (same image, scale 4, rotY 270, so its live-measured face
+and widget scale apply) at (-22, 1, -15): below the Warband Importer, mirroring the tracker
+above it. Nine classic 3D widgets from `BUTTONS` in `mod/scripts/47de64.lua`: the scenario
+label (`n/12  Name  (36")`), **< Scenario** / **Scenario >**, the board label (`Board i/5:
+seed N` or `Random board: seed N`), **Next board** / **Random board**, **Spawn battlefield**,
+**Clear battlefield** and a status line.
+
+- Data comes from the campaign API at the Warband Importer's base URL (its `state.baseUrl`,
+  default `https://tc.rynfin.org`): `GET /api/battlefields` for the scenario list with five
+  recommended seeds each (`data/tts/battlefield-seeds.json`, `pnpm battlefields:seeds`), and
+  `GET /api/battlefields/<scenario>/<seed>` for one board in the compact `tc-battlefield-v1`
+  form (`packages/battlefield/src/compact.ts`). Random board picks a seed in 1..`maxSeed`
+  client-side. No board data is stored in the mod.
+- `buildState` is the Lua twin of `expandBattlefield`: one payload row back to the object
+  state the generator's `--tts` output carries; `mod/test/battlefield_test.lua` compares the
+  two field for field on a fixture board. Names reach the mod as raw UTF-8 (the API's
+  `JSON.stringify` never writes `\u` escapes), so the `·` in the terrain names survives.
+- **Spawn battlefield** removes every object tagged `tc-terrain` or `tc-token:objective`
+  (generated terrain and objective markers, nothing else), spawns each row with
+  `spawnObjectData`, waits until the pieces have loaded (45 s cap), then takes one marker per
+  objective from the Red Objective bag `70d18f` at the objective point and calls
+  `setRingRadius` with the spec's `ringIn`; the marker seats itself on the terrain.
+  **Clear battlefield** removes the same two tags. Network and HTTP failures are written to
+  the status line with the host and the server's message.
+- State saved: scenario index, board index, random seed.

@@ -204,6 +204,7 @@ describe("objectiveMarkers", () => {
         const o = l.objectives[i]!;
         if (!o.coverPieceId) {
           expect(m.ringIn).toBeCloseTo(OBJECTIVE_MARKER_IN / 2 + OBJECTIVE_CONTROL_IN, 3);
+          expect(m.band).toEqual([]);
           continue;
         }
         covered++;
@@ -214,8 +215,22 @@ describe("objectiveMarkers", () => {
         expect(m.ringIn).toBeGreaterThanOrEqual(far + OBJECTIVE_CONTROL_IN - 0.001);
         expect(m.ringIn).toBeLessThanOrEqual(far + OBJECTIVE_CONTROL_IN + 0.001);
         expect(m.ringIn).toBeGreaterThan(OBJECTIVE_MARKER_IN / 2 + OBJECTIVE_CONTROL_IN);
+        // The band is the piece grown by exactly 1in: every point 1in from the footprint, closed.
+        expect(m.band.length).toBeGreaterThan(8);
+        expect(m.band[0]).toEqual(m.band.at(-1));
+        const world = corners.map(([x, y]) => [x - l.boardIn / 2, y - l.boardIn / 2] as [number, number]);
+        for (const [bx, bz] of m.band) {
+          const d = Math.min(...world.map((c, k) => segmentDistance([bx, bz], c, world[(k + 1) % world.length]!)));
+          expect(d).toBeCloseTo(OBJECTIVE_CONTROL_IN, 2);
+        }
       }
     }
     expect(covered).toBeGreaterThan(0);
   });
 });
+
+function segmentDistance(p: [number, number], a: [number, number], b: [number, number]): number {
+  const [dx, dy] = [b[0] - a[0], b[1] - a[1]];
+  const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)));
+  return Math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy);
+}

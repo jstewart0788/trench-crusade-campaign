@@ -5939,7 +5939,7 @@
         "scaleZ": 1.49072266
       },
       "Nickname": "Objective",
-      "Description": "Infinite bag: Objective marker (Scripted Table). Place per the scenario Game Map (rulebook p144+).",
+      "Description": "Infinite bag: Objective marker, a flat 40mm spot that models pass through with a ring 1\" beyond it (rulebook p146, p152). Place per the scenario Game Map, or let the Battlefield panel place them.",
       "GMNotes": "",
       "AltLookAngle": {
         "x": 0.0,
@@ -5984,7 +5984,7 @@
       "ContainedObjects": [
         {
           "GUID": "a18feb",
-          "Name": "Custom_Assetbundle",
+          "Name": "Chip_10",
           "Transform": {
             "posX": 37.0,
             "posY": 2.0,
@@ -5992,12 +5992,12 @@
             "rotX": 0.0,
             "rotY": 0.0,
             "rotZ": 0.0,
-            "scaleX": 0.8,
+            "scaleX": 1.0,
             "scaleY": 1.0,
-            "scaleZ": 0.8
+            "scaleZ": 1.0
           },
           "Nickname": "Objective",
-          "Description": "Objective marker (Scripted Table). Place per the scenario Game Map (rulebook p144+).",
+          "Description": "Objective marker: a 40mm spot models pass through, ring 1\" beyond it (rulebook p146, p152). Right-click: Move objective / Delete objective.",
           "GMNotes": "",
           "AltLookAngle": {
             "x": 0.0,
@@ -6005,10 +6005,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.6919601,
-            "g": 0.8980392,
-            "b": 0.168627113,
-            "a": 0.5686275
+            "r": 0.25,
+            "g": 0.85,
+            "b": 0.35
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -6024,13 +6023,6 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
-          "CustomAssetbundle": {
-            "AssetbundleURL": "https://steamusercontent-a.akamaihd.net/ugc/1663475788745418652/0D54D9828314E4A749E7829475A604F669E9B139/",
-            "AssetbundleSecondaryURL": "",
-            "MaterialIndex": 0,
-            "TypeIndex": 1,
-            "LoopingEffectIndex": 0
-          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": "",
@@ -6042,7 +6034,7 @@
       "ChildObjects": [
         {
           "GUID": "fc05bb",
-          "Name": "Custom_Assetbundle",
+          "Name": "Chip_10",
           "Transform": {
             "posX": 0.0,
             "posY": 0.0,
@@ -6063,10 +6055,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.6919601,
-            "g": 0.8980392,
-            "b": 0.168627113,
-            "a": 0.5686275
+            "r": 0.25,
+            "g": 0.85,
+            "b": 0.35
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -6082,13 +6073,6 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
-          "CustomAssetbundle": {
-            "AssetbundleURL": "https://steamusercontent-a.akamaihd.net/ugc/1663475788745418652/0D54D9828314E4A749E7829475A604F669E9B139/",
-            "AssetbundleSecondaryURL": "",
-            "MaterialIndex": 0,
-            "TypeIndex": 1,
-            "LoopingEffectIndex": 0
-          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": ""
@@ -7193,7 +7177,7 @@
         "scaleZ": 1.49072266
       },
       "Nickname": "Objective",
-      "Description": "Infinite bag: Objective marker (Scripted Table). Place per the scenario Game Map (rulebook p144+).",
+      "Description": "Infinite bag: Objective marker, a flat 40mm spot that models pass through with a ring 1\" beyond it (rulebook p146, p152). Place per the scenario Game Map, or let the Battlefield panel place them.",
       "GMNotes": "",
       "AltLookAngle": {
         "x": 0.0,
@@ -7238,20 +7222,20 @@
       "ContainedObjects": [
         {
           "GUID": "8f0c3a",
-          "Name": "Custom_Assetbundle",
+          "Name": "Chip_10",
           "Transform": {
             "posX": -37.0,
             "posY": 2.0,
             "posZ": -31.66,
             "rotX": 0.0,
-            "rotY": 180.0,
+            "rotY": 0.0,
             "rotZ": 0.0,
-            "scaleX": 0.8,
+            "scaleX": 1.0,
             "scaleY": 1.0,
-            "scaleZ": 0.8
+            "scaleZ": 1.0
           },
           "Nickname": "Objective",
-          "Description": "Objective marker (Scripted Table). Place per the scenario Game Map (rulebook p144+).",
+          "Description": "Objective marker: a 40mm spot models pass through, ring 1\" beyond it (rulebook p146, p152). Right-click: Move objective / Delete objective.",
           "GMNotes": "",
           "AltLookAngle": {
             "x": 0.0,
@@ -7259,10 +7243,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.6919601,
-            "g": 0.8980392,
-            "b": 0.168627113,
-            "a": 0.5686275
+            "r": 0.25,
+            "g": 0.85,
+            "b": 0.35
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -7278,13 +7261,6 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
-          "CustomAssetbundle": {
-            "AssetbundleURL": "https://steamusercontent-a.akamaihd.net/ugc/1663475788745418652/0D54D9828314E4A749E7829475A604F669E9B139/",
-            "AssetbundleSecondaryURL": "",
-            "MaterialIndex": 0,
-            "TypeIndex": 1,
-            "LoopingEffectIndex": 0
-          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": "",
@@ -7296,7 +7272,7 @@
       "ChildObjects": [
         {
           "GUID": "b7e51d",
-          "Name": "Custom_Assetbundle",
+          "Name": "Chip_10",
           "Transform": {
             "posX": 0.0,
             "posY": 0.0,
@@ -7317,10 +7293,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.6919601,
-            "g": 0.8980392,
-            "b": 0.168627113,
-            "a": 0.5686275
+            "r": 0.25,
+            "g": 0.85,
+            "b": 0.35
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -7336,13 +7311,6 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
-          "CustomAssetbundle": {
-            "AssetbundleURL": "https://steamusercontent-a.akamaihd.net/ugc/1663475788745418652/0D54D9828314E4A749E7829475A604F669E9B139/",
-            "AssetbundleSecondaryURL": "",
-            "MaterialIndex": 0,
-            "TypeIndex": 1,
-            "LoopingEffectIndex": 0
-          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": ""
@@ -7405,6 +7373,62 @@
       "LuaScript": "",
       "LuaScriptState": "",
       "XmlUI": ""
+    },
+    {
+      "GUID": "47de64",
+      "Name": "Custom_Tile",
+      "Transform": {
+        "posX": -22.0,
+        "posY": 1.0,
+        "posZ": -15.0,
+        "rotX": 0.0,
+        "rotY": 270.0,
+        "rotZ": 0.0,
+        "scaleX": 4.0,
+        "scaleY": 4.0,
+        "scaleZ": 4.0
+      },
+      "Nickname": "Battlefield",
+      "Description": "Pick a scenario and a board, then Spawn battlefield: the board comes from the campaign API (the Warband Importer's base URL). Clear battlefield removes only generated terrain and objective markers.",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": false,
+      "Snap": false,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": false,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomImage": {
+        "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/775122507969952347/4E99D20F84403FF679928DC594B8795A493FECAB/",
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomTile": {
+          "Type": 0,
+          "Thickness": 0.2,
+          "Stackable": false,
+          "Stretch": true
+        }
+      },
+      "LuaScript": "",
+      "LuaScriptState": ""
     }
   ]
 }

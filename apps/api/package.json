@@ -12,6 +12,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@tc/battlefield": "workspace:*",
     "@tc/rules": "workspace:*",
     "better-sqlite3": "^12.2.0",
     "cors": "^2.8.5",

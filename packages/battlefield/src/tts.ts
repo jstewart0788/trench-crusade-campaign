@@ -124,6 +124,37 @@ export interface ObjectiveMarkerSpec {
   posX: number;
   posZ: number;
   ringIn: number;
+  /**
+   * For an objective covered by a terrain piece, the boundary of "within 1in of the piece":
+   * its turned footprint grown by 1in with rounded corners, as closed world x/z points.
+   * Empty for an open objective, whose control range is the ringIn circle.
+   */
+  band: [number, number][];
+}
+
+const BAND_ARC_STEPS = 8;
+
+/** The outline of a convex polygon grown by `r` (straight sides, round corners), closed. */
+export function grownOutline(corners: readonly (readonly [number, number])[], r: number): [number, number][] {
+  const pts = [...corners];
+  const area = pts.reduce((a, p, i) => { const q = pts[(i + 1) % pts.length]!; return a + p[0] * q[1] - q[0] * p[1]; }, 0);
+  if (area < 0) pts.reverse();
+  const out: [number, number][] = [];
+  const normal = (a: readonly [number, number], b: readonly [number, number]): number => Math.atan2(-(b[0] - a[0]), b[1] - a[1]);
+  for (let i = 0; i < pts.length; i++) {
+    const prev = pts[(i + pts.length - 1) % pts.length]!;
+    const c = pts[i]!;
+    const next = pts[(i + 1) % pts.length]!;
+    const a0 = normal(prev, c);
+    let a1 = normal(c, next);
+    while (a1 < a0) a1 += 2 * Math.PI;
+    for (let k = 0; k <= BAND_ARC_STEPS; k++) {
+      const a = a0 + ((a1 - a0) * k) / BAND_ARC_STEPS;
+      out.push([c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)]);
+    }
+  }
+  out.push(out[0]!);
+  return out;
 }
 
 /**
@@ -136,6 +167,7 @@ export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Cata
   const half = layout.boardIn / 2;
   return layout.objectives.map((o) => {
     let reach = OBJECTIVE_MARKER_IN / 2;
+    let band: [number, number][] = [];
     const cover = o.coverPieceId ? layout.pieces.find((p) => p.id === o.coverPieceId) : undefined;
     if (cover) {
       const entry = resolved.byId.get(cover.paletteId);
@@ -143,6 +175,10 @@ export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Cata
       const r = turnedRect(cover.position[0], cover.position[1], entry, cover.rotY, resolved.rotation.rotYSense);
       const corners = r.poly ?? [[r.x0, r.y0], [r.x1, r.y0], [r.x1, r.y1], [r.x0, r.y1]];
       for (const [x, y] of corners) reach = Math.max(reach, Math.hypot(x - o.position[0], y - o.position[1]));
+      band = grownOutline(corners as [number, number][], OBJECTIVE_CONTROL_IN).map(([x, y]) => [
+        round(opts.matCenter[0] + (x - half)),
+        round(opts.matCenter[1] + (y - half)),
+      ]);
     }
     return {
       id: o.id,
@@ -150,6 +186,7 @@ export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Cata
       posX: round(opts.matCenter[0] + (o.position[0] - half)),
       posZ: round(opts.matCenter[1] + (o.position[1] - half)),
       ringIn: round(reach + OBJECTIVE_CONTROL_IN),
+      band,
     };
   });
 }

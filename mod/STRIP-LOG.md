@@ -514,3 +514,12 @@ engine).
   buttons and saves three fields, the turn functions are gone, the Global HUD preferences touch
   no removed id. It went red on the pre-strip scripts and on a mutant with the 128 cap restored.
 - Not validated: anything in TTS (`mod/TESTING.md` step 11).
+
+## Objective marker asset (TC-022a)
+
+The Objective bags' content and icons (`a18feb`, `8f0c3a` and their bag icons) were the
+Scripted Table's `Custom_Assetbundle` `0D54D98...`, whose only mesh is LCT's 40k
+`9thObjGreen(Clone)`: a green spot with a ~6" ring baked into one model (found live by the
+coordinator). Replaced with the built-in `Chip_10` tinted green; the marker script now sizes
+it to 40mm and draws the rule-sized spot and range as vector lines (ANATOMY, *Objective
+markers*). No asset URL is left in the bags.
