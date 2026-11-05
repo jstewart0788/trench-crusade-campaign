@@ -7,7 +7,7 @@
 -- MoonSharp (Lua 5.2): no `//`, no goto, no integer/float distinctions.
 
 EXPORT_VERSION = "tc-warband-export-v1"
-DEFAULT_BASE_URL = "http://127.0.0.1:3001"
+DEFAULT_BASE_URL = "https://tc.rynfin.org"
 API_PATH = "/api/tts/warband/"
 
 TAG_WARBAND = "tc-warband:"

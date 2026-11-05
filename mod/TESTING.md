@@ -121,7 +121,7 @@ the widget layout: every button and input inside the measured tile face, none ov
 letters 0.6-1.3 units tall) and `luac -p` over every script.
 
 Start the API from the repo before loading the table. Until the roster tool (TC-010) exists,
-`pnpm mod:serve` serves the fixtures at `http://127.0.0.1:3001/api/tts/warband/<code>`; the
+`pnpm mod:serve` serves the fixtures at `https://tc.rynfin.org (hosted roster tool; type http://127.0.0.1:3001 for a local `pnpm dev` API)/api/tts/warband/<code>`; the
 only code is `NA-TEST-01` (the New Antioch starting warband: Lieutenant, 4 Yeomen,
 Shocktrooper). Once the roster tool ships, run it instead and use a code it hands out; the
 URL shape is the same. TTS's `WebRequest` reaches localhost without any allow-list.
@@ -189,12 +189,12 @@ These are the facts the layout is built on; the scripts re-measure the first thr
 
 - The **Warband Importer** tile (dark charcoal 16"x12", the Scripted Table's board image)
   shows two blocks. Down the viewer's left: a gold **WARBAND IMPORTER** label; the **API
-  base URL** input (`http://127.0.0.1:3001`); the larger **Warband code** input; **Colour:
+  base URL** input (`https://tc.rynfin.org (hosted roster tool; type http://127.0.0.1:3001 for a local `pnpm dev` API)`); the larger **Warband code** input; **Colour:
   mine**; **Bind**; a green **Import**; and a status box (`Start the API, type a code, press
   Import.`). The right half is empty until a warband is imported. Click into the code
   field: a caret appears and typing lands in it.
 - Seated as **Red**, type `NA-TEST-01`, press **Import**. Status goes `Fetching
-  http://127.0.0.1:3001/api/tts/warband/NA-TEST-01` (wrapped), then `Test warband: spawned
+  https://tc.rynfin.org (hosted roster tool; type http://127.0.0.1:3001 for a local `pnpm dev` API)/api/tts/warband/NA-TEST-01` (wrapped), then `Test warband: spawned
   6 model(s) for Red.` The server's terminal logs one `GET ... 200`. Six models land **on
   the mat** along Red's edge: a row of six at z=19 (3" inside the +z edge), x from -6.25 to
   6.25 (2.5" apart, centred on the mat), y 1.95, facing -z, bases tinted toward red; a

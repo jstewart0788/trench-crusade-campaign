@@ -200,9 +200,9 @@ end
 ---------------------------------------------------------------- url --
 
 do
-  eq(warbandUrl("http://127.0.0.1:3001", "NA-TEST-01"), "http://127.0.0.1:3001/api/tts/warband/NA-TEST-01", "url")
-  eq(warbandUrl("http://127.0.0.1:3001/", " NA-TEST-01 "), "http://127.0.0.1:3001/api/tts/warband/NA-TEST-01", "url trims and strips the slash")
-  eq(warbandUrl("", "a b"), "http://127.0.0.1:3001/api/tts/warband/a%20b", "url falls back to the default base and encodes")
+  eq(warbandUrl("https://tc.rynfin.org", "NA-TEST-01"), "https://tc.rynfin.org/api/tts/warband/NA-TEST-01", "url")
+  eq(warbandUrl("https://tc.rynfin.org/", " NA-TEST-01 "), "https://tc.rynfin.org/api/tts/warband/NA-TEST-01", "url trims and strips the slash")
+  eq(warbandUrl("", "a b"), "https://tc.rynfin.org/api/tts/warband/a%20b", "url falls back to the default base and encodes")
 end
 
 ---------------------------------------------------------------- specs --
@@ -456,7 +456,7 @@ do
       check(not overlaps(nonLabel[i].extent, nonLabel[j].extent), nonLabel[i].id .. " does not overlap " .. nonLabel[j].id)
     end
   end
-  local inputs = inputLayout("http://127.0.0.1:3001", "NA-TEST-01", geom)
+  local inputs = inputLayout("https://tc.rynfin.org", "NA-TEST-01", geom)
   for _, spec in ipairs(inputs) do
     local e = widgetExtent(spec)
     check(e.left >= -geom.hx and e.right <= geom.hx and e.top >= -geom.hz and e.bottom <= geom.hz, spec.id .. " input stays on the tile")
@@ -469,7 +469,7 @@ do
     local letters = spec.font_size / UNITS_PER_LOCAL * scale.z
     check(letters >= 0.6 and letters <= 1.3, string.format("%s letters are %.2f units tall", spec.id, letters))
   end
-  eq(inputs[1].value, "http://127.0.0.1:3001", "base URL input carries the state")
+  eq(inputs[1].value, "https://tc.rynfin.org", "base URL input carries the state")
   eq(inputs[2].value, "NA-TEST-01", "code input carries the state")
   eq(inputs[1].input_function, "onBaseUrlInput", "base URL callback")
   eq(inputs[2].input_function, "onCodeInput", "code callback")
@@ -532,7 +532,7 @@ do
   eq(wrapText("short", 10), "short", "short text is not wrapped")
   eq(wrapText("one two three four", 9), "one two\nthree\nfour", "words wrap at the limit")
   eq(wrapText("http://127.0.0.1:3001/api/tts/warband/NA-TEST-01", 20), "http://127.0.0.1:300\n1/api/tts/warband/NA\n-TEST-01", "long words break hard")
-  eq(wrapText("Fetching http://127.0.0.1:3001/api/tts/warband/NA-TEST-01", LAYOUT.status.wrap):find("\n") ~= nil, true, "the fetch status wraps")
+  eq(wrapText("Fetching https://tc.rynfin.org/api/tts/warband/NA-TEST-01", LAYOUT.status.wrap):find("\n") ~= nil, true, "the fetch status wraps")
   eq(wrapText(nil, 10), "", "nil wraps to empty")
 end
 
