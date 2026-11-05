@@ -237,6 +237,11 @@ disagreement left: Death Commando Binoculars missing upstream). Next: TC-014, TC
 **Phase 1**
 - TC-010 Roster tool UI: pick faction + Patron, add units, equip, validate live, save,
   get code.
+- TC-010b Roster tool restructure (Jonathan, 2026-11-04): three screens — **Warband** (campaign
+  metadata: name, faction, variant, patron, game, ducats, glory; locked after creation, changed only
+  through campaign mechanics), **Barracks** (recruit units), **Armoury** (buy equipment, filterable by
+  unit). Options that are not available to this roster are hidden, never shown disabled or annotated
+  "not checked here" — including gates the data cannot evaluate.
 - TC-011 NewRecruit import into the roster tool.
 - TC-012 `/api/tts/warband/{code}` JSON contract + endpoint.
 - TC-013 LCT fork: strip 40k systems; keep engine; document what was removed.
