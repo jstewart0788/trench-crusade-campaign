@@ -211,12 +211,39 @@ describe("validateWarband: one failing case per error code", () => {
         member("trench-pilgrims/huscarl"),
         member("trench-pilgrims/huscarl"),
         member("trench-pilgrims/huscarl"),
-        member("trench-pilgrims/witchburner"),
+        // The Pilgrims' Witchburner comes with Combat Helmet and Reinforced Armour (fixed rows).
+        member("trench-pilgrims/witchburner", ["combat-helmet", "reinforced-armour"]),
       ],
       glory: 5, // the Witchburner's hire price
     };
     const result = expectCode(w, "elite-cap");
     expect(result.errors.find((e) => e.code === "elite-cap")?.message).toContain(String(MAX_ELITES));
+  });
+
+  it("item-fixed-missing: a model without the kit its entry gives it", () => {
+    // Black Grail Sin Eater: Combat Helmet, Reinforced Armour and Tenderizer Maul are fixed rows.
+    const kit = ["combat-helmet", "reinforced-armour", "tenderizer-maul"];
+    const full = warband("black-grail", [member("black-grail/sin-eater", kit)]);
+    expect(validate(full).errors.filter((e) => e.code === "item-fixed-missing")).toEqual([]);
+    const bare = member("black-grail/sin-eater", ["combat-helmet", "reinforced-armour"]);
+    const result = validate(warband("black-grail", [bare]));
+    expect(result.errors.filter((e) => e.code === "item-fixed-missing")).toEqual([
+      { code: "item-fixed-missing", memberId: bare.id, unitId: "black-grail/sin-eater", itemId: "tenderizer-maul", message: "Sin Eater must carry Tenderizer Maul: it is part of the unit's kit" },
+    ]);
+  });
+
+  it("item-fixed-missing binds only where the fixed row's gate is open", () => {
+    // Anointed Heavy Infantry: Infernal Brand is fixed, but not under the Trench Ghosts variant.
+    const aho = data().unitsById.get("heretic-legion/anointed-heavy-infantry")!;
+    const brand = aho.equipmentAccess.find((a) => a.itemId === "infernal-brand")!;
+    expect(brand.fixed).toBe(true);
+    expect(brand.onlyWithout).toEqual(["heretic-legion/trench-ghosts"]);
+    const others = aho.equipmentAccess.filter((a) => a.fixed && a.itemId !== "infernal-brand").map((a) => a.itemId);
+    const missing = (w: Warband) => validate(w).errors.filter((e) => e.code === "item-fixed-missing").map((e) => e.itemId);
+    expect(missing(warband("heretic-legion", [member(aho.id, others)]))).toEqual(["infernal-brand"]);
+    expect(missing(warband("heretic-legion", [member(aho.id, others)], { variantId: "heretic-legion/trench-ghosts" }))).toEqual([]);
+    // Technomancer: its fixed helmet and armour need Cadaver Corps, which the data cannot count, so they are not required.
+    expect(missing(warband("heretic-legion", [member("heretic-legion/technomancer", [])]))).toEqual([]);
   });
 
   it("item-unknown", () => {

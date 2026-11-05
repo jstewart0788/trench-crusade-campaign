@@ -78,7 +78,10 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   Shocktrooper "0 of 0–5". **Not listed anywhere**: Crimson Communicant (Red Brigade only),
   Homunculus (Book of Golems), Disciple of St. Roch (third-party mercenaries), Trench Dog (needs
   Dog Food). No row carries "needs …" or "not checked" text. At the bottom of the panel one
-  quiet line: **"2 options hidden by campaign rules we can't check yet"**.
+  quiet line: **"2 options hidden by campaign rules we can't check yet"**. No row ever reads "0 of 0": a unit whose limit
+  is 0 for this roster is left out like any other unavailable option (check with a Heretic Naval
+  Raiders warband under **The Leviathan Shoal**: no Sea Hag; without the variant the Sea Hag reads
+  "0 of 0–1").
 - **Add** Lieutenant: a roster row appears with a brass outline and a **PENDING** chip (unit
   name, Elite tag, empty "Custom name" field, "No equipment", 70d, **Equip** link, Duplicate,
   **Undo**). Header: **0 → 70 / 700 ducats** with "+70", **Discard changes**, **Confirm
@@ -182,9 +185,18 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   sit: Combat Helmet "Carried" (the data files it as plain equipment, not headgear), Reinforced
   Armour "Torso", Tenderizer Maul "Melee hands". The Inventory panel does **not** list the Combat
   Helmet.
-- Profile kit: recruit a **Witchburner** (New Antioch mercenary). Built-in kit lists Gavel of
-  Justice, Dignified Conduct and Divine Judgement marked "Profile" (they are printed on the unit
-  card, not bought).
+- Profile kit: recruit a **Witchburner** (New Antioch mercenary). Built-in kit lists Combat Helmet
+  ("Carried"), Reinforced Armour ("Torso") and **Gavel of Justice** marked "Profile" (printed on the
+  unit card, not bought). **Dignified Conduct** and **Divine Judgement** are card *abilities*, so
+  they are under Abilities. A Court **Hunter of the Left-Hand Path** shows its spells under
+  Abilities with their cost ("Spell (Cost 3): …" on expand).
+- Built-in kit is required: import or hand-edit a roster whose Sin Eater lacks its Tenderizer Maul
+  (or remove it via a stale pending removal): the badge shows an error "Sin Eater must carry
+  Tenderizer Maul: it is part of the unit's kit", and Confirm is blocked while it is staged.
+- TTS: save a warband with a Witchburner and open its TTS URL: the Witchburner's `equipment` lists
+  Combat Helmet and Reinforced Armour with `"builtIn": true`, then
+  `{"id": "profile/gavel-of-justice", …, "builtIn": true}`; its `abilities` end with Dignified
+  Conduct and Divine Judgement; `ttsDescription` names the Gavel. Bought kit has no `builtIn` key.
 - Mandatory upgrade: in a **The Red Brigade** warband, recruit a **Crimson Communicant**. It
   arrives with the **Atonement Bell**: the panel lists it under **Skills & upgrades** (pending
   until you confirm the recruit), the Inventory's Upgrades list does not, and nothing offers to

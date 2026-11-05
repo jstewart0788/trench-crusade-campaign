@@ -77,6 +77,16 @@ describe("unitRows", () => {
     expect(unitRows(prussia, data, ctxFor(prussia)).rows.find((r) => r.unit.name === "Shocktrooper")).toMatchObject({ min: 2, max: 8 });
   });
 
+  it("leaves out a unit whose limit resolves to 0 for this roster, and lists it where the limit allows one", () => {
+    const raiders = (variantId?: string) =>
+      createWarband({ name: "r", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders", ...(variantId ? { variantId } : {}) }, "r");
+    const listed = (w: Warband) => unitRows(w, data, ctxFor(w)).rows.find((r) => r.unit.id === "heretic-naval-raiders/sea-hag");
+    expect(listed(raiders())).toMatchObject({ max: 1 });
+    const shoal = raiders("heretic-naval-raiders/the-leviathan-shoal");
+    expect(listed(shoal)).toBeUndefined();
+    expect(unitRows(shoal, data, ctxFor(shoal)).rows.some((r) => r.max === 0)).toBe(false);
+  });
+
   it("never lists a fireteam wrapper", () => {
     for (const faction of data.factions) {
       const w = createWarband({ name: "f", factionId: faction.id }, "f");

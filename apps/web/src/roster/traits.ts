@@ -1,7 +1,10 @@
 import {
   abilityApplies,
   evaluateGates,
+  profileAbilities,
+  profileKit,
   resolveLimit,
+  rosterVariants,
   upgradeFor,
   type LimitContext,
   type RosterUnit,
@@ -10,7 +13,7 @@ import {
   type Warband,
   type WarbandMember,
 } from "@tc/rules/browser";
-import { describeAbility, describeItem, describeProfileKit, describeUpgrade, type Description, type ProfileKit } from "./describe.js";
+import { describeAbility, describeItem, describeUpgrade, type Description } from "./describe.js";
 import { gateStatus } from "./select.js";
 import { kitEntries, zoneOf, ZONE_LABELS, type KitEntry, type Zone } from "./slots.js";
 import { stagedUpgrades, type PendingMember, type StagedEntry } from "./staging.js";
@@ -34,24 +37,6 @@ export function defaultUpgrades(unit: RosterUnit, warband: Warband, data: RulesD
   return (unit.upgrades ?? [])
     .filter((g) => isMandatoryUpgrade(g, ctx) && gateStatus(evaluateGates(g.onlyWith, g.onlyWithout, warband, data, ctx)) === "open")
     .map((g) => g.bsId);
-}
-
-/** The converter's `builtInWeapons` / `builtInEquipment` (passthrough fields), read defensively. */
-export function profileKit(unit: RosterUnit): ProfileKit[] {
-  const raw = [unit.builtInWeapons, unit.builtInEquipment].flatMap((v) => (Array.isArray(v) ? (v as unknown[]) : []));
-  return raw.flatMap((v) => {
-    if (!v || typeof v !== "object") return [];
-    const o = v as Record<string, unknown>;
-    if (typeof o.name !== "string") return [];
-    const kit: ProfileKit = {
-      name: o.name,
-      keywords: Array.isArray(o.keywords) ? o.keywords.filter((k): k is string => typeof k === "string") : [],
-      rules: typeof o.rules === "string" ? o.rules : "",
-    };
-    if (typeof o.type === "string") kit.type = o.type;
-    if (typeof o.range === "string") kit.range = o.range;
-    return [kit];
-  });
 }
 
 export interface Trait {
@@ -79,8 +64,9 @@ const ZONE_PLACE: Record<Zone, string> = { ...ZONE_LABELS, ranged: "Ranged hands
  * built-in shows as such; pass no `pm` for an already-applied member.
  */
 export function memberTraits(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext, pm?: PendingMember): MemberTraits {
-  const variantName = data.factionsById.get(warband.factionId)?.variants.find((v) => v.id === warband.variantId)?.name;
-  const abilities = unit.abilities.filter((a) => abilityApplies(a, warband.variantId, variantName)).map((a, i) => ({ key: `a${i}`, desc: describeAbility(a) }));
+  // Same lookups as toWarbandExport, so the panel lists exactly what the TTS payload binds (subfaction variants included).
+  const variantName = rosterVariants(data, warband).find((v) => v.id === warband.variantId)?.name;
+  const abilities = [...unit.abilities.filter((a) => abilityApplies(a, warband.variantId, variantName)), ...profileAbilities(unit)].map((a, i) => ({ key: `a${i}`, desc: describeAbility(a) }));
 
   const builtIn: Trait[] = kitEntries(member, unit, data, pm)
     .filter(isBuiltIn)
@@ -89,7 +75,7 @@ export function memberTraits(member: WarbandMember, unit: RosterUnit, warband: W
       if (e.pending) t.pending = e.pending;
       return t;
     });
-  profileKit(unit).forEach((k, i) => builtIn.push({ key: `p${i}`, desc: describeProfileKit(k), where: "Profile" }));
+  profileKit(unit).forEach((k) => builtIn.push({ key: k.id, desc: describeItem(k), where: "Profile" }));
 
   const skills: Trait[] = stagedUpgrades(member, pm).flatMap((u, i) => {
     const upgrade = upgradeFor(unit, u.id);

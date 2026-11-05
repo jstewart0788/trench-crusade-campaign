@@ -66,6 +66,8 @@ export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): 
     if (status === "uncheckable") uncheckable += 1;
     if (status !== "open") continue;
     const { min, max } = unitLimits(unit, ctx);
+    // A limit that resolves to 0 for this roster (the Sea Hag under the Leviathan Shoal) bars the unit as surely as a gate does.
+    if (max === 0) continue;
     const count = counts.get(unit.id) ?? 0;
     rows.push({ unit, count, min, max, atMax: max !== null && count >= max });
   }

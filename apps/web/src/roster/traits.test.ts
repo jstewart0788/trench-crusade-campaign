@@ -1,9 +1,9 @@
-import { limitContext, loadRulesData, toWarbandExport, upgradeFor, type RulesData, type Warband } from "@tc/rules";
+import { limitContext, loadRulesData, profileKit, toWarbandExport, upgradeFor, type RulesData, type Warband } from "@tc/rules";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createWarband, rosterReducer } from "./reducer.js";
 import { defaultKit } from "./select.js";
-import { defaultUpgrades, isBuiltIn, isMandatoryUpgrade, lockedUpgradeIds, memberTraits, profileKit } from "./traits.js";
+import { defaultUpgrades, isBuiltIn, isMandatoryUpgrade, lockedUpgradeIds, memberTraits } from "./traits.js";
 
 let data: RulesData;
 beforeAll(() => {
@@ -33,10 +33,31 @@ describe("memberTraits: abilities", () => {
     expect(traitsOf(plain).abilities.every((t) => t.desc.rules.length > 0)).toBe(true);
     const eire = withMember("new-antioch", "new-antioch/lieutenant", [], "new-antioch/eire-rangers");
     expect(traitsOf(eire).abilities.map((t) => t.desc.name)).toEqual(["Skirmisher", "Tough", "Leader"]);
-    for (const w of [plain, eire]) {
+    // Abilities gated on a subfaction's variant: the Heretic Captain is Strong only with the Leviathan Shoal.
+    const raiders = (variantId?: string) => {
+      const w = createWarband({ name: "r", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders", ...(variantId ? { variantId } : {}) }, "r");
+      return rosterReducer(w, { type: "add-member", unitId: "heretic-naval-raiders/heretic-captain", equipmentItemIds: [] });
+    };
+    expect(traitsOf(raiders("heretic-naval-raiders/the-leviathan-shoal")).abilities.map((t) => t.desc.name)).toContain("Strong");
+    expect(traitsOf(raiders()).abilities.map((t) => t.desc.name)).not.toContain("Strong");
+    for (const w of [plain, eire, raiders(), raiders("heretic-naval-raiders/the-leviathan-shoal")]) {
       const exported = toWarbandExport(w, data, { code: "T" }).members[0]!.abilities;
       expect(traitsOf(w).abilities.map((t) => ({ name: t.desc.name, text: t.desc.rules }))).toEqual(exported.map((a) => ({ name: a.name, text: a.text.trim() })));
     }
+  });
+});
+
+describe("memberTraits: a gate that names a subfaction variant by name", () => {
+  it("matches it through the subfaction's variants, as the export does (no such gate in today's data, so the case is built here)", () => {
+    const captain = unit("heretic-naval-raiders/heretic-captain");
+    const named = { ...captain, abilities: [...captain.abilities, { name: "Shoal Drill", text: "Only in the Shoal.", onlyWith: ["The Leviathan Shoal [Heretic Naval Raiders]"] }] };
+    const raiders = (variantId?: string) => {
+      const w = createWarband({ name: "r", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders", ...(variantId ? { variantId } : {}) }, "r");
+      return rosterReducer(w, { type: "add-member", unitId: captain.id, equipmentItemIds: [] });
+    };
+    const names = (w: Warband) => memberTraits(w.members[0]!, named, w, data, limitContext(w, data)).abilities.map((t) => t.desc.name);
+    expect(names(raiders("heretic-naval-raiders/the-leviathan-shoal"))).toContain("Shoal Drill");
+    expect(names(raiders())).not.toContain("Shoal Drill");
   });
 });
 
@@ -51,12 +72,16 @@ describe("memberTraits: built-in kit", () => {
       ["Reinforced Armour", "Torso"],
       ["Tenderizer Maul", "Melee hands"],
     ]);
-    const witchburner = withMember("new-antioch", "new-antioch/witchburner", []);
+    // The card's kit is built in; the card's "Ability" entries are abilities, as in the TTS export.
+    const witchburner = withMember("new-antioch", "new-antioch/witchburner", ["combat-helmet", "reinforced-armour"]);
     expect(traitsOf(witchburner).builtIn.map((t) => [t.desc.name, t.where])).toEqual([
+      ["Combat Helmet", "Carried"],
+      ["Reinforced Armour", "Torso"],
       ["Gavel of Justice", "Profile"],
-      ["Dignified Conduct", "Profile"],
-      ["Divine Judgement", "Profile"],
     ]);
+    expect(traitsOf(witchburner).abilities.map((t) => t.desc.name)).toEqual(expect.arrayContaining(["Dignified Conduct", "Divine Judgement"]));
+    const exported = toWarbandExport(witchburner, data, { code: "T" }).members[0]!;
+    expect(traitsOf(witchburner).abilities.map((t) => t.desc.name)).toEqual(exported.abilities.map((a) => a.name));
     expect(profileKit(unit("new-antioch/yeoman"))).toEqual([]);
   });
 

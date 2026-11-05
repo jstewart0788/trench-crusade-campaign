@@ -39,6 +39,7 @@ export const ROSTER_ERROR_CODES = [
   "elite-cap",
   "item-unknown",
   "item-not-available",
+  "item-fixed-missing",
   "item-variant-locked",
   "item-max-per-model",
   "item-max-per-warband",
@@ -204,6 +205,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   for (const { member, unit } of members) {
     const where = { memberId: member.id, unitId: unit.id };
     const carried = checkMemberItems(member, unit, data, warband, ctx, fail, warn);
+    checkFixedKit(member, unit, data, warband, ctx, fail);
     const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
     const kit = checkBattlekit(unit, carried);
     for (const e of kit.errors) fail({ ...where, ...e });
@@ -516,6 +518,25 @@ function checkUnitCounts(
     if (min.value !== null && count < min.value && unitAvailable(unit, warband, data, ctx)) {
       fail({ code: "unit-min", ...where, message: `${count} x ${unit.name}; at least ${min.value} required` });
       warnUnresolved(warn, min.unresolved, where, unit.name);
+    }
+  }
+}
+
+// A `fixed` armoury row is kit the unit's entry gives it: free, and (every
+// such row in the data) "min 1 per model". It is part of the model, so leaving
+// it off is an error. A gate the data cannot count leaves the row unrequired.
+function checkFixedKit(member: WarbandMember, unit: RosterUnit, data: RulesData, warband: Warband, ctx: LimitContext, fail: (e: RosterError) => void): void {
+  const model = { member, unit };
+  for (const access of unit.equipmentAccess) {
+    if (!access.fixed) continue;
+    const item = data.equipmentById.get(access.itemId);
+    if (!item) continue;
+    if (access.onlyWith?.length && !evalGate(access.onlyWith, warband, data, ctx, model).matched) continue;
+    if (access.onlyWithout?.length && evalGate(access.onlyWithout, warband, data, ctx, model).matched) continue;
+    const required = Math.max(1, resolveLimit(access.limitsText ?? item.limits ?? undefined, "min", "model", null, ctx, item.name).value ?? 1);
+    const carried = member.equipmentItemIds.filter((id) => id === access.itemId).length;
+    if (carried < required) {
+      fail({ code: "item-fixed-missing", memberId: member.id, unitId: unit.id, itemId: item.id, message: `${unit.name} must carry ${item.name}: it is part of the unit's kit` });
     }
   }
 }

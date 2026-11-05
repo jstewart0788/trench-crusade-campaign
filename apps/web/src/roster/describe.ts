@@ -1,4 +1,4 @@
-import type { EquipmentItem, RosterAbility, Upgrade } from "@tc/rules/browser";
+import type { EquipmentItem, ProfileKitEntry, RosterAbility, Upgrade } from "@tc/rules/browser";
 
 /** What every list shows for a piece of kit, an upgrade or an ability: one shape, so a picker row and the equipped item read the same. */
 export interface Description {
@@ -11,7 +11,8 @@ export interface Description {
 
 const clean = (text: string | undefined) => (text && text.trim() !== "-" ? text.trim() : "");
 
-export function describeItem(item: EquipmentItem): Description {
+/** Armoury items and card kit read the same: range · hands · keywords, then the rules. */
+export function describeItem(item: Pick<EquipmentItem | ProfileKitEntry, "name" | "range" | "hands" | "keywords" | "rules">): Description {
   return {
     name: item.name,
     detail: [item.range, item.hands ? `${item.hands}H` : null, ...item.keywords].filter(Boolean).join(" · "),
@@ -36,21 +37,4 @@ export function describeUpgrade(upgrade: Upgrade): Description {
 
 export function describeAbility(ability: Pick<RosterAbility, "name" | "text">): Description {
   return { name: ability.name, detail: "", rules: clean(ability.text) };
-}
-
-/** Kit printed on the unit profile (`builtInWeapons` / `builtInEquipment`), which never appears in the armoury. */
-export interface ProfileKit {
-  name: string;
-  type?: string;
-  range?: string;
-  keywords: string[];
-  rules: string;
-}
-
-export function describeProfileKit(kit: ProfileKit): Description {
-  return {
-    name: kit.name,
-    detail: [kit.range, kit.type && kit.type !== "Equipment" && kit.type !== "Special" ? kit.type : null, ...kit.keywords].filter(Boolean).join(" · "),
-    rules: clean(kit.rules),
-  };
 }

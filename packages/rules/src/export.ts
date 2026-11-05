@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { itemCost, warbandCost } from "./cost.js";
 import { normaliseName } from "./limits.js";
-import { findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
+import { accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
+import { profileAbilities, profileKit } from "./profile.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import { EquipmentCategory, Movement } from "./schema.js";
 import { validateWarband } from "./validate.js";
@@ -24,6 +25,8 @@ export const ExportEquipment = z.object({
   keywords: z.array(z.string()),
   rules: z.string(),
   cost: ExportCost,
+  /** The model always has it: armoury kit marked fixed, or kit printed on the unit card (id "profile/…"). Absent on bought kit. */
+  builtIn: z.literal(true).optional(),
 });
 export type ExportEquipment = z.infer<typeof ExportEquipment>;
 
@@ -210,7 +213,7 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
     const item = data.equipmentById.get(itemId);
     if (!item) throw new WarbandExportError(`Unknown item "${itemId}" on member ${member.id}`);
     const { ducats, glory } = itemCost(data, warband, member.unitId, itemId);
-    return {
+    const entry: ExportEquipment = {
       id: item.id,
       name: item.name,
       category: item.category,
@@ -220,11 +223,16 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
       rules: item.rules,
       cost: { ducats, glory },
     };
+    if (accessFor(unit, itemId)?.fixed) entry.builtIn = true;
+    return entry;
   });
 
-  // Armour is the profile value plus whatever the worn armour and shield
-  // grant. Conditional modifiers (none in the data today) are not applied.
+  // Armour is the profile value plus whatever bought armour and shields grant.
+  // Built-in armour is already in the printed profile (Warbands of Trench Crusade:
+  // "The Injury Modifier for the Armour is included in the model's Profile"), so
+  // it is not added again. Conditional modifiers (none today) are not applied.
   const armourBreakdown = equipment.flatMap((e) => {
+    if (e.builtIn) return [];
     if (e.category !== "armour" && e.category !== "shield") return [];
     const delta = data.equipmentById
       .get(e.id)!
@@ -232,6 +240,9 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
       .reduce((n, m) => n + m.delta, 0);
     return delta === 0 ? [] : [{ itemId: e.id, name: e.name, delta }];
   });
+
+  // Card kit comes after the armour breakdown: the profile's Armour value already includes it.
+  for (const k of profileKit(unit)) equipment.push({ ...k, cost: { ducats: 0, glory: 0 }, builtIn: true });
 
   const upgrades = (member.upgradeIds ?? []).map((id) => {
     const upgrade = upgradeFor(unit, id);
@@ -255,7 +266,7 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
       armourBreakdown,
       base: unit.stats.base,
     },
-    abilities: unit.abilities.filter((a) => abilityApplies(a, warband.variantId, variantName)).map((a) => ({ name: a.name, text: a.text })),
+    abilities: [...unit.abilities.filter((a) => abilityApplies(a, warband.variantId, variantName)).map((a) => ({ name: a.name, text: a.text })), ...profileAbilities(unit)],
     equipment,
     upgrades,
     skills: [],

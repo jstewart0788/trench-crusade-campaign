@@ -177,6 +177,42 @@ describe("member.model and prebuilt TTS text", () => {
   });
 });
 
+describe("built-in kit in the export", () => {
+  it("adds card kit as equipment flagged builtIn, card abilities and spells as abilities, and flags fixed armoury kit", () => {
+    const d = data();
+    const burner = d.unitsById.get("new-antioch/witchburner")!;
+    const fixed = burner.equipmentAccess.filter((a) => a.fixed).map((a) => a.itemId);
+    const out = toWarbandExport(warband("new-antioch", [member(burner.id, fixed)]), d, { code: CODE, now: NOW });
+    expect(WarbandExport.parse(out)).toEqual(out);
+    const m = out.members[0]!;
+    expect(m.equipment.filter((e) => e.builtIn).map((e) => e.id)).toEqual([...fixed, "profile/gavel-of-justice"]);
+    expect(m.equipment.find((e) => e.id === "profile/gavel-of-justice")).toMatchObject({ name: "Gavel of Justice", category: "melee", hands: 1, range: "Melee", cost: { ducats: 0, glory: 0 }, builtIn: true });
+    expect(m.abilities.map((a) => a.name)).toEqual(expect.arrayContaining(["Dignified Conduct", "Divine Judgement"]));
+    expect(m.equipment.map((e) => e.name)).not.toContain("Dignified Conduct");
+    expect(m.ttsDescription).toContain("Gavel of Justice");
+    expect(m.ttsGmNotes).toContain("Gavel of Justice");
+    expect(m.ttsGmNotes).toContain("Dignified Conduct");
+  });
+
+  it("keeps a spell's cost with its text, types card weapons by range, and leaves card armour out of the armour breakdown", () => {
+    const d = data();
+    const hunter = d.unitsById.get("court-of-the-seven-headed-serpent/hunter-of-the-left-hand-path")!;
+    const out = toWarbandExport(warband("court-of-the-seven-headed-serpent", [member(hunter.id, hunter.equipmentAccess.filter((a) => a.fixed).map((a) => a.itemId))]), d, { code: CODE, now: NOW });
+    const m = out.members[0]!;
+    expect(m.equipment.find((e) => e.name === "Bow of Lethe")).toMatchObject({ category: "ranged", hands: 1, range: '24"', builtIn: true });
+    expect(m.abilities.find((a) => a.name === "Oracle Beast Cloak")!.text).toMatch(/^Spell \(Cost 3\): You can cast this spell/);
+
+    const knight = d.unitsById.get("court-of-the-seven-headed-serpent/hell-knight")!;
+    const k = toWarbandExport(warband("court-of-the-seven-headed-serpent", [member(knight.id, knight.equipmentAccess.filter((a) => a.fixed).map((a) => a.itemId))]), d, { code: CODE, now: NOW }).members[0]!;
+    expect(k.equipment.find((e) => e.name === "Infernal Iron Armour")).toMatchObject({ category: "armour", builtIn: true });
+    expect(k.stats.armourBreakdown.map((b) => b.name)).not.toContain("Infernal Iron Armour");
+  });
+
+  it("leaves bought kit unflagged", () => {
+    for (const e of fixtureExport().members.flatMap((m) => m.equipment)) expect("builtIn" in e).toBe(false);
+  });
+});
+
 describe("renderTtsDescription", () => {
   it("carries the name, stat line, keywords and every equipment name, and fits a tooltip", () => {
     for (const m of fixtureExport().members) {
@@ -235,5 +271,24 @@ describe("mod/fixtures/warband-new-antioch.json", () => {
     const committed = JSON.parse(readFileSync(FIXTURE, "utf8"));
     expect(WarbandExport.parse(committed)).toEqual(fresh);
     expect(committed).toEqual(fresh);
+  });
+});
+
+describe("built-in armour is not counted twice", () => {
+  it("exports a Witchburner at its printed Armour, not printed plus its built-in Reinforced Armour", async () => {
+    const { loadRulesData } = await import("../src/load.js");
+    const { toWarbandExport } = await import("../src/export.js");
+    const { resolve } = await import("node:path");
+    const data = loadRulesData(resolve(import.meta.dirname, "../../.."));
+    const unit = data.units.find((u) => u.name === "Witchburner" && u.factionId === "new-antioch")!;
+    const fixed = unit.equipmentAccess.filter((a) => a.fixed).map((a) => a.itemId);
+    const warband = {
+      id: "w", name: "w", factionId: "new-antioch", gameNumber: 1, glory: 10,
+      members: [{ id: "m1", unitId: unit.id, equipmentItemIds: fixed }],
+    };
+    const out = toWarbandExport(warband as never, data, { code: "T", now: "2026-11-04T00:00:00.000Z" });
+    expect(unit.stats.armour).toBe(-2);
+    expect(out.members[0]!.stats.armour).toBe(-2);
+    expect(out.members[0]!.stats.armourBreakdown).toEqual([]);
   });
 });
