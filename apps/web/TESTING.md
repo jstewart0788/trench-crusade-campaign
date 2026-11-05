@@ -46,7 +46,7 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
 - Edit the name in the header: the change shows on every screen (it is the one field that is
   never locked).
 
-## 4. Barracks
+## 4. Barracks (recruiting is staged)
 
 - Left "Roster · 0 models": "No models yet. Recruit from the list on the right."
 - Right "Recruit": **Units** then **Mercenaries**. Lieutenant "0 of 1", Yeoman "0 of any",
@@ -54,19 +54,29 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
   Homunculus (Book of Golems), Disciple of St. Roch (third-party mercenaries), Trench Dog (needs
   Dog Food). No row carries "needs …" or "not checked" text. At the bottom of the panel one
   quiet line: **"2 options hidden by campaign rules we can't check yet"**.
-- **Add** Lieutenant: a roster row appears (unit name, Elite tag, empty "Custom name" field,
-  "No equipment", 70d, **Equip** link, Duplicate, Remove). Header flips to **Legal**, 70 / 700.
-  Lieutenant now reads "1 of 1" and its Add is disabled.
-- Add Yeoman, then **Duplicate** the Yeoman three times: four Yeoman rows, 30d each. Add
-  Shocktrooper. Header 235 / 700.
+- **Add** Lieutenant: a roster row appears with a brass outline and a **PENDING** chip (unit
+  name, Elite tag, empty "Custom name" field, "No equipment", 70d, **Equip** link, Duplicate,
+  **Undo**). Header: **0 → 70 / 700 ducats** with "+70", **Discard changes**, **Confirm
+  purchases (1)**, and the badge still reads **Legal** (the staged roster has its Lieutenant).
+  Lieutenant now reads "1 of 1" in the Recruit list and its Add is disabled.
+- Add Yeoman, then **Duplicate** the Yeoman three times: four pending Yeoman rows, 30d each.
+  Add Shocktrooper. Header 0 → 235 (+235), Confirm purchases (6).
 - Type a custom name on the first Yeoman with a space in it ("Old Tom"): the space is not
-  eaten; the row keeps "Yeoman" as its title.
-- **Remove** one Yeoman, then Add it back: the roster is six rows again.
+  eaten; the row keeps "Yeoman" as its title. Names are never staged.
+- **Undo** one pending Yeoman: the row vanishes, Confirm purchases (5). Add it back.
+- **Confirm purchases (6)**: outlines and chips vanish, header **235 / 700**, "Unsaved changes",
+  Confirm/Discard gone.
+- **Remove** a confirmed Yeoman: the row stays, struck, with a red **LEAVING** chip and a
+  **Keep** button; header **235 → 205 (−30)**, Confirm purchases (1). **Keep**: back to normal.
+  Remove it again and **Discard changes**: back to normal.
+- Add a second Lieutenant: it appears pending, the badge turns red (**1 error**: at most 1 per
+  warband) and **Confirm purchases** is disabled; **Undo** it.
 
 ## 5. Armoury: the figure
 
 - Click **Equip** on the Lieutenant row: URL `/w/draft/armoury?member=m1`, Armoury tab lit, the
-  "Equipping" select shows "Lieutenant". Left column: the Lieutenant panel (custom name field,
+  "Equipping" select shows "Lieutenant" (a pending recruit would read "… (pending recruit)" and
+  can be equipped too). Left column: the Lieutenant panel (custom name field,
   stat line `Mov 6"/Infantry · Rng +2 · Mel +2 · Arm 0 · 32mm`, "Model total 70d"), then the
   **figure**: a brass silhouette with eight dashed slots laid over it: Head on top; Ranged /
   Torso / Melee on the first row; Ranged / Off-hand / Melee on the second; Grenades at the
@@ -166,11 +176,30 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
   `/w/draft` and `/w/draft/armoury` show the same roster. Home shows the draft banner with
   "Resume". Save it; the banner is gone.
 
-## 10. Rules cache
+## 10. Import from NewRecruit
+
+- Home → **Import from NewRecruit** (also linked from `/new`): `/import` with a dashed drop
+  zone. Drop `packages/rules/test/fixtures/new-antioch.ros` (or pick it): a preview appears —
+  "The Fifth Lantern", File "new-antioch.ros (BattleScribe roster, https://www.newrecruit.eu)",
+  Faction New Antioch, Variant None, Patron Temporal Lord, Cost 328 ducats, Rules check
+  **Legal**, six models (Captain Vane (Lieutenant), three Yeomen each with Bolt-Action Rifle and
+  Bayonet, Old Tom (Yeoman) with Trench Mole, Shocktrooper with Submachine Gun), and
+  **Not mapped · 2**: "Allow Third-Party Mercenaries?" and "Lieutenant > Lucky Charm" with their
+  reasons and entry ids.
+- Zip the same file as `anything.rosz` (`zip anything.rosz new-antioch.ros`) and drop it: the
+  same preview. (The JSON export path is covered by the tests; drop one if you have a real
+  NewRecruit JSON export and tell me what the preview says.)
+- Drop any other file (a PNG, a 40k roster): a red "could not be imported" line with the reason;
+  nothing is created.
+- **Create draft from this roster**: lands on `/w/draft` (Warband screen) with the roster, the
+  patron and the names, badge **Legal**, 328 / 700. If a draft already existed the preview
+  warned that it would be replaced.
+
+## 11. Rules cache
 
 - Reload any warband screen: `GET /api/rules` is served from cache or 304 with the same `etag`.
 
 Anything red in the console, any 4xx/5xx other than the deliberate 404 in step 8, any "needs",
 "not with" or "not checked" text on a Barracks row or in a picker, a request to `/api/warbands`
-carrying an unconfirmed item, or any figure that disagrees with this script is a defect: note
-the step and the exact text.
+carrying an unconfirmed item or recruit, or any figure that disagrees with this script is a
+defect: note the step and the exact text.

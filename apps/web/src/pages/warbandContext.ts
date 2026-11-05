@@ -2,7 +2,7 @@ import type { LimitContext, RulesData, ValidationResult, Warband, WarbandCost, W
 import type { Dispatch } from "react";
 import { useOutletContext } from "react-router-dom";
 import type { RosterAction } from "../roster/reducer.js";
-import type { Pending, PendingDelta, StagingAction } from "../roster/staging.js";
+import type { Pending, PendingDelta, StagedMemberRow, StagingAction } from "../roster/staging.js";
 
 /** The :code that means "the unsaved draft in this browser". Real codes are six uppercase characters, so they never collide. */
 export const DRAFT_CODE = "draft";
@@ -20,6 +20,8 @@ export interface WarbandContext {
   base: string;
   dispatch: Dispatch<RosterAction>;
   pending: Pending;
+  /** Every member the screens list: confirmed ones (dismissals marked) then pending recruits. */
+  rows: StagedMemberRow[];
   stage: (action: StagingAction) => void;
   pendingCount: number;
   delta: PendingDelta;

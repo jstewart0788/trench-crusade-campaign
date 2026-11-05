@@ -2,6 +2,7 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { ArmouryScreen } from "./pages/ArmouryScreen.js";
 import { BarracksScreen } from "./pages/BarracksScreen.js";
 import { HomePage } from "./pages/HomePage.js";
+import { ImportPage } from "./pages/ImportPage.js";
 import { NewPage } from "./pages/NewPage.js";
 import { WarbandLayout } from "./pages/WarbandLayout.js";
 import { WarbandScreen } from "./pages/WarbandScreen.js";
@@ -26,6 +27,7 @@ export function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/new" element={<NewPage />} />
+            <Route path="/import" element={<ImportPage />} />
             <Route path="/w/:code" element={<WarbandLayout />}>
               <Route index element={<WarbandScreen />} />
               <Route path="barracks" element={<BarracksScreen />} />

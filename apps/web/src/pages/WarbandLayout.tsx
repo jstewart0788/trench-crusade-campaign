@@ -5,7 +5,7 @@ import { api, ApiRequestError, type SavedWarband } from "../api.js";
 import { Header } from "../components/Header.js";
 import { Tabs } from "../components/Tabs.js";
 import { rosterReducer } from "../roster/reducer.js";
-import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
+import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagedMembers, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
 import { useRules } from "../rules.js";
 import { clearDraft, loadDraft, loadPending, movePending, rememberSaved, saveDraft, savePending } from "../storage.js";
 import { DRAFT_CODE, warbandBase, type WarbandContext } from "./warbandContext.js";
@@ -93,12 +93,17 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
 
   const stage = useCallback((action: StagingAction) => setPending((p) => stagingReducer(p, action)), []);
   const staged = useMemo(() => applyPending(confirmed, pending), [confirmed, pending]);
+  const rows = useMemo(() => stagedMembers(confirmed, pending), [confirmed, pending]);
 
-  // Members removed in the Barracks take their pending purchases with them.
+  // Pending changes never outlive the member they belong to.
   const memberKey = confirmed.members.map((m) => m.id).join("\u0000");
   useEffect(() => {
     const memberIds = memberKey ? memberKey.split("\u0000") : [];
-    setPending((p) => (Object.keys(p).every((id) => memberIds.includes(id)) ? p : stagingReducer(p, { type: "prune", memberIds })));
+    setPending((p) => {
+      const known = (id: string) => memberIds.includes(id) || p.recruits.some((r) => r.id === id);
+      const stale = Object.keys(p.members).some((id) => !known(id)) || p.dismissals.some((id) => !memberIds.includes(id));
+      return stale ? stagingReducer(p, { type: "prune", memberIds }) : p;
+    });
   }, [memberKey]);
 
   useEffect(() => {
@@ -156,6 +161,7 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
     base,
     dispatch,
     pending,
+    rows,
     stage,
     pendingCount: count,
     delta,

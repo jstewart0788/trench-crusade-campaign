@@ -19,9 +19,14 @@ export function HomePage() {
     <div className={styles.home}>
       <header className={styles.head}>
         <h1>Warbands</h1>
-        <Link to="/new">
-          <button className="primary">New warband</button>
-        </Link>
+        <div className={styles.headActions}>
+          <Link to="/import">
+            <button>Import from NewRecruit</button>
+          </Link>
+          <Link to="/new">
+            <button className="primary">New warband</button>
+          </Link>
+        </div>
       </header>
 
       {draft && (

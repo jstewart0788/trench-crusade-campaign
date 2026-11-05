@@ -6,7 +6,7 @@ import { armouryHref, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
-  const { rules, warband, code, base, cost, threshold, validation, dispatch, pending } = useWarband();
+  const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage } = useWarband();
   const faction = rules.factionsById.get(warband.factionId);
   const variant = faction?.variants.find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
@@ -57,7 +57,15 @@ export function WarbandScreen() {
           </h2>
           <Link to={`${base}/barracks`}>Recruit in the Barracks</Link>
         </div>
-        <MemberList warband={warband} rules={rules} cost={cost} validation={validation} base={base} dispatch={dispatch} pending={pending} />
+        <MemberList
+          rows={rows}
+          factionId={warband.factionId}
+          rules={rules}
+          cost={cost}
+          validation={validation}
+          base={base}
+          onRename={(row, name) => (row.pending === "add" ? stage({ type: "rename-recruit", memberId: row.member.id, name }) : dispatch({ type: "rename-member", memberId: row.member.id, name }))}
+        />
       </section>
 
       <ValidationPanel warband={warband} rules={rules} validation={validation} linkTo={(memberId) => armouryHref(base, memberId)} />

@@ -1,6 +1,6 @@
 import { patronsForFaction } from "@tc/rules/browser";
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createWarband } from "../roster/reducer.js";
 import { useRules } from "../rules.js";
 import { saveDraft } from "../storage.js";
@@ -81,6 +81,7 @@ export function NewPage() {
         <input type="number" min={1} step={1} value={gameNumber} onChange={(e) => setGameNumber(Math.max(1, Number(e.target.value) || 1))} />
       </label>
       <div className={styles.actions}>
+        <Link to="/import">Import from NewRecruit instead</Link>
         <button type="submit" className="primary" disabled={!faction}>
           Start building
         </button>

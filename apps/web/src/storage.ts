@@ -1,5 +1,5 @@
 import type { Warband } from "@tc/rules/browser";
-import type { Pending } from "./roster/staging.js";
+import { EMPTY_PENDING, hasPending, type Pending } from "./roster/staging.js";
 
 // Everything this browser remembers: the codes it has saved and the one
 // unsaved draft. localStorage can be absent or throw (private windows), so
@@ -69,13 +69,17 @@ function readPendingMap(): Record<string, Pending> {
 }
 
 export function loadPending(key: string): Pending {
-  const pending = readPendingMap()[key];
-  return pending && typeof pending === "object" ? pending : {};
+  const stored = readPendingMap()[key] as unknown;
+  if (!stored || typeof stored !== "object") return EMPTY_PENDING;
+  const o = stored as Partial<Pending> & Record<string, unknown>;
+  // Before recruits were staged, the stored value was the per-member map itself.
+  if (!("members" in o)) return { members: o as Pending["members"], recruits: [], dismissals: [] };
+  return { members: o.members ?? {}, recruits: Array.isArray(o.recruits) ? o.recruits : [], dismissals: Array.isArray(o.dismissals) ? o.dismissals : [] };
 }
 
 export function savePending(key: string, pending: Pending): void {
   const map = readPendingMap();
-  if (Object.keys(pending).length === 0) delete map[key];
+  if (!hasPending(pending)) delete map[key];
   else map[key] = pending;
   write(PENDING_KEY, Object.keys(map).length ? map : undefined);
 }

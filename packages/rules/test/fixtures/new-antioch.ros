@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hand-built BattleScribe roster for the importer tests: a New Antioch starting warband as NewRecruit would export it. -->
+<roster id="r-1" name="The Fifth Lantern" battleScribeVersion="2.03" gameSystemId="sys-4f3d-c5c9-7df1-ad01" gameSystemName="Trench Crusade" gameSystemRevision="17" generatedBy="https://www.newrecruit.eu" xmlns="http://www.battlescribe.net/schema/rosterSchema">
+  <costs>
+    <cost name="Ducats" typeId="cost-ducats" value="328.0"/>
+    <cost name="Glory Points" typeId="cost-glory" value="0.0"/>
+  </costs>
+  <forces>
+    <force id="f-1" name="Warband" entryId="force-warband" catalogueId="707d-5bdf-586e-f704" catalogueRevision="13" catalogueName="New Antioch">
+      <selections>
+        <selection id="s-patron" name="Patron" entryId="patron-group" number="1" type="upgrade">
+          <selections>
+            <selection id="s-patron-1" name="Temporal Lord" entryId="patron-temporal-lord" number="1" type="upgrade"/>
+          </selections>
+        </selection>
+        <selection id="s-merc" name="Allow Third-Party Mercenaries?" entryId="campaign-allow-mercs" number="1" type="upgrade">
+          <costs><cost name="Ducats" typeId="cost-ducats" value="0.0"/></costs>
+        </selection>
+        <selection id="s-lt" name="Lieutenant" entryId="1a2b-link-0001::e578-1122-47cb-10ad" number="1" type="model" customName="Captain Vane">
+          <costs><cost name="Ducats" typeId="cost-ducats" value="70.0"/></costs>
+          <categories><category id="c-1" name="Elite" entryId="cat-elite" primary="true"/></categories>
+          <selections>
+            <selection id="s-lt-1" name="Sword/Axe" entryId="e938-b0dc-418c-0924" number="1" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="4.0"/></costs>
+            </selection>
+            <selection id="s-lt-2" name="Pistol" entryId="48be-3a36-f9c0-a465" number="1" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="6.0"/></costs>
+            </selection>
+            <selection id="s-lt-3" name="Standard Armour" entryId="link-armour-0003::6fa6-650d-4136-bc70" number="1" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="15.0"/></costs>
+            </selection>
+            <selection id="s-lt-4" name="Lucky Charm" entryId="dead-beef-0000-0000" number="1" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="0.0"/></costs>
+            </selection>
+          </selections>
+        </selection>
+        <selection id="s-yeo" name="Yeoman" entryId="f2c3-86d1-5924-093f" number="3" type="model">
+          <costs><cost name="Ducats" typeId="cost-ducats" value="90.0"/></costs>
+          <selections>
+            <selection id="s-yeo-1" name="Bolt-Action Rifle" entryId="link-rifle-0004::4c87-312e-7aa1-4de0" number="3" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="15.0"/></costs>
+              <selections>
+                <selection id="s-yeo-1b" name="Bayonet" entryId="2a56-df62-c8c1-9bc0" number="3" type="upgrade">
+                  <costs><cost name="Ducats" typeId="cost-ducats" value="6.0"/></costs>
+                </selection>
+              </selections>
+            </selection>
+          </selections>
+        </selection>
+        <selection id="s-mole" name="Yeoman" entryId="f2c3-86d1-5924-093f" number="1" type="model" customName="Old Tom">
+          <costs><cost name="Ducats" typeId="cost-ducats" value="30.0"/></costs>
+          <selections>
+            <selection id="s-mole-1" name="Bolt-Action Rifle" entryId="zzzz-0000-0000-0000" number="1" type="upgrade">
+              <selections>
+                <selection id="s-mole-1b" name="Bayonet" entryId="2a56-df62-c8c1-9bc0" number="1" type="upgrade"/>
+              </selections>
+            </selection>
+            <selection id="s-mole-2" name="Trench Mole" entryId="9886-5b15-fa46-8d84" number="1" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="10.0"/></costs>
+              <profiles><profile id="p-1" name="Trench Mole" typeName="Abilities"><characteristics><characteristic name="Description" typeId="ch-1">Digs in &amp; waits.</characteristic></characteristics></profile></profiles>
+            </selection>
+          </selections>
+        </selection>
+        <selection id="s-shock" name="Shocktrooper" entryId="579e-2810-d1cf-454b" number="1" type="model">
+          <costs><cost name="Ducats" typeId="cost-ducats" value="45.0"/></costs>
+          <selections>
+            <selection id="s-shock-1" name="Submachine Gun" entryId="0754-f896-3f97-65c7" number="1" type="upgrade">
+              <costs><cost name="Ducats" typeId="cost-ducats" value="30.0"/></costs>
+            </selection>
+          </selections>
+        </selection>
+      </selections>
+    </force>
+  </forces>
+</roster>

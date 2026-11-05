@@ -7,7 +7,7 @@ import { Loadout } from "../components/Loadout.js";
 import { SlotPicker } from "../components/SlotPicker.js";
 import { memberTitle, upgradeRows } from "../roster/select.js";
 import { kitEntries, layoutFigure, pickerRows, SLOTS, ZONE_LABELS, type KitEntry, type PickerRow, type SlotView, type Zone } from "../roster/slots.js";
-import { stagedUpgrades, type StagedEntry } from "../roster/staging.js";
+import { baseMember, stagedUpgrades, type StagedEntry } from "../roster/staging.js";
 import { useWarband } from "./warbandContext.js";
 import styles from "./ArmouryScreen.module.css";
 
@@ -21,16 +21,16 @@ interface OpenPicker {
 }
 
 export function ArmouryScreen() {
-  const { rules, warband, confirmed, pending, stage, base, ctx, cost, delta, validation, dispatch } = useWarband();
+  const { rules, warband, confirmed, pending, rows, stage, base, ctx, cost, delta, validation, dispatch } = useWarband();
   const [params, setParams] = useSearchParams();
   const wanted = params.get("member");
   const member = warband.members.find((m) => m.id === wanted) ?? warband.members[0];
   const [picker, setPicker] = useState<OpenPicker>();
   const closePicker = useCallback(() => setPicker(undefined), []);
 
-  const confirmedMember = confirmed.members.find((m) => m.id === member?.id);
+  const confirmedMember = member ? baseMember(confirmed, pending, member.id) : undefined;
   const unit = member ? findUnit(rules, warband.factionId, member.unitId) : undefined;
-  const pm = member ? pending[member.id] : undefined;
+  const pm = member ? pending.members[member.id] : undefined;
 
   const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm) : []), [member, confirmedMember, unit, rules, pm]);
   const figure = useMemo(() => (unit ? layoutFigure(kit, unit) : undefined), [kit, unit]);
@@ -78,11 +78,14 @@ export function ArmouryScreen() {
               setParams({ member: e.target.value }, { replace: true });
             }}
           >
-            {warband.members.map((m) => (
-              <option key={m.id} value={m.id}>
-                {memberTitle(m, findUnit(rules, warband.factionId, m.unitId))}
-              </option>
-            ))}
+            {rows
+              .filter((r) => r.pending !== "remove")
+              .map(({ member: m, pending: p }) => (
+                <option key={m.id} value={m.id}>
+                  {memberTitle(m, findUnit(rules, warband.factionId, m.unitId))}
+                  {p === "add" ? " (pending recruit)" : ""}
+                </option>
+              ))}
           </select>
         </label>
         <Link to={`${base}/barracks`}>Barracks</Link>

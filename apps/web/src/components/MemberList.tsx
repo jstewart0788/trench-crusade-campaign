@@ -1,26 +1,29 @@
-import { findUnit, upgradeFor, type MemberCost, type RosterUnit, type RulesData, type ValidationResult, type Warband, type WarbandCost, type WarbandMember } from "@tc/rules/browser";
-import type { Dispatch } from "react";
+import { findUnit, upgradeFor, type MemberCost, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
-import type { RosterAction } from "../roster/reducer.js";
 import { priceText } from "../roster/select.js";
-import { type Pending } from "../roster/staging.js";
+import type { StagedMemberRow } from "../roster/staging.js";
 import styles from "./MemberList.module.css";
 
 interface Props {
-  warband: Warband;
+  rows: StagedMemberRow[];
+  factionId: string;
   rules: RulesData;
   cost: WarbandCost;
   validation: ValidationResult;
   base: string;
-  dispatch: Dispatch<RosterAction>;
-  /** Barracks mode: duplicate and remove. The custom name is editable either way. */
-  manage?: boolean;
-  pending?: Pending;
+  /** Names are never staged: a confirmed member's name goes to the roster, a recruit's to the pending recruit. */
+  onRename: (row: StagedMemberRow, name: string) => void;
+  /** Barracks mode: duplicate, dismiss or undo. */
+  manage?: {
+    onDuplicate: (row: StagedMemberRow) => void;
+    onRemove: (row: StagedMemberRow) => void;
+    onKeep: (row: StagedMemberRow) => void;
+  };
 }
 
-export function MemberList({ warband, rules, cost, validation, base, dispatch, manage = false, pending = {} }: Props) {
-  if (warband.members.length === 0) {
+export function MemberList({ rows, factionId, rules, cost, validation, base, onRename, manage }: Props) {
+  if (rows.length === 0) {
     return (
       <div className={`panel ${styles.empty}`}>
         No models yet. {manage ? "Recruit from the list on the right." : <Link to={`${base}/barracks`}>Recruit in the Barracks</Link>}
@@ -29,20 +32,16 @@ export function MemberList({ warband, rules, cost, validation, base, dispatch, m
   }
   return (
     <ul className={styles.list}>
-      {warband.members.map((member) => (
+      {rows.map((row) => (
         <MemberRow
-          key={member.id}
-          member={member}
-          unit={findUnit(rules, warband.factionId, member.unitId)}
-          cost={cost.perMember.find((c) => c.memberId === member.id)}
-          issues={validation.errors.filter((e) => e.memberId === member.id).length}
-          pendingCount={(() => {
-            const pm = pending[member.id];
-            return pm ? pm.adds.length + pm.removes.length + pm.upgradeAdds.length + pm.upgradeRemoves.length : 0;
-          })()}
+          key={row.member.id}
+          row={row}
+          unit={findUnit(rules, factionId, row.member.unitId)}
+          cost={cost.perMember.find((c) => c.memberId === row.member.id)}
+          issues={validation.errors.filter((e) => e.memberId === row.member.id).length}
           rules={rules}
           base={base}
-          dispatch={dispatch}
+          onRename={onRename}
           manage={manage}
         />
       ))}
@@ -51,59 +50,73 @@ export function MemberList({ warband, rules, cost, validation, base, dispatch, m
 }
 
 interface RowProps {
-  member: WarbandMember;
+  row: StagedMemberRow;
   unit: RosterUnit | undefined;
   cost: MemberCost | undefined;
   issues: number;
-  pendingCount: number;
   rules: RulesData;
   base: string;
-  dispatch: Dispatch<RosterAction>;
-  manage: boolean;
+  onRename: Props["onRename"];
+  manage: Props["manage"];
 }
 
-function MemberRow({ member, unit, cost, issues, pendingCount, rules, base, dispatch, manage }: RowProps) {
+function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage }: RowProps) {
+  const { member } = row;
+  const leaving = row.pending === "remove";
   const kit = [
     ...member.equipmentItemIds.map((id) => rules.equipmentById.get(id)?.name ?? id),
     ...(member.upgradeIds ?? []).map((id) => (unit && upgradeFor(unit, id)?.name) ?? id),
   ];
   return (
-    <li className={styles.row}>
+    <li className={`${styles.row} ${row.pending === "add" ? styles.pendingAdd : ""} ${leaving ? styles.pendingRemove : ""}`}>
       <div className={styles.title}>
-        <span className={styles.unit}>{unit?.name ?? member.unitId}</span>
+        <span className={`${styles.unit} ${leaving ? styles.struck : ""}`}>{unit?.name ?? member.unitId}</span>
         {unit?.elite && <span className={styles.tag}>Elite</span>}
         {unit?.mercenary && <span className={styles.tag}>Mercenary</span>}
-        {issues > 0 && (
+        {row.pending === "add" && <span className={styles.pending}>pending</span>}
+        {leaving && <span className={styles.leaving}>leaving</span>}
+        {!leaving && issues > 0 && (
           <span className={styles.issues}>
             {issues} {issues === 1 ? "issue" : "issues"}
           </span>
         )}
-        {pendingCount > 0 && <span className={styles.pending}>{pendingCount} pending</span>}
+        {row.changes > 0 && (
+          <span className={styles.pending}>
+            {row.changes} {row.changes === 1 ? "change" : "changes"}
+          </span>
+        )}
       </div>
       <input
         className={styles.nameInput}
         value={member.name ?? ""}
         placeholder="Custom name"
         aria-label={`Name for ${unit?.name ?? member.unitId}`}
-        onChange={(e) => dispatch({ type: "rename-member", memberId: member.id, name: e.target.value })}
-        onBlur={(e) => dispatch({ type: "rename-member", memberId: member.id, name: e.target.value.trim() })}
+        onChange={(e) => onRename(row, e.target.value)}
+        onBlur={(e) => onRename(row, e.target.value.trim())}
       />
-      <span className={styles.kit}>{kit.length ? kit.join(", ") : <span className="muted">No equipment</span>}</span>
+      <span className={`${styles.kit} ${leaving ? styles.struck : ""}`}>{kit.length ? kit.join(", ") : <span className="muted">No equipment</span>}</span>
       <span className={styles.cost}>{cost ? priceText(cost) : ""}</span>
       <div className={styles.actions}>
-        <Link to={armouryHref(base, member.id)} className={styles.equip}>
-          Equip
-        </Link>
-        {manage && (
-          <>
-            <button className="small" onClick={() => dispatch({ type: "duplicate-member", memberId: member.id })}>
-              Duplicate
-            </button>
-            <button className="small danger" onClick={() => dispatch({ type: "remove-member", memberId: member.id })}>
-              Remove
-            </button>
-          </>
+        {!leaving && (
+          <Link to={armouryHref(base, member.id)} className={styles.equip}>
+            Equip
+          </Link>
         )}
+        {manage &&
+          (leaving ? (
+            <button className="small" onClick={() => manage.onKeep(row)}>
+              Keep
+            </button>
+          ) : (
+            <>
+              <button className="small" onClick={() => manage.onDuplicate(row)}>
+                Duplicate
+              </button>
+              <button className="small danger" onClick={() => manage.onRemove(row)}>
+                {row.pending === "add" ? "Undo" : "Remove"}
+              </button>
+            </>
+          ))}
       </div>
     </li>
   );
