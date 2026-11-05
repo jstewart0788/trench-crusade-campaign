@@ -50,7 +50,7 @@ describe("layoutToObjectStates", () => {
         expect(s.Nickname, piece.id).toBe(terrainName(terrain));
         expect(s.Description.split("\n")[0], piece.id).toBe(terrainReminder(terrain, palette));
         if (piece.role === "ground" && piece.baseIn > 0) {
-          expect(s.Nickname, piece.id).toBe('Hill · 2.5" · Climb');
+          expect(s.Nickname, piece.id).toBe('Hill · 3" · Elevated · Climb');
           hills++;
         }
       }

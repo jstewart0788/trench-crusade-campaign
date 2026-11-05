@@ -8,11 +8,12 @@ export const terrainOf = (piece: PalettePiece, baseIn: number): TerrainRules => 
 /** The name a player reads on hover: what it is, its height, then how it plays, e.g. `Wall · 3" · Cover · Climb`. */
 export function terrainName(t: TerrainRules): string {
   const parts = [t.label];
+  const height = t.playedAsIn ?? t.heightIn;
   const impassable = t.types.includes("impassable");
   // Heights where they decide play: what is climbed, stood on or crossed into; area terrain and scatter go without.
-  if (t.heightIn !== null && !impassable && t.kind !== "scattered" && t.kind !== "area") parts.push(t.kind === "trench" && t.label === "Trench" ? `${inches(t.heightIn)} deep` : inches(t.heightIn));
+  if (height !== null && !impassable && t.kind !== "scattered" && t.kind !== "area") parts.push(t.kind === "trench" && t.label === "Trench" ? `${inches(height)} deep` : inches(height));
   if (t.fireStepIn) parts.push("Fire step");
-  if (t.kind === "hill" && t.heightIn !== null && t.heightIn >= 3) parts.push("Elevated");
+  if (t.kind === "hill" && height !== null && height >= 3) parts.push("Elevated");
   if (t.types.includes("difficult")) parts.push("Difficult");
   if (t.types.includes("dangerous")) parts.push(t.keywords?.length ? `Dangerous (${t.keywords.join(", ")})` : "Dangerous");
   if (impassable) parts.push("Impassable");

@@ -63,7 +63,8 @@ describe("terrain names", () => {
     expect(terrainName(piece("statue").terrain)).toBe("Statue · Impassable · Cover");
     expect(terrainName(piece("trench-straight-ledge").terrain)).toBe('Trench · 2" deep · Fire step · Cover');
     expect(terrainName(piece("landscape-1x2").terrain)).toBe("Ground · Open");
-    expect(terrainName(piece("landscape-1x2").stackedTerrain!)).toBe('Hill · 2.5" · Climb');
+    expect(terrainName(piece("landscape-1x2").stackedTerrain!)).toBe('Hill · 3" · Elevated · Climb');
+    expect(piece("landscape-1x2").stackedTerrain!.heightIn).toBe(2.5);
     expect(terrainName(piece("sandbags-long").terrain)).toBe('Sandbags · 1" · Cover');
     expect(terrainName(piece("barrel").terrain)).toBe("Barrel · Scatter");
     const fire: TerrainRules = { label: "Burning wreck", kind: "area", types: ["dangerous"], keywords: ["FIRE"], cover: true, climb: false, heightIn: 2, pages: [38, 54] };

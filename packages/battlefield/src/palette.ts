@@ -65,6 +65,8 @@ export const TerrainRules = z
     /** Measured height in inches to the nearest 1/2in: its top above the ground it stands on, unless `measure` says otherwise. */
     heightIn: z.number().nonnegative().nullable(),
     measure: z.string().optional(),
+    /** The height it is played at, where the players have agreed one other than the measurement. */
+    playedAsIn: z.number().positive().optional(),
     /** Trench pieces with a fire step: its height above the trench floor. */
     fireStepIn: z.number().positive().optional(),
     pages: z.array(z.number().int().positive()).min(1),

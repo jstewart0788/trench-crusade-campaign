@@ -179,12 +179,13 @@
         "climb": true,
         "heightIn": 2.5,
         "measure": "one tile stacked on the ground: its top above the ground around it",
+        "playedAsIn": 3,
         "pages": [
           38,
           39,
           61
         ],
-        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61). Played as 3\" so a hill gives Elevated position (p.43), by the players' agreement."
       }
     },
     {
@@ -233,12 +234,13 @@
         "climb": true,
         "heightIn": 2.5,
         "measure": "one tile stacked on the ground: its top above the ground around it",
+        "playedAsIn": 3,
         "pages": [
           38,
           39,
           61
         ],
-        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61). Played as 3\" so a hill gives Elevated position (p.43), by the players' agreement."
       }
     },
     {
@@ -288,12 +290,13 @@
         "climb": true,
         "heightIn": 2.5,
         "measure": "one tile stacked on the ground: its top above the ground around it",
+        "playedAsIn": 3,
         "pages": [
           38,
           39,
           61
         ],
-        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61). Played as 3\" so a hill gives Elevated position (p.43), by the players' agreement."
       }
     },
     {
@@ -741,13 +744,14 @@
         "cover": false,
         "climb": true,
         "heightIn": 2.0,
+        "playedAsIn": 3,
         "measure": "its top above the ground around it",
         "pages": [
           38,
           39,
           61
         ],
-        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61)."
+        "call": "A stacked tile's sides are sheer, so models Climb them (p.39) or take a ramp; the book's hills are usually Open (p.61). Played as 3\" so a hill gives Elevated position (p.43), by the players' agreement."
       }
     },
     {
