@@ -1,3 +1,4 @@
+import { rotateOffset } from "../src/tts.js";
 import { describe, expect, it } from "vitest";
 import { generateBattlefield, layoutToObjectStates, TERRAIN_TAG } from "../src/index.js";
 import { fixtureCatalog, fixtureEnv } from "./fixtures.js";
@@ -51,9 +52,13 @@ describe("layoutToObjectStates", () => {
     expect(byId.get(cover.id)!.Transform.posX).toBe(0);
     expect(byId.get(cover.id)!.Transform.posZ).toBe(0);
     const along = layout.pieces.find((p) => p.paletteId === "landscape-1x2" && p.rotY === 90)!;
-    const [c, r] = along.cell!;
-    expect(byId.get(along.id)!.Transform.posX).toBeCloseTo(c * 4 + 2 - 18, 3);
-    expect(byId.get(along.id)!.Transform.posZ).toBeCloseTo(r * 4 + 2 - 18, 3);
+    // Measured live (2026-11-04): a Landscape 1x2 at rotY 90 has its bounds centre 2in toward -x of its
+    // pivot, so the pivot must sit 2in toward +x of the footprint centre for the tile to cover its cells.
+    const entry = env.palette.pieces.find((p) => p.id === along.paletteId)!;
+    const [ox, oz] = rotateOffset(entry.pivotOffsetIn, along.rotY, env.palette.rotation.rotYSense);
+    expect([ox, oz].map((v) => Math.round(v) + 0)).toEqual([-2, 0]);
+    expect(byId.get(along.id)!.Transform.posX + ox).toBeCloseTo(along.position[0] - 18, 3);
+    expect(byId.get(along.id)!.Transform.posZ + oz).toBeCloseTo(along.position[1] - 18, 3);
     const shifted = layoutToObjectStates(layout, env.palette, catalog, { matTopY: 2, matCenter: [10, -5] });
     expect(shifted.find((s) => s.Description.includes(cover.id))!.Transform).toMatchObject({ posX: 10, posZ: -5 });
   });
