@@ -186,6 +186,8 @@ export const CatalogAsset = z
     /** RGB, or RGBA for a handful of harvested assets; the emitter uses the first three. */
     colorDiffuse: z.array(z.number()).min(3).max(4),
     nicknames: z.array(z.object({ nickname: z.string(), count: z.number() }).passthrough()),
+    /** How the source saves spawn it: render/physics material, object type and (models) a convex collider. */
+    spawn: z.object({ materialIndex: z.number().int(), typeIndex: z.number().int(), convex: z.boolean().optional() }).optional(),
   })
   .passthrough();
 export type CatalogAsset = z.infer<typeof CatalogAsset>;

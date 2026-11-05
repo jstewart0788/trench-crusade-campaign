@@ -50,15 +50,18 @@ export function rotateOffset(offset: readonly [number, number], rotY: number, se
   return rotateVector(offset, rotY, sense);
 }
 
+// Spawned as the source saves spawn the asset (the harvested catalog's `spawn`),
+// TTS's defaults where the catalog has none.
 function customBlock(asset: CatalogAsset): Pick<TtsObjectState, "Name" | "CustomAssetbundle" | "CustomMesh" | "CustomImage"> {
   const urls = asset.urls;
+  const spawn = { materialIndex: 0, typeIndex: 0, convex: true, ...asset.spawn };
   switch (asset.kind) {
     case "Custom_Assetbundle":
-      return { Name: asset.kind, CustomAssetbundle: { AssetbundleURL: urls.primary, AssetbundleSecondaryURL: urls.secondary ?? "", MaterialIndex: 0, TypeIndex: 0, LoopingEffectIndex: 0 } };
+      return { Name: asset.kind, CustomAssetbundle: { AssetbundleURL: urls.primary, AssetbundleSecondaryURL: urls.secondary ?? "", MaterialIndex: spawn.materialIndex, TypeIndex: spawn.typeIndex, LoopingEffectIndex: 0 } };
     case "Custom_Model":
     case "Custom_Model_Bag":
     case "Custom_Model_Infinite_Bag":
-      return { Name: "Custom_Model", CustomMesh: { MeshURL: urls.primary, DiffuseURL: urls.diffuse ?? "", NormalURL: urls.normal ?? "", ColliderURL: urls.collider ?? "", Convex: true, MaterialIndex: 0, TypeIndex: 0, CastShadows: true } };
+      return { Name: "Custom_Model", CustomMesh: { MeshURL: urls.primary, DiffuseURL: urls.diffuse ?? "", NormalURL: urls.normal ?? "", ColliderURL: urls.collider ?? "", Convex: spawn.convex, MaterialIndex: spawn.materialIndex, TypeIndex: spawn.typeIndex, CastShadows: true } };
     case "Custom_Token":
     case "Custom_Tile":
     case "Custom_Board":

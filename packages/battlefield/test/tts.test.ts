@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateBattlefield, layoutToObjectStates, pieceById, rotatedFootprint, rotateOffset, TERRAIN_TAG, type Layout, type TtsObjectState } from "../src/index.js";
+import { generateBattlefield, layoutToObjectStates, pieceById, pieceToObjectState, resolvePalette, rotatedFootprint, rotateOffset, TERRAIN_TAG, type Catalog, type Layout, type TtsObjectState } from "../src/index.js";
 import { fixtureCatalog, fixtureEnv } from "./fixtures.js";
 
 const env = fixtureEnv();
@@ -119,5 +119,36 @@ describe("layoutToObjectStates", () => {
     expect(shifted.get(tile.id)!.Transform.posX).toBeCloseTo(byId.get(tile.id)!.Transform.posX + 10, 6);
     expect(shifted.get(tile.id)!.Transform.posZ).toBeCloseTo(byId.get(tile.id)!.Transform.posZ - 5, 6);
     expect(shifted.get(tile.id)!.Transform.posY).toBeCloseTo(2 + 1.0, 6);
+  });
+
+  it("spawns each asset as its source saves do: material, type and collider from the catalog, TTS's defaults where it has none", () => {
+    const emitter = (cat: Catalog) => {
+      const resolved = resolvePalette(palette, cat);
+      const template = layout.pieces.find((p) => p.cells === null)!;
+      return (paletteId: string) => pieceToObjectState({ ...template, paletteId, assetId: resolved.byId.get(paletteId)!.assetId }, layout, resolved, { matTopY: MAT_TOP, matCenter: [0, 0] });
+    };
+    const emit = emitter(catalog);
+    // As the reference saves spawn them: sandbags and crate heaps cardboard, the heap colliding on its own mesh; a ruined building wood, typed a figurine.
+    expect(emit("sandbags-corner").CustomMesh).toMatchObject({ MaterialIndex: 3, TypeIndex: 0, Convex: true });
+    expect(emit("crates-group").CustomMesh).toMatchObject({ MaterialIndex: 3, TypeIndex: 0, Convex: false });
+    expect(emit("ruins-medium-b").CustomAssetbundle).toMatchObject({ MaterialIndex: 1, TypeIndex: 1 });
+    const resolved = resolvePalette(palette, catalog);
+    let models = 0;
+    for (const board of boards) {
+      for (const s of statesOf(board)) {
+        const spawn = resolved.byId.get(/\(([^)]+)\)/.exec(s.Description)![1]!)!.asset.spawn!;
+        expect(spawn, s.Description).toBeDefined();
+        const block = s.CustomAssetbundle ?? s.CustomMesh!;
+        expect([block.MaterialIndex, block.TypeIndex], s.Description).toEqual([spawn.materialIndex, spawn.typeIndex]);
+        if (s.CustomMesh) {
+          models++;
+          expect(s.CustomMesh.Convex, s.Description).toBe(spawn.convex);
+        }
+      }
+    }
+    expect(models).toBeGreaterThan(0);
+    const bare = emitter({ ...catalog, assets: catalog.assets.map(({ spawn: _spawn, ...a }) => a) });
+    expect(bare("crates-group").CustomMesh).toMatchObject({ MaterialIndex: 0, TypeIndex: 0, Convex: true });
+    expect(bare("ruins-medium-b").CustomAssetbundle).toMatchObject({ MaterialIndex: 0, TypeIndex: 0 });
   });
 });

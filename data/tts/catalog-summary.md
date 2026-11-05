@@ -116,3 +116,102 @@ Ranked by number of source mods, then total placements.
 | 62bf7ab8e61d | Trench Straight w/ Ledge | Custom_Assetbundle | 0.67x1.0x0.22 |  |  | 2 | 72 |
 | 1d73497f2296 |  | Custom_Model | 0.65x0.65x0.65 |  |  | 2 | 50 |
 | 7bfc88b99778 | H4x4 | Custom_Assetbundle | -1.0x1.0x1.0 | 2.0 | 0.0 | 2 | 38 |
+
+## Bundle shaders on Metal (macOS)
+
+From `scripts/check_bundle_shaders.py` over the bundles in TTS's local cache at harvest time (not part of the catalog; informational, never fails the harvest). TTS on Apple hardware draws with Metal: a bundle that packs its own shader with no Metal program draws through that shader's fallback, and draws solid magenta when no fallback can run.
+
+- Bundle URLs: **421** (fallback 84, magenta 2, ok 257, unchecked 77, unknown 1)
+  - unchecked, not in the TTS cache: 71
+  - unchecked, BundleError: serialized format 15: 4
+  - unchecked, LZMAError: Corrupt input data: 2
+
+| verdict | id | nickname | unity | material: shader chain |
+|---|---|---|---|---|
+| magenta | 38f97d6f118e | Corpse | 2019.4.40f1 | corp_zomby1: Mobile/Diffuse -> Mobile/VertexLit |
+| magenta | 86d19812e50b | Corpse | 2019.4.40f1 | corp_zomby1: Mobile/Diffuse -> Mobile/VertexLit |
+| unknown | 92a091be98e9 | Camp Fire | 5.6.2f1 | SmokeLightParticle: Custom/SurfaceShader_VC |
+| fallback | 0044706e52e2 | Impassable | 2019.1.0f2 | Tex_1477_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 004e59a145e5 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Wall_Decor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 05d2659253fd | tlou_blood_decal_f_1 | 2019.1.0f2 | t1_levels_hunter-city_hun-financial_other_hun-fin-blood-decals_: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 06fb3e6a3706 | tw2_5_addon_10_14 | 2019.1.0f2 | t_5_temple_02_floor: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 070d1e2c0a64 | tw2_5_addon_10_12 | 2019.1.0f2 | t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 0855eaad6d4e | PA_SM_Skeleton_Pile_05 | 2019.1.0f2 | MI_Skeletons: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 093dad2d832b | Z_L2_Blood01 | 2019.1.0f2 | Blood01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 09ecf3ce0671 | tw2_5_townwall_01_01 | 2019.1.0f2 | t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 0bc2589b0c73 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Wall_Decor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 0bdbd0da0810 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 0c008ad2a249 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 0f21fb87e1ed | tw2_5_addon_05_5 | 2019.1.0f2 | t_5_stone_newdown_02: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); t_5_stone_newdown_03: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 13fe878e53ff |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 189aa5adf562 | ESO_L3_HangingIvy4_1G | 2019.1.0f2 | Tex_0912_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 19363032cc78 |  | 2019.1.0f2 | MI_VikingBell: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 1a3858af63d1 | PA_SM_Skeleton_Pile_04 | 2019.1.0f2 | MI_Skeletons: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 1b523f4333c9 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 1c3ada4662e8 | Impassable | 2019.1.0f2 | Monolit_Mat_1: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 1ec1930a5fdf | tw2_5_dun_addon2_02_33 | 2019.1.0f2 | t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 1f3e1728860f |  | 2019.1.0f2 | M_JAIL_Wall_Top_A: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); M_JAIL_Wall_Stone_Mossy: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 211beba5f098 | Impassable | 2019.1.0f2 | Tex_1387_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 2335ad94bf68 | tw2_5_temple_01_2 | 2019.1.0f2 | t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 247941564d65 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Wall_Decor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 24fd75644710 | Cliff  | 2019.1.0f2 | material_Cliff_03: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 2524141f20a7 | tw2_5_fur_01_69 | 2019.1.0f2 | interior_01_06: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 2577f36f52a8 | Impassable | 2019.1.0f2 | Tex_1477_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 2701ea87d401 | tw2_5_dun_addon2_01_11 | 2019.1.0f2 | 5_dungeon_01_floor_02: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 29e3e7e00b55 |  | 2019.1.0f2 | m35_00_272: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); m35_00_271: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 29fcad4ecdaa |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 2c74d920ba50 | Z_L2_Blood02 | 2019.1.0f2 | Blood01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 2de5c0f0942a | Statue | 2019.1.0f2 | FG_Assets01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 2e45b2b82c5f | tw2_5_addon_07_3-cut1 | 2019.1.0f2 | 5_house_05_05: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 2f176e28b560 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Wall_Decor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 33954c721dd2 | tw2_5_addon_03_7 | 2019.1.0f2 | t_5_stone2: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 34f0d0d7c771 | Moss Swamp River | 2019.1.14f1 | R2_River_Tesseled_Swamp: Geometry+999 -> Transparent (TTS's own) |
+| fallback | 38f052654740 | Tiny Desk Engineer | 2019.1.14f1 | Particle Texture: Plane -> Opaque (TTS's own) |
+| fallback | 4a15f0c3d452 |  | 2019.1.0f2 | Tex_0824_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 4fd010b6281f |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Wall_Decor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 51a3a645b935 | nw_jav_struc_def_ironwood_t2_fence | 2019.1.0f2 | jav_prp_wooddoor_b_mat0: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 5662fe9141b4 |  | 2019.1.14f1 | kerze_dunkeldunkelv2: Standard -> VertexLit (TTS's own); candle_wide_tex2: Plane -> Opaque (TTS's own); grün-ton-1-2: Standard -> VertexLit (TTS's own); None: Standard -> VertexLit (TTS's own); glowmat: Transparent+1 -> Transparent (TTS's own); bienenwachs-ton-2-2_WET: Standard -> VertexLit (TTS's own); Default-Material: Standard -> VertexLit (TTS's own); bienenwachs-ton-2-2: Standard -> VertexLit (TTS's own) |
+| fallback | 567e91313d77 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 57c95553f5fd |  | 2019.1.0f2 | Tex_1792_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 57d5e08e538b |  | 2019.1.0f2 | Mat_Bone_Blight: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 580328df246b | tw2_5_addon_05_4 | 2019.1.0f2 | t_5_stone_newdown_03: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 6229d9a16d97 | tw2_5_dun_addon2_02_8 | 2019.1.0f2 | 5_dun_addons_01_pillar: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); 5_dungeons_tombs: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 64a4bfcc3307 | Tablas de madera | 2019.1.0f2 | M_TELEMA_Wood_Props_A: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 6557fa863ef6 | Ruins Defendable | 2019.1.0f2 | material_SV_Gravestone: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 67cee7bc970a |  | 2019.1.0f2 | 1_tree_02: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 68f497039114 |  | 2019.1.0f2 | M_ORC_STR_Wall_Destroyed_A: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 69beb1697292 | ESO_Ss8_Wood8 | 2019.1.0f2 | Tex_1792_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 69d0965fd3ed |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Soil_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Floor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 6a51ccfdfce1 | Gws_Fi_Vil_Furniture_Bench01 | 2019.1.0f2 | fi_village_wood: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 6b61508b0ab2 | Impassable | 2019.1.0f2 | Monolit_Mat_2: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 72d7954c6110 | tw2_5_fur_01_10 | 2019.1.0f2 | interior_01_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 7c20c6d877d8 | Camp Fire | 2019.1.0f2 | TELEMA_Scavenger_Fire_Camp_0Mat: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 8463eea1747e | Tall Fence | 2019.1.0f2 | FG_Assets01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 8900f5fa9e51 |  | 2019.1.0f2 | material_Tyros_Aquila_Snake_Statue: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 8e9414858128 | tw2_5_temple_01_1 | 2019.1.0f2 | t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); t_5_temple_02_main: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 98ab7f847a79 | Lantern | 2017.3.0f3 | body_albedo: Standard -> VertexLit (TTS's own); Lid_albedo: Standard -> VertexLit (TTS's own); grass_albedo: Standard -> VertexLit (TTS's own) |
+| fallback | 997ff36b125d | ESO_W15_StonePlatform1 | 2019.1.0f2 | Tex_2961_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Tex_2958_0_dds: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 9a7ea1ea8396 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | 9ac11b011fa9 | Difficult Terrain | 2019.1.0f2 | 5_dungeon_01_stone_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | 9c565c81a9d9 | Water 1x1 | 2019.1.14f1 | R2_River_Tesseled_Stream: Geometry+999 -> Transparent (TTS's own) |
+| fallback | 9dc52433c0fb | tw2_5_addon_10_13 | 2019.1.0f2 | t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | a0c97ff163bd | Ancient Books | 2019.1.0f2 | fi_village_library: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); fi_village_lighting: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); fi_village_wood: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | addbff78076c |  | 2019.1.0f2 | material_Ruins_walls.005: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | b760ddf56924 | tw2_5_townwall_01_04 | 2019.1.0f2 | t_5_windows2: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); t_5_townwall_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); t_5_stone_newdown_04: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | bc89aedac334 |  | 2019.1.0f2 | material_Tyros_Obeliks: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | c3cf72e31278 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Wall_Decor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | c853f74c717f | Box | 2019.1.0f2 | GEN_F_Atlas_Fabric_01_DiffuseMap: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); GEN_W_WattleFence_01_DiffuseMap: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | ca8cb1360ad2 | Ruins Brick | 2019.1.0f2 | material_Ruins_walls: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | cdffdad64e53 |  | 2019.1.0f2 | Bridge_Trim_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Portal_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | e0b3352d4f19 | O_Prop_FabricShroudB | 2019.1.0f2 | mat_env_fabricShroud: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | e3437148048e |  | 2019.1.0f2 | RockGr_09_a: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | e83f0e006aaf |  | 2019.1.0f2 | Columns_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | eea7dc4cd031 |  | 2019.1.0f2 | Columns_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | f0aec66fcdcb | Dummy | 2019.1.0f2 | GEN_V_StrawRode_01_DiffuseMap: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); GEN_F_Atlas_Fabric_01_DiffuseMap: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | f1f005cf5bf0 |  | 2019.1.0f2 | Floor_Indoor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Staircase_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | f36638cf0936 | Z_L2_Blood03 | 2019.1.0f2 | Blood01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | f4d7f35a5514 | Fishing Bags | 2019.1.0f2 | GEN_F_Atlas_Fabric_[R]_01: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own); GEN_V_Net_[R]_01_AT_2SD: Standard (Specular setup) 2 Sided -> VertexLit (TTS's own) |
+| fallback | f78fd65b288c |  | 2019.1.0f2 | mat_env_masterBrickBurntBrokenHyperVertex: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); mat_env_atlasStoneWoodDark: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); mat_env_masterStoneWall3HyperVertex: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | fa02ed5e9658 |  | 2019.1.0f2 | Walls_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Soil_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own); Floor_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | fe7db3a79210 |  | 2019.1.0f2 | Portal_Material_01: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |
+| fallback | ffed0809f6a9 |  | 2019.1.0f2 | material_Altar_Bench_Church: Custom/Saught's Diffuse -> Transparent/Cutout/VertexLit (TTS's own) |

@@ -10,6 +10,7 @@ Standard library only. Deterministic: every collection is sorted before output.
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -182,6 +183,36 @@ def color_key(obj):
     return tuple(parts)
 
 
+# The object-state fields that say how TTS treats a custom object: MaterialIndex (a
+# model's render material, plastic / wood / metal / cardboard; a bundle's sound and
+# physics material), TypeIndex (generic, figurine, ...) and, for models, whether the
+# collider is the mesh's convex hull. Missing fields take TTS's defaults.
+SPAWN_FIELDS = {
+    "Custom_Assetbundle": ("CustomAssetbundle", (("materialIndex", "MaterialIndex", 0), ("typeIndex", "TypeIndex", 0))),
+    "Custom_Model": ("CustomMesh", (("materialIndex", "MaterialIndex", 0), ("typeIndex", "TypeIndex", 0), ("convex", "Convex", True))),
+}
+SPAWN_FIELDS["Custom_Model_Bag"] = SPAWN_FIELDS["Custom_Model"]
+SPAWN_FIELDS["Custom_Model_Infinite_Bag"] = SPAWN_FIELDS["Custom_Model"]
+
+
+def spawn_settings(obj):
+    spec = SPAWN_FIELDS.get(obj.get("Name", ""))
+    if spec is None:
+        return None
+    block = obj.get(spec[0]) or {}
+    return tuple((key, block.get(field, default)) for key, field, default in spec[1])
+
+
+def spawn_entry(counter):
+    """The settings the source saves use most for an asset (ties to the first in sort order), and every variant seen."""
+    if not counter:
+        return None, []
+    ranked = sorted(counter.items(), key=lambda kv: (-kv[1], json.dumps(kv[0])))
+    chosen = dict(ranked[0][0])
+    variants = [dict(settings, count=count) for settings, count in ranked] if len(ranked) > 1 else []
+    return chosen, variants
+
+
 def load_save(path):
     with open(path, "r", encoding="utf-8") as fh:
         return json.load(fh)
@@ -201,9 +232,13 @@ class AssetAccumulator:
         self.ref_obs = defaultdict(list)
         self.layout_pos_y = defaultdict(list)
         self.tcmap_pos_y = []
+        self.spawn = Counter()
 
     def observe(self, obj, mod_id, role, depth, container, via):
         self.nicknames[obj.get("Nickname") or ""] += 1
+        settings = spawn_settings(obj)
+        if settings is not None:
+            self.spawn[settings] += 1
         desc = (obj.get("Description") or "").strip()
         if desc:
             self.descriptions.add(desc[:DESCRIPTION_MAX])
@@ -253,6 +288,7 @@ def build_entry(aid, acc, mod_names):
     color = None
     if acc.colors:
         color = list(sorted(acc.colors.items(), key=lambda kv: (-kv[1], kv[0]))[0][0])
+    spawn, spawn_variants = spawn_entry(acc.spawn)
     entry = {
         "id": aid,
         "kind": acc.kind,
@@ -285,6 +321,10 @@ def build_entry(aid, acc, mod_names):
         "tags": derive_tags([n for n, _ in nicknames]),
         "sizeHint": derive_size_hints([n for n, _ in nicknames]),
     }
+    if spawn is not None:
+        entry["spawn"] = spawn
+    if spawn_variants:
+        entry["spawnVariants"] = spawn_variants
     return entry
 
 
@@ -352,7 +392,52 @@ def build_mod_index(mod_id, name, role, save):
     }
 
 
-def write_summary(path, catalog):
+def run_shader_check(entries, cache_dir):
+    """check_bundle_shaders over every bundle in the catalog; any failure is reported, never raised."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    try:
+        spec = importlib.util.spec_from_file_location("check_bundle_shaders", os.path.join(here, "check_bundle_shaders.py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        labels = {}
+        for e in entries:
+            if e["kind"] == "Custom_Assetbundle":
+                nick = e["nicknames"][0]["nickname"] if e["nicknames"] else ""
+                labels.setdefault(e["urls"]["primary"], (e["id"], nick))
+        results = module.check_urls(labels, cache_dir)
+        return {"labels": labels, "results": results}
+    except Exception as exc:
+        return {"error": "%s: %s" % (type(exc).__name__, exc)}
+
+
+def shader_summary_lines(check):
+    lines = ["## Bundle shaders on Metal (macOS)", ""]
+    lines.append("From `scripts/check_bundle_shaders.py` over the bundles in TTS's local cache at harvest time (not part of the catalog; informational, never fails the harvest). TTS on Apple hardware draws with Metal: a bundle that packs its own shader with no Metal program draws through that shader's fallback, and draws solid magenta when no fallback can run.")
+    lines.append("")
+    if "error" in check:
+        lines.append("Check did not run: %s" % check["error"])
+        lines.append("")
+        return lines
+    results, labels = check["results"], check["labels"]
+    counts = Counter(r["verdict"] for r in results.values())
+    lines.append("- Bundle URLs: **%d** (%s)" % (len(results), ", ".join("%s %d" % (k, counts[k]) for k in sorted(counts))))
+    reasons = Counter(r.get("reason", "") for r in results.values() if r["verdict"] == "unchecked")
+    for reason, n in sorted(reasons.items(), key=lambda kv: (-kv[1], kv[0])):
+        lines.append("  - unchecked, %s: %d" % (reason, n))
+    lines.append("")
+    flagged = [(labels[u], r) for u, r in results.items() if r["verdict"] in ("magenta", "unknown", "fallback")]
+    order = {"magenta": 0, "unknown": 1, "fallback": 2}
+    if flagged:
+        lines.append("| verdict | id | nickname | unity | material: shader chain |")
+        lines.append("|---|---|---|---|---|")
+        for (aid, nick), r in sorted(flagged, key=lambda x: (order[x[1]["verdict"]], x[0][0])):
+            chain = "; ".join("%s: %s" % (m["material"], m["shader"]) for m in r["materials"] if m["verdict"] != "ok")
+            lines.append("| %s | %s | %s | %s | %s |" % (r["verdict"], aid, nick.replace("|", "\\|"), r.get("unity", ""), chain.replace("|", "\\|")))
+        lines.append("")
+    return lines
+
+
+def write_summary(path, catalog, shader_check=None):
     s = catalog["summary"]
     lines = []
     lines.append("# TTS terrain asset catalog — summary")
@@ -397,6 +482,8 @@ def write_summary(path, catalog):
             "" if a["restHeightSpread"] is None else a["restHeightSpread"],
             a["sourceModCount"], a["placements"]))
     lines.append("")
+    if shader_check is not None:
+        lines.extend(shader_summary_lines(shader_check))
     with open(path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
 
@@ -406,6 +493,8 @@ def main(argv=None):
     parser.add_argument("--mods-dir", default="~/Library/Tabletop Simulator/Mods/Workshop")
     parser.add_argument("--out", default="data/tts/catalog.json")
     parser.add_argument("--summary", default="data/tts/catalog-summary.md")
+    parser.add_argument("--bundle-cache", default="~/Library/Tabletop Simulator/Mods/Assetbundles", help="TTS's asset bundle cache, for the shader check")
+    parser.add_argument("--no-shader-check", action="store_true", help="skip the Metal shader check in the summary")
     args = parser.parse_args(argv)
 
     mods_dir = os.path.expanduser(args.mods_dir)
@@ -505,6 +594,7 @@ def main(argv=None):
             "heightStats": "only top-level objects (not bag contents, not ChildObjects) with posY >= %s" % STASH_FLOOR,
             "restHeight": "median posY across reference mods where |rotX|,|rotZ| within %s deg of 0 or 180" % UPRIGHT_TOLERANCE_DEG,
             "unstable": "restHeightSpread > %s; use restHeightMin as the rest estimate" % UNSTABLE_SPREAD,
+            "spawn": "MaterialIndex, TypeIndex and (models) Convex as the source saves spawn the asset: the most common combination across every placement, ties to the first in sort order; spawnVariants lists them all when they differ",
             "referenceMods": [m[0] for m in MODS if m[2] == ROLE_REFERENCE],
             "tcMapMod": TCMAP_ID,
         },
@@ -520,8 +610,15 @@ def main(argv=None):
         json.dump(catalog, fh, indent=1, sort_keys=True, ensure_ascii=False)
         fh.write("\n")
 
+    shader_check = None if args.no_shader_check else run_shader_check(entries, args.bundle_cache)
     os.makedirs(os.path.dirname(args.summary) or ".", exist_ok=True)
-    write_summary(args.summary, catalog)
+    write_summary(args.summary, catalog, shader_check)
+    if shader_check is not None:
+        if "error" in shader_check:
+            print("shader check did not run: %s" % shader_check["error"], file=sys.stderr)
+        else:
+            counts = Counter(r["verdict"] for r in shader_check["results"].values())
+            print("shader check (informational): %s" % ", ".join("%s %d" % (k, counts[k]) for k in sorted(counts)))
 
     print("assets=%d withRestHeight=%d tcMapOnly=%d layoutOnly=%d modelGroups=%d -> %s" % (
         summary["totalTerrainAssets"], summary["withRestHeight"], summary["tcMapOnly"],
