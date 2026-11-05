@@ -103,7 +103,7 @@
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--blood);
+  color: var(--blood-ink);
   border: 1px solid var(--blood);
   border-radius: 2px;
   padding: 0 0.3rem;

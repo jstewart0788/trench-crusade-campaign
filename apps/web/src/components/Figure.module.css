@@ -32,7 +32,7 @@
   gap: 0.15rem;
   text-align: left;
   padding: 0.4rem 0.55rem;
-  background: rgba(21, 19, 15, 0.88);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   border: 1px dashed var(--line-strong);
   color: var(--ink);
 }
@@ -112,7 +112,7 @@
   border: 1px solid var(--brass);
 }
 .chipRemove {
-  color: var(--blood);
+  color: var(--blood-ink);
   border: 1px solid var(--blood);
 }
 .aside h3 {
@@ -144,7 +144,7 @@
 .locked {
   border-style: solid;
   border-color: var(--oxblood);
-  background: linear-gradient(var(--oxblood-fill), var(--oxblood-fill)), rgba(21, 19, 15, 0.92);
+  background: linear-gradient(var(--oxblood-fill), var(--oxblood-fill)), color-mix(in srgb, var(--bg) 92%, transparent);
 }
 .locked .note {
   color: var(--oxblood-ink);

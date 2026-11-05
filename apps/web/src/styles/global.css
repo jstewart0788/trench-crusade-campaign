@@ -101,7 +101,7 @@ button.primary {
   font-weight: 600;
 }
 button.danger {
-  color: var(--blood);
+  color: var(--blood-ink);
 }
 button.small {
   padding: 0.15rem 0.5rem;

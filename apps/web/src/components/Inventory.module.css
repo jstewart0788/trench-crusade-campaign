@@ -50,7 +50,7 @@
   border: 1px solid var(--brass);
 }
 .chipRemove {
-  color: var(--blood);
+  color: var(--blood-ink);
   border: 1px solid var(--blood);
 }
 .locked {

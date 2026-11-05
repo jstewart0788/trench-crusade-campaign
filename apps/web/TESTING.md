@@ -378,6 +378,30 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 
 - Reload any warband screen: `GET /api/rules` is served from cache or 304 with the same `etag`.
 
+## 12. Faction themes
+
+- Open a warband of each faction on its Barracks. The whole page (nav bar included) takes the
+  faction's palette, panel frames and backdrop, with a large faint sigil at the right:
+  - **New Antioch**: field grey, canvas weave and faint stencil arrows; brass corner brackets on
+    the panels; a keep under a four-pointed star.
+  - **Heretic Legion**: blackened silver frames with a rivet in each corner, a chain along the
+    top of the page, an ember glow at the bottom; a broken ring, a blade and two horns.
+  - **Trench Pilgrims**: soot-grimed parchment ruled like a psalter, candle glow at the top,
+    tarnished gold frames; a rayed halo behind a cross.
+  - **Iron Sultanate**: lapis under a lattice of eight-pointed stars, verdigris double frames; an
+    eight-pointed star of two squares.
+  - **Black Grail**: rot-mottled green-black with fly specks, corroded frames; a dripping goblet.
+  - **Court of the Seven-Headed Serpent**: crimson with serpent scale and gold filigree, gold-curled
+    panel corners; a seven-pointed star in a ring of seven.
+- The active tab has a 2px rule in the theme's accent. A subfaction keeps its faction's theme
+  with its own accent: Heretic Naval Raiders turn the sigil and tab rule brine teal.
+- **Warbands** (Home), **New warband** and **Import** are neutral again: DevTools shows no
+  `data-faction` and no inline custom properties on `<html>`. Back to the warband: 26 of them.
+- Everything is CSS and inline SVG: Network shows no image requests for the backdrop. With
+  "Emulate CSS prefers-reduced-motion: reduce" nothing changes, because nothing moves.
+- Contrast is checked on the tokens (`src/theme/themes.test.ts`): every text colour on every
+  surface it is drawn on, per theme, at 4.5:1 or better.
+
 Contrast check (WCAG AA): dimmed price text, error text and the Elite tag must all stay readable
 on the dark panels; nothing relies on a strikethrough or colour alone (dimmed prices also go
 dashed, and say why on hover and to screen readers).

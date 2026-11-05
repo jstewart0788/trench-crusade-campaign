@@ -1,5 +1,5 @@
 import { limitContext, validateWarband, warbandCost, warbandThreshold, type RulesData, type Warband } from "@tc/rules/browser";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api, ApiRequestError, type SavedWarband } from "../api.js";
 import { Header } from "../components/Header.js";
@@ -8,6 +8,9 @@ import { gloryPool, type Purse } from "../roster/purse.js";
 import { rosterReducer } from "../roster/reducer.js";
 import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagedMembers, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
 import { useRules } from "../rules.js";
+import { applyTheme } from "../theme/apply.js";
+import { FactionBackdrop } from "../theme/Backdrop.js";
+import { themeFor } from "../theme/themes.js";
 import { clearDraft, loadDraft, loadPending, moveExpanded, movePending, rememberSaved, saveDraft, savePending } from "../storage.js";
 import { DRAFT_CODE, warbandBase, type WarbandContext } from "./warbandContext.js";
 import styles from "./WarbandLayout.module.css";
@@ -96,6 +99,10 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
   const staged = useMemo(() => applyPending(confirmed, pending), [confirmed, pending]);
   const rows = useMemo(() => stagedMembers(confirmed, pending), [confirmed, pending]);
 
+  // The warband's faction dresses the whole page while its screens are open; leaving them strips it again.
+  const theme = useMemo(() => themeFor(confirmed), [confirmed.factionId, confirmed.subfactionId, confirmed.variantId]);
+  useLayoutEffect(() => applyTheme(document.documentElement, theme), [theme]);
+
   // Pending changes never outlive the member they belong to.
   const memberKey = confirmed.members.map((m) => m.id).join("\u0000");
   useEffect(() => {
@@ -183,6 +190,7 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
 
   return (
     <div className={styles.shell}>
+      {theme && <FactionBackdrop factionId={theme.id} />}
       <Header
         warband={staged}
         rules={rules}

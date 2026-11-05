@@ -30,7 +30,7 @@
   cursor: pointer;
 }
 .error {
-  color: var(--blood);
+  color: var(--blood-ink);
 }
 .preview {
   display: flex;
