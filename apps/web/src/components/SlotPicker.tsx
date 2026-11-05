@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { hiddenText, priceText } from "../roster/select.js";
-import { ZONE_LABELS, type KitEntry, type PickerListing, type PickerRow, type Zone } from "../roster/slots.js";
+import { unfitLines, ZONE_LABELS, type KitEntry, type PickerListing, type PickerRow, type Zone } from "../roster/slots.js";
 import styles from "./SlotPicker.module.css";
 
 interface Props {
@@ -117,6 +117,11 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
           </section>
         ))
       )}
+      {unfitLines(listing.unfit).map((line) => (
+        <p key={line} className="quiet">
+          {line}
+        </p>
+      ))}
       {listing.uncheckable > 0 && <p className="quiet">{hiddenText(listing.uncheckable)}</p>}
     </div>
   );

@@ -1,6 +1,7 @@
 import {
   accessFor,
   checkBattlekit,
+  type BattlekitErrorCode,
   classifyItem,
   hasKeyword,
   normaliseName,
@@ -224,7 +225,35 @@ export interface PickerListing {
   rows: PickerRow[];
   /** Bayonets that can be fixed to a Ranged Weapon the model carries; picked without replacing anything. */
   attachments: PickerRow[];
+  /** Rows of this zone hidden because their gate names a campaign selection the data cannot count. */
   uncheckable: number;
+  /** Rows of this zone the kit cannot take, by the battlekit problem the engine would raise. */
+  unfit: Partial<Record<BattlekitErrorCode, number>>;
+}
+
+const UNFIT_WORDS: Record<BattlekitErrorCode, { one: string; many: string }> = {
+  "battlekit-hands": { one: "needs a free hand", many: "need a free hand" },
+  "battlekit-ranged": { one: "needs a free hand", many: "need a free hand" },
+  "battlekit-melee": { one: "needs a free hand", many: "need a free hand" },
+  "battlekit-armour": { one: "would be a second suit of armour", many: "would be a second suit of armour" },
+  "battlekit-shield": { one: "would be a second shield", many: "would be a second shield" },
+  "battlekit-headgear": { one: "would be a second piece of headgear", many: "would be a second piece of headgear" },
+  "battlekit-grenade": { one: "is another kind of grenade; one kind per model", many: "are other kinds of grenade; one kind per model" },
+  "battlekit-heavy": { one: "would be a second HEAVY item", many: "would be a second HEAVY item" },
+  "battlekit-duplicate": { one: "is already carried", many: "are already carried" },
+  "bayonet-lug": { one: "needs a ranged weapon with a bayonet lug", many: "need a ranged weapon with a bayonet lug" },
+};
+
+/** One quiet line per reason, in plain words: "2 items need a free hand". */
+export function unfitLines(unfit: PickerListing["unfit"]): string[] {
+  const lines: string[] = [];
+  for (const code of Object.keys(UNFIT_WORDS) as BattlekitErrorCode[]) {
+    const n = unfit[code];
+    if (!n) continue;
+    const words = UNFIT_WORDS[code];
+    lines.push(n === 1 ? `1 item ${words.one}` : `${n} items ${words.many}`);
+  }
+  return lines;
 }
 
 function toCarried(ids: string[], unit: RosterUnit, data: RulesData): CarriedItem[] {
@@ -270,10 +299,17 @@ export function pickerRows(
   const listing = armouryGroups(member, unit, warband, data, ctx);
   const baseIds = replacing ? withoutLast(member.equipmentItemIds, replacing) : member.equipmentItemIds;
   const before = problemCounts(unit, member.equipmentItemIds, data);
-  const fits = (ids: string[], itemId: string) => {
+  const unfit: PickerListing["unfit"] = {};
+  // The first battlekit problem adding the item would raise that the kit does not already have; undefined when it fits.
+  const blocker = (ids: string[], itemId: string): BattlekitErrorCode | undefined => {
     const after = problemCounts(unit, [...ids, itemId], data);
-    for (const [code, n] of after) if (n > (before.get(code) ?? 0)) return false;
-    return true;
+    for (const [code, n] of after) if (n > (before.get(code) ?? 0)) return code as BattlekitErrorCode;
+    return undefined;
+  };
+  const offer = (list: PickerRow[], ids: string[], row: PickerRow) => {
+    const code = blocker(ids, row.item.id);
+    if (code) unfit[code] = (unfit[code] ?? 0) + 1;
+    else list.push(row);
   };
   const rows: PickerRow[] = [];
   const attachments: PickerRow[] = [];
@@ -286,12 +322,10 @@ export function pickerRows(
       const warbandCount = ctx.count(row.item.name) ?? 0;
       if (warbandMax !== null && warbandCount >= warbandMax) continue;
       const pickerRow: PickerRow = { ...row, zone, classified, warbandCount, warbandMax };
-      if (classified.bayonet) {
-        if (fits(member.equipmentItemIds, row.item.id)) attachments.push(pickerRow);
-      } else if (fits(baseIds, row.item.id)) {
-        rows.push(pickerRow);
-      }
+      if (classified.bayonet) offer(attachments, member.equipmentItemIds, pickerRow);
+      else offer(rows, baseIds, pickerRow);
     }
   }
-  return { rows, attachments, uncheckable: listing.uncheckable };
+  const uncheckable = listing.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access)) === zone).length;
+  return { rows, attachments, uncheckable, unfit };
 }

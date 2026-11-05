@@ -99,9 +99,16 @@ export interface AccessGroup {
   rows: AccessRow[];
 }
 
+export interface HiddenRow {
+  access: RosterAccess;
+  item: EquipmentItem;
+}
+
 export interface ArmouryListing {
   groups: AccessGroup[];
   uncheckable: number;
+  /** The rows behind the `uncheckable` count. */
+  uncheckableRows: HiddenRow[];
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -141,12 +148,12 @@ function groupRank(group: string): number {
 export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): ArmouryListing {
   const model = { member, unit };
   const byGroup = new Map<string, AccessRow[]>();
-  let uncheckable = 0;
+  const uncheckableRows: HiddenRow[] = [];
   for (const access of unit.equipmentAccess) {
     const item = data.equipmentById.get(access.itemId);
     if (!item) continue;
     const status = gateStatus(evaluateGates(access.onlyWith, access.onlyWithout, warband, data, ctx, model));
-    if (status === "uncheckable") uncheckable += 1;
+    if (status === "uncheckable") uncheckableRows.push({ access, item });
     if (status !== "open") continue;
     const count = member.equipmentItemIds.filter((id) => id === access.itemId).length;
     const max = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx, item.name).value;
@@ -165,7 +172,7 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
   const groups = [...byGroup]
     .map(([group, rows]) => ({ group, label: groupLabel(group), rows }))
     .sort((a, b) => groupRank(a.group) - groupRank(b.group) || a.group.localeCompare(b.group));
-  return { groups, uncheckable };
+  return { groups, uncheckable: uncheckableRows.length, uncheckableRows };
 }
 
 export interface UpgradeRow {

@@ -1,8 +1,9 @@
-import { accessFor, classifyItem, limitContext, loadRulesData, type RulesData, type Warband, type WarbandMember } from "@tc/rules";
+import { accessFor, classifyItem, evaluateGates, limitContext, loadRulesData, type RulesData, type Warband, type WarbandMember } from "@tc/rules";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createWarband, rosterReducer } from "./reducer.js";
-import { kitEntries, layoutFigure, pickerRows, zoneOf, type FigureView, type SlotId } from "./slots.js";
+import { kitEntries, layoutFigure, pickerRows, unfitLines, zoneOf, type FigureView, type SlotId } from "./slots.js";
+import { armouryGroups, gateStatus } from "./select.js";
 import type { PendingMember } from "./staging.js";
 
 let data: RulesData;
@@ -183,6 +184,55 @@ describe("pickerRows", () => {
     const row = picks("inventory", room, 3).rows.find((r) => r.item.name === "Mountaineer Kit")!;
     expect(row).toMatchObject({ warbandCount: 3, warbandMax: 4 });
     expect(picks("inventory", room, 3).uncheckable).toBeGreaterThanOrEqual(0);
+  });
+
+  it("tells items the kit cannot take apart from items hidden by campaign rules, per zone", () => {
+    const lieutenant = warbandWith("new-antioch", [["new-antioch/lieutenant", ["automatic-shotgun", "trench-shield"]]]);
+    const offhand = picks("offhand", lieutenant);
+    expect(offhand.rows.map((r) => r.item.name)).not.toContain("Musical Instrument");
+    expect(offhand.rows.map((r) => r.item.name)).not.toContain("Troop Flag");
+    expect(offhand.unfit).toEqual({ "battlekit-hands": 2 });
+    // The campaign line counts only this zone's uncountable gates, not the whole armoury's.
+    const m = lieutenant.members[0]!;
+    const u = data.unitsById.get(m.unitId)!;
+    const whole = armouryGroups(m, u, lieutenant, data, limitContext(lieutenant, data));
+    const zoneCount = whole.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access)) === "offhand").length;
+    expect(offhand.uncheckable).toBe(zoneCount);
+    expect(whole.uncheckable).toBeGreaterThan(zoneCount);
+    expect(picks("inventory", lieutenant).uncheckable + offhand.uncheckable).toBeLessThanOrEqual(whole.uncheckable);
+    const rowsGated = u.equipmentAccess.filter((a) => gateStatus(evaluateGates(a.onlyWith, a.onlyWithout, lieutenant, data, limitContext(lieutenant, data), { member: m, unit: u })) === "uncheckable");
+    expect(whole.uncheckable).toBe(rowsGated.length);
+  });
+
+  it("names the battlekit reason: armour, grenade kind, HEAVY, bayonet lug", () => {
+    const armoured = warbandWith("new-antioch", [["new-antioch/lieutenant", ["standard-armour"]]]);
+    const torso = picks("torso", armoured);
+    expect(torso.rows).toEqual([]);
+    expect(torso.unfit["battlekit-armour"]).toBeGreaterThanOrEqual(1);
+    const grenadier = warbandWith("new-antioch", [["new-antioch/yeoman", ["frag-grenades"]]]);
+    const pouch = picks("grenade", grenadier);
+    expect(pouch.rows).toEqual([]);
+    expect(pouch.unfit["battlekit-grenade"]).toBeGreaterThanOrEqual(1);
+    const gunner = warbandWith("new-antioch", [["new-antioch/yeoman", ["machine-gun"]]]);
+    const melee = picks("melee", gunner);
+    expect(melee.rows.map((r) => r.item.name)).toContain("Sword/Axe");
+    expect(melee.rows.map((r) => r.item.name)).not.toContain("Great Sword/Axe");
+    expect(melee.unfit["battlekit-heavy"]).toBeGreaterThanOrEqual(1);
+    const unarmed = warbandWith("new-antioch", [["new-antioch/yeoman", []]]);
+    const ranged = picks("ranged", unarmed);
+    expect(ranged.attachments).toEqual([]);
+    expect(ranged.unfit).toEqual({ "bayonet-lug": 1 });
+    expect(picks("head", unarmed).unfit).toEqual({});
+  });
+
+  it("words each reason for people", () => {
+    expect(unfitLines({ "battlekit-hands": 2, "battlekit-heavy": 1 })).toEqual(["2 items need a free hand", "1 item would be a second HEAVY item"]);
+    expect(unfitLines({ "battlekit-grenade": 1, "bayonet-lug": 2, "battlekit-armour": 3 })).toEqual([
+      "3 items would be a second suit of armour",
+      "1 item is another kind of grenade; one kind per model",
+      "2 items need a ranged weapon with a bayonet lug",
+    ]);
+    expect(unfitLines({})).toEqual([]);
   });
 
   it("keeps the TC-010b availability rule: variant-locked and uncountable rows never appear", () => {
