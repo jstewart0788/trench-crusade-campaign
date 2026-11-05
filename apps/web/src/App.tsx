@@ -1,7 +1,10 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import { BuilderPage } from "./pages/BuilderPage.js";
+import { ArmouryScreen } from "./pages/ArmouryScreen.js";
+import { BarracksScreen } from "./pages/BarracksScreen.js";
 import { HomePage } from "./pages/HomePage.js";
 import { NewPage } from "./pages/NewPage.js";
+import { WarbandLayout } from "./pages/WarbandLayout.js";
+import { WarbandScreen } from "./pages/WarbandScreen.js";
 import styles from "./App.module.css";
 
 export function App() {
@@ -23,7 +26,11 @@ export function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/new" element={<NewPage />} />
-            <Route path="/w/:code" element={<BuilderPage />} />
+            <Route path="/w/:code" element={<WarbandLayout />}>
+              <Route index element={<WarbandScreen />} />
+              <Route path="barracks" element={<BarracksScreen />} />
+              <Route path="armoury" element={<ArmouryScreen />} />
+            </Route>
             <Route path="*" element={<p className="muted">Nothing here.</p>} />
           </Routes>
         </main>

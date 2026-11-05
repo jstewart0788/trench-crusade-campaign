@@ -1,36 +1,31 @@
 .list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 .empty {
   color: var(--ink-muted);
 }
-.card {
+.row {
   background: var(--bg-raised);
   border: 1px solid var(--line);
-  border-left: 3px solid var(--line);
   border-radius: 4px;
-  padding: 0.6rem 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  cursor: pointer;
-}
-.card:hover {
-  border-color: var(--line-strong);
-}
-.selected {
-  border-left-color: var(--brass);
-  background: #221e17;
-}
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title cost"
+    "name name"
+    "kit kit"
+    "actions actions";
+  gap: 0.3rem 0.75rem;
+  align-items: center;
 }
 .title {
+  grid-area: title;
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
@@ -54,52 +49,38 @@
   color: var(--blood);
 }
 .cost {
+  grid-area: cost;
   font-family: var(--font-mono);
   color: var(--ink-muted);
   white-space: nowrap;
 }
 .nameInput {
+  grid-area: name;
   background: transparent;
   border: none;
   border-bottom: 1px dotted var(--line-strong);
   border-radius: 0;
   padding: 0.1rem 0;
   font-size: 0.9rem;
+  max-width: 22rem;
 }
 .nameInput:focus {
   outline: none;
   border-bottom-color: var(--brass);
 }
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
+.kit {
+  grid-area: kit;
   font-size: 0.85rem;
-}
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: var(--bg-sunken);
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  padding: 0.05rem 0.2rem 0.05rem 0.45rem;
-}
-.upgradeChip {
-  border-color: var(--brass-dim);
-}
-.chipRemove {
-  background: none;
-  border: none;
-  padding: 0 0.2rem;
-  color: var(--ink-muted);
-  line-height: 1;
-}
-.chipRemove:hover {
-  color: var(--blood);
+  color: var(--ink);
 }
 .actions {
+  grid-area: actions;
   display: flex;
   gap: 0.4rem;
   justify-content: flex-end;
+  align-items: center;
+}
+.equip {
+  margin-right: auto;
+  font-size: 0.9rem;
 }

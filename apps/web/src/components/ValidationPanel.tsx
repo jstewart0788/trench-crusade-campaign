@@ -1,4 +1,5 @@
 import { findUnit, type RulesData, type ValidationResult, type Warband } from "@tc/rules/browser";
+import { Link } from "react-router-dom";
 import { memberLabel } from "../roster/select.js";
 import styles from "./ValidationPanel.module.css";
 
@@ -6,10 +7,11 @@ interface Props {
   warband: Warband;
   rules: RulesData;
   validation: ValidationResult;
-  onSelect: (memberId: string) => void;
+  /** Where a member's name should take the reader, e.g. the Armoury filtered to that member. */
+  linkTo: (memberId: string) => string;
 }
 
-export function ValidationPanel({ warband, rules, validation, onSelect }: Props) {
+export function ValidationPanel({ warband, rules, validation, linkTo }: Props) {
   if (validation.ok && validation.warnings.length === 0) {
     return <div className={`panel ${styles.ok}`}>Rulebook-legal: nothing to fix.</div>;
   }
@@ -27,9 +29,9 @@ export function ValidationPanel({ warband, rules, validation, onSelect }: Props)
       <li key={key} className={kind}>
         {label &&
           (memberId ? (
-            <button className={styles.link} onClick={() => onSelect(memberId)}>
+            <Link className={styles.link} to={linkTo(memberId)}>
               {label}
-            </button>
+            </Link>
           ) : (
             <span className={styles.subject}>{label}</span>
           ))}

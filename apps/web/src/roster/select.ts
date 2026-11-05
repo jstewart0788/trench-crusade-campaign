@@ -6,7 +6,6 @@ import {
   unitLimits,
   upgradeFor,
   type EquipmentItem,
-  type GateRef,
   type GateResult,
   type LimitContext,
   type LineCost,
@@ -18,41 +17,24 @@ import {
   type WarbandMember,
 } from "@tc/rules/browser";
 
-// Read-only views over the roster for the builder's pickers. Every number
-// here comes from the same engine calls the validator makes, so what the
-// picker shows is what validation will say.
+// Read-only views over the roster for the Barracks and the Armoury. Every
+// number comes from the engine calls the validator makes, so what a list
+// shows is what validation will say.
 
-export interface GateView {
-  /** Locked out by the warband's variant: not shown at all. */
-  hidden: boolean;
-  /** Waiting on something else on the roster or this model: shown, not selectable. */
-  disabled: boolean;
-  notes: string[];
-}
+export type GateStatus = "open" | "closed" | "uncheckable";
 
-export function gateLabel(gate: string, data: RulesData): string {
-  const variant = data.variantsById.get(gate);
-  if (variant) return variant.name;
-  const scoped = /^(item|upgrade):(.+)$/.exec(gate);
-  if (scoped) return scoped[1] === "item" ? (data.equipmentById.get(scoped[2]!)?.name ?? scoped[2]!) : scoped[2]!;
-  return gate.replace(/\s*\[[^\]]*\]\s*$/, "");
-}
-
-export function gateView(result: GateResult, data: RulesData): GateView {
-  const labels = (refs: GateRef[], list: GateRef["list"]) => refs.filter((r) => r.list === list).map((r) => gateLabel(r.gate, data));
-  const notes: string[] = [];
-  const needs = labels(result.unresolved, "onlyWith");
-  const notWith = labels(result.unresolved, "onlyWithout");
-  if (needs.length) notes.push(`needs ${needs.join(" or ")} — not checked here`);
-  if (notWith.length) notes.push(`not with ${notWith.join(", ")} — not checked here`);
-  if (result.open) return { hidden: false, disabled: false, notes };
-  if (result.blockedBy.every((r) => data.variantsById.has(r.gate))) return { hidden: true, disabled: true, notes };
-  const blocked: string[] = [];
-  const blockedNeeds = labels(result.blockedBy, "onlyWith");
-  const blockedNotWith = labels(result.blockedBy, "onlyWithout");
-  if (blockedNeeds.length) blocked.push(`needs ${blockedNeeds.join(" or ")}`);
-  if (blockedNotWith.length) blocked.push(`not with ${blockedNotWith.join(", ")}`);
-  return { hidden: false, disabled: true, notes: [...blocked, ...notes] };
+/**
+ * What a list does with a gated row. Closed rows (wrong variant, something
+ * missing from the roster or from this model) are left out. Rows that need a
+ * campaign selection the data cannot count (Book of Golems, Remnants of
+ * Byzantium…) are left out too and only tallied, so a list can say how many
+ * it is not showing. An exclusion the data cannot count is assumed not to
+ * apply, which is what the validator assumes.
+ */
+export function gateStatus(result: GateResult): GateStatus {
+  if (!result.open) return "closed";
+  if (result.unresolved.some((r) => r.list === "onlyWith")) return "uncheckable";
+  return "open";
 }
 
 export interface UnitRow {
@@ -61,25 +43,32 @@ export interface UnitRow {
   min: number | null;
   max: number | null;
   atMax: boolean;
-  gate: GateView;
 }
 
-export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): UnitRow[] {
+export interface UnitListing {
+  rows: UnitRow[];
+  /** Units left out because their gate names something the data cannot count. */
+  uncheckable: number;
+}
+
+export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): UnitListing {
   const counts = new Map<string, number>();
   for (const m of warband.members) {
     const unit = findUnit(data, warband.factionId, m.unitId);
     if (unit) counts.set(unit.id, (counts.get(unit.id) ?? 0) + 1);
   }
   const rows: UnitRow[] = [];
+  let uncheckable = 0;
   for (const unit of data.unitsByFaction.get(warband.factionId) ?? []) {
     if (unit.kind === "fireteam") continue;
-    const gate = gateView(evaluateGates(unit.onlyWith, unit.onlyWithout, warband, data, ctx), data);
-    if (gate.hidden) continue;
+    const status = gateStatus(evaluateGates(unit.onlyWith, unit.onlyWithout, warband, data, ctx));
+    if (status === "uncheckable") uncheckable += 1;
+    if (status !== "open") continue;
     const { min, max } = unitLimits(unit, ctx);
     const count = counts.get(unit.id) ?? 0;
-    rows.push({ unit, count, min, max, atMax: max !== null && count >= max, gate });
+    rows.push({ unit, count, min, max, atMax: max !== null && count >= max });
   }
-  return rows;
+  return { rows, uncheckable };
 }
 
 export function limitText(min: number | null, max: number | null): string {
@@ -90,7 +79,9 @@ export function limitText(min: number | null, max: number | null): string {
 
 /** Items the unit arrives with (`fixed` rows); added to a new member automatically. */
 export function defaultKit(unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): string[] {
-  return unit.equipmentAccess.filter((a) => a.fixed && evaluateGates(a.onlyWith, a.onlyWithout, warband, data, ctx).open).map((a) => a.itemId);
+  return unit.equipmentAccess
+    .filter((a) => a.fixed && gateStatus(evaluateGates(a.onlyWith, a.onlyWithout, warband, data, ctx)) === "open")
+    .map((a) => a.itemId);
 }
 
 export interface AccessRow {
@@ -100,13 +91,17 @@ export interface AccessRow {
   count: number;
   max: number | null;
   atMax: boolean;
-  gate: GateView;
 }
 
 export interface AccessGroup {
   group: string;
   label: string;
   rows: AccessRow[];
+}
+
+export interface ArmouryListing {
+  groups: AccessGroup[];
+  uncheckable: number;
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -129,7 +124,7 @@ const GROUP_LABELS: Record<string, string> = {
   "special-ammunitions": "Special ammunition",
   loadout: "Loadout",
   direct: "Built in",
-  upgrades: "Upgrades",
+  upgrades: "Upgrade items",
   enhancement: "Enhancements",
 };
 const GROUP_ORDER = Object.keys(GROUP_LABELS);
@@ -143,14 +138,16 @@ function groupRank(group: string): number {
   return at === -1 ? GROUP_ORDER.length : at;
 }
 
-export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): AccessGroup[] {
+export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): ArmouryListing {
   const model = { member, unit };
   const byGroup = new Map<string, AccessRow[]>();
+  let uncheckable = 0;
   for (const access of unit.equipmentAccess) {
     const item = data.equipmentById.get(access.itemId);
     if (!item) continue;
-    const gate = gateView(evaluateGates(access.onlyWith, access.onlyWithout, warband, data, ctx, model), data);
-    if (gate.hidden) continue;
+    const status = gateStatus(evaluateGates(access.onlyWith, access.onlyWithout, warband, data, ctx, model));
+    if (status === "uncheckable") uncheckable += 1;
+    if (status !== "open") continue;
     const count = member.equipmentItemIds.filter((id) => id === access.itemId).length;
     const max = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx, item.name).value;
     const row: AccessRow = {
@@ -160,15 +157,15 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
       count,
       max,
       atMax: max !== null && count >= max,
-      gate,
     };
     const rows = byGroup.get(access.group) ?? [];
     rows.push(row);
     byGroup.set(access.group, rows);
   }
-  return [...byGroup]
+  const groups = [...byGroup]
     .map(([group, rows]) => ({ group, label: groupLabel(group), rows }))
     .sort((a, b) => groupRank(a.group) - groupRank(b.group) || a.group.localeCompare(b.group));
+  return { groups, uncheckable };
 }
 
 export interface UpgradeRow {
@@ -177,15 +174,21 @@ export interface UpgradeRow {
   count: number;
   max: number;
   atMax: boolean;
-  gate: GateView;
 }
 
-export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): UpgradeRow[] {
+export interface UpgradeListing {
+  rows: UpgradeRow[];
+  uncheckable: number;
+}
+
+export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): UpgradeListing {
   const model = { member, unit };
   const rows: UpgradeRow[] = [];
+  let uncheckable = 0;
   for (const upgrade of unit.upgrades ?? []) {
-    const gate = gateView(evaluateGates(upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, model), data);
-    if (gate.hidden) continue;
+    const status = gateStatus(evaluateGates(upgrade.onlyWith, upgrade.onlyWithout, warband, data, ctx, model));
+    if (status === "uncheckable") uncheckable += 1;
+    if (status !== "open") continue;
     const count = (member.upgradeIds ?? []).filter((id) => upgradeFor(unit, id)?.name === upgrade.name).length;
     // Warbands p14: once per model unless the entry says otherwise.
     const max = resolveLimit(upgrade.limitsText, "max", "model", upgrade.max ?? null, ctx, upgrade.name).value ?? 1;
@@ -195,14 +198,19 @@ export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Wa
       count,
       max,
       atMax: count >= max,
-      gate,
     });
   }
-  return rows;
+  return { rows, uncheckable };
 }
 
 export function memberLabel(member: WarbandMember, unit: RosterUnit | undefined): string {
   return member.name ?? unit?.name ?? member.unitId;
+}
+
+/** "Captain Vane (Lieutenant)" when the member is named, else the unit name. */
+export function memberTitle(member: WarbandMember, unit: RosterUnit | undefined): string {
+  const unitName = unit?.name ?? member.unitId;
+  return member.name ? `${member.name} (${unitName})` : unitName;
 }
 
 export function priceText(cost: { ducats: number; glory: number }): string {
@@ -210,4 +218,8 @@ export function priceText(cost: { ducats: number; glory: number }): string {
   if (cost.ducats || !cost.glory) parts.push(`${cost.ducats}d`);
   if (cost.glory) parts.push(`${cost.glory}g`);
   return parts.join(" + ");
+}
+
+export function hiddenText(n: number): string {
+  return `${n} ${n === 1 ? "option" : "options"} hidden by campaign rules we can't check yet`;
 }

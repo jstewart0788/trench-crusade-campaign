@@ -33,7 +33,7 @@ export function NewPage() {
     if (!faction) return;
     const warband = createWarband({ name: name.trim(), factionId: faction.id, variantId: variantId || undefined, patronId: patronId || undefined, gameNumber });
     saveDraft(warband);
-    navigate("/w/draft");
+    navigate("/w/draft/barracks");
   }
 
   return (

@@ -1,21 +1,14 @@
-import { findUnit, limitContext, validateWarband, warbandCost, warbandThreshold, type RulesData, type Warband } from "@tc/rules/browser";
+import { limitContext, validateWarband, warbandCost, warbandThreshold, type RulesData, type Warband } from "@tc/rules/browser";
 import { useEffect, useMemo, useReducer, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api, ApiRequestError, type SavedWarband } from "../api.js";
-import { Armoury } from "../components/Armoury.js";
 import { Header } from "../components/Header.js";
-import { RosterList } from "../components/RosterList.js";
-import { SavePanel } from "../components/SavePanel.js";
-import { UnitPicker } from "../components/UnitPicker.js";
-import { ValidationPanel } from "../components/ValidationPanel.js";
-import { nextMemberId, rosterReducer } from "../roster/reducer.js";
-import { defaultKit } from "../roster/select.js";
+import { Tabs } from "../components/Tabs.js";
+import { rosterReducer } from "../roster/reducer.js";
 import { useRules } from "../rules.js";
 import { clearDraft, loadDraft, rememberSaved, saveDraft } from "../storage.js";
-import styles from "./BuilderPage.module.css";
-
-/** The :code that means "the unsaved draft in this browser". Real codes are six uppercase characters, so they never collide. */
-export const DRAFT_CODE = "draft";
+import { DRAFT_CODE, warbandBase, type WarbandContext } from "./warbandContext.js";
+import styles from "./WarbandLayout.module.css";
 
 type Source =
   | { kind: "loading"; code: string }
@@ -23,9 +16,11 @@ type Source =
   | { kind: "missing"; code: string }
   | { kind: "error"; message: string };
 
-export function BuilderPage() {
+/** Resolves the roster behind /w/:code (the draft, or a fetch) and hosts the Warband, Barracks and Armoury screens. */
+export function WarbandLayout() {
   const { code: param = DRAFT_CODE } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { rules, error } = useRules();
   const [source, setSource] = useState<Source>({ kind: "loading", code: param });
 
@@ -66,29 +61,31 @@ export function BuilderPage() {
   }
 
   return (
-    <Builder
+    <Shell
       key={source.code ?? DRAFT_CODE}
       rules={rules}
       initial={source.warband}
       code={source.code}
       onSaved={(saved) => {
         setSource({ kind: "ready", code: saved.code, warband: saved.warband });
-        if (!source.code) navigate(`/w/${saved.code}`, { replace: true });
+        if (!source.code) {
+          const path = location.pathname.replace(/^\/w\/draft(?=\/|$)/, `/w/${saved.code}`);
+          navigate(path + location.search, { replace: true });
+        }
       }}
     />
   );
 }
 
-interface BuilderProps {
+interface ShellProps {
   rules: RulesData;
   initial: Warband;
   code?: string;
   onSaved: (saved: SavedWarband) => void;
 }
 
-function Builder({ rules, initial, code, onSaved }: BuilderProps) {
+function Shell({ rules, initial, code, onSaved }: ShellProps) {
   const [warband, dispatch] = useReducer(rosterReducer, initial);
-  const [selectedId, setSelectedId] = useState<string | undefined>(initial.members[0]?.id);
   const [save, setSave] = useState<{ busy: boolean; error?: string; snapshot?: string }>({ busy: false, snapshot: code ? JSON.stringify(initial) : undefined });
 
   const ctx = useMemo(() => limitContext(warband, rules), [warband, rules]);
@@ -100,8 +97,6 @@ function Builder({ rules, initial, code, onSaved }: BuilderProps) {
     if (!code) saveDraft(warband);
   }, [warband, code]);
 
-  const selected = warband.members.find((m) => m.id === selectedId) ?? warband.members[0];
-  const selectedUnit = selected ? findUnit(rules, warband.factionId, selected.unitId) : undefined;
   const dirty = JSON.stringify(warband) !== save.snapshot;
 
   async function persist() {
@@ -122,41 +117,27 @@ function Builder({ rules, initial, code, onSaved }: BuilderProps) {
     }
   }
 
+  const base = warbandBase(code);
+  const context: WarbandContext = { rules, warband, code, base, dispatch, ctx, validation, cost, threshold };
+
   return (
-    <div className={styles.builder}>
-      <Header warband={warband} rules={rules} cost={cost} threshold={threshold} validation={validation} dispatch={dispatch} />
-      <SavePanel code={code} dirty={dirty} busy={save.busy} error={save.error} onSave={persist} />
-      <ValidationPanel warband={warband} rules={rules} validation={validation} onSelect={setSelectedId} />
-      <div className={styles.columns}>
-        <section className={styles.roster}>
-          <RosterList
-            warband={warband}
-            rules={rules}
-            cost={cost}
-            validation={validation}
-            selectedId={selected?.id}
-            onSelect={setSelectedId}
-            dispatch={dispatch}
-          />
-        </section>
-        <section className={styles.pickers}>
-          <UnitPicker
-            warband={warband}
-            rules={rules}
-            ctx={ctx}
-            onAdd={(unit) => {
-              const memberId = nextMemberId(warband.members);
-              dispatch({ type: "add-member", unitId: unit.id, equipmentItemIds: defaultKit(unit, warband, rules, ctx) });
-              setSelectedId(memberId);
-            }}
-          />
-          {selected && selectedUnit ? (
-            <Armoury warband={warband} rules={rules} ctx={ctx} member={selected} unit={selectedUnit} dispatch={dispatch} />
-          ) : (
-            <p className="muted">Add a model, then pick it on the left to equip it.</p>
-          )}
-        </section>
-      </div>
+    <div className={styles.shell}>
+      <Header
+        warband={warband}
+        rules={rules}
+        cost={cost}
+        threshold={threshold}
+        validation={validation}
+        code={code}
+        base={base}
+        dirty={dirty}
+        busy={save.busy}
+        error={save.error}
+        onSave={persist}
+        dispatch={dispatch}
+      />
+      <Tabs base={base} />
+      <Outlet context={context} />
     </div>
   );
 }

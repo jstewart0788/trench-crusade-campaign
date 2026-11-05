@@ -129,3 +129,8 @@ label > select {
 .warning {
   color: var(--amber);
 }
+.quiet {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  margin: 0.6rem 0 0;
+}

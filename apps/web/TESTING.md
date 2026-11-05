@@ -1,8 +1,8 @@
 # Roster tool: manual click-through
 
-The API and reducer are covered by vitest; this is the browser pass that nothing automated
-runs. Do it in Chrome with DevTools open on the **Console** and **Network** tabs the whole way
-through: a page that looks right while a request 500s is a fail.
+The API, the reducer and the availability filtering are covered by vitest; this is the browser
+pass that nothing automated runs. Do it in Chrome with DevTools open on the **Console** and
+**Network** tabs the whole way through: a page that looks right while a request 500s is a fail.
 
 ## 0. Start
 
@@ -20,102 +20,114 @@ pnpm --filter @tc/web dev`.
 The api line should print `rules: .../data/rules (103 units, 213 items)` and
 `db: .../apps/api/data/roster.sqlite`. Open http://localhost:5173.
 
-- Network: `GET /api/rules` is 200, `content-encoding: gzip`, about 300 KB on the wire.
+- Network: `GET /api/rules` is 200, `content-encoding: gzip`, about 200 KB on the wire.
 - Console: no red lines. (A Vite "new dependencies optimized" reload is fine.)
 
 ## 1. Home, empty
 
-- Heading "Warbands", button "New warband", text "No warbands saved from this browser yet",
-  an "Open by code" box. No draft banner.
+- Heading "Warbands", button "New warband", "No warbands saved from this browser yet", an
+  "Open by code" box. No draft banner.
 
 ## 2. New warband
 
-- Click **New warband**. Name "The Fifth Lantern". Faction: the six factions are listed.
-  Pick **New Antioch**: the Variant select fills with six variants; Patron offers Temporal
-  Lord, Warrior Saint, Learned Saint and nothing else. Pick Court of the Seven-Headed Serpent
-  instead: Variant reads "No variants" and is disabled; Patron offers Infernal Noble and
-  Mammon. Back to **New Antioch**, Variant none, Patron **Temporal Lord**, Game 1.
-- **Start building**. URL is `/w/draft`.
+- **New warband**. Name "The Fifth Lantern". Faction: six listed. Pick **New Antioch**: the
+  Variant select fills with six variants; Patron offers Temporal Lord, Warrior Saint, Learned
+  Saint and nothing else. Pick Court of the Seven-Headed Serpent: Variant reads "No variants"
+  and is disabled; Patron offers Infernal Noble and Mammon. Back to **New Antioch**, Variant
+  none, Patron **Temporal Lord**, Game 1.
+- **Start building**. URL is `/w/draft/barracks`.
 
-## 3. Builder, empty roster
+## 3. The shell (every warband screen)
 
-- Header: name field shows the name, "NEW ANTIOCH" under it, Variant/Patron/Game/Glory
-  controls, totals **0 / 700 ducats**, **0 glory of 0**, status **1 error**.
-- Validation panel lists exactly: `Lieutenant 0 x Lieutenant; at least 1 required`.
-- Save panel says it is an unsaved draft; button reads "Save and get code".
-- Add-units list: Lieutenant shows "0 of 1", Yeoman "0 of any", Shocktrooper "0 of 0–5",
-  Crimson Communicant is **absent**, Homunculus is present with the amber note
-  "needs Book of Golems — not checked here", Trench Dog is greyed with "needs Dog Food" and
-  its Add button disabled.
+- Header: the name in brass as an editable field, "NEW ANTIOCH · TEMPORAL LORD · GAME 1"
+  under it, totals **0 / 700 ducats** and **0 glory of 0**, a red **1 error** badge, "Draft"
+  and a **Save and get code** button. Below it the tabs **Warband · Barracks · Armoury**;
+  Barracks is lit.
+- Edit the name in the header: the change shows on every screen (it is the one field that is
+  never locked).
 
-## 4. Build the starting warband (the API test fixture)
+## 4. Barracks
 
-- Add **Lieutenant**: status flips to **Legal**, panel reads "Rulebook-legal". Total 70.
-  The Lieutenant card is selected (brass left border) and the right side shows
-  "Equip Lieutenant" with a stat line `Mov 6"/Infantry · Rng +2 · Mel +2 · Arm 0 · 32mm`.
-  Lieutenant's Add button is now disabled ("1 of 1").
-- In the armoury: **+ Sword/Axe** (4d), **+ Pistol** (6d), **+ Standard Armour** (15d). The
-  card's chips and cost (95d) and the header total update on each click. Standard Armour
-  now reads "1/1" and its + is disabled.
-- Add **Yeoman**, equip **Bolt-Action Rifle** (5d) and **Bayonet** (2d). Click **Duplicate**
-  on the Yeoman card three times: four Yeomen, each 37d, each with its own chips.
-- Add **Shocktrooper**, equip **Submachine Gun** (30d, under "Shield combo").
-- Header: **318 / 700 ducats**, **Legal**. Six cards.
+- Left "Roster · 0 models": "No models yet. Recruit from the list on the right."
+- Right "Recruit": **Units** then **Mercenaries**. Lieutenant "0 of 1", Yeoman "0 of any",
+  Shocktrooper "0 of 0–5". **Not listed anywhere**: Crimson Communicant (Red Brigade only),
+  Homunculus (Book of Golems), Disciple of St. Roch (third-party mercenaries), Trench Dog (needs
+  Dog Food). No row carries "needs …" or "not checked" text. At the bottom of the panel one
+  quiet line: **"2 options hidden by campaign rules we can't check yet"**.
+- **Add** Lieutenant: a roster row appears (unit name, Elite tag, empty "Custom name" field,
+  "No equipment", 70d, **Equip** link, Duplicate, Remove). Header flips to **Legal**, 70 / 700.
+  Lieutenant now reads "1 of 1" and its Add is disabled.
+- Add Yeoman, then **Duplicate** the Yeoman three times: four Yeoman rows, 30d each. Add
+  Shocktrooper. Header 235 / 700.
+- Type a custom name on the first Yeoman with a space in it ("Old Tom"): the space is not
+  eaten; the row keeps "Yeoman" as its title.
+- **Remove** one Yeoman, then Add it back: the roster is six rows again.
 
-## 5. Live validation
+## 5. Armoury
 
-- On a Yeoman, add a second **Bolt-Action Rifle**: the panel shows `Yeoman Yeoman: one
-  2-Handed or two 1-Handed Ranged Weapons (has 2 x 2H, 0 x 1H)`, the card shows "1 issue",
-  and clicking the name in the panel selects that card. Remove one rifle with the chip's ×
-  or the armoury −: it clears.
-- Add **Machine Gun** (50d) to every Yeoman: total passes 700, the ducats figure turns red and
-  the panel reads `Warband costs ... ducats; Threshold Value is 700`. Remove them.
-- Rename a Yeoman "Old Tom" (type a space mid-name: it must not be eaten). The card title
-  stays "Yeoman", the panel uses "Old Tom" if it has an error for him.
+- Click **Equip** on the Lieutenant row: URL `/w/draft/armoury?member=m1`, Armoury tab lit,
+  the "Equipping" select shows "Lieutenant". Left panel: "Lieutenant", custom name field, stat
+  line `Mov 6"/Infantry · Rng +2 · Mel +2 · Arm 0 · 32mm`, "Carrying: Nothing yet", model total
+  70d.
+- Right panel groups in this order: Ranged 1-handed, Ranged 2-handed, Bayonets, Melee
+  1-handed, Melee 2-handed, Shield combo, Shields, Armour, Headgear, Grenades, Equipment, …
+  Every row shows a price; no row shows "needs …", "not with …" or "not checked". The panel
+  ends with a quiet "N options hidden by campaign rules we can't check yet" line.
+- **+ Sword/Axe** (4d), **+ Pistol** (6d), **+ Standard Armour** (15d): chips appear in the
+  left panel, model total 95d, header 260 / 700. Standard Armour shows "1/1" and its + is
+  disabled. Click the chip's × on Sword/Axe, then + again: back to 95d.
+- Same-model gate: Heavy Ballistic Shield is **absent** from Shields. **+ Machine Armour**
+  (Armour): Heavy Ballistic Shield now appears under Shields, and the header shows **1 error**
+  because two suits of armour are on. Remove Machine Armour with −: the shield row disappears
+  again and the error clears.
+- Change the "Equipping" select to a Yeoman: URL updates, the lists re-filter. **+ Bolt-Action
+  Rifle** (5d), **+ Bayonet** (2d). Add a second Bolt-Action Rifle: header shows **1 error**;
+  remove it with −.
+- Repeat rifle + bayonet on the other three Yeomen via the select; give the Shocktrooper a
+  **Submachine Gun** (30d, under Shield combo). Header: **318 / 700 ducats**, **Legal**.
 
-## 6. Variant and patron changes
+## 6. Warband screen
 
-- Variant **Eire Rangers**: Yeoman's Equipment group gains "Armour Piercing Bullets";
-  select a Yeoman with a rifle, the row is greyed with "not with Bolt-Action Rifle"; the
-  Yeoman upgrades gain "Carnyx". Lieutenant's abilities are not shown here (TTS export
-  carries them).
-- Variant **The Red Brigade**: "Crimson Communicant" appears in the unit list; Yeoman
-  upgrades gain "Blood Cloak" (5d); add it to one Yeoman, the chip is brass-bordered.
-- Variant **Papal States Intervention Force**: threshold reads **/ 500**, glory "of 11", the
-  Lieutenant minimum disappears from the panel if you remove him.
-- Back to Variant **None**: the Blood Cloak now errors (`Blood Cloak is only available with
-  new-antioch/the-red-brigade`); remove it.
-- Patron: switch between the three; no error either way. Game number 3: threshold 900.
-  Back to 1.
+- Click the **Warband** tab (or the Legal badge). Left "Campaign" panel: Name editable, then
+  locked facts: Faction New Antioch, Variant None, Patron Temporal Lord, Game 1, Ducats
+  "318 of 700", Glory "0 spent of 0", and the note that these are fixed at creation. There are
+  **no** selects or number inputs for faction, variant, patron or game.
+- Right "TTS import" panel: "Unsaved draft … Save (top right) to get a code".
+- "Roster · 6 models" with a "Recruit in the Barracks" link; each row has the custom-name
+  field (edit one here; it shows in the Barracks and the Armoury select), its kit in one line,
+  its cost and an **Equip** link that opens the Armoury filtered to it.
+- "Rulebook-legal: nothing to fix."
+- Make it illegal to see the list: Barracks → Add a second Lieutenant → Warband screen lists
+  `2 x Lieutenant; at most 1 per warband` and the badge reads 1 error. Remove him.
 
 ## 7. Save
 
-- **Save and get code**. Network: `POST /api/warbands` 201. The URL becomes `/w/XXXXXX`
-  (six characters, no 0/O/1/I), the Save panel shows the code large, "Copy TTS import code",
-  the URL `http://localhost:5173/api/tts/warband/XXXXXX` and "Saved".
-- **Copy TTS import code**: button reads "Copied"; paste somewhere to confirm.
-- Click the TTS URL: a JSON document with `"version": "tc-warband-export-v1"`, the code,
-  `"valid": true`, `"totals": {"ducats": 318, "glory": 0}` and six members whose `equipment`
-  names match the cards.
-- Change the name; Save panel shows "Unsaved changes"; **Save changes**: Network
-  `PUT /api/warbands/XXXXXX` 200, back to "Saved". Reload the page: the name sticks.
+- **Save and get code** in the header from any screen. Network: `POST /api/warbands` 201. The
+  URL becomes `/w/XXXXXX` plus the screen you were on (six characters, no 0/O/1/I); the header
+  shows the code in brass and "Saved". The Warband screen's TTS panel shows the code large,
+  **Copy TTS import code**, the URL `http://localhost:5173/api/tts/warband/XXXXXX`, Copy URL.
+- Copy the code: button reads "Copied"; paste somewhere to confirm.
+- Open the TTS URL: JSON with `"version": "tc-warband-export-v1"`, the code, `"valid": true`,
+  `"totals": {"ducats": 318, "glory": 0}` and six members whose equipment matches the rows.
+- Change the name; header shows "Unsaved changes"; **Save changes**: `PUT /api/warbands/XXXXXX`
+  200, back to "Saved". Reload: the name sticks and the Warband screen is the landing screen.
 
 ## 8. Home again
 
-- Click **Warbands**: the table lists the warband with faction, code, time. No draft banner
-  (saving cleared it). Open by code with the code in lowercase and with a dash in it: opens.
-- **Forget**: the row goes; the code still opens by URL (server keeps it).
-- `/w/ABCDEF` (any unused code): "No warband with code ABCDEF" with a link back.
+- **Warbands**: the table lists the warband with faction, code, time; no draft banner. Open by
+  code in lowercase with a dash: opens. **Forget** removes the row; the URL still opens it.
+- `/w/ABCDEF` (unused code): "No warband with code ABCDEF" with a link back.
 
 ## 9. Draft survives a reload
 
-- New warband, add a unit, reload `/w/draft`: the roster is still there. Home shows the
-  draft banner with "Resume". Save it, then the banner is gone.
+- New warband, Add a unit, reload `/w/draft/barracks`: the roster is still there, and
+  `/w/draft` and `/w/draft/armoury` show the same roster. Home shows the draft banner with
+  "Resume". Save it; the banner is gone.
 
 ## 10. Rules cache
 
-- Reload the builder: Network `GET /api/rules` is served from cache or returns 304 with the
-  same `etag` as the first load.
+- Reload any warband screen: `GET /api/rules` is served from cache or 304 with the same `etag`.
 
-Anything red in the console, any 4xx/5xx other than the deliberate 404 in step 8, or any
-figure that disagrees with this script is a defect: note the step and the exact text.
+Anything red in the console, any 4xx/5xx other than the deliberate 404 in step 8, any "needs",
+"not with" or "not checked" text on a Barracks or Armoury row, or any figure that disagrees
+with this script is a defect: note the step and the exact text.

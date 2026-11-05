@@ -22,13 +22,9 @@
   align-items: baseline;
 }
 .link {
-  background: none;
-  border: none;
-  padding: 0;
   color: inherit;
   font-weight: 600;
   text-decoration: underline dotted;
-  cursor: pointer;
 }
 .subject {
   font-weight: 600;
