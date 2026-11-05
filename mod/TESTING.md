@@ -29,32 +29,19 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 
 ## 2. Start menu (the object at x≈52 behind the Red side)
 
-Since TC-023s there is no setup flow. On load the Start Menu shows **one** button, the red
-`Initiative Phase / Next Phase` button (world x≈48.5). There is **no** GAME MODES header,
-no 1v1 / Solo / Combat Patrol / Onslaught / Colosseum / Boarding Action, no deployment
-picker, no Clear Table, no START GAME and no "Red player first" toggle. The mat stays at
-60" x 44". If any of those render, the build is stale.
+Since TC-023t the Start Menu draws **no** buttons (it only owns the table theme and terrain
+pass-through). No GAME MODES, deployment picker, Clear Table, START GAME, or Next Phase /
+Pass Turn button. The mat stays at 60" x 44". If any of those render, the build is stale.
 
-## 3. Turns and HUD
+## 3. HUD
 
-- No START GAME is needed: the HUD at the top right is live from load, with the Red row
-  highlighted and its die glyph (Initiative) lit. It has `?` help, clock toggle, `-`
-  minimalist; a ROUND badge; two rows (Blue, Red) each with Turn N, **three** phase glyphs
-  (die = Initiative, crossed swords = Activation, skull = Morale; hover for the tooltip),
-  the chess-clock readout and its +/-/play/pause controls; an `X` hide button. There is
-  **no** VP, CP, disposition badge, star/"Show scoring" button, or Scoreboard / Gain CP /
-  Use CP row. Clicking a glyph on the active row jumps to that phase and chat prints its
-  name; the on-table phase button cycles Initiative -> Activation -> Morale -> pass turn.
-  If the three glyphs render as boxes, the font lacks U+2684/U+2694/U+2620 - swap the
-  `text` attributes in `mod/ui/global.xml` for ones from the old strip (✴ ➡ ✜ render).
-- Click the ROUND badge or the on-table "Pass Turn" button: the turn flips, the Turn counter
-  tokens at x≈51 increment, chat prints `Round R, <Colour> Turn T` with **no** CP message.
-  On a fresh table Red's first turn reads Turn 0 (START GAME used to make it 1); left-click
-  the Red Turns token if that matters.
-- Round counter: when the Blue and Red turn counters both pass a value the Game Rounds token
-  increments and the ROUND badge follows.
-- Spectator (Grey) HUD: switch to Grey; the panel shows the same minus the pass/phase
-  buttons' effect.
+- Top right: the `?` help and `◴` clock-toggle buttons, two chess-clock rows (blue on top,
+  red below) each with play / pause, the readout and +/-, and the red `X` hide button.
+  There is **no** ROUND badge, no `Turn N` readout, no phase glyphs and no `-` minimalist
+  button. The turn and phase live on the Turn Tracker (step 9).
+- The clock toggle hides / shows both clock rows; `X` hides the panel; Show/Hide UI on the
+  dice tray or its hotkey brings it back.
+- Spectator (Grey) HUD: switch to Grey; the same panel.
 
 ## 4. Table theme
 
@@ -63,23 +50,20 @@ picker, no Clear Table, no START GAME and no "Red player first" toggle. The mat 
   swatch. Check it does not cover the Warband Importer (x=-22, z=0) or the Turn Tracker
   (x=-22, z=15); if it does, move the anchor `369707` in `mod/save.json`.
 
-## 5. Engine features that must still work (all unchanged from LCT)
+## 5. Engine features that must still work
 
-- **Dice mats** (red/blue boards either side of centre): spawn 1/2/3/4/5/10/25 dice, roll
-  all, select/delete by face, clear mat, d3, the "123" custom bubble button opens the
-  bubble-size overlay (type 12, OK: a 12" bubble appears on the selected model).
-- **Hotkeys** (Options > Game Keys): Save Position / Restore Position, Custom Bubble,
-  Coherency Check, Engagement Range, Roll All Dice, 1/2 inch gap arrangement, Clear
-  Bubbles/Lines/Mat, Show/Hide UI, the 1/2/3/6/8/9/12 inch measurement circles. "Show
-  Scoreboard" must be **gone** from the list.
+- **Dice trays** (TC-023t: half size, in front of each TC roller): see step 11.
+- **Hotkeys** (Options > Game Keys): 1. Save Position, 2. Restore Position, 3. Custom
+  Bubble, 4. Roll All Dice, Clear Bubbles / Bubbles (Selected) / Lines / Mat, Show/Hide UI,
+  the 1/2/3/6/8/9/12 inch measurement circles. Coherency Check, Engagement Range, the gap
+  arrangements and "Show Scoreboard" must be **gone**.
 - **Dice rollers** (the bowls next to the mats) print results in chat.
 - **Trash bins** (vortices) destroy dropped objects; the counters beside them count.
-- **Token bags**: the LCT infinite bags left (+1/-1, Reroll, banners, d6/d3) dispense. The
-  Mothmy, Legacy, Mission & Utility, Battle Shocked and Objective Secured bags are **gone**
-  (TC-017), and so are Action, Objective, Home Objective, Hidden, Marked Terrain and Marked
-  Unit (TC-023s); the Trench Crusade bags are checked in step 9.
-- **Trackers**: "Spawn game tools" (x≈80, hidden under the Red edge) spawns Squad
-  activation / Wounds trackers; HIDE ARMY moves selected models into the hidden zone.
+- **Token bags**: the LCT infinite bags left (banners, d6/d3) dispense. Every LCT 40k bag is
+  **gone** (TC-017, TC-023s, and +1/-1 / Reroll in TC-023t); the Trench Crusade bags are
+  checked in step 9.
+- **Trackers**: "Spawn game tools", the Squad activation / Wounds Remaining trackers and the
+  hide-army zones are **gone** (TC-023t).
 - **LOS markers**, **selection highlighters** (select a model: a ring appears), **stopwatch**
   (chess clock on the HUD counts down, play/pause per side).
 - **Interactive buttons**: the six tokens that stood at x≈45 (Table Quarters, Strat
@@ -87,24 +71,21 @@ picker, no Clear Table, no START GAME and no "Red player first" toggle. The mat 
   (TC-023s).
 - **Flex Table Control** (x≈81,z≈-94) resizes the table surface; **Mat url** sets a mat
   image; **Extract terrain** / **Advanced Features** (terrain collider toggle) respond.
-- **Auto-seat**: save the game mid-match, reload, both colours are re-seated.
+- **Auto-seat**: has no trigger since TC-023t (it was armed by START GAME, then by Pass
+  Turn); reconnecting players get the seat picker.
 
 ## 6. Things to tune (expected)
 
-- `HUD_FULL` in `mod/scripts/global.lua` (height 155 / controls 143) was derived from the
-  spectator panel after removing the CP row; if the Red/Blue panels clip the clock steppers
-  or leave a gap, change those two numbers (and the matching `height="155"` /
-  `preferredHeight="143"` in `mod/ui/global.xml`). Its width (1200 / main 1144) is the old
-  1280 / 1224 minus the two phase buttons TC-014 removed; if the clock readout clips or the
-  panel has slack, change `width` / `mainWidth` and the matching `width="1200"` /
-  `preferredWidth="1144" minWidth="1144"` on all three HUD panels in the XML.
-- Minimalist mode (`-`): the phase strips hide and the panel narrows to 804; the height no
-  longer changes.
+- HUD width: `width="416"` and `preferredWidth="360" minWidth="360"` on the three HUD panels
+  in `mod/ui/global.xml` were computed from the element widths after TC-023t removed the
+  ROUND badge, Turn readouts and phase strips. If the clock rows clip or the panel has slack,
+  change them (all three panels); the height (155) is unchanged.
+- Dice tray button size (step 11).
 
 ## 7. Save
 
-Save the table under a new name and reload it: no errors, the theme persists, the turn,
-phase and HUD state persist. Then `trash` the test save; `TrenchCrusade-dev.json` is
+Save the table under a new name and reload it: no errors, the theme and the Turn Tracker state
+persist. Then `trash` the test save; `TrenchCrusade-dev.json` is
 regenerated by `pnpm mod:install`.
 
 ## 8. Warband import (TC-016, object `b91983`)
@@ -283,8 +264,7 @@ TTS; all geometry (shelf height, button sizes, bag icons) is a first guess to tu
   x +-0.72, rows 0.27 apart. If anything overflows or reads small, tune `BUTTONS` (row, col,
   width, height, font) in `mod/scripts/4ac9e3.lua`; `pnpm mod:test` keeps the rows on the
   face and apart.
-- **HUD** still works after all of the above (step 3) - the tracker and the LCT round /
-  pass-turn machinery are independent by design.
+- **HUD** shows only help and the clocks (step 3); the Turn Tracker is the only turn engine.
 
 ## 10. Second strip (TC-023s)
 
@@ -300,11 +280,33 @@ Offline first: `pnpm mod:test` (lint now also scans `mod/save.json` and every sc
 - With a generated battlefield on the table, play a few phases and turns: nothing on the
   table disappears (Clear Table, which deleted everything inside the 60" x 44" box including
   the importer and Turn Tracker, is gone).
-- Two seats filled, pass a turn, save, reload with both players reconnecting: both are put
-  back in their colours (auto-seat is now armed by a pass with both seats filled instead of
-  by START GAME).
 - **Extract terrain** and **Advanced Features** still respond (they used to call the removed
   Start Menu functions); Disable Terrain Colliders does not affect `tc-terrain` pieces yet.
+
+## 11. Third strip (TC-023t)
+
+Offline first: `pnpm mod:test`.
+
+- Load: no red error lines; nothing mentioning `passTurn`, `writeMenus`, `newRoundStarted`,
+  `SyncClockToTurn`, `changeSustainedHitsThreshold`, `getLethalZoneBounds` or
+  `SELECTION_HIGHLIGHTER_GUID`. No Game Rounds / Red Turns / Blue Turns tokens at x≈51, no
+  Lethal Hit Zone strips at z≈±23.6, no +1/-1 / Reroll bags beside the trays.
+- **Dice tray** (Red at x -12.8..15.7, z 25.7..31.3, in front of the TC roller; Blue
+  mirrored): half the old length and depth. Buttons kept: Clear mat (right click), Roll all,
+  +1d3, +1d6 ... +4d6, the four colour swatches, pip colour, Custom Dice, Show/Hide UI,
+  Revert Roll, Last 5 Rolls, Save / Restore Position, the bubble row, custom bubble, Clear
+  Bubbles / Lines, Highlight + swatch. **No** Lethal / Sustained, Del / Roll rows, - / +
+  toggle, Ordered / In 2s / In 3s, Copy opponent's dice, +5d6 / +10d6 / +25d6, Dice+,
+  Coherency, Engagement, Gap. Check that the labels are readable from the seat at half size;
+  if not, the fix is a relayout with larger button `scale`, not a bigger tray.
+- Press +2d6 three times, +4d6 once: the tray stops at 10 dice with `The tray holds 10
+  dice.` Roll all: the dice go through the bowl and land back on the tray; the readout shows
+  the face counts, `10 ∑ <total>` and `High 2: x  Low 2: y` (x = two highest, y = two lowest).
+  With 3 dice the High / Low pair is a +1 DICE / -1 DICE Success Roll. Clear mat (right click)
+  removes them.
+- Click the Green swatch: only the five spawn buttons turn green.
+- The two loose d6 now sit on the trays at (±9.7, ±30.4).
+- Stopwatch: the HUD clocks start, pause and switch per side on their own.
 
 ## Reporting
 

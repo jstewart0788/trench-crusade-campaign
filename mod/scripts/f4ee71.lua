@@ -1045,23 +1045,6 @@ end
 function PlayClock1(player) playClockSide(1, player) end
 function PlayClock2(player) playClockSide(2, player) end
 
--- Called by startMenu.passTurn after the active player flips: if the clock was
--- running for the previous player, switch it to the new active player. A
--- paused, editing, or never-started clock is left alone, so turn passes made
--- before the game clock is started never start it.
-function SyncClockToTurn(params)
-	local color = params and params.color
-	local side = (color == "Blue" and 1) or (color == "Red" and 2) or nil
-	if not side then return end
-	if clockEditing() then return end
-	local running = clockSideRunning(data.state)
-	if not running or running == side then return end
-	if side == 1 then Click_1(CLOCK_ACTOR) else Click_2(CLOCK_ACTOR) end
-	-- printToAll, not broadcast: passTurn already pops the turn banner.
-	printToAll("Chess clock follows the turn - now running for " .. color .. ".",
-		(side == 1) and {0.4, 0.6, 1} or {1, 0.4, 0.4})
-end
-
 -- Changes the color of the UI buttons based on the set colors
 function changeButtonColors()
 	-- Stopwatch Buttons

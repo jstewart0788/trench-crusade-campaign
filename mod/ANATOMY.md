@@ -20,12 +20,15 @@ Classification used here:
   Trench Crusade object (the ten 40k token bags).
 - **STRIP-2** - kept by the first strip, removed by the second (TC-023s): the 40k table toggles
   and objectives manager, their templates, and the 40k mission / secondary token bags.
+- **STRIP-3** - removed by the third strip (TC-023t): the LCT turn engine counters, the dice
+  mat's Lethal Hit Zones, the 40k modifier / re-roll bags, squad activation and wound trackers
+  and their spawner, the hide-army fog zones.
 - **ADDED** - objects this repo adds on top of the fork: the Warband Importer (TC-016) and
   the Trench Crusade content port (TC-014 / TC-017, see *Added: Trench Crusade content*).
 
-Counts over the 218 top-level objects: **KEEP 68, UNSURE 7, REPLACED 10, STRIP 110,
-STRIP-2 23**. Every nested object follows its top-level parent. The table now has 104
-top-level / 154 total objects (75 kept from LCT, 29 added) and packs to about 1.0 MB; the
+Counts over the 218 top-level objects: **KEEP 48, UNSURE 5, REPLACED 10, STRIP 110,
+STRIP-2 23, STRIP-3 22**. Every nested object follows its top-level parent. The table now has
+82 top-level / 116 total objects (53 kept from LCT, 29 added) and packs to about 0.74 MB; the
 ten replaced bags carried 924 nested 40k tokens, which is where the other 1.7 MB went.
 
 ## Top-level objects
@@ -51,16 +54,16 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | (no nickname) | `f7d85a` | HandTrigger | 0 | 0 | hand zone (seating) |
 | KEEP | (no nickname) | `f938a2` | Custom_Assetbundle | 0 | 0 | table leg / side asset bundle positioned by Flex Table Control |
 | KEEP | (no nickname) | `f9d618` | HandTrigger | 0 | 0 | hand zone (seating) |
-| KEEP | +1 to Rolls | `450445` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | +1 to Rolls | `988659` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | -1 to Rolls | `c54686` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | -1 to Rolls | `d1c6dd` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
+| STRIP-3 | +1 to Rolls | `450445` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | +1 to Rolls | `988659` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | -1 to Rolls | `c54686` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | -1 to Rolls | `d1c6dd` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
 | STRIP-2 | Action | `db0a07` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Action | `e6d3ec` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | KEEP | Advanced Features Panel | `ed17d0` | BlockSquare | 3,009 | 0 | terrain collider toggle panel (forwards to the Start Menu) |
 | KEEP | Banner (Blue) | `0dd965` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
 | KEEP | Banner (Red) | `0dd964` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Blue Custom Dice Table | `839fcc` | Custom_Tile | 138,402 | 0 | dice mat: roll/select/clear, bubbles, save/restore positions, measurement hotkeys (138 KB) |
+| KEEP | Blue Custom Dice Table | `839fcc` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout, scale 3.75 -> 1.875 (57.1 x 11.2 -> 28.6 x 5.6 world units) in front of the TC roller |
 | KEEP | Blue dice cam | `96a319` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Blue dice camera | `c09349` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Blue Dice Roller | `927ca1` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing |
@@ -68,8 +71,8 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | Blue LOS Marker | `b1625c` | Custom_Tile | 3,676 | 0 | line-of-sight marker |
 | KEEP | Blue Selection Highligher | `84c3a4` | Quarter | 4,513 | 0 | generic table furniture |
 | KEEP | Blue Trash bin | `4b1a7b` | Custom_Assetbundle_Bag | 1,050 | 0 | vortex trash bin |
-| KEEP | Blue Turns | `7e4111` | Custom_Token | 5,490 | 0 | round / turn counter feeding the HUD |
-| KEEP | BlueHiddenZone | `e1e91a` | FogOfWarTrigger | 0 | 0 | hidden zone used by the Spawn-game-tools HIDE ARMY buttons |
+| STRIP-3 | Blue Turns | `7e4111` | Custom_Token | 5,490 | 0 | TC-023t: the LCT player-turn / round counters behind the HUD ROUND badge and Turn readouts; the Turn Tracker `4ac9e3` and its TC Turn counters are the turn engine |
+| STRIP-3 | BlueHiddenZone | `e1e91a` | FogOfWarTrigger | 0 | 0 | TC-023t: hide-army fog zone used only by `a76485` |
 | KEEP | Counter | `42c161` | Custom_Token | 5,146 | 0 | token counter beside each trash bin |
 | KEEP | Counter | `42c164` | Custom_Token | 5,146 | 0 | token counter beside each trash bin |
 | KEEP | d3 | `2d9705` | Infinite_Bag | 0 | 1 | infinite dice bag |
@@ -79,7 +82,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | Extract terrain | `70b9f6` | Custom_Model_Bag | 13,123 | 0 | terrain extraction / mirroring tool |
 | KEEP | Flex Table Control | `bd69bd` | Chinese_Checkers_Piece | 20,270 | 0 | table size / surface controls |
 | STRIP-2 | Full circle | `51ee2f` | Custom_Model | 47 | 0 | TC-023s: circle template cloned only by the Start Menu overlays and Area Denial; no caller left |
-| KEEP | Game Rounds | `ee92cf` | Custom_Token | 6,588 | 0 | round / turn counter feeding the HUD |
+| STRIP-3 | Game Rounds | `ee92cf` | Custom_Token | 6,588 | 0 | TC-023t: the LCT player-turn / round counters behind the HUD ROUND badge and Turn readouts; the Turn Tracker `4ac9e3` and its TC Turn counters are the turn engine |
 | STRIP-2 | Hidden | `972ea3` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Hidden | `9abea4` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Home Objective | `312600` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
@@ -97,7 +100,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP-2 | Objective | `4d85d9` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Objective | `d1100e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Quarter-circle | `51ee3f` | Custom_Model | 0 | 0 | TC-023s: quarter-circle template, read by nothing (`quarterCircle_GUID` had no reader); removed |
-| KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice mat: roll/select/clear, bubbles, save/restore positions, measurement hotkeys (138 KB) |
+| KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout, scale 3.75 -> 1.875 (57.1 x 11.2 -> 28.6 x 5.6 world units) in front of the TC roller |
 | KEEP | Red dice cam | `48dcae` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Red dice camera | `19b9bf` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Red Dice Roller | `17ca2b` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing |
@@ -105,26 +108,26 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | Red LOS Marker | `ca16c5` | Custom_Tile | 3,676 | 0 | line-of-sight marker |
 | KEEP | Red Selection Highlighter | `27de4f` | Quarter | 4,513 | 0 | selection highlighter |
 | KEEP | Red Trash bin | `be2cdb` | Custom_Assetbundle_Bag | 1,050 | 0 | vortex trash bin |
-| KEEP | Red Turns | `055302` | Custom_Token | 5,490 | 0 | round / turn counter feeding the HUD |
-| KEEP | RedHiddenZone | `28419e` | FogOfWarTrigger | 0 | 0 | hidden zone used by the Spawn-game-tools HIDE ARMY buttons |
-| KEEP | Reroll 1s | `389ff7` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Reroll 1s | `adae2a` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Reroll All | `404fe0` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Reroll All | `af7071` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Spawn game tools | `a76485` | BlockRectangle | 7,901 | 0 | spawns activation/wound trackers and hides/shows armies |
-| KEEP | Squad activation | `229946` | BlockSquare | 2,062 | 0 | activation / wound tracker token cloned by Spawn game tools |
-| KEEP | Squad activation | `37e995` | BlockSquare | 2,062 | 0 | activation / wound tracker token cloned by Spawn game tools |
-| KEEP | Squad activation | `bcf2a4` | BlockSquare | 2,062 | 0 | activation / wound tracker token cloned by Spawn game tools |
-| KEEP | Stopwatch | `f4ee71` | Custom_Model | 42,585 | 0 | chess clock driving the HUD clock readouts |
-| KEEP | Wounds Remaining | `2e4f26` | BlockSquare | 1,968 | 0 | activation / wound tracker token cloned by Spawn game tools |
-| KEEP | Wounds Remaining | `5fd19f` | BlockSquare | 1,968 | 0 | activation / wound tracker token cloned by Spawn game tools |
-| KEEP | Wounds Remaining | `ad63ba` | BlockSquare | 1,968 | 0 | activation / wound tracker token cloned by Spawn game tools |
+| STRIP-3 | Red Turns | `055302` | Custom_Token | 5,490 | 0 | TC-023t: the LCT player-turn / round counters behind the HUD ROUND badge and Turn readouts; the Turn Tracker `4ac9e3` and its TC Turn counters are the turn engine |
+| STRIP-3 | RedHiddenZone | `28419e` | FogOfWarTrigger | 0 | 0 | TC-023t: hide-army fog zone used only by `a76485` |
+| STRIP-3 | Reroll 1s | `389ff7` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | Reroll 1s | `adae2a` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | Reroll All | `404fe0` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | Reroll All | `af7071` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023t: 40k modifier / re-roll reminder bag (its icon is a 40k Battle-shocked token); Trench Crusade modifies rolls with +/-DICE |
+| STRIP-3 | Spawn game tools | `a76485` | BlockRectangle | 7,901 | 0 | TC-023t: spawned 40k squad activation / wound trackers and hid armies in fog zones; Trench Crusade tracks Activated / Down / Blood with its own tokens |
+| STRIP-3 | Squad activation | `229946` | BlockSquare | 2,062 | 0 | TC-023t: 40k squad activation tracker master (cloned by `a76485`) |
+| STRIP-3 | Squad activation | `37e995` | BlockSquare | 2,062 | 0 | TC-023t: 40k squad activation tracker master (cloned by `a76485`) |
+| STRIP-3 | Squad activation | `bcf2a4` | BlockSquare | 2,062 | 0 | TC-023t: 40k squad activation tracker master (cloned by `a76485`) |
+| KEEP | Stopwatch | `f4ee71` | Custom_Model | 42,585 | 0 | chess clock driving the HUD clock rows; stands alone (TC-023t removed `SyncClockToTurn`, its only link to the LCT turn engine) |
+| STRIP-3 | Wounds Remaining | `2e4f26` | BlockSquare | 1,968 | 0 | TC-023t: 40k multi-wound tracker master (cloned by `a76485`); TC uses Blood markers |
+| STRIP-3 | Wounds Remaining | `5fd19f` | BlockSquare | 1,968 | 0 | TC-023t: 40k multi-wound tracker master (cloned by `a76485`); TC uses Blood markers |
+| STRIP-3 | Wounds Remaining | `ad63ba` | BlockSquare | 1,968 | 0 | TC-023t: 40k multi-wound tracker master (cloned by `a76485`); TC uses Blood markers |
 | UNSURE | (no nickname) | `138b05` | go_game_piece_black | 0 | 0 | unscripted go piece hidden under the table at x=68; purpose unknown |
 | UNSURE | (no nickname) | `6f0823` | go_game_piece_black | 0 | 0 | unscripted go piece hidden under the table at x=68; purpose unknown |
 | UNSURE | Army Placer | `8b7aa6` | BlockSquare | 4,358 | 0 | Army Placer: moves a staged army onto the table for Red/Blue; generic but untested here |
 | REPLACED | Battle Shocked | `3f45f1` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Battle-shocked' bag; its slot now holds the Blue Blood Marker bag `061bfb` (TC-017) |
 | REPLACED | Battle Shocked | `e51f0c` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Battle-shocked' bag; its slot now holds the Red Blood Marker bag `3b0f1d` (TC-017) |
-| UNSURE | Blue Lethal Hit Zone | `71ab21` | Custom_Tile | 0 | 0 | lethal-hit parking zone used by the dice mat's 40k sustained/lethal hits feature; mat kept intact |
+| STRIP-3 | Blue Lethal Hit Zone | `71ab21` | Custom_Tile | 0 | 0 | TC-023t: parking zone of the dice mat's 40k Lethal Hits feature, removed with it |
 | STRIP-2 | Center Objective | `3c9b57` | Custom_Model | 0 | 6 | TC-023s: 40k objective-marker template, only the removed objectives manager cloned it |
 | STRIP-2 | Expansion Objective | `7fd7df` | Custom_Model | 0 | 6 | TC-023s: 40k objective-marker template, only the removed objectives manager cloned it |
 | STRIP-2 | Home Objective | `e6b8fb` | Custom_Model | 0 | 6 | TC-023s: 40k objective-marker template, only the removed objectives manager cloned it |
@@ -138,8 +141,8 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | REPLACED | Mission & Utility Tokens Red | `58d30b` | Bag | 36,861 | 87 | memory bag of 40k mission tokens; removed with its script and state (TC-017) |
 | REPLACED | Objective Secured Blue | `04d13e` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Objective Secured' bag; its slot now holds the Blue Blessing Marker bag `c30c00` (TC-017) |
 | REPLACED | Objective Secured Red | `e87880` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Objective Secured' bag; its slot now holds the Red Blessing Marker bag `6cecd8` (TC-017) |
-| UNSURE | Red Lethal Hit Zone | `7ac8ba` | Custom_Tile | 0 | 0 | lethal-hit parking zone used by the dice mat's 40k sustained/lethal hits feature; mat kept intact |
-| UNSURE | Start Menu | `738804` | BlockRectangle | 252,625 | 0 | the game controller. After TC-023s it keeps only the table-theme swatch targets, terrain pass-through and the LCT turn / phase / round engine behind the HUD (one on-table "Next Phase / Pass Turn" button); game modes, sizes, deployment presets and picker, Clear Table, START GAME, objectives manager, territory / 9" lines are gone (STRIP-LOG, *Second strip*). Still UNSURE: the turn engine is 40k-shaped (player turns) and runs beside the TC Turn Tracker |
+| STRIP-3 | Red Lethal Hit Zone | `7ac8ba` | Custom_Tile | 0 | 0 | TC-023t: parking zone of the dice mat's 40k Lethal Hits feature, removed with it |
+| UNSURE | Start Menu | `738804` | BlockRectangle | 252,625 | 0 | was the LCT game controller. After TC-023t only the table-theme swatch targets and terrain pass-through remain (14.5 KB, no buttons): its turn / phase / round engine went with the HUD strip it drove. A rename / move to Global is the open question |
 | REPLACED | Tokens by Mothmy Titania (Blue) | `9d6b2f` | Bag | 16,208 | 289 | memory bag of 89 Mothmy tokens (40k stat modifiers, CP/OC/LD, Battle-Shock, plus a few generic 'General Token' blanks); removed whole rather than curated - the handful of generic blanks did not justify keeping a 289-object bag (TC-017) |
 | REPLACED | Tokens by Mothmy Titania (Red) | `446a11` | Bag | 16,208 | 289 | memory bag of 89 Mothmy tokens; removed whole (TC-017) |
 | STRIP | (no nickname) | `066fd3` | Custom_Tile | 0 | 0 | art tile paired with a mission-matrix bag (GAME_MODE_OBJECTS in the Start Menu) |
@@ -287,7 +290,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 
 | System | Class | Functions |
 |---|---|---|
-| HUD (overlay panels, preferences, minimalist mode, splash) | KEEP | `setHudAttribute`, `setHudValue`, `getDefaultHudSettings`, `ensureHudSettings`, `getHudColorFromCallback`, `setHudAttributeForColor`, `applyMinimalistForColor`, `hudToggleMinimalist`, `applyHudPreferencesForColor`, `applyHudPreferences`, `hudToggleHelp`, `hudCloseHelp`, `hudToggleClock`, `toggleHudOverlayForColor`, `hudHideOverlay`, `updateSplashOverlay`, `announceVersion`, `patchNumber` |
+| HUD (overlay panels, preferences, splash; minimalist mode removed by TC-023t) | KEEP | `setHudAttribute`, `setHudValue`, `getDefaultHudSettings`, `ensureHudSettings`, `getHudColorFromCallback`, `setHudAttributeForColor`, `applyHudPreferencesForColor`, `applyHudPreferences`, `hudToggleHelp`, `hudCloseHelp`, `hudToggleClock`, `toggleHudOverlayForColor`, `hudHideOverlay`, `updateSplashOverlay`, `announceVersion`, `patchNumber` |
 | CP (command points) | STRIP | `cpCounterForColor`, `counterValue`, `counterSetValue`, `counterIncrement`, `counterDecrement`, `currentBattleRound`, `gainCPForColor`, `hudGainCP`, `hudUseCP` (the counter helpers were generic but had no remaining caller) |
 | 40k scoring overlay (scoreboard fed by the 10e score sheet and the secondary slots) | STRIP | `hudToggleLock`, `hudCloseScoringOverlay`, `hudToggleScoringMinimalist`, `hotkeyToggleScoringOverlay`, `formatSecondaryListColumns`, `isAnyScoringOverlayOpen`, `scheduleScoringOverlayRefreshLoop`, `getActiveSecondaryNames`, `getRemainingDeckSecondaryNames`, `recordDiscardTurn`, `getDiscardedSecondaryNames` (+ local `addName`), `setScoringContext`, `invalidateScoringCache`, `scoringTargetColors`, `setScoringHudValue`, `setScoringHudAttribute`, `setScoringListColumns`, `formatScoringPlayerHeader`, `formatScoringPrimaryMission`, `applyScoringContextToOverlay`, `hudAdjustRoundScore`, `refreshScoringOverlay` (+ locals `applyRoundRows`, `sectionH`) |
 | Secondary card slots (zones, labels, draw/sort/discard/recycle) | STRIP | `getSecondaryCardZones`, `getCardsInSecondarySlot` (+ local `add`), `getSecondaryCardZoneByIndex`, `getSecondarySlotCardPosition`, `getSecondaryDeckByColor`, `getSecondaryDiscardPosition`, `refreshSecondaryNamesForColor`, `isSecondaryCardZone`, `isBlueSecondaryCardZone`, `isRedSecondaryCardZone`, `getSecondaryCardName`, `getSecondaryCardNameForColor`, `setSecondaryName`, `setBlueSecondaryName`, `setRedSecondaryName`, `refreshSecondaryNames`, `refreshBlueSecondaryNames`, `refreshRedSecondaryNames`, `refreshBlueSecondaryNamesSoon`, `refreshRedSecondaryNamesSoon`, `getSecondaryZoneColorAndIndex`, `onObjectEnterScriptingZone`, `onObjectLeaveScriptingZone`, `isSecondaryCardObject`, `addUniqueSecondaryCard`, `assignSecondarySlotCard`, `clearSecondarySlotAssignment`, `getAssignedSecondarySlotCard`, `getCardsInSecondarySlotForColor`, `clearSecondarySlotAssignmentsForColor`, `drawSecondaryToFirstOpenSlot`, `drawBlueSecondaryToFirstOpenSlot`, `drawRedSecondaryToFirstOpenSlot`, `drawBlueSecondaryToFirstOpenSlotSingle`, `drawRedSecondaryToFirstOpenSlotSingle`, `sortSecondarySlots`, `discardSecondarySlot`, `recycleSecondarySlot` |
@@ -302,7 +305,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | Persistence / lifecycle | KEEP (edited) | `onSave`, `onLoad`, `onObjectDestroy` |
 | Yellowscribe UI clean-up (`ymc-` cards in Global UI) | UNSURE, kept | `isYellowscribeGlobalCard`, `xmlElementHasCallbackGuid`, `removeYellowscribeGlobalCards`. Roster import will not use yellowscribe (ROADMAP), but these only sweep foreign XML and are harmless; TC-016 can delete them. |
 | Feedback form callbacks (no panel in the XML) | UNSURE, kept | `onNameChanged`, `onEmailChanged`, `onTypeChanged`, `onLikeChanged`, `onMessageChanged` - dead code in LCT too. |
-| Dice hotkeys | UNSURE, kept | `onScriptingButtonDown` calls the dice mat's `changeSustainedHitsThreshold` (40k sustained hits); the mat is kept intact, see below. |
+| Dice hotkeys | STRIP-3 | `onScriptingButtonDown` called the dice mat's `changeSustainedHitsThreshold` (40k sustained hits, never defined); removed by TC-023t. |
 | Misc | KEEP | `destroyObjectByGUID` |
 
 Data in global.lua: the GUID constant block (KEEP, minus mission/CP/zone constants),
@@ -320,7 +323,7 @@ seven `interactiveButton*` toggle-state globals with the objects they served.
 | `main` | splash + seat picker (Red / Spectator / Blue), patch notes | KEEP (retitled) |
 | `bubbleOverlay_Red` / `bubbleOverlay_Blue` | aura/bubble size input | KEEP |
 | `DebugTools` | shared debug panel (DEBUG builds only): diagnostics, custom mat URL | KEEP; its "Battlemaster cache" section STRIP |
-| `RedHud_VPScores` / `BlueHud_VPScores` / `GreyHud_VPScores` | per-colour HUD: controls column, ROUND badge, per-player Turn readout, phase strip, clock | KEEP; inside it `*_LockBtn` (open scoreboard), `*_DispBadge*` + `*_DispSpacer*` (disposition glyph), `*_VPWatch*`, `*_CPWatch*`, `*_Row3` (Scoreboard / Gain CP / Use CP) STRIP; `*_PhaseRow*` relabelled by TC-014 from the five 40k phases to Initiative / Activation / Morale (`Ph1`-`Ph3`, the `Ph4`/`Ph5` buttons removed, panel 80 narrower) |
+| `RedHud_VPScores` / `BlueHud_VPScores` / `GreyHud_VPScores` | per-colour HUD: controls column, ROUND badge, per-player Turn readout, phase strip, clock | KEEP; inside it `*_LockBtn` (open scoreboard), `*_DispBadge*` + `*_DispSpacer*` (disposition glyph), `*_VPWatch*`, `*_CPWatch*`, `*_Row3` (Scoreboard / Gain CP / Use CP) STRIP; `*_PhaseRow*` relabelled by TC-014 from the five 40k phases to Initiative / Activation / Morale (`Ph1`-`Ph3`, the `Ph4`/`Ph5` buttons removed, panel 80 narrower). TC-023t: ROUND badge, Turn readouts, phase strips and the minimalist `-` button removed; the panel is now the `?` help and clock toggle plus the two chess-clock rows (width 1200 -> 416, main 1144 -> 360) |
 | `*_HelpOverlay` | help overlay (background + close) | KEEP |
 | `RedHud_ScoringOverlay` / `Blue...` / `Grey...` | 40k scoreboard (PRI/SEC per round, active/discard/remaining secondaries) | STRIP |
 
@@ -338,14 +341,14 @@ seven `interactiveButton*` toggle-state globals with the objects they served.
   clock sync, territory line, 9" lines, terrain pass-through (KEEP).
 - **Map Creator Filter `369707`** - creator filter + Battlemaster mat randomizer (STRIP) and
   the Table Theme swatches (KEEP); rewritten to only the swatches.
-- **Custom Dice Table `acae21` / `839fcc`** (138 KB each, identical) - the dice engine,
-  save/restore positions, bubbles, coherency, engagement range, measurement circles,
-  hotkeys. Contains 40k sustained/lethal-hits handling and the "Lethal Hit Zone" tiles; left
-  intact (UNSURE) because surgery there is a refactor of working code. Only the "Show
-  Scoreboard" hotkey was removed.
-- **Game Rounds `ee92cf`**, **Red/Blue Turns `055302`/`7e4111`** - counters that push to the
-  HUD and tell the Start Menu when a round starts (KEEP; the rounds token no longer looks up
-  the score sheet).
+- **Custom Dice Table `acae21` / `839fcc`** (138 KB each in LCT, identical; 63 KB after
+  TC-023t) - now a small Trench Crusade dice tray: spawn 1-4 d6 or a d3 (10 dice at most),
+  roll all through the LCT dice roller, revert / last 5 rolls, colours and pips, face counts
+  with total and the two highest / two lowest. It still hosts the generic table tools: save /
+  restore positions, measuring bubbles and custom bubble, clear bubbles / lines, highlight
+  paint, hotkeys. The 40k features listed in its row above are gone (STRIP-LOG, *Third strip*).
+- **Game Rounds `ee92cf`**, **Red/Blue Turns `055302`/`7e4111`** - LCT turn counters; removed
+  by TC-023t with the turn engine.
 - **Mission Manager `cff35b`/`471de1`**, **10e Score Sheet `06d627`**, **Command Points
   `e446f7`/`deb9f2`**, **Gain CP `af8032`/`5e882b`**, **WH Stats Helper `7c7c20`/`b7ac7a`**
   - STRIP, see the table.

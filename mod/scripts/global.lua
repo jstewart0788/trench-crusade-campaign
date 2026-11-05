@@ -94,56 +94,6 @@ function setHudAttributeForColor(color, params)
     end)
 end
 
--- ===== Minimalist HUD (per player, toggled by the "-" control button) =====
--- Minimalist mode hides both per-turn phase-icon strips, then resizes the panel +
--- control column to fit. Red and Blue are independent (separate panels); Grey has
--- no "-" button so it is never minimal.
-hudMinimalist = hudMinimalist or {}   -- player color -> bool
-
--- Per-mode geometry. Minimalist drops the panel width by the phase-strip width and
--- shrinks the 3-button control column (and its font) so the glyphs still fit. width/height are visual estimates — tune in-game.
-local HUD_FULL = { width = "1200", height = "155", mainWidth = "1144", mainHeight = "155", controlsH = "143", btnFont = "28", shown = "true"  }
-local HUD_MIN  = { width = "804",  height = "155", mainWidth = "804",  mainHeight = "155", controlsH = "143", btnFont = "24", shown = "false" }
-
--- The clock readout + its steppers and play/pause buttons (same id set the
--- clock-hide toggle uses).
-local HUD_CLOCK_IDS = {"ClockSubPanel1", "ClockSubPanel2", "ChsStpPlus1", "ChsStpMinus1", "ChsStpPlus2", "ChsStpMinus2", "ChsStpPlay1", "ChsStpPause1", "ChsStpPlay2", "ChsStpPause2"}
-
-function applyMinimalistForColor(color)
-    if color ~= "Red" and color ~= "Blue" then return end
-    local minimal = hudMinimalist[color]
-    local d = minimal and HUD_MIN or HUD_FULL
-    local p = color .. "Hud_"
-    -- Minimalist always hides the clock; full mode hands it back to the player's
-    -- own clock toggle so we don't override a manually hidden clock.
-    local clockShown = (not minimal) and (not ensureHudSettings(color).clockHidden)
-    pcall(function()
-        Global.UI.setAttribute(p .. "PhaseRow1", "active", d.shown)
-        Global.UI.setAttribute(p .. "PhaseRow2", "active", d.shown)
-        Global.UI.setAttribute(p .. "RightControls", "active", d.shown)
-        for _, id in ipairs(HUD_CLOCK_IDS) do
-            Global.UI.setAttribute(p .. id, "active", clockShown and "true" or "false")
-        end
-        Global.UI.setAttribute(p .. "VPScores",  "width",  d.width)
-        Global.UI.setAttribute(p .. "VPScores",  "height", d.height)
-        Global.UI.setAttribute(p .. "MainPanel", "preferredWidth",  d.mainWidth)
-        Global.UI.setAttribute(p .. "MainPanel", "minWidth",        d.mainWidth)
-        Global.UI.setAttribute(p .. "MainPanel", "preferredHeight", d.mainHeight)
-        Global.UI.setAttribute(p .. "MainPanel", "minHeight",       d.mainHeight)
-        Global.UI.setAttribute(color .. "HudControls", "preferredHeight", d.controlsH)
-        for _, b in ipairs({"HelpBtn", "ClockBtn", "MinusBtn"}) do
-            Global.UI.setAttribute(p .. b, "fontSize", d.btnFont)
-        end
-    end)
-end
-
-function hudToggleMinimalist(player, value, id)
-    local color = getHudColorFromCallback(player, id)
-    if color ~= "Red" and color ~= "Blue" then return end
-    hudMinimalist[color] = not hudMinimalist[color]
-    applyMinimalistForColor(color)
-end
-
 function applyHudPreferencesForColor(color)
     local settings = ensureHudSettings(color)
     local helpOverlayActive = settings.helpOverlayOpen and "true" or "false"
@@ -329,21 +279,11 @@ blueCustomDiceMat_GUID = "839fcc" -- diceTable
 redCustomDiceRoller_GUID = "17ca2b" -- kustom40kDiceRoller
 blueCustomDiceRoller_GUID = "927ca1" -- kustom40kDiceRoller
 
-redLethalHits_GUID = "7ac8ba"
-blueLethalHits_GUID = "71ab21"
-
 RedVortexGUID = "be2cdb"
 BlueVortexGUID = "4b1a7b"
 RedTokenCounterGUID = "42c161"
 BlueTokenCounterGUID = "42c164"
 
-redTurnCounter_GUID = "055302"
-blueTurnCounter_GUID = "7e4111"
-gameTurnCounter_GUID = "ee92cf"
--- Master activation/wound tracker tokens cloned by the Spawn buttons on the
--- "Spawn game tools" object (a76485).
-activation_GUID = "229946"
-wounds_GUID = "ad63ba"
 
 table_GUID = "948ce5"
 felt_GUID = "28865a"
@@ -362,8 +302,6 @@ extractTerrain_GUID = "70b9f6"
 
 redHandZone_GUID = "f7d85a"
 blueHandZone_GUID = "731345"
-redHiddenZone_GUID = "28419e"
-blueHiddenZone_GUID = "e1e91a"
 
 
 teamModels = { Red = {}, Blue = {} }
@@ -866,18 +804,6 @@ function setViewForPlayer(player, color)
         yaw      = 180,
         distance = 20,
         })
-end
-
-function onScriptingButtonDown(index, playerColor)
-    if index == 1 then
-        -- If '=' is bound to scripting button 1
-        local diceMat = getObjectFromGUID(redCustomDiceMat_GUID)
-        diceMat.call("changeSustainedHitsThreshold", { 1 })
-    elseif index == 2 then
-        -- If '-' is bound to scripting button 2
-        local diceMat = getObjectFromGUID(redCustomDiceMat_GUID)
-        diceMat.call("changeSustainedHitsThreshold", { -1 })
-    end
 end
 
 function placeToColor(player, color)

@@ -2,7 +2,6 @@
 -- CONTENT:
 -- table theme
 -- terrain pass-through
--- game manager (turn / phase / round HUD)
 
 keepForTerrainEditor = true
 
@@ -71,8 +70,6 @@ function onLoad(saved_data)
     terrainPassThroughOriginalStates = {}
     if saved_data ~= "" then
         local loaded_data = JSON.decode(saved_data)
-        currentTurn = loaded_data.svcurrentTurn or currentTurn
-        currentPhase = loaded_data.svcurrentPhase or currentPhase
         matTextureSelected = loaded_data.svMatTextureSelected or matTextureSelected
         terrainPassThroughEnabled = loaded_data.svTerrainPassThroughEnabled or false
         terrainPassThroughOriginalStates = loaded_data.svTerrainPassThroughOriginalStates or {}
@@ -88,31 +85,11 @@ function onLoad(saved_data)
     -- after both scripts have had time to register their public functions.
     Wait.frames(syncAdvancedFeaturesPanel, 2)
 
-    -- Everything below reads Global's counter GUIDs, so it waits for Global's onLoad.
-    whenGlobalReady(function()
-        applyMatTexture(false)
-
-        redTurnCounter = getObjectFromGUID(Global.getVar("redTurnCounter_GUID"))
-        blueTurnCounter = getObjectFromGUID(Global.getVar("blueTurnCounter_GUID"))
-        gameTurnCounter = getObjectFromGUID(Global.getVar("gameTurnCounter_GUID"))
-        Notes.setNotes(notePadTxt)
-        if not gameTurnCounter then
-            ttsDebugLog("gameTurnCounter not found during onLoad")
-        end
-        writeMenus()
-        -- The phase highlight and active-turn strip colours live only in the
-        -- non-persistent Global overlay, so they reset to the XML defaults on reload.
-        -- Re-push them from the restored game state (immediate + a race-safe retry in
-        -- case the overlay isn't live yet when this object's onLoad runs).
-        updateGameStateHUD()
-        Wait.time(updateGameStateHUD, 1)
-    end)
+    whenGlobalReady(applyMatTexture)
 end
 
 function onSave()
     saved_data = JSON.encode({
-        svcurrentTurn = currentTurn,
-        svcurrentPhase = currentPhase,
         svMatTextureSelected = matTextureSelected,
         svTerrainPassThroughEnabled = terrainPassThroughEnabled,
         svTerrainPassThroughOriginalStates = terrainPassThroughOriginalStates,
@@ -135,7 +112,7 @@ function normalizeMatTextureIndex(index)
     return index
 end
 
-function applyMatTexture(rewriteMenu)
+function applyMatTexture()
     matTextureSelected = normalizeMatTextureIndex(matTextureSelected)
     local selected = matTextures[matTextureSelected]
     local mapMat = getObjectFromGUID(mapMat_GUID)
@@ -152,10 +129,6 @@ function applyMatTexture(rewriteMenu)
         local wasInteractable = mapMat.interactable
         mapMat.setCustomObject(customInfo)
         restoreMatFlags(mapMat.reload(), wasLocked, wasInteractable)
-    end
-
-    if rewriteMenu then
-        Wait.frames(function() writeMenus() end, 2)
     end
 end
 
@@ -178,7 +151,7 @@ end
 
 function setMatTexture(index)
     matTextureSelected = normalizeMatTextureIndex(index)
-    applyMatTexture(true)
+    applyMatTexture()
 end
 
 function setMatTexture1() setMatTexture(1) end
@@ -385,208 +358,4 @@ function onObjectDestroy(obj)
     if not obj or not terrainPassThroughOriginalStates then return end
     local guid = obj.getGUID()
     if guid and guid ~= "" then terrainPassThroughOriginalStates[guid] = nil end
-end
-
--- ************
--- GAME MANAGER
--- ************
-
-gameTurnCounter = nil
-armyMover = ""
-currentTurn = "Red"
-
-phases = {"Initiative Phase", "Activation Phase", "Morale Phase"}
-currentPhase = 1
-nextPhaseLbl = "Pass\nTurn"
-nextPhaseBtn = {
-    index = 1, label = nextPhaseLbl, tooltip = "Left click - Next phase\nRight click - Skip to next turn", click_function = "nextPhase", function_owner = self,
-    position = {0, 5, 3.5}, rotation = {0, 0, 0}, height = 1500, width = 5000,
-    font_size = 600, color = {0.90, 0.30, 0.30}, font_color = {1, 1, 1}
-}
-notePadTxt = ""
-
-function writeMenus()
-    self.clearButtons()
-    writeIngameMenu()
-end
-
-menuButtonBorderThickness = 70
-
--- Creates a button with a border by drawing a slightly larger backing button behind it
--- (TTS buttons have no outline property). borderColor defaults to dark grey.
-function createButtonWithBorder(params, borderColor)
-    local border = {}
-    for k, v in pairs(params) do border[k] = v end
-    border.label = ""
-    border.font_size = 1
-    border.height = (params.height or 0) + menuButtonBorderThickness
-    border.width = (params.width or 0) + menuButtonBorderThickness
-    local resolvedBorderColor = borderColor or {0.1, 0.1, 0.1, 1}
-    border.color = resolvedBorderColor
-    border.hover_color = resolvedBorderColor
-    border.press_color = resolvedBorderColor
-    self.createButton(border)
-
-    -- Raise the real button slightly in y so it renders on top of the border.
-    local top = {}
-    for k, v in pairs(params) do top[k] = v end
-    top.position = {params.position[1], params.position[2] + 0.01, params.position[3]}
-    self.createButton(top)
-end
-
-function writeIngameMenu()
-    nextPhaseBtn.color = currentTurn == "Blue" and {0.30, 0.58, 0.90} or {0.90, 0.30, 0.30}
-    nextPhaseBtn.font_color = {1, 1, 1}
-    nextPhaseBtn.label = phases[currentPhase].."\nNext Phase"
-    if currentPhase == #phases then
-        nextPhaseBtn.label = phases[currentPhase].."\nPass Turn"
-    end
-    createButtonWithBorder(nextPhaseBtn)
-end
-
--- Flip every Activation token back to "not acted" on each phase change; the
--- manual button lives on spawnGameTools.
-function resetActivationTokens()
-    for _, obj in ipairs(getAllObjects()) do
-        if obj.getVar("BCBtype") == "ActivationToken" then
-            obj.call("resetAlredyActed")
-        end
-    end
-end
-
-function newRoundStarted()
-    updateGameStateHUD()
-end
-
-local function counterValue(counter)
-    if not counter then return 0 end
-    local ok, value = pcall(function() return counter.call("getValue") end)
-    if ok and value ~= nil then return tonumber(value) or 0 end
-    if counter.Counter then return counter.Counter.getValue() end
-    return 0
-end
-
--- "Round R, <Color> Turn T" stamp for the turn-pass chat message. Uses the round
--- counter (ee92cf) and the active player's turn counter.
-function getTurnStateLabel()
-    local roundObj = getObjectFromGUID("ee92cf")
-    local round = counterValue(roundObj)
-    local turnCounter = (currentTurn == "Red") and redTurnCounter or blueTurnCounter
-    local turnNum = counterValue(turnCounter)
-    return "Round " .. round .. ", " .. currentTurn .. " Turn " .. turnNum
-end
-
-function hudPassTurn(player)
-    passTurn(self, currentTurn, false)
-end
-
-local function hudCanControlTurn(player, targetTurn)
-    return currentTurn == targetTurn
-end
-
-local function hudAdvanceIfActive(player, targetTurn)
-    if not hudCanControlTurn(player, targetTurn) then return end
-    nextPhase(self, currentTurn, false)
-end
-
-function hudTurnWatch1(player)
-    hudAdvanceIfActive(player, "Blue")
-end
-
-function hudTurnWatch2(player)
-    hudAdvanceIfActive(player, "Red")
-end
-
-local _phaseIds     = { "Ph1", "Ph2", "Ph3" }
-local _phaseToId    = { [1]="Ph1", [2]="Ph2", [3]="Ph3" }
-
-function updatePhaseHUD()
-    for _, id in ipairs(_phaseIds) do
-        Global.call("setHudAttribute", {id = id.."1", attr = "textColor", value = "#FFFFFF30"})
-        Global.call("setHudAttribute", {id = id.."2", attr = "textColor", value = "#FFFFFF30"})
-    end
-    local active = _phaseToId[currentPhase]
-    if active then
-        local activeRow = (currentTurn == "Blue") and "1" or "2"
-        Global.call("setHudAttribute", {id = active..activeRow, attr = "textColor", value = "White"})
-    end
-end
-
-local function hudJumpToPhaseForTurn(player, targetTurn, idx)
-    if not hudCanControlTurn(player, targetTurn) then return end
-    jumpToPhase(idx)
-end
-
-function hudPhaseIniBlue(player) hudJumpToPhaseForTurn(player, "Blue", 1) end
-function hudPhaseActBlue(player) hudJumpToPhaseForTurn(player, "Blue", 2) end
-function hudPhaseMorBlue(player) hudJumpToPhaseForTurn(player, "Blue", 3) end
-
-function hudPhaseIniRed(player) hudJumpToPhaseForTurn(player, "Red", 1) end
-function hudPhaseActRed(player) hudJumpToPhaseForTurn(player, "Red", 2) end
-function hudPhaseMorRed(player) hudJumpToPhaseForTurn(player, "Red", 3) end
-
-function jumpToPhase(idx)
-    currentPhase = idx
-    broadcastToAll(phases[currentPhase], "Yellow")
-    writeMenus()
-    updateGameStateHUD()
-end
-
-function updateGameStateHUD()
-    local roundObj = getObjectFromGUID("ee92cf")
-    local round = counterValue(roundObj)
-    Global.call("setHudValue", {id = "RoundWatch", value = tostring(round)})
-    updatePhaseHUD()
-    local blueActive = currentTurn ~= "Red"
-    Global.call("setHudAttribute", {id = "ChsStpPanel1", attr = "color", value = blueActive and "#2E86FFF8" or "#0B255C28"})
-    Global.call("setHudAttribute", {id = "ChsStpPanel2", attr = "color", value = blueActive and "#4A101028" or "#FF3737F8"})
-    Global.call("setHudAttribute", {id = "ChsStpPanel1", attr = "outline", value = blueActive and "#FFFFFF" or "#5B8FDECC"})
-    Global.call("setHudAttribute", {id = "ChsStpPanel1", attr = "outlineSize", value = blueActive and "6" or "1"})
-    Global.call("setHudAttribute", {id = "ChsStpPanel2", attr = "outline", value = blueActive and "#D46060CC" or "#FFFFFF"})
-    Global.call("setHudAttribute", {id = "ChsStpPanel2", attr = "outlineSize", value = blueActive and "1" or "6"})
-end
-
-function nextPhase(obj, player_color_click, alt_click)
-    resetActivationTokens()
-    if alt_click then
-        passTurn(obj, player_color_click, alt_click)
-        return
-    end
-    currentPhase = currentPhase + 1
-    if currentPhase > #phases then
-        currentPhase = 1
-        passTurn(obj, player_color_click, alt_click)
-    end
-    broadcastToAll(phases[currentPhase], "Yellow")
-    writeMenus()
-    updateGameStateHUD()
-end
-
-function passTurn(obj, player_color_click, alt_click)
-    -- Global.onPlayerConnect re-seats the Red/Blue steam IDs recorded here.
-    if Player.Red.seated and Player.Blue.seated then
-        Global.call("recordPlayers")
-    end
-    currentPhase = 1
-    if currentTurn == "Red" then
-        currentTurn = "Blue"
-        blueTurnCounter.call("increaseSelf")
-    else
-        currentTurn = "Red"
-        redTurnCounter.call("increaseSelf")
-    end
-
-    updateGameStateHUD()
-
-    -- QoL: the chess clock follows the turn. If it was running for the player
-    -- who just finished, switch it to the new active player; paused or
-    -- never-started clocks are left alone (see SyncClockToTurn in chessClock).
-    local chessClock = getObjectFromGUID(Global.getVar("chessClock_GUID") or "")
-    if chessClock then
-        chessClock.call("SyncClockToTurn", {color = currentTurn})
-    end
-
-    printToAll(getTurnStateLabel(), "Yellow")
-    broadcastToAll("It's " .. currentTurn .. " Player's turn", currentTurn)
-    writeMenus()
 end

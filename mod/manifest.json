@@ -1,81 +1,9 @@
 {
   "global": {
-    "LuaScript": 33212,
-    "XmlUI": 33308
+    "LuaScript": 29438,
+    "XmlUI": 25315
   },
   "objects": [
-    {
-      "key": "229946",
-      "guid": "229946",
-      "nickname": "Squad activation",
-      "name": "BlockSquare",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 2062,
-      "xml_bytes": 0,
-      "state_bytes": 53,
-      "nested": 0
-    },
-    {
-      "key": "37e995",
-      "guid": "37e995",
-      "nickname": "Squad activation",
-      "name": "BlockSquare",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 2062,
-      "xml_bytes": 0,
-      "state_bytes": 53,
-      "nested": 0
-    },
-    {
-      "key": "bcf2a4",
-      "guid": "bcf2a4",
-      "nickname": "Squad activation",
-      "name": "BlockSquare",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 2062,
-      "xml_bytes": 0,
-      "state_bytes": 53,
-      "nested": 0
-    },
-    {
-      "key": "ad63ba",
-      "guid": "ad63ba",
-      "nickname": "Wounds Remaining",
-      "name": "BlockSquare",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 1968,
-      "xml_bytes": 0,
-      "state_bytes": 44,
-      "nested": 0
-    },
-    {
-      "key": "5fd19f",
-      "guid": "5fd19f",
-      "nickname": "Wounds Remaining",
-      "name": "BlockSquare",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 1968,
-      "xml_bytes": 0,
-      "state_bytes": 44,
-      "nested": 0
-    },
-    {
-      "key": "2e4f26",
-      "guid": "2e4f26",
-      "nickname": "Wounds Remaining",
-      "name": "BlockSquare",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 1968,
-      "xml_bytes": 0,
-      "state_bytes": 44,
-      "nested": 0
-    },
     {
       "key": "138b05",
       "guid": "138b05",
@@ -93,30 +21,6 @@
       "guid": "c09349",
       "nickname": "Blue dice camera",
       "name": "Custom_Assetbundle",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "7ac8ba",
-      "guid": "7ac8ba",
-      "nickname": "Red Lethal Hit Zone",
-      "name": "Custom_Tile",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "71ab21",
-      "guid": "71ab21",
-      "nickname": "Blue Lethal Hit Zone",
-      "name": "Custom_Tile",
       "path": [],
       "via": "top",
       "lua_bytes": 0,
@@ -203,45 +107,9 @@
       "name": "Custom_Tile",
       "path": [],
       "via": "top",
-      "lua_bytes": 138251,
+      "lua_bytes": 62948,
       "xml_bytes": 0,
       "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "ee92cf",
-      "guid": "ee92cf",
-      "nickname": "Game Rounds",
-      "name": "Custom_Token",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 6183,
-      "xml_bytes": 0,
-      "state_bytes": 70,
-      "nested": 0
-    },
-    {
-      "key": "055302",
-      "guid": "055302",
-      "nickname": "Red Turns",
-      "name": "Custom_Token",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 5490,
-      "xml_bytes": 0,
-      "state_bytes": 68,
-      "nested": 0
-    },
-    {
-      "key": "7e4111",
-      "guid": "7e4111",
-      "nickname": "Blue Turns",
-      "name": "Custom_Token",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 5490,
-      "xml_bytes": 0,
-      "state_bytes": 69,
       "nested": 0
     },
     {
@@ -383,7 +251,7 @@
       "name": "Custom_Tile",
       "path": [],
       "via": "top",
-      "lua_bytes": 138251,
+      "lua_bytes": 62948,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0
@@ -395,7 +263,7 @@
       "name": "BlockRectangle",
       "path": [],
       "via": "top",
-      "lua_bytes": 23312,
+      "lua_bytes": 14550,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0
@@ -407,7 +275,7 @@
       "name": "Custom_Model",
       "path": [],
       "via": "top",
-      "lua_bytes": 42585,
+      "lua_bytes": 41723,
       "xml_bytes": 3961,
       "state_bytes": 293,
       "nested": 0
@@ -542,18 +410,6 @@
       "nested": 0
     },
     {
-      "key": "a76485",
-      "guid": "a76485",
-      "nickname": "Spawn game tools",
-      "name": "BlockRectangle",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 7901,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
       "key": "17ca2b",
       "guid": "17ca2b",
       "nickname": "Red Dice Roller",
@@ -609,30 +465,6 @@
       "path": [],
       "via": "top",
       "lua_bytes": 3156,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "28419e",
-      "guid": "28419e",
-      "nickname": "RedHiddenZone",
-      "name": "FogOfWarTrigger",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "e1e91a",
-      "guid": "e1e91a",
-      "nickname": "BlueHiddenZone",
-      "name": "FogOfWarTrigger",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0
@@ -893,326 +725,6 @@
       "path": [],
       "via": "top",
       "lua_bytes": 3009,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "988659",
-      "guid": "988659",
-      "nickname": "+1 to Rolls",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "c21ac8",
-      "guid": "c21ac8",
-      "nickname": "+1 to Rolls",
-      "name": "Custom_Token",
-      "path": [
-        "988659"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c2a871",
-      "guid": "c2a871",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "988659"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "404fe0",
-      "guid": "404fe0",
-      "nickname": "Reroll All",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "1bce95",
-      "guid": "1bce95",
-      "nickname": "Reroll All",
-      "name": "Custom_Token",
-      "path": [
-        "404fe0"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "08e2e1",
-      "guid": "08e2e1",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "404fe0"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "adae2a",
-      "guid": "adae2a",
-      "nickname": "Reroll 1s",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "cf3933",
-      "guid": "cf3933",
-      "nickname": "Reroll 1s",
-      "name": "Custom_Token",
-      "path": [
-        "adae2a"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "b2490d",
-      "guid": "b2490d",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "adae2a"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c54686",
-      "guid": "c54686",
-      "nickname": "-1 to Rolls",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "a443a0",
-      "guid": "a443a0",
-      "nickname": "-1 to Rolls",
-      "name": "Custom_Token",
-      "path": [
-        "c54686"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c36fc6",
-      "guid": "c36fc6",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "c54686"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "389ff7",
-      "guid": "389ff7",
-      "nickname": "Reroll 1s",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "cf3933.2",
-      "guid": "cf3933",
-      "nickname": "Reroll 1s",
-      "name": "Custom_Token",
-      "path": [
-        "389ff7"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "b2490d.2",
-      "guid": "b2490d",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "389ff7"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "450445",
-      "guid": "450445",
-      "nickname": "+1 to Rolls",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "c21ac8.2",
-      "guid": "c21ac8",
-      "nickname": "+1 to Rolls",
-      "name": "Custom_Token",
-      "path": [
-        "450445"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c2a871.2",
-      "guid": "c2a871",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "450445"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "d1c6dd",
-      "guid": "d1c6dd",
-      "nickname": "-1 to Rolls",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "a443a0.2",
-      "guid": "a443a0",
-      "nickname": "-1 to Rolls",
-      "name": "Custom_Token",
-      "path": [
-        "d1c6dd"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c36fc6.2",
-      "guid": "c36fc6",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "d1c6dd"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "af7071",
-      "guid": "af7071",
-      "nickname": "Reroll All",
-      "name": "Custom_Model_Infinite_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 2
-    },
-    {
-      "key": "1bce95.2",
-      "guid": "1bce95",
-      "nickname": "Reroll All",
-      "name": "Custom_Token",
-      "path": [
-        "af7071"
-      ],
-      "via": "contained",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "08e2e1.2",
-      "guid": "08e2e1",
-      "nickname": "[b][i]Battle-shocked[/i][/b]",
-      "name": "Custom_Token",
-      "path": [
-        "af7071"
-      ],
-      "via": "child",
-      "lua_bytes": 0,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0

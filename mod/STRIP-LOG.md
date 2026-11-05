@@ -386,3 +386,131 @@ auto-seat on reconnect used to be armed by START GAME and would otherwise never 
   tolerate an LCT-era state; the theme panel builds with the selected swatch lit. A mutant
   without the seat guard failed it. The harness is a stub, not TTS.
 - Not validated: anything in TTS (`mod/TESTING.md` step 10 is the sign-off for this strip).
+
+## Third strip - TC-023t (turn engine, 40k dice features, remaining 40k tokens)
+
+Jonathan's answers to the TC-023s open questions: strip the LCT turn engine, remove the dice
+mats' 40k features and the +1/-1 / Reroll bags, and "really anything that is mostly only
+useful for 40k we should remove ... The dice tray should be maybe half the size and an
+alternative to using the TC native dice roller." Done by `strip_023t.py` (outside the repo)
+against `2b4144b`, every text edit asserting its anchor count.
+
+| | before (TC-023s) | after TC-023t |
+|---|---|---|
+| packed save | 1,008,549 bytes | 735,980 bytes |
+| top-level objects | 104 | 82 |
+| objects incl. nested | 154 | 116 |
+| scripted objects | 47 | 37 |
+| global.lua | 33,212 bytes / 908 lines | 29,438 bytes / 834 lines |
+| Start Menu `738804` | 23,312 bytes / 592 lines | 14,550 bytes / 361 lines |
+| dice tray `acae21` / `839fcc` (each) | 138,251 bytes / 3,481 lines | 62,948 bytes / 1,703 lines |
+| Stopwatch `f4ee71` | 42,585 bytes | 41,723 bytes |
+| XmlUI | 33,308 bytes / 323 lines | 25,315 bytes / 252 lines |
+
+### Inventory and verdicts
+
+| Object / feature | GUID | Verdict | Reason |
+|---|---|---|---|
+| Start Menu game manager: Next Phase / Pass Turn button, `passTurn` / `nextPhase` / `jumpToPhase`, HUD handlers `hudPassTurn` / `hudTurnWatch*` / `hudPhase*`, `updateGameStateHUD`, `resetActivationTokens`, auto-seat hook | `738804` | removed | LCT player-turn engine; the Turn Tracker `4ac9e3` is the turn engine |
+| Game Rounds, Red Turns, Blue Turns | `ee92cf` `055302` `7e4111` | removed | only fed the removed engine and HUD |
+| HUD ROUND badge, per-player Turn readouts, phase strips, minimalist `-` button and mode | XmlUI, `global.lua` | removed | showed / drove the removed engine; minimalist mode only hid the phase strips and clock (the clock toggle still hides the clock) |
+| Chess clock follow-the-turn (`SyncClockToTurn`) | `f4ee71` | removed | only caller was `passTurn`; the clock now stands alone |
+| Dice mat: Lethal Hits, Sustained Hits, Sustained & Lethal, lethal tracking and 3D-text counter | `acae21` `839fcc` | removed | 40k weapon abilities |
+| Lethal Hit Zone tiles | `7ac8ba` `71ab21` | removed | parking zones of that feature |
+| Dice mat: Del / Roll by face rows with the lower / upper toggle | `acae21` `839fcc` | removed | 40k hit / wound / save sequencing (keep the 3+s, re-roll the 1s ...) |
+| Dice mat: Ordered roll, In 2s / In 3s, Copy opponent's dice, +5 / +10 / +25 d6, Dice+ extra colours, the empty "NO FAST REPETITIONS" label | `acae21` `839fcc` | removed | mass-dice and 40k attacker / defender affordances; Trench Crusade rolls 2-10 dice |
+| Dice mat: Coherency, Engagement (2"), 1" / 2" Gap arrange, their hotkeys and object-event monitors | `acae21` `839fcc` | removed | 40k unit coherency and engagement; Trench Crusade models act alone |
+| Dice mat: "Cumulative" (3+ / 4+ ... running counts) display mode | `acae21` `839fcc` | removed | 40k threshold counting |
+| Dice mat stats-helper hooks (`spawnStatsDice`, `getStatsHelperDiceConfig`) | `acae21` `839fcc` | removed | callers (WH Stats Helper) left in the first strip |
+| Global `onScriptingButtonDown` (scripting keys 1/2 -> `changeSustainedHitsThreshold`) | Global | removed | 40k and calling a function that never existed |
+| +1 / -1 to Rolls, Reroll 1s, Reroll All bags | `988659` `450445` `c54686` `d1c6dd` `adae2a` `389ff7` `404fe0` `af7071` | removed | 40k modifiers; TC modifies with +/-DICE |
+| Spawn game tools + Squad activation / Wounds Remaining tracker masters | `a76485`, `229946` `37e995` `bcf2a4`, `ad63ba` `5fd19f` `2e4f26` | removed | 40k squad and multi-wound tracking; TC has Activated / Down / Blood tokens |
+| Hide-army fog zones | `28419e` `e1e91a` | removed | used only by `a76485`'s HIDE / SHOW ARMY; warbands are open information |
+| Dice tray itself: 1-4 d6 and d3 spawns, roll all, clear, revert, last 5 rolls, colours, pips, custom dice, show / hide HUD | `acae21` `839fcc` | kept, resized | TC-sized alternative to the TC roller (below) |
+| Measuring bubbles (1/2/3/6/8/9/12/15" and custom), clear bubbles / lines, highlight paint, save / restore position, their hotkeys | `acae21` `839fcc` | kept | generic table tools that happen to live on the tray |
+| LCT dice roller bowls | `17ca2b` `927ca1` | kept | the tray rolls through them; their ordered / grouped display code is now unreachable (no button sets it) and left as is |
+| Stopwatch (both player timers) | `f4ee71` | kept | stands alone |
+| Banners (Red / Blue) | `0dd964` `0dd965` | kept, UNSURE | a team-coloured banner model, not a 40k rule token; Jonathan's call |
+| Army Placer | `8b7aa6` | kept, UNSURE | moves a staged army from off-table onto the mat; generic, superseded in practice by the importer |
+| LOS markers, selection highlighters, trash bins and counters, d6 / d3 bags, loose d6s, table assets, theme panel, Advanced Features, Flex Table, Mat url, Extract terrain | | kept | generic |
+| Injection Detector | `5c328f` | kept (security) | |
+| Go pieces | `138b05` `6f0823` | kept, UNSURE | unscripted, unreferenced, under the table edge; purpose unknown, may be physical stops |
+
+### The dice tray
+
+Measured live (read-only `tts_exec` probe, 2026-11-05): `acae21` at (0, 0.87, 29), scale
+3.75, bounds centre (2.88, 0.93, 27.97), size **57.11 x 11.15**; `839fcc` mirrored at z=-29.
+Both trays are now scale **1.875**, so the footprint scales about the same pivot to **28.56 x
+5.58** (a quarter of the area): Red spans x -12.8..15.7, z 25.7..31.3, directly in front of the
+Red TC roller `25b3ac` (12, 39) and the Points / Turn / Glory counters (z=38); Blue mirrored.
+The two loose d6 (`ae1f5b`, `c1aaa4`) moved with it to (±9.69, ±30.42). The after-footprint
+is computed from the measured one, not measured.
+
+- Every button is in tray-local coordinates and TTS scales world buttons with the object, so
+  the remaining buttons keep their layout and shrink to half size, with gaps where removed
+  buttons were. Whether the half-size labels read from the seats is the first thing to check
+  live; relaying the buttons out is a follow-up.
+- The dice-area margins in `getDice` / `checkDice` were world units measured on the 3.75 mat;
+  they now scale with the tray (`trayMarginScale`).
+- Max dice **10** (`MAX_TRAY_DICE`): a Success or Injury Roll is 2 dice plus one per +/-DICE
+  or +/-INJURY DICE, keeping the two highest or two lowest (rulebook p15, p18); a model holds at
+  most 6 BLOOD MARKERS, each spendable for -1 DICE / +1 INJURY DICE (p19); a Bloodbath Roll is
+  3 dice (p19); D3 is a halved D6 (p23). 2 + 6 + 2 other modifiers = 10 covers every roll in
+  the book. The 128-dice LCT cap is gone.
+- The readout keeps face counts and the total and adds `High 2: a  Low 2: b` whenever two or
+  more dice are on the tray: the Success / Injury Roll result for +DICE and -DICE alike. No
+  hit / wound / save step remains anywhere in the tray.
+- `modifyMenu` recoloured buttons by fixed index (7-12, 33-37: the spawn buttons, and by
+  accident the lethal buttons' borders). It now recolours by click function: exactly the five
+  spawn buttons.
+- Hotkeys: Coherency, Engagement Range and the 1" / 2" Gap hotkeys removed; "6. Roll All
+  Dice" became "4. Roll All Dice" (a player who bound the old label rebinds it).
+
+### What the HUD shows now
+
+Red and Blue panels: the `?` help and `◴` clock-toggle column, then two clock rows (blue row
+on top, red below) each with play / pause, the readout and +/-, and the `X` hide button.
+Grey: the same without the help/clock buttons' per-player effect. Width 1200 -> 416, main
+1144 -> 360, height unchanged (155) - computed from the element widths, to tune live. The
+row colours are now the static XML ones (the active-turn highlight came from the removed
+engine).
+
+### Other edits
+
+- Start Menu `738804`: only table theme and terrain pass-through remain. It no longer clears
+  the Notes panel on every load (that was the game manager's `Notes.setNotes("")`).
+- Auto-seat: `recordPlayers` lost its trigger again (TC-023s had moved it from START GAME to
+  `passTurn`). Reconnecting players get the seat picker; re-arming auto-seat from the Turn
+  Tracker is a proposal, not done.
+- `global.lua`: minimalist HUD, the turn-counter / activation / wounds / hidden-zone / lethal
+  GUID constants and `onScriptingButtonDown` removed.
+- `save.json`: 22 top-level objects removed, the two trays rescaled, the two loose d6 moved,
+  the "Gaming instructions" and "Trench Crusade content" tabs updated. Scripts and state of the
+  removed objects trashed; `mod/manifest.json` regenerated from the build.
+- The highlight painter's `SELECTION_HIGHLIGHTER_GUID` lived in the removed coherency section;
+  the undefined-global check caught it and it is now declared above the painter.
+
+### Validation
+
+- `tts_lint.py mod/scripts mod/test mod/save.json`: luac 38 ok / 2 allowed / 0 failed,
+  malware scan 157 scripts / 0 findings, exit 0; packed build 117 scripts / 0 findings, exit 0.
+  `luac -p` on each edited script exits 0 (the trays with `!=` rewritten in a throwaway copy).
+- `importer_test` 311 and `tracker_test` 233 checks, exit 0.
+- Pack 735,980 bytes, deterministic; `--verify` round trip JSON-equal and reproduces
+  `scripts/`, `ui/`, `state/`, `save.json`. The new save is the old one minus the 22 objects,
+  with only the two tray scales, two loose-die positions and two notebook tabs changed.
+- Dangling references: every name removed from the edited scripts searched across scripts,
+  UI and tests (the hits are unrelated locals of the same name in other scripts); no Lua
+  writes a removed HUD id; every global.xml handler resolves except the upstream `closeRedir`,
+  and no XML handler routes to `738804` any more; every `.call` target resolves except the
+  upstream `openTerrain` (`changeSustainedHitsThreshold` is gone with its caller); none of the
+  22 GUIDs appears anywhere; every 6-hex literal resolves except `948ce5`. An undefined-global
+  check over the luac listing (definitions read from source, since the trays' main chunk has
+  more than 255 constants) reports only `savePositionTip`, nil upstream as well.
+- Offline harness `harness_023t.lua` (stubbed TTS, 67 checks, exit 0): no 40k button or hotkey
+  on the tray, every kept tool still has its button, the colour swatch recolours exactly the
+  five spawn buttons, spawning stops at 10 and every die lands inside the half-size tray's dice
+  area, the readout shows counts, total and `High 2: 12  Low 2: 2`, the Start Menu draws no
+  buttons and saves three fields, the turn functions are gone, the Global HUD preferences touch
+  no removed id. It went red on the pre-strip scripts and on a mutant with the 128 cap restored.
+- Not validated: anything in TTS (`mod/TESTING.md` step 11).
