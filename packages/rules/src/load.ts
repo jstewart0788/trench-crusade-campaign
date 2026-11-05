@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildModelMap, buildRulesData, MODEL_MAP_FILE, RULES_FILES, type ModelMap, type RulesData, type RulesFileKey, type RulesFiles } from "./data.js";
+import { buildModelMap, buildRulesData, MODEL_MAP_FILE, MODEL_PICKS_FILE, RULES_FILES, type ModelMap, type RulesData, type RulesFileKey, type RulesFiles } from "./data.js";
 
 export * from "./data.js";
 
@@ -19,7 +19,9 @@ export function readRulesFiles(rootDir: string): RulesFiles {
 }
 
 export function loadModelMap(rootDir: string): ModelMap {
-  return buildModelMap(JSON.parse(readFileSync(resolve(rootDir, MODEL_MAP_FILE), "utf8")));
+  const picksPath = resolve(rootDir, MODEL_PICKS_FILE);
+  const picks = existsSync(picksPath) ? (JSON.parse(readFileSync(picksPath, "utf8")) as unknown) : undefined;
+  return buildModelMap(JSON.parse(readFileSync(resolve(rootDir, MODEL_MAP_FILE), "utf8")), picks);
 }
 
 /** Loads and validates the rules data, plus the TTS model map when `<rootDir>/data/tts/models.json` exists. */

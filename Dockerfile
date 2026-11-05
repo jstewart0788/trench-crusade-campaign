@@ -12,6 +12,7 @@ COPY packages ./packages
 COPY apps ./apps
 COPY data/rules ./data/rules
 COPY data/tts/models.json ./data/tts/models.json
+COPY data/tts/model-picks.json ./data/tts/model-picks.json
 RUN pnpm --filter @tc/rules build && pnpm --filter @tc/api build && pnpm --filter @tc/web build
 RUN pnpm --filter @tc/api --prod deploy --legacy /out/api 2>/dev/null || pnpm --filter @tc/api --prod deploy /out/api
 

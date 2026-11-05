@@ -292,3 +292,21 @@ describe("built-in armour is not counted twice", () => {
     expect(out.members[0]!.stats.armourBreakdown).toEqual([]);
   });
 });
+
+describe("hand-picked models by loadout (data/tts/model-picks.json)", () => {
+  it("gives each Raider the sculpt for its weapon, and falls back to the unit default otherwise", async () => {
+    const { loadRulesData } = await import("../src/load.js");
+    const { modelFor } = await import("../src/data.js");
+    const { resolve } = await import("node:path");
+    const data = loadRulesData(resolve(import.meta.dirname, "../../.."));
+    const raider = "heretic-naval-raiders/heretic-raider";
+    expect(modelFor(data.models, raider, ["trench-shield", "submachine-gun", "bayonet"])).toMatchObject({ picked: true, candidate: { guid: "827743" } });
+    expect(modelFor(data.models, raider, ["trench-shield", "automatic-shotgun", "bayonet"])).toMatchObject({ picked: true, candidate: { guid: "adbef0" } });
+    expect(modelFor(data.models, raider, ["boarding-axe", "gas-grenades", "sword-axe"])).toMatchObject({ picked: true, candidate: { guid: "a23c4d" } });
+    const plain = modelFor(data.models, raider, ["pistol"]);
+    expect(plain?.picked).toBe(false);
+    expect(plain?.candidate.guid).toBe(data.models!.byUnitId.get(raider)!.guid);
+    expect(modelFor(data.models, "heretic-naval-raiders/heretic-captain", [])).toMatchObject({ picked: true, candidate: { guid: "c43176" } });
+    expect(modelFor(data.models, "new-antioch/lieutenant", ["pistol"])?.picked).toBe(false);
+  });
+});

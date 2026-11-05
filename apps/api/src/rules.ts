@@ -21,7 +21,9 @@ export function loadRules(dir: string): LoadedRules {
     files[key] = JSON.parse(readFileSync(join(dir, basename(RULES_FILES[key])), "utf8")) as unknown;
   }
   const modelsPath = resolve(dir, "..", "tts", "models.json");
-  const models = existsSync(modelsPath) ? buildModelMap(JSON.parse(readFileSync(modelsPath, "utf8"))) : undefined;
+  const picksPath = resolve(dir, "..", "tts", "model-picks.json");
+  const picks = existsSync(picksPath) ? (JSON.parse(readFileSync(picksPath, "utf8")) as unknown) : undefined;
+  const models = existsSync(modelsPath) ? buildModelMap(JSON.parse(readFileSync(modelsPath, "utf8")), picks) : undefined;
   const data = buildRulesData(files, models);
   const json = Buffer.from(JSON.stringify(files));
   const etag = `"${createHash("sha256").update(json).digest("hex").slice(0, 32)}"`;

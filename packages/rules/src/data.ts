@@ -168,9 +168,55 @@ export const ModelMapFile = z.object({ $schema: z.literal("tc-tts-models-v1"), u
 
 export const MODEL_MAP_FILE = "data/tts/models.json";
 
+export const MODEL_PICKS_FILE = "data/tts/model-picks.json";
+
+const PickedModel = z.object({
+  modId: z.string(),
+  guid: z.string(),
+  nickname: z.string(),
+  meshUrl: z.string(),
+  diffuseUrl: z.string().nullable(),
+  colliderUrl: z.string().nullable(),
+  scale: Vec3,
+  parts: z.array(
+    z.object({
+      kind: z.enum(["Custom_Model", "Custom_Assetbundle"]),
+      meshUrl: z.string().nullable(),
+      diffuseUrl: z.string().nullable(),
+      colliderUrl: z.string().nullable(),
+      assetBundleUrl: z.string().nullable(),
+      position: Vec3,
+      rotation: Vec3,
+      scale: Vec3,
+    }),
+  ),
+});
+
+export const ModelPicksFile = z.object({
+  $schema: z.literal("tc-tts-model-picks-v1"),
+  picks: z.array(z.object({ unitId: z.string(), matchItemIds: z.array(z.string()), note: z.string().optional(), model: PickedModel })),
+}).passthrough();
+
+export interface ModelPick {
+  matchItemIds: string[];
+  candidate: ModelCandidate;
+}
+
 export interface ModelMap {
   /** The chosen default candidate per unit id; unmapped units and fireteam wrappers are absent. */
   byUnitId: Map<string, ModelCandidate>;
+  /** Hand-picked models per unit, chosen by the member's loadout (data/tts/model-picks.json). */
+  picksByUnitId?: Map<string, ModelPick[]>;
+}
+
+/** The most specific pick whose items the member all carries, else the unit's default. */
+export function modelFor(models: ModelMap | undefined, unitId: string, itemIds: readonly string[]): { candidate: ModelCandidate; picked: boolean } | undefined {
+  const carried = new Set(itemIds);
+  const fits = (models?.picksByUnitId?.get(unitId) ?? []).filter((p) => p.matchItemIds.every((id) => carried.has(id)));
+  fits.sort((a, b) => b.matchItemIds.length - a.matchItemIds.length);
+  if (fits[0]) return { candidate: fits[0].candidate, picked: true };
+  const d = models?.byUnitId.get(unitId);
+  return d ? { candidate: d, picked: false } : undefined;
 }
 
 export interface RulesData {
@@ -308,7 +354,7 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
  * GUIDs repeat inside a TTS save, so a unit's chosen model is addressed by
  * modId + guid + nickname (see data/tts/MODELS-COVERAGE.md).
  */
-export function buildModelMap(raw: unknown): ModelMap {
+export function buildModelMap(raw: unknown, picksRaw?: unknown): ModelMap {
   const parsed = ModelMapFile.safeParse(raw);
   if (!parsed.success) {
     throw new RulesDataError(MODEL_MAP_FILE, parsed.error.issues.slice(0, 10).map((i) => `${i.path.join(".")}: ${i.message}`));
@@ -320,7 +366,24 @@ export function buildModelMap(raw: unknown): ModelMap {
     if (!chosen) throw new RulesDataError(MODEL_MAP_FILE, [`units.${unitId}: chosen ${unit.chosen} is not among its candidates`]);
     byUnitId.set(unitId, chosen);
   }
-  return { byUnitId };
+  if (picksRaw === undefined) return { byUnitId };
+  const picks = ModelPicksFile.safeParse(picksRaw);
+  if (!picks.success) {
+    throw new RulesDataError(MODEL_PICKS_FILE, picks.error.issues.slice(0, 10).map((i) => `${i.path.join(".")}: ${i.message}`));
+  }
+  const picksByUnitId = new Map<string, ModelPick[]>();
+  for (const p of picks.data.picks) {
+    const m = p.model;
+    const candidate: ModelCandidate = {
+      modId: m.modId, guid: m.guid, nickname: m.nickname, meshUrl: m.meshUrl, diffuseUrl: m.diffuseUrl, colliderUrl: m.colliderUrl,
+      rotation: [0, 0, 0], scale: m.scale,
+      parts: m.parts.map((q) => ({ ...q, guid: "", nickname: "" })),
+    };
+    const list = picksByUnitId.get(p.unitId) ?? [];
+    list.push({ matchItemIds: p.matchItemIds, candidate });
+    picksByUnitId.set(p.unitId, list);
+  }
+  return { byUnitId, picksByUnitId };
 }
 
 /** Which roster list a warband draws from: a faction's core list, or one of its subfactions. */

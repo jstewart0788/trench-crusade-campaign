@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { itemCost, warbandCost } from "./cost.js";
 import { normaliseName } from "./limits.js";
-import { accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
+import { modelFor, accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
 import { profileAbilities, profileKit } from "./profile.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import { EquipmentCategory, Movement } from "./schema.js";
@@ -49,7 +49,7 @@ export const ExportModelPart = z.object({
 export type ExportModelPart = z.infer<typeof ExportModelPart>;
 
 export const ExportModel = z.object({
-  source: z.literal("default"),
+  source: z.enum(["default", "pick"]),
   modId: z.string(),
   guid: z.string(),
   nickname: z.string(),
@@ -193,7 +193,7 @@ function exportMember(member: WarbandMember, warband: Warband, data: RulesData, 
   const core = exportMemberCore(member, warband, data, variantName, extras);
   return {
     ...core,
-    model: exportModel(models?.byUnitId.get(core.unit.id)),
+    model: exportModel(modelFor(models, core.unit.id, member.equipmentItemIds)),
     ttsDescription: renderTtsDescription(core),
     ttsGmNotes: renderTtsGmNotes(core),
   };
@@ -203,10 +203,11 @@ function exportMember(member: WarbandMember, warband: Warband, data: RulesData, 
 // the canonical form so the payload survives a JSON round-trip unchanged.
 const vec3 = (v: [number, number, number]): [number, number, number] => [v[0] + 0, v[1] + 0, v[2] + 0];
 
-function exportModel(candidate: ModelCandidate | undefined): ExportModel | null {
-  if (!candidate) return null;
+function exportModel(chosen: { candidate: ModelCandidate; picked: boolean } | undefined): ExportModel | null {
+  if (!chosen) return null;
+  const candidate = chosen.candidate;
   return {
-    source: "default",
+    source: chosen.picked ? "pick" : "default",
     modId: candidate.modId,
     guid: candidate.guid,
     nickname: candidate.nickname,
