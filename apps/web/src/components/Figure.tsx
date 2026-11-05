@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { describeItem } from "../roster/describe.js";
 import type { FigureView, KitEntry, SlotView } from "../roster/slots.js";
 import { isBuiltIn } from "../roster/traits.js";
@@ -20,7 +21,7 @@ interface Props {
 const pendingChip = (entry: KitEntry) =>
   entry.pending === "add" ? <span className={styles.chipAdd}>pending</span> : entry.pending === "remove" ? <span className={styles.chipRemove}>removing</span> : null;
 
-/** The model as a figure: one button per slot, a silhouette behind. */
+/** The model as a paper doll: the figure in the middle, its slots either side. */
 export function Figure({ figure, openSlot, onSlot, onRemove, onKeep, replaceableNow }: Props) {
   return (
     <div className={styles.wrap}>
@@ -90,6 +91,7 @@ function Slot({ slot, open, onClick, replaceable }: { slot: SlotView; open: bool
       title={locked ? "Built-in kit: always carried" : slot.hint}
       aria-pressed={open}
       data-locked={locked ? "true" : undefined}
+      data-zone={slot.zone}
     >
       <span className={styles.label}>
         {slot.label}
@@ -124,19 +126,95 @@ function Slot({ slot, open, onClick, replaceable }: { slot: SlotView; open: bool
   );
 }
 
+// An original trench soldier on a round base: helmet, gas mask, greatcoat, puttees.
+// Each kit zone has its own part, lit while its slot is hovered or open.
 function Silhouette() {
+  const id = useId().replace(/:/g, "");
+  const body = `url(#${id}-body)`;
   return (
-    <svg className={styles.silhouette} viewBox="0 0 300 440" aria-hidden="true" focusable="false">
-      <g fill="currentColor" fillOpacity="0.07" stroke="currentColor" strokeOpacity="0.4" strokeWidth="2" strokeLinejoin="round">
-        <circle cx="150" cy="52" r="30" />
-        <path d="M138 84 h24 v14 h-24 z" />
-        <path d="M110 100 h80 l14 20 v120 l-18 10 h-72 l-18 -10 v-120 z" />
-        <path d="M92 118 l-34 22 l-18 96 l22 6 l22 -78 l8 -4 z" />
-        <path d="M208 118 l34 22 l18 96 l-22 6 l-22 -78 l-8 -4 z" />
-        <path d="M60 242 l-16 24 l10 14 l20 -16 l-4 -22 z" />
-        <path d="M240 242 l16 24 l-10 14 l-20 -16 l4 -22 z" />
-        <path d="M114 252 h30 l6 110 l-2 60 h-30 l-4 -60 z" />
-        <path d="M156 252 h30 l0 110 l-4 60 h-30 l-2 -60 z" />
+    <svg className={styles.silhouette} viewBox="0 0 200 440" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id={`${id}-body`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="currentColor" stopOpacity="0.2" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0.05" />
+        </linearGradient>
+        <radialGradient id={`${id}-glow`} cx="0.5" cy="0.35" r="0.6">
+          <stop offset="0" stopColor="currentColor" stopOpacity="0.14" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+        </radialGradient>
+        <filter id={`${id}-lens`} x="-1" y="-1" width="3" height="3">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+      </defs>
+      <ellipse cx="100" cy="190" rx="100" ry="190" fill={`url(#${id}-glow)`} />
+
+      <g className={styles.base}>
+        <ellipse cx="100" cy="425" rx="80" ry="12" />
+        <ellipse cx="100" cy="420" rx="80" ry="12" />
+      </g>
+
+      <g className={styles.part} fill={body}>
+        <path d="M66 344H96L94 404H68Z" />
+        <path d="M104 344H134L132 404H106Z" />
+        <path d="M62 402H98L100 420H54Q54 408 62 402Z" />
+        <path d="M102 402H138Q146 408 146 420H100Z" />
+      </g>
+      <g className={styles.detail}>
+        <path d="M67 356L95 350M67 368L95 362M67 380L95 374M68 392L94 386M105 356L133 350M105 368L133 362M105 380L133 374M106 392L132 386" />
+      </g>
+
+      <g className={`${styles.part} ${styles.zoneRanged}`} fill={body}>
+        <path d="M34 166Q16 176 14 212L10 300Q12 312 24 312L30 306L34 222L44 196Z" />
+        <circle cx="20" cy="318" r="10" />
+      </g>
+      <g className={`${styles.part} ${styles.zoneMelee}`} fill={body}>
+        <path d="M166 166Q184 176 186 212L190 300Q188 312 176 312L170 306L166 222L156 196Z" />
+        <circle cx="180" cy="318" r="10" />
+      </g>
+
+      <g className={`${styles.part} ${styles.zoneTorso}`} fill={body}>
+        <path d="M64 148H136Q160 152 168 166L162 262Q160 300 168 344L112 348L100 312L88 348L32 344Q40 300 38 262L32 166Q40 152 64 148Z" />
+      </g>
+      <g className={styles.detail}>
+        <path d="M100 152V312" />
+        <path d="M44 160L58 154L160 252L144 256Z" />
+        <circle cx="88" cy="182" r="2.2" />
+        <circle cx="88" cy="204" r="2.2" />
+        <circle cx="88" cy="226" r="2.2" />
+        <circle cx="112" cy="182" r="2.2" />
+        <circle cx="112" cy="204" r="2.2" />
+        <circle cx="112" cy="226" r="2.2" />
+      </g>
+
+      <g className={`${styles.part} ${styles.zoneGrenade}`} fill={body}>
+        <path d="M36 252H164L163 266H37Z" />
+        <rect x="93" y="249" width="14" height="20" rx="2" />
+        <rect x="120" y="266" width="20" height="18" rx="2" />
+        <ellipse cx="56" cy="276" rx="7" ry="9" />
+        <ellipse cx="72" cy="278" rx="7" ry="9" />
+      </g>
+
+      <g className={`${styles.part} ${styles.zoneHead}`} fill={body}>
+        <path d="M74 132H126L136 150H64Z" />
+        <path d="M70 84H130C132 106 124 122 112 130H88C76 122 68 106 70 84Z" />
+        <path d="M90 128H110L114 152H86Z" />
+        <path d="M58 70C58 36 78 18 100 18C122 18 142 36 142 70L152 80L146 86H54L48 80Z" />
+      </g>
+      <g className={styles.detail}>
+        <path d="M54 86H146M89 136H111M88 144H112" />
+        <path d="M112 142C130 150 134 170 122 182" />
+        <circle cx="64" cy="64" r="2.5" />
+      </g>
+      <g className={styles.lens}>
+        <circle cx="86" cy="102" r="9" filter={`url(#${id}-lens)`} />
+        <circle cx="114" cy="102" r="9" filter={`url(#${id}-lens)`} />
+        <circle cx="86" cy="102" r="7" />
+        <circle cx="114" cy="102" r="7" />
+      </g>
+
+      <g className={`${styles.ghost} ${styles.zoneOffhand}`}>
+        <circle cx="22" cy="268" r="26" />
+        <circle cx="22" cy="268" r="6" />
       </g>
     </svg>
   );
