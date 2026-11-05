@@ -14,7 +14,7 @@
     "mod:build": "python3 -I scripts/tts_pack.py mod mod/build/trench-crusade.json",
     "mod:verify": "python3 -I scripts/tts_pack.py mod mod/build/trench-crusade.json && python3 -I scripts/tts_unpack.py mod/build/trench-crusade.json mod/build/roundtrip --verify",
     "mod:install": "python3 -I scripts/tts_install.py",
-    "mod:test": "lua mod/test/importer_test.lua && python3 -I scripts/tts_lint.py mod/scripts mod/test",
+    "mod:test": "lua mod/test/importer_test.lua && lua mod/test/tracker_test.lua && python3 -I scripts/tts_lint.py mod/scripts mod/test",
     "mod:serve": "python3 -I scripts/tts_fixture_server.py"
   },
   "devDependencies": {

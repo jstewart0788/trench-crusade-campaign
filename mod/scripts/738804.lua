@@ -2352,7 +2352,7 @@ armyMover = ""
 first = "Red"
 currentTurn = "Red"
 
-phases = {"Command Phase", "Movement Phase", "Shooting Phase", "Charge Phase", "Fight Phase"}
+phases = {"Initiative Phase", "Activation Phase", "Morale Phase"}
 currentPhase = 1
 startBtn = {
     index = 1, label = "S T A R T  G A M E", click_function = "startGame", function_owner = self,
@@ -2599,8 +2599,8 @@ function hudTurnWatch2(player)
     hudAdvanceIfActive(player, "Red")
 end
 
-local _phaseIds     = { "Ph1", "Ph2", "Ph3", "Ph4", "Ph5" }
-local _phaseToId    = { [1]="Ph1", [2]="Ph2", [3]="Ph3", [4]="Ph4", [5]="Ph5" }
+local _phaseIds     = { "Ph1", "Ph2", "Ph3" }
+local _phaseToId    = { [1]="Ph1", [2]="Ph2", [3]="Ph3" }
 
 function updatePhaseHUD()
     for _, id in ipairs(_phaseIds) do
@@ -2619,17 +2619,13 @@ local function hudJumpToPhaseForTurn(player, targetTurn, idx)
     jumpToPhase(idx)
 end
 
-function hudPhaseCmdBlue(player) hudJumpToPhaseForTurn(player, "Blue", 1) end
-function hudPhaseMovBlue(player) hudJumpToPhaseForTurn(player, "Blue", 2) end
-function hudPhaseShtBlue(player) hudJumpToPhaseForTurn(player, "Blue", 3) end
-function hudPhaseChrBlue(player) hudJumpToPhaseForTurn(player, "Blue", 4) end
-function hudPhaseFgtBlue(player) hudJumpToPhaseForTurn(player, "Blue", 5) end
+function hudPhaseIniBlue(player) hudJumpToPhaseForTurn(player, "Blue", 1) end
+function hudPhaseActBlue(player) hudJumpToPhaseForTurn(player, "Blue", 2) end
+function hudPhaseMorBlue(player) hudJumpToPhaseForTurn(player, "Blue", 3) end
 
-function hudPhaseCmdRed(player) hudJumpToPhaseForTurn(player, "Red", 1) end
-function hudPhaseMovRed(player) hudJumpToPhaseForTurn(player, "Red", 2) end
-function hudPhaseShtRed(player) hudJumpToPhaseForTurn(player, "Red", 3) end
-function hudPhaseChrRed(player) hudJumpToPhaseForTurn(player, "Red", 4) end
-function hudPhaseFgtRed(player) hudJumpToPhaseForTurn(player, "Red", 5) end
+function hudPhaseIniRed(player) hudJumpToPhaseForTurn(player, "Red", 1) end
+function hudPhaseActRed(player) hudJumpToPhaseForTurn(player, "Red", 2) end
+function hudPhaseMorRed(player) hudJumpToPhaseForTurn(player, "Red", 3) end
 
 function jumpToPhase(idx)
     if gameNotStartedGuard() then return end

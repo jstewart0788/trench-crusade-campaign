@@ -23,7 +23,8 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
   Blue buttons) is up. Pick **Red**.
 - The table surface has no mission-matrix bags, no card decks, no PDFs on the shelf, no link
   tiles at the top-right edge, no "Reinforcements and Reserves" boards behind the hand zones.
-- Notebook tabs: "Gaming instructions" (rewritten) and "Credits" (upstream attribution, kept).
+- Notebook tabs: "Gaming instructions" (rewritten), "Credits" (upstream attribution, kept)
+  and "Trench Crusade content" (what TC-014/017 added and where it is).
 
 ## 2. Start menu (the object at x≈52 behind the Red side)
 
@@ -42,11 +43,16 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 ## 3. Start a game, turns and HUD
 
 - Toggle "Red player first", press **START GAME** (needs a deployment zone selected). Chat
-  prints `Command Phase` and `It's Blue Player's turn`. The deployment overlay disappears.
+  prints `Initiative Phase` and `It's Blue Player's turn`. The deployment overlay disappears.
 - The HUD at the top right now has: `?` help, clock toggle, `-` minimalist; a ROUND badge;
-  two rows (Blue, Red) each with Turn N, five phase glyphs, the chess-clock readout and its
-  +/-/play/pause controls; an `X` hide button. There is **no** VP, CP, disposition badge,
-  star/"Show scoring" button, or Scoreboard / Gain CP / Use CP row.
+  two rows (Blue, Red) each with Turn N, **three** phase glyphs (die = Initiative, crossed
+  swords = Activation, skull = Morale; hover for the tooltip), the chess-clock readout and
+  its +/-/play/pause controls; an `X` hide button. There is **no** VP, CP, disposition
+  badge, star/"Show scoring" button, or Scoreboard / Gain CP / Use CP row. Clicking a glyph
+  on your own row jumps to that phase and chat prints its name; the on-table phase button
+  cycles Initiative -> Activation -> Morale -> pass turn. If the three glyphs render as
+  boxes, the font lacks U+2684/U+2694/U+2620 - swap the `text` attributes in
+  `mod/ui/global.xml` for ones from the old strip (✴ ➡ ✜ render).
 - Click the ROUND badge or the on-table "Pass Turn" button: the turn flips, the Turn counter
   tokens at x≈51 increment, chat prints `Round R, <Colour> Turn T` with **no** CP message.
 - Round counter: when the Blue and Red turn counters both pass a value the Game Rounds token
@@ -73,9 +79,10 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
   Scoreboard" must be **gone** from the list.
 - **Dice rollers** (the bowls next to the mats) print results in chat.
 - **Trash bins** (vortices) destroy dropped objects; the counters beside them count.
-- **Token bags**: both Mothmy bags and both Legacy bags "Place" and "Recall" their tokens;
-  infinite bags (Action, Objective, Hidden, Marked, +1/-1, Reroll, Battle-shocked, banners,
-  d6/d3) dispense.
+- **Token bags**: the LCT infinite bags (Action, Objective, Hidden, Marked, +1/-1, Reroll,
+  banners, d6/d3) dispense. The Mothmy, Legacy, Mission & Utility, Battle Shocked and
+  Objective Secured bags are **gone** (TC-017); the Trench Crusade bags that took their
+  place are checked in step 9.
 - **Trackers**: "Spawn game tools" (x≈80, hidden under the Red edge) spawns Squad
   activation / Wounds trackers; HIDE ARMY moves selected models into the hidden zone.
 - **LOS markers**, **selection highlighters** (select a model: a ring appears), **stopwatch**
@@ -93,7 +100,10 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 - `HUD_FULL` in `mod/scripts/global.lua` (height 155 / controls 143) was derived from the
   spectator panel after removing the CP row; if the Red/Blue panels clip the clock steppers
   or leave a gap, change those two numbers (and the matching `height="155"` /
-  `preferredHeight="143"` in `mod/ui/global.xml`).
+  `preferredHeight="143"` in `mod/ui/global.xml`). Its width (1200 / main 1144) is the old
+  1280 / 1224 minus the two phase buttons TC-014 removed; if the clock readout clips or the
+  panel has slack, change `width` / `mainWidth` and the matching `width="1200"` /
+  `preferredWidth="1144" minWidth="1144"` on all three HUD panels in the XML.
 - Minimalist mode (`-`): the phase strips hide and the panel narrows to 804; the height no
   longer changes.
 
@@ -183,9 +193,56 @@ URL shape is the same. TTS's `WebRequest` reaches localhost without any allow-li
 - Save and reload: the API field, code and colour choice persist (object script state);
   the member list does not (re-import to repopulate it).
 
+## 9. Trench Crusade content (TC-014 / TC-017)
+
+Offline first: `pnpm mod:test` also runs `mod/test/tracker_test.lua` (token tags, turn and
+phase transitions, roll-off, Success Roll table, morale text). Nothing below has been run in
+TTS; all geometry (shelf height, button sizes, bag icons) is a first guess to tune.
+
+- **Rules shelf**: the "Trench Crusade content" notebook tab lists it. Press **Rules shelf**
+  on the Turn Tracker (dark 8"x8" tile at x≈-22, z≈15, above the Warband Importer): the
+  camera swings to the raised ledge at x≈102 (where LCT kept its 40k PDFs). Six PDFs lie
+  22" apart along z with a "RULES SHELF" 3D label at the +z end: Rulebook (z=11), Warbands
+  (-11), FAQ (33), Tactics Guide (-33), Red Brigade (55), Great Hunger (-55). Each loads its
+  pages (first open downloads from Steam). The Rulebook, Warbands and Tactics Guide carry a
+  column of jump buttons down their left edge: press **Injury Table** on the Rulebook and it
+  turns to the Injury Table page; **New Antioch** on Warbands opens that faction. If the
+  pages read upside-down from the table side, set `rotY` 270 -> 90 on the six PDFs and the
+  label in `mod/save.json`; if the shelf floats or sinks, adjust `posY` 9.5 (and
+  `RULES_SHELF` in `mod/scripts/4ac9e3.lua` to match).
+- **Trench Crusade Dice Roller** (round pad behind each dice mat at x≈±12, z≈±39): drop a
+  d6 from the d6 bag on its centre, press **+** twice (label `+2`), click the number: four
+  dice spawn around the pad and chat prints `<name> rolled: ... HIGH : <two highest>`.
+  Press **-** until `-1` and roll again: three dice, chat prints `LOW : <two lowest>`. At
+  `0` it rolls two and prints the total. Clear removes the dice. Right-click shows **no**
+  alternate-art states (dropped on purpose). Save/reload keeps the +/- setting.
+- **Counters** (three per side at z≈±38: Points, Turn, Glory): left click +1, right click
+  -1; Turn will not go below 1, the others not below 0. The label is editable in place.
+- **Token bags** (both sides, where the 40k bags were: x≈±33.5 column holds Blood and
+  Blessing, x≈±37 column holds Activated, Down, Tough, Objective). Each shows a small icon
+  of its content. Drag out a Blood Marker: a red d6. Blessing: a d6. Activated / Down /
+  Tough: Gannel's tokens (Down stands upright). Objective: the green glowing marker.
+  Right-click a drawn token > Tags: `tc-token:<role>`. If an icon is too small, too large or
+  sunk into the bag, tune the `ChildObjects[0].Transform` scale / posY of that bag in
+  `mod/save.json` (dice icons 0.34 at y 0.14, tokens 0.27, objective 0.4).
+- **Turn Tracker**: the top line reads `Turn 1 - Initiative Phase`. **Initiative roll-off**
+  broadcasts `Initiative roll-off: Red N, Blue M - <side> has the Initiative.` in the
+  winner's colour (or `tied, roll again` in white). Draw three Activated tokens onto the
+  table, press **Start turn (clear Activated)**: the three vanish, the bags keep theirs,
+  chat reads `Turn 1 - Activation Phase. Cleared 3 Activated token(s)...`, the label
+  follows. Draw two Down tokens, press **Morale reminder**: label `Turn 1 - Morale Phase`,
+  chat prints the p21 rule and `2 Down token(s) on the table (both sides together).`
+  Press **Next turn**: label `Turn 2 - Initiative Phase`, chat prints the initiative
+  reminder, and **both** Turn counters read 2 (left-clicking a counter afterwards still
+  works). **Red Shaken: no** toggles to `YES` and broadcasts the Risky-roll consequence in
+  red; press again to clear. Save and reload: the turn, phase and Shaken flags persist and
+  the buttons rebuild. If the buttons overflow the tile or the text is too small, tune the
+  `BUTTONS` table (z, w, h, font) in `mod/scripts/4ac9e3.lua`; nothing else depends on it.
+- **HUD** still works after all of the above (step 3) - the tracker and the LCT round /
+  pass-turn machinery are independent by design.
+
 ## Reporting
 
 Record every error line and every item above that did not behave, with the object GUID
 where it is visible (hover the object with the Gizmo tool). Those become TC-013 follow-ups;
-TC-014 then ports the Trench Crusade content on top of a signed-off engine. Step 8 findings
-are TC-016 follow-ups.
+step 8 findings are TC-016 follow-ups and step 9 findings TC-014 / TC-017 follow-ups.

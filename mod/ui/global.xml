@@ -80,9 +80,9 @@
   <Button id="DebugToolsMinBtn" text="—" fontSize="24" textColor="#FFFFFF" color="#B52020" width="44" height="44" roundEdges="true" outline="#2a2a4aCC" outlineSize="3" rectAlignment="UpperRight" offsetXY="-26 -26" onClick="minimizeDebugTools" tooltip="Minimize"/>
 </Panel>
 
-<Panel id="RedHud_VPScores" visibility="Red" active="true" scale="0.40 0.40 0.40" width="1280" height="155" rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging="true" restrictDraggingToParentBounds="false" returnToOriginalPositionWhenReleased="false">
+<Panel id="RedHud_VPScores" visibility="Red" active="true" scale="0.40 0.40 0.40" width="1200" height="155" rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging="true" restrictDraggingToParentBounds="false" returnToOriginalPositionWhenReleased="false">
   <HorizontalLayout spacing="6" padding="0" childForceExpandWidth="false" childForceExpandHeight="false" childAlignment="UpperLeft">
-  <Panel id="RedHud_MainPanel" flexibleWidth="0" preferredWidth="1224" minWidth="1224" preferredHeight="155" minHeight="155" flexibleHeight="0" color="#0D0D1AE6" outline="#2a2a4a" outlineSize="3">
+  <Panel id="RedHud_MainPanel" flexibleWidth="0" preferredWidth="1144" minWidth="1144" preferredHeight="155" minHeight="155" flexibleHeight="0" color="#0D0D1AE6" outline="#2a2a4a" outlineSize="3">
   <HorizontalLayout spacing="6" padding="6" childForceExpandWidth="false" childForceExpandHeight="false" childAlignment="MiddleLeft">
     <VerticalLayout id="RedHudControls" flexibleWidth="0" preferredWidth="54" preferredHeight="143" flexibleHeight="0" spacing="4">
       <Button id="RedHud_HelpBtn" text="?" fontSize="28" fontStyle="Bold" textColor="#000000" color="#FFFFFF" width="50" height="48" roundEdges="true" outline="#2a2a4aCC" outlineSize="2" onClick="hudToggleHelp" tooltip="Help"/>
@@ -104,11 +104,9 @@
           <Text id="RedHud_TVWatch1" text="Turn 0" fontSize="40" color="White" shadow="#000000AA" shadowDistance="1 -1"/>
         </Panel>
         <HorizontalLayout id="RedHud_PhaseRow1" spacing="2">
-          <Button id="RedHud_Ph11" text="✴" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseCmdBlue"/>
-          <Button id="RedHud_Ph21" text="➡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMovBlue"/>
-          <Button id="RedHud_Ph31" text="✜" fontSize="36" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseShtBlue"/>
-          <Button id="RedHud_Ph41" text="⚡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseChrBlue"/>
-          <Button id="RedHud_Ph51" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseFgtBlue"/>
+          <Button id="RedHud_Ph11" text="⚄" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseIniBlue" tooltip="Initiative Phase"/>
+          <Button id="RedHud_Ph21" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseActBlue" tooltip="Activation Phase"/>
+          <Button id="RedHud_Ph31" text="☠" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMorBlue" tooltip="Morale Phase"/>
         </HorizontalLayout>
         <VerticalLayout spacing="2">
           <Button id="RedHud_ChsStpPlay1"  text="▶" fontSize="16" color="rgba(0,0,0,0.30)" textColor="White" width="28" height="26" roundEdges="true" onClick="" tooltip="Start Blue clock"/>
@@ -131,11 +129,9 @@
           <Text id="RedHud_TVWatch2" text="Turn 0" fontSize="40" color="White" shadow="#000000AA" shadowDistance="1 -1"/>
         </Panel>
         <HorizontalLayout id="RedHud_PhaseRow2" spacing="2">
-          <Button id="RedHud_Ph12" text="✴" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseCmdRed"/>
-          <Button id="RedHud_Ph22" text="➡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMovRed"/>
-          <Button id="RedHud_Ph32" text="✜" fontSize="36" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseShtRed"/>
-          <Button id="RedHud_Ph42" text="⚡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseChrRed"/>
-          <Button id="RedHud_Ph52" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseFgtRed"/>
+          <Button id="RedHud_Ph12" text="⚄" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseIniRed" tooltip="Initiative Phase"/>
+          <Button id="RedHud_Ph22" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseActRed" tooltip="Activation Phase"/>
+          <Button id="RedHud_Ph32" text="☠" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMorRed" tooltip="Morale Phase"/>
         </HorizontalLayout>
         <VerticalLayout spacing="2">
           <Button id="RedHud_ChsStpPlay2"  text="▶" fontSize="16" color="rgba(0,0,0,0.30)" textColor="White" width="28" height="26" roundEdges="true" onClick="" tooltip="Start Red clock"/>
@@ -162,10 +158,10 @@
     </Panel>
 </Panel>
 
-<Panel id="BlueHud_VPScores" visibility="Blue" active="true" scale="0.40 0.40 0.40" width="1280" height="155"
+<Panel id="BlueHud_VPScores" visibility="Blue" active="true" scale="0.40 0.40 0.40" width="1200" height="155"
 rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging="true" restrictDraggingToParentBounds="false" returnToOriginalPositionWhenReleased="false">
   <HorizontalLayout spacing="6" padding="0" childForceExpandWidth="false" childForceExpandHeight="false" childAlignment="UpperLeft">
-  <Panel id="BlueHud_MainPanel" flexibleWidth="0" preferredWidth="1224" minWidth="1224" preferredHeight="155" minHeight="155" flexibleHeight="0" color="#0D0D1AE6" outline="#2a2a4a" outlineSize="3">
+  <Panel id="BlueHud_MainPanel" flexibleWidth="0" preferredWidth="1144" minWidth="1144" preferredHeight="155" minHeight="155" flexibleHeight="0" color="#0D0D1AE6" outline="#2a2a4a" outlineSize="3">
   <HorizontalLayout spacing="6" padding="6" childForceExpandWidth="false" childForceExpandHeight="false" childAlignment="MiddleLeft">
     <VerticalLayout id="BlueHudControls" flexibleWidth="0" preferredWidth="54" preferredHeight="143" flexibleHeight="0" spacing="4">
       <Button id="BlueHud_HelpBtn" text="?" fontSize="28" fontStyle="Bold" textColor="#000000" color="#FFFFFF" width="50" height="48" roundEdges="true" outline="#2a2a4aCC" outlineSize="2" onClick="hudToggleHelp" tooltip="Help"/>
@@ -187,11 +183,9 @@ rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging
           <Text id="BlueHud_TVWatch1" text="Turn 0" fontSize="40" color="White" shadow="#000000AA" shadowDistance="1 -1"/>
         </Panel>
         <HorizontalLayout id="BlueHud_PhaseRow1" spacing="2">
-          <Button id="BlueHud_Ph11" text="✴" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseCmdBlue"/>
-          <Button id="BlueHud_Ph21" text="➡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMovBlue"/>
-          <Button id="BlueHud_Ph31" text="✜" fontSize="36" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseShtBlue"/>
-          <Button id="BlueHud_Ph41" text="⚡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseChrBlue"/>
-          <Button id="BlueHud_Ph51" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseFgtBlue"/>
+          <Button id="BlueHud_Ph11" text="⚄" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseIniBlue" tooltip="Initiative Phase"/>
+          <Button id="BlueHud_Ph21" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseActBlue" tooltip="Activation Phase"/>
+          <Button id="BlueHud_Ph31" text="☠" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMorBlue" tooltip="Morale Phase"/>
         </HorizontalLayout>
         <VerticalLayout spacing="2">
           <Button id="BlueHud_ChsStpPlay1"  text="▶" fontSize="16" color="rgba(0,0,0,0.30)" textColor="White" width="28" height="26" roundEdges="true" onClick="" tooltip="Start Blue clock"/>
@@ -214,11 +208,9 @@ rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging
           <Text id="BlueHud_TVWatch2" text="Turn 0" fontSize="40" color="White" shadow="#000000AA" shadowDistance="1 -1"/>
         </Panel>
         <HorizontalLayout id="BlueHud_PhaseRow2" spacing="2">
-          <Button id="BlueHud_Ph12" text="✴" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseCmdRed"/>
-          <Button id="BlueHud_Ph22" text="➡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMovRed"/>
-          <Button id="BlueHud_Ph32" text="✜" fontSize="36" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseShtRed"/>
-          <Button id="BlueHud_Ph42" text="⚡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseChrRed"/>
-          <Button id="BlueHud_Ph52" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseFgtRed"/>
+          <Button id="BlueHud_Ph12" text="⚄" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseIniRed" tooltip="Initiative Phase"/>
+          <Button id="BlueHud_Ph22" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseActRed" tooltip="Activation Phase"/>
+          <Button id="BlueHud_Ph32" text="☠" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="738804/hudPhaseMorRed" tooltip="Morale Phase"/>
         </HorizontalLayout>
         <VerticalLayout spacing="2">
           <Button id="BlueHud_ChsStpPlay2"  text="▶" fontSize="16" color="rgba(0,0,0,0.30)" textColor="White" width="28" height="26" roundEdges="true" onClick="" tooltip="Start Red clock"/>
@@ -245,9 +237,9 @@ rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging
     </Panel>
 </Panel>
 
-<Panel id="GreyHud_VPScores" visibility="Grey" active="true" scale="0.40 0.40 0.40" width="1280" height="155" rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging="true" restrictDraggingToParentBounds="false" returnToOriginalPositionWhenReleased="false">
+<Panel id="GreyHud_VPScores" visibility="Grey" active="true" scale="0.40 0.40 0.40" width="1200" height="155" rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging="true" restrictDraggingToParentBounds="false" returnToOriginalPositionWhenReleased="false">
   <HorizontalLayout spacing="6" padding="0" childForceExpandWidth="false" childForceExpandHeight="false" childAlignment="UpperLeft">
-  <Panel id="GreyHud_MainPanel" flexibleWidth="0" preferredWidth="1224" minWidth="1224" preferredHeight="155" minHeight="155" flexibleHeight="0" color="#0D0D1AE6" outline="#2a2a4a" outlineSize="3">
+  <Panel id="GreyHud_MainPanel" flexibleWidth="0" preferredWidth="1144" minWidth="1144" preferredHeight="155" minHeight="155" flexibleHeight="0" color="#0D0D1AE6" outline="#2a2a4a" outlineSize="3">
   <HorizontalLayout spacing="6" padding="6" childForceExpandWidth="false">
     <VerticalLayout id="GreyHudControls" flexibleWidth="0" preferredWidth="54" spacing="4">
       <Button id="GreyHud_HelpBtn" text="?" fontSize="28" fontStyle="Bold" textColor="#000000" color="#FFFFFF" width="50" height="48" roundEdges="true" outline="#2a2a4aCC" outlineSize="2" onClick="hudToggleHelp" tooltip="Help"/>
@@ -266,11 +258,9 @@ rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging
           <Text id="GreyHud_TVWatch1" text="Turn 0" fontSize="40" color="White" shadow="#000000AA" shadowDistance="1 -1"/>
         </Panel>
         <HorizontalLayout spacing="2">
-          <Button id="GreyHud_Ph11" text="✴" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph21" text="➡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph31" text="✜" fontSize="36" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph41" text="⚡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph51" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
+          <Button id="GreyHud_Ph11" text="⚄" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="" tooltip="Initiative Phase"/>
+          <Button id="GreyHud_Ph21" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="" tooltip="Activation Phase"/>
+          <Button id="GreyHud_Ph31" text="☠" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="" tooltip="Morale Phase"/>
         </HorizontalLayout>
         <VerticalLayout spacing="2">
           <Button id="GreyHud_ChsStpPlay1"  text="▶" fontSize="16" color="rgba(0,0,0,0.30)" textColor="White" width="28" height="26" roundEdges="true" onClick="" tooltip="Start Blue clock"/>
@@ -293,11 +283,9 @@ rectAlignment="UpperRight" offsetXY="-167 0" color="rgba(0,0,0,0)" allowDragging
           <Text id="GreyHud_TVWatch2" text="Turn 0" fontSize="40" color="White" shadow="#000000AA" shadowDistance="1 -1"/>
         </Panel>
         <HorizontalLayout spacing="2">
-          <Button id="GreyHud_Ph12" text="✴" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph22" text="➡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph32" text="✜" fontSize="36" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph42" text="⚡" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
-          <Button id="GreyHud_Ph52" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick=""/>
+          <Button id="GreyHud_Ph12" text="⚄" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="" tooltip="Initiative Phase"/>
+          <Button id="GreyHud_Ph22" text="⚔" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="" tooltip="Activation Phase"/>
+          <Button id="GreyHud_Ph32" text="☠" fontSize="28" textColor="#FFFFFF30" color="rgba(0,0,0,0)" width="38" height="50" onClick="" tooltip="Morale Phase"/>
         </HorizontalLayout>
         <VerticalLayout spacing="2">
           <Button id="GreyHud_ChsStpPlay2"  text="▶" fontSize="16" color="rgba(0,0,0,0.30)" textColor="White" width="28" height="26" roundEdges="true" onClick="" tooltip="Start Red clock"/>

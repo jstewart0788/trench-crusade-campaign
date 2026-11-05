@@ -146,8 +146,9 @@ Found by scanning every 6-hex-digit string literal in the remaining Lua/XML agai
 - Left as in LCT, justified: `table_GUID = "948ce5"` (TTS's own table has no object; `Extract
   terrain` and `Flex Table Control` read it through `Global.getVar` and nil-check);
   `7abc5a` in the four token-bag scripts (nil-checked `destroyObject` of a helper that no
-  longer exists upstream); `b4d10a` (Battlemaster spawner) was dangling upstream and is now
-  gone with its callers.
+  longer exists upstream; those scripts left with the second cut below, so `948ce5` is now
+  the only dangling literal); `b4d10a` (Battlemaster spawner) was dangling upstream and is
+  now gone with its callers.
 - Pre-existing dangling calls, not GUIDs: `Extract terrain` calls `Global.call("openTerrain")`
   which LCT never defined; global `onScriptingButtonDown` calls the dice mat's
   `changeSustainedHitsThreshold`, which no mat script defines; the inactive `redirect` XML
@@ -170,3 +171,70 @@ Found by scanning every 6-hex-digit string literal in the remaining Lua/XML agai
   XML; no name whose definition was removed is referenced from kept code (the audit's
   remaining hits are unrelated locals of the same name).
 - Not validated: anything in TTS. `mod/TESTING.md` is the in-TTS sign-off.
+
+## Second cut - TC-014 / TC-017 (Trench Crusade content port)
+
+Done by a one-off script against the signed-off `mod/` (commit "Record the TTS sign-off of
+the stripped table and the importer landing"), every text edit asserting its anchor matched
+exactly once. What came in is in `mod/ANATOMY.md` (*Added: Trench Crusade content*); this
+records what went out.
+
+| | stripped (TC-013) | after TC-014/017 |
+|---|---|---|
+| packed save | 2,975,325 bytes | 1,221,247 bytes |
+| top-level objects | 109 | 127 |
+| objects incl. nested | 1,101 | 219 |
+| scripted objects | 48 | 54 |
+| global.lua | 33,536 bytes / 919 lines | unchanged size (one constant edited) |
+| Start Menu `738804` | 117,164 bytes / 2,966 lines | 116,792 bytes / 2,962 lines |
+| XmlUI | 34,706 bytes / 335 lines | 33,308 bytes / 323 lines |
+
+### Objects removed (10 top-level, 924 nested)
+
+The ten token bags ANATOMY classed UNSURE on content only, now REPLACED:
+
+- Infinite bags `Battle Shocked` x2 (`3f45f1`, `e51f0c`) and `Objective Secured` x2
+  (`04d13e`, `e87880`) - 40k rule names; their four slots now hold the Blood and Blessing
+  Marker bags.
+- Memory bags `Legacy Tokens (Blue/Red) by Trashpanda` (`10a26a`, `7aca71`; 27 + 29 40k
+  modifier tokens), `Mission & Utility Tokens Red` x2 (`3f26fa`, `58d30b`; 29 40k mission
+  tokens each) and `Tokens by Mothmy Titania (Blue/Red)` (`9d6b2f`, `446a11`; 89 tokens
+  each, 289 nested objects each). Inspected before removal: every token is a 40k stat,
+  mission or CP/OC/LD marker apart from a few blank "General Token" tiles in the Mothmy
+  bags, which did not justify keeping a 289-object bag; the memory-bag engine itself
+  (place / recall) had nothing Trench Crusade to place. Their scripts and saved
+  `memoryList` state (`mod/scripts/*.lua`, `mod/state/*.json` for the six GUIDs) went
+  with them, which also removes the `7abc5a` dangling literal the first cut had justified.
+
+### Edited
+
+- Start Menu `738804`: `phases` is now `Initiative Phase / Activation Phase / Morale
+  Phase`; `_phaseIds` / `_phaseToId` shrink to three; the ten `hudPhase{Cmd,Mov,Sht,Chr,Fgt}
+  {Blue,Red}` handlers become six `hudPhase{Ini,Act,Mor}{Blue,Red}`. Nothing else in the
+  turn/phase machinery changed, so `nextPhase` now wraps after Morale and `passTurn` is
+  unchanged.
+- XmlUI: in both rows of the Red, Blue and Grey HUD panels the `Ph4`/`Ph5` buttons are
+  removed and `Ph1`-`Ph3` get the new glyphs and tooltips (handlers on Red/Blue; the Grey
+  buttons stay `onClick=""` as in LCT); `*Hud_VPScores` width 1280 -> 1200 and
+  `*Hud_MainPanel` preferred/min width 1224 -> 1144 on all three (two 38-wide buttons and
+  two 2-wide gaps). `global.lua` `HUD_FULL` follows (1280/1224 -> 1200/1144); `HUD_MIN` is
+  untouched.
+- Save level: a third notebook tab "Trench Crusade content"; the "Gaming instructions" tab
+  gains a line pointing at it. `ComponentTags` still lists the card labels, as before.
+
+### Validation
+
+- `pnpm mod:build` / `pnpm mod:verify`: packs, and the round trip of the build is JSON-equal;
+  unpacking the build reproduces `mod/` exactly (`diff -r` on scripts/, ui/, state/ and
+  save.json), and `mod/manifest.json` is that unpack's manifest.
+- `pnpm mod:test`: `importer_test` 88 checks, `tracker_test` 146 checks, `luac -p` 54 ok /
+  3 allowed (`!=`, the three LCT files) / 0 failed. The tracker test was proven
+  load-bearing by breaking the script three ways (Success Roll threshold, tie result,
+  missing phase reset) and watching it go red each time before restoring it byte-identical.
+- Dangling references: every 6-hex-digit string literal in `mod/scripts/*.lua` and
+  `mod/ui/*.xml` resolves to an object in `save.json` except `948ce5` (`table_GUID`,
+  justified above). Every new GUID is absent from the Scripted Table, Gannel's and LCT
+  saves as well as from this one. Every XML `onClick` target in the edited rows exists in
+  the Start Menu script.
+- Not validated: anything in TTS. `mod/TESTING.md` step 9 is the in-TTS sign-off for this
+  cut.

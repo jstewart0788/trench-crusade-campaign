@@ -104,7 +104,7 @@ hudMinimalist = hudMinimalist or {}   -- player color -> bool
 
 -- Per-mode geometry. Minimalist drops the panel width by the phase-strip width and
 -- shrinks the 3-button control column (and its font) so the glyphs still fit. width/height are visual estimates — tune in-game.
-local HUD_FULL = { width = "1280", height = "155", mainWidth = "1224", mainHeight = "155", controlsH = "143", btnFont = "28", shown = "true"  }
+local HUD_FULL = { width = "1200", height = "155", mainWidth = "1144", mainHeight = "155", controlsH = "143", btnFont = "28", shown = "true"  }
 local HUD_MIN  = { width = "804",  height = "155", mainWidth = "804",  mainHeight = "155", controlsH = "143", btnFont = "24", shown = "false" }
 
 -- The clock readout + its steppers and play/pause buttons (same id set the

@@ -16,11 +16,15 @@ Classification used here:
   map caches, 40k reference material and community links). Removed in `mod/`.
 - **UNSURE** - kept, because it is either an engine piece with 40k-flavoured data, or a
   controller that carries both. Each one is listed with what would resolve it.
+- **REPLACED** - was UNSURE on content only; removed by TC-017 and its slot now holds a
+  Trench Crusade object (the ten 40k token bags).
+- **ADDED** - objects this repo adds on top of the fork: the Warband Importer (TC-016) and
+  the Trench Crusade content port (TC-014 / TC-017, see *Added: Trench Crusade content*).
 
-Counts over the 218 top-level objects: **KEEP 85, UNSURE 23, STRIP 110**. Every nested
-object follows its top-level parent. The stripped table keeps 108 top-level / 1,100 total
-objects and packs to about 2.9 MB. Objects this repo adds on top of the fork are classed
-**ADDED** (one so far: the Warband Importer, TC-016), for 109 top-level / 1,101 total.
+Counts over the 218 top-level objects: **KEEP 85, UNSURE 13, REPLACED 10, STRIP 110**.
+Every nested object follows its top-level parent. The table now has 127 top-level / 219
+total objects (98 kept from LCT, 29 added) and packs to about 1.2 MB; the ten replaced
+bags carried 924 nested 40k tokens, which is where the other 1.7 MB went.
 
 ## Top-level objects
 
@@ -116,8 +120,8 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | UNSURE | (no nickname) | `138b05` | go_game_piece_black | 0 | 0 | unscripted go piece hidden under the table at x=68; purpose unknown |
 | UNSURE | (no nickname) | `6f0823` | go_game_piece_black | 0 | 0 | unscripted go piece hidden under the table at x=68; purpose unknown |
 | UNSURE | Army Placer | `8b7aa6` | BlockSquare | 4,358 | 0 | Army Placer: moves a staged army onto the table for Red/Blue; generic but untested here |
-| UNSURE | Battle Shocked | `3f45f1` | Custom_Model_Infinite_Bag | 0 | 2 | infinite bag of 'Battle-shocked' tokens (40k rule name; harmless) |
-| UNSURE | Battle Shocked | `e51f0c` | Custom_Model_Infinite_Bag | 0 | 2 | infinite bag of 'Battle-shocked' tokens (40k rule name; harmless) |
+| REPLACED | Battle Shocked | `3f45f1` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Battle-shocked' bag; its slot now holds the Blue Blood Marker bag `061bfb` (TC-017) |
+| REPLACED | Battle Shocked | `e51f0c` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Battle-shocked' bag; its slot now holds the Red Blood Marker bag `3b0f1d` (TC-017) |
 | UNSURE | Blue Lethal Hit Zone | `71ab21` | Custom_Tile | 0 | 0 | lethal-hit parking zone used by the dice mat's 40k sustained/lethal hits feature; mat kept intact |
 | UNSURE | Center Objective | `3c9b57` | Custom_Model | 0 | 6 | objective marker template used by the kept objectives manager; 40k-styled 'Center Objective' model |
 | UNSURE | Expansion Objective | `7fd7df` | Custom_Model | 0 | 6 | objective marker template used by the kept objectives manager; 40k-styled 'Expansion Objective' model |
@@ -125,17 +129,17 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | UNSURE | Interactive Buttons - Area Denial | `8c71ab` | Custom_Token | 2,225 | 0 | draws 3"/6" circles from the table centre (named for the 40k Area Denial secondary) - generic measurement geometry |
 | UNSURE | Interactive Buttons - Show Objectives | `15d652` | Custom_Token | 2,343 | 0 | toggles the objectives manager (placeObjectives) which uses the 40k marker templates |
 | UNSURE | Interactive Buttons - Strat Reserves | `7b7ab8` | Custom_Token | 3,029 | 0 | draws lines 6" from each edge (40k strategic reserves) - generic measurement geometry |
-| UNSURE | Legacy Tokens (Blue) by Trashpanda | `10a26a` | Bag | 16,208 | 79 | memory bag engine is generic; contents are 40k status tokens - TC-017 replaces contents |
-| UNSURE | Legacy Tokens (Red) by Trashpanda | `7aca71` | Bag | 16,208 | 85 | memory bag engine is generic; contents are 40k status tokens (Stealth, Fell Back, cover) - TC-017 replaces contents |
+| REPLACED | Legacy Tokens (Blue) by Trashpanda | `10a26a` | Bag | 16,208 | 79 | memory bag of 40k status tokens (hit/wound/strength/toughness modifiers, Stealth, Fell Back); nothing in it applies to Trench Crusade, removed with its script and state (TC-017) |
+| REPLACED | Legacy Tokens (Red) by Trashpanda | `7aca71` | Bag | 16,208 | 85 | memory bag of 40k status tokens; removed with its script and state (TC-017) |
 | UNSURE | Map Creator Filter | `369707` | BlockSquare | 23,109 | 0 | was the map-creator filter + Battlemaster mat randomizer + Table Theme swatches; rewritten to keep only the theme swatches (the only UI for table themes) |
-| UNSURE | Mission & Utility Tokens Red | `3f26fa` | Bag | 36,861 | 87 | 'Mission & Utility Tokens' memory bag: engine generic, contents are 40k mission tokens (Battle-shocked, Sensor Sweep...) |
-| UNSURE | Mission & Utility Tokens Red | `58d30b` | Bag | 36,861 | 87 | 'Mission & Utility Tokens' memory bag: engine generic, contents are 40k mission tokens |
-| UNSURE | Objective Secured Blue | `04d13e` | Custom_Model_Infinite_Bag | 0 | 2 | infinite bag of 'Objective Secured' tokens (40k rule name; harmless) |
-| UNSURE | Objective Secured Red | `e87880` | Custom_Model_Infinite_Bag | 0 | 2 | infinite bag of 'Objective Secured' tokens (40k rule name; harmless) |
+| REPLACED | Mission & Utility Tokens Red | `3f26fa` | Bag | 36,861 | 87 | memory bag of 40k mission tokens (Beacon, Cleanse, Sensor Sweep, Vital Link...); removed with its script and state (TC-017) |
+| REPLACED | Mission & Utility Tokens Red | `58d30b` | Bag | 36,861 | 87 | memory bag of 40k mission tokens; removed with its script and state (TC-017) |
+| REPLACED | Objective Secured Blue | `04d13e` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Objective Secured' bag; its slot now holds the Blue Blessing Marker bag `c30c00` (TC-017) |
+| REPLACED | Objective Secured Red | `e87880` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Objective Secured' bag; its slot now holds the Red Blessing Marker bag `6cecd8` (TC-017) |
 | UNSURE | Red Lethal Hit Zone | `7ac8ba` | Custom_Tile | 0 | 0 | lethal-hit parking zone used by the dice mat's 40k sustained/lethal hits feature; mat kept intact |
-| UNSURE | Start Menu | `738804` | BlockRectangle | 252,625 | 0 | Start Menu is the whole game controller; kept with its mission/disposition/Battlemaster/restore-point code removed (see STRIP-LOG). Sizes, mat themes, deploy-zone overlays, turn/phase HUD, territory line, terrain pass-through remain |
-| UNSURE | Tokens by Mothmy Titania (Blue) | `9d6b2f` | Bag | 16,208 | 289 | memory bag engine is generic; 289 nested Mothmy tokens, mixed generic/40k - TC-017 curates |
-| UNSURE | Tokens by Mothmy Titania (Red) | `446a11` | Bag | 16,208 | 289 | memory bag engine is generic; 289 nested Mothmy tokens, mixed generic/40k - TC-017 curates |
+| UNSURE | Start Menu | `738804` | BlockRectangle | 252,625 | 0 | Start Menu is the whole game controller; kept with its mission/disposition/Battlemaster/restore-point code removed (see STRIP-LOG). Sizes, mat themes, deploy-zone overlays, turn/phase HUD (phase strip relabelled Initiative / Activation / Morale by TC-014), territory line, terrain pass-through remain |
+| REPLACED | Tokens by Mothmy Titania (Blue) | `9d6b2f` | Bag | 16,208 | 289 | memory bag of 89 Mothmy tokens (40k stat modifiers, CP/OC/LD, Battle-Shock, plus a few generic 'General Token' blanks); removed whole rather than curated - the handful of generic blanks did not justify keeping a 289-object bag (TC-017) |
+| REPLACED | Tokens by Mothmy Titania (Red) | `446a11` | Bag | 16,208 | 289 | memory bag of 89 Mothmy tokens; removed whole (TC-017) |
 | STRIP | (no nickname) | `066fd3` | Custom_Tile | 0 | 0 | art tile paired with a mission-matrix bag (GAME_MODE_OBJECTS in the Start Menu) |
 | STRIP | (no nickname) | `251e3c` | Custom_Tile | 0 | 0 | printed 40k Core Stratagems billboard |
 | STRIP | (no nickname) | `2aef7f` | Custom_Tile | 0 | 0 | art tile paired with a mission-matrix bag (GAME_MODE_OBJECTS in the Start Menu) |
@@ -247,6 +251,34 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP | TwistSlot | `d1e006` | ScriptingTrigger | 0 | 0 | scripting zone for a primary / deployment / twist mission card slot |
 | STRIP | Warhammer Open FAQ | `47587b` | Custom_PDF | 5,296 | 0 | 40k rules PDF (Core Rules / Tournament Companion / Warhammer Open FAQ) with a generic bookmark script |
 | ADDED | Warband Importer | `b91983` | Custom_Tile | 24,786 | 0 | TC-016: code entry, `WebRequest` fetch of `/api/tts/warband/{code}`, spawn of bound models, Bind mode, re-import; see below |
+| ADDED | Trench Crusade Digital Rulebook 1.0.2 | `6b081d` | Custom_PDF | 6,297 | 0 | TC-014 rules shelf, from Scripted Table `70e736`; section-jump buttons (Core Rules p13 ... Scenarios p142) |
+| ADDED | Warbands of Trench Crusade 1.0.2 | `a55c7e` | Custom_PDF | 6,238 | 0 | TC-014 rules shelf, from Scripted Table `a00f4d`; faction-jump buttons |
+| ADDED | Trench Crusade FAQ 1.0.1 | `ff5f5a` | Custom_PDF | 0 | 0 | TC-014 rules shelf, from Scripted Table `bb1029` |
+| ADDED | TC Tactics Guide (community) | `bddb43` | Custom_PDF | 3,438 | 0 | TC-014 rules shelf, from Scripted Table `972d47`; faction-jump buttons |
+| ADDED | Red Brigade (warband supplement) | `0a5af1` | Custom_PDF | 0 | 0 | TC-014 rules shelf, from Scripted Table `485143` |
+| ADDED | The Great Hunger (playtest summary) | `74c1e6` | Custom_PDF | 0 | 0 | TC-014 rules shelf, from Scripted Table `e18cdb` |
+| ADDED | Rules shelf label | `c650dd` | 3DText | 0 | 0 | TC-014 "RULES SHELF" 3D text at the end of the shelf (shape copied from Scripted Table `3b98b9`) |
+| ADDED | Trench Crusade Dice Roller | `25b3ac` | Custom_Token | 10,760 | 0 | TC-014 Red +/-DICE Success Roll pad, from Scripted Table `e3a6d5` without its 26 art states |
+| ADDED | Trench Crusade Dice Roller | `ea3160` | Custom_Token | 10,760 | 0 | TC-014 Blue +/-DICE Success Roll pad, from Scripted Table `63dad0` without its 26 art states |
+| ADDED | Points | `c0530b` | Custom_Token | 3,653 | 0 | TC-014 Red Points counter, from Scripted Table `bf846e` (+ `getValue`/`setValue`) |
+| ADDED | Turn | `0e8265` | Custom_Token | 3,653 | 0 | TC-014 Red Turn counter, from Scripted Table `5114af`; the Turn Tracker sets it |
+| ADDED | Glory | `e58368` | Custom_Token | 3,653 | 0 | TC-014 Red Glory counter, from Scripted Table `cdcfd8` |
+| ADDED | Points | `520a95` | Custom_Token | 3,653 | 0 | TC-014 Blue Points counter, from Scripted Table `58b28d` |
+| ADDED | Turn | `f14264` | Custom_Token | 3,653 | 0 | TC-014 Blue Turn counter, from Scripted Table `025fa8`; the Turn Tracker sets it |
+| ADDED | Glory | `7a87e9` | Custom_Token | 3,653 | 0 | TC-014 Blue Glory counter, from Scripted Table `9458e0` |
+| ADDED | Blood Marker | `3b0f1d` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Red bag; content `924f1f` = Scripted Table die `a4e6d3`, tag `tc-token:blood` |
+| ADDED | Blessing Marker | `6cecd8` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Red bag; content `38e2c8` = Scripted Table die `719992`, tag `tc-token:blessing` |
+| ADDED | Activated | `fef40e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Red bag; content `fc9f6c` = Gannel's `7c7f58`, tag `tc-token:activated` |
+| ADDED | Down | `e75c71` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Red bag; content `a045d1` = Gannel's `4f22ce`, tag `tc-token:down` |
+| ADDED | Tough | `d51618` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Red bag; content `6c10a1` = Gannel's `03604e`, tag `tc-token:tough` |
+| ADDED | Objective | `70d18f` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Red bag; content `a18feb` = Scripted Table objective bundle `ba7eaf`, tag `tc-token:objective` |
+| ADDED | Blood Marker | `061bfb` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `b3f4eb`, tag `tc-token:blood` |
+| ADDED | Blessing Marker | `c30c00` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `dff3f3`, tag `tc-token:blessing` |
+| ADDED | Activated | `0659ae` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `eb723c`, tag `tc-token:activated` |
+| ADDED | Down | `9eb271` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `dff860`, tag `tc-token:down` |
+| ADDED | Tough | `359c8c` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `afb1c2`, tag `tc-token:tough` |
+| ADDED | Objective | `2d4b7e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `8f0c3a`, tag `tc-token:objective` |
+| ADDED | Turn Tracker | `4ac9e3` | Custom_Tile | 9,678 | 0 | TC-017 turn helpers: initiative roll-off, Start turn, Morale reminder, Next turn, Shaken flags, rules-shelf camera; see below |
 
 
 ## global.lua (128,527 bytes, 151 functions) by system
@@ -285,7 +317,7 @@ changelog constants (KEEP).
 | `main` | splash + seat picker (Red / Spectator / Blue), patch notes | KEEP (retitled) |
 | `bubbleOverlay_Red` / `bubbleOverlay_Blue` | aura/bubble size input | KEEP |
 | `DebugTools` | shared debug panel (DEBUG builds only): diagnostics, custom mat URL | KEEP; its "Battlemaster cache" section STRIP |
-| `RedHud_VPScores` / `BlueHud_VPScores` / `GreyHud_VPScores` | per-colour HUD: controls column, ROUND badge, per-player Turn readout, phase strip, clock | KEEP; inside it `*_LockBtn` (open scoreboard), `*_DispBadge*` + `*_DispSpacer*` (disposition glyph), `*_VPWatch*`, `*_CPWatch*`, `*_Row3` (Scoreboard / Gain CP / Use CP) STRIP; `*_PhaseRow*` (40k phases) UNSURE kept |
+| `RedHud_VPScores` / `BlueHud_VPScores` / `GreyHud_VPScores` | per-colour HUD: controls column, ROUND badge, per-player Turn readout, phase strip, clock | KEEP; inside it `*_LockBtn` (open scoreboard), `*_DispBadge*` + `*_DispSpacer*` (disposition glyph), `*_VPWatch*`, `*_CPWatch*`, `*_Row3` (Scoreboard / Gain CP / Use CP) STRIP; `*_PhaseRow*` relabelled by TC-014 from the five 40k phases to Initiative / Activation / Morale (`Ph1`-`Ph3`, the `Ph4`/`Ph5` buttons removed, panel 80 narrower) |
 | `*_HelpOverlay` | help overlay (background + close) | KEEP |
 | `RedHud_ScoringOverlay` / `Blue...` / `Grey...` | 40k scoreboard (PRI/SEC per round, active/discard/remaining secondaries) | STRIP |
 
@@ -312,9 +344,11 @@ changelog constants (KEEP).
 - **Mission Manager `cff35b`/`471de1`**, **10e Score Sheet `06d627`**, **Command Points
   `e446f7`/`deb9f2`**, **Gain CP `af8032`/`5e882b`**, **WH Stats Helper `7c7c20`/`b7ac7a`**
   - STRIP, see the table.
-- Token bags (`7aca71`, `10a26a`, `446a11`, `9d6b2f`, `3f26fa`, `58d30b`, `5549a7`) share
-  the memory-bag script family (place / recall / setup). Engine KEEP; `5549a7` ("40K items")
-  STRIP; the others UNSURE on content only.
+- Token bags (`7aca71`, `10a26a`, `446a11`, `9d6b2f`, `3f26fa`, `58d30b`, `5549a7`) shared
+  the memory-bag script family (place / recall / setup). `5549a7` ("40K items") went with
+  the strip; the other six went with TC-017 (REPLACED above) - their only contents were 40k
+  tokens, so the generic engine had nothing left to place. The memory-bag script is no
+  longer in the save.
 
 ## Added: Warband Importer `b91983` (TC-016)
 
@@ -380,3 +414,126 @@ object a player grabs (the moment ForceOrg's importer also binds on, via `onPlay
 copies the member's name, description, GM notes and tags onto that object and deletes the
 member's spawned default. The 3D-widget panel has not been run in TTS yet (`mod/TESTING.md`
 step 8 lists the orientation and sizing knobs).
+
+## Added: Trench Crusade content (TC-014 / TC-017)
+
+Ported from Steam Workshop 3603166284 "Trench Crusade 1.0.2 - Scripted Table" (ST) and
+3700111403 "Gannel's Model Corner" (GN) by copying object states with their asset URLs and
+giving every object a fresh GUID absent from the save, both sources and LCT. Nothing in
+this section has been loaded in TTS yet (`mod/TESTING.md` step 9).
+
+### Rules shelf
+
+Six `Custom_PDF`s on the raised ledge LCT used for its 40k rulebooks (x=102, y=9.5, rotY
+270, scale 5, 22" apart along z), with a "RULES SHELF" 3D label at z=72 and a "Trench
+Crusade content" notebook tab listing them. The Turn Tracker's **Rules shelf** button
+points the clicking player's camera at it.
+
+| New | Source | Content | Script |
+|---|---|---|---|
+| `6b081d` | ST `70e736` | Trench Crusade Digital Rulebook 1.0.2 (197 pp) | section-jump buttons (ST script verbatim) |
+| `a55c7e` | ST `a00f4d` | Warbands of Trench Crusade 1.0.2 (186 pp) | faction-jump buttons (verbatim) |
+| `ff5f5a` | ST `bb1029` | Trench Crusade FAQ 1.0.1 (5 pp) | none |
+| `bddb43` | ST `972d47` | TC Tactics Guide, community (291 pp) | faction-jump buttons (verbatim) |
+| `0a5af1` | ST `485143` | Red Brigade warband supplement (12 pp) | none |
+| `74c1e6` | ST `e18cdb` | The Great Hunger playtest summary (13 pp) | none |
+
+The PDFs were identified from the local TTS PDF cache (`~/Library/Tabletop
+Simulator/Mods/PDF`), since the ST objects carry no nicknames. ST's per-player duplicates
+of the rulebook and warbands (`33c1dd`, `7f7cde`, `928924`, `f3c29b`, `75f7ff`) are not
+ported; one copy each on the shelf. ST's five `Custom_Board`s (`f1195f`, `199749`,
+`c23e91`, `ebabad`, `8352f6`) are a plain wood-texture image, not reference material, and
+were left behind, as was its `6927df` shelf card (a map-controls illustration).
+
+### Dice rollers
+
+`25b3ac` (Red, 12/1/39) and `ea3160` (Blue, -12/1/-39) are ST `e3a6d5` / `63dad0`: the
+**Trench Crusade** roller. Place a die on the centre pad, set +N / -N with the side
+buttons, click the number: it rolls 2+N dice and prints the two highest (+DICE) or two
+lowest (-DICE), which is the rulebook p15 Success Roll. The 26 alternate-art `States`
+(10.7 KB of Lua each) were dropped and the description's "[Right Click > State]" line with
+them. ST's plain N-dice roller (`15d529`, "ALT. DICE ROLLER") was not ported: LCT's dice
+rollers `17ca2b` / `927ca1` and the dice mats already do bulk dice. Use the TC roller for
+Success and Injury Rolls, the LCT mats for everything else; neither touches the other.
+
+### Counters
+
+Six `Custom_Token` counters (ST script, left click +1 / right click -1, editable name) in a
+row behind each dice mat: Red `c0530b` Points (-6/38), `0e8265` Turn (-2/38), `e58368`
+Glory (2/38); Blue `520a95` Points (6/-38), `f14264` Turn (2/-38), `7a87e9` Glory
+(-2/-38). Sources ST `bf846e`/`5114af`/`cdcfd8` and `58b28d`/`025fa8`/`9458e0`; the
+Turn counters keep ST's `MIN_VALUE = 1`. The only script change is an appended `getValue`
+/ `setValue` so the Turn Tracker can write them. They are **added alongside** LCT's Game
+Rounds / Red Turns / Blue Turns (`ee92cf`, `055302`, `7e4111`): those drive the HUD ROUND
+badge and the chess clock through the Start Menu's pass-turn and were left untouched;
+LCT's "round" (both players passed) does not map onto a Trench Crusade Turn (alternating
+single activations), so the TC counters carry the Trench Crusade numbers and the LCT ones
+stay engine plumbing.
+
+### Token bags (TC-017)
+
+Twelve `Custom_Model_Infinite_Bag`s on LCT's bag shell (`3f45f1`'s mesh, invisible, scale
+1.49, locked) with one tagged content object and one locked, untagged child icon. They sit
+where the replaced 40k bags were, plus a fourth column at x=+/-37: Red column x=33.5 holds
+Blood (`3b0f1d`, slot of `e51f0c`) and Blessing (`6cecd8`, slot of `e87880`); x=37 holds
+Activated `fef40e`, Down `e75c71`, Tough `d51618`, Objective `70d18f`. Blue mirrors it
+(`061bfb`, `c30c00`, `0659ae`, `9eb271`, `359c8c`, `2d4b7e`). Contents and tags:
+
+| Role | Tag on the content | Source | Why |
+|---|---|---|---|
+| blood | `tc-token:blood` | ST `a4e6d3` Blood Marker (`Custom_Dice` d6) | p19: a red die counts the markers; no equivalent in GN |
+| blessing | `tc-token:blessing` | ST `719992` Blessing Marker (`Custom_Dice` d6) | p20; no equivalent in GN |
+| activated | `tc-token:activated` | GN `7c7f58` ACTIVATED | consistent art with DOWN/TOUGH; ST's per-faction `Active` tokens (`8435a8` ...) not ported |
+| down | `tc-token:down` | GN `4f22ce` DOWN (standing token) | consistent art; ST `c00e37` not ported |
+| tough | `tc-token:tough` | GN `03604e` TOUGH | consistent art; ST `956155` not ported |
+| objective | `tc-token:objective` | ST `ba7eaf` Objective (`Custom_Assetbundle`) | the generic green objective from ST's "Objectives + Tokens" bag |
+
+A spawned token is a clone of the content, so it carries the tag; `getObjectsWithTag` never
+returns bag contents or attached icons, which is why **Start turn** can delete every
+`tc-token:activated` object on the table without emptying a bag. No Shaken or Broken token:
+p21 defines Shaken as a warband state with no marker, so it is a flag on the Turn Tracker.
+Not ported from ST's "Objectives + Tokens": the scenario pieces (emplacements, mines,
+peasants, reliquaries, supply caches, hell ticks, explosives, shells) - Phase 2 scenario
+work; the `Supply Cache` mesh is a pastebin URL in the raw save anyway. Not ported either:
+ST's Fear and Infection markers, the six faction dice bags and the seven faction activation
+bags (not asked for; candidates for TC-018 friction tickets).
+
+### Turn Tracker `4ac9e3` (TC-017)
+
+A locked 8"x8" `Custom_Tile` at (-22, 1, 15), above the Warband Importer, with eight
+`createButton`s: a label (`Turn N - <Phase> Phase`), **Initiative roll-off**, **Start turn
+(clear Activated)**, **Morale reminder**, **Next turn**, **Red Shaken** / **Blue Shaken**
+toggles and **Rules shelf**. `mod/scripts/4ac9e3.lua` is split like the importer: above
+the `TTS glue` line is pure Lua that `mod/test/tracker_test.lua` runs under plain Lua:
+
+- `tokenTag` / `roleFromTag` - the `tc-token:<role>` names, six roles.
+- `newState` / `normaliseState` - `{ turn, phase, shaken = { Red, Blue } }` with garbage
+  tolerance for saves made by an older script.
+- `startTurn` - phase 2 (Activation), returns the announcement with the cleared count.
+- `nextTurn` - turn + 1, phase 1 (Initiative), returns the initiative reminder (fewest
+  models on the table, Down and Out of Action not counted, tie rolls off - p32).
+- `rollOff` / `describeRollOff` - two d6, higher wins, tie asks for a re-roll.
+- `successRoll` - the p15 table: 2-6 failure, 7-11 success, 12+ critical (reserved for
+  later helpers; the tracker only announces initiative and morale).
+- `toggleShaken` / `shakenLabel` / `describeShaken` - the p21 consequence text.
+- `moraleSummary` - the p21 rule, the number of Down tokens on the table and any Shaken
+  side. **Per-colour Down / Out of Action counts are not computed**: tokens carry no colour,
+  and Out of Action models have left the table, so the tracker cannot tell whose they were
+  without the importer's roster bookkeeping; the whole-table Down count is what is cheap.
+- `countTagged` - counts entries whose tag list carries a role.
+
+The glue: `onStartTurn` destroys every `tc-token:activated` object; `onNextTurn` calls
+`setValue(turn)` on both TC Turn counters; `onMorale` counts `tc-token:down`; the Shaken
+toggles broadcast in the side's colour; `onRulesShelf` is `Player[colour].lookAt` at the
+shelf. State persists through `onSave` / `onLoad`.
+
+### HUD phase strip (TC-014)
+
+The strip is data-driven (`phases` in the Start Menu) with five fixed glyph buttons per row
+in the XML, so both were edited: `phases` is now Initiative / Activation / Morale, the
+`_phaseIds` tables and handlers shrink to three (`hudPhaseIni*` / `hudPhaseAct*` /
+`hudPhaseMor*`), the `Ph4`/`Ph5` buttons are gone from both rows of all three panels
+(the spectator's are display-only, `onClick=""`, as in LCT), the remaining glyphs are a
+die / crossed swords / skull with tooltips, and the panel widths drop by the two removed
+buttons (1280 -> 1200, 1224 -> 1144 in the XML for Red, Blue and Grey, and in
+`HUD_FULL`).
