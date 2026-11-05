@@ -3,7 +3,6 @@
 version=2.02
 function onLoad()
     flexControl = getObjectFromGUID(Global.getVar("flexControl_GUID"))
-    gameMenu= getObjectFromGUID(Global.getVar("startMenu_GUID"))
     self.interactable=false
     Wait.time(refresh, 0.05)
     --showMenu()
@@ -11,9 +10,6 @@ end
 
 function refresh()
     flexControl.call('refreshSurface')
-    if gameMenu ~= nil then
-        gameMenu.call('refreshMat')
-    end
 end
 
 btnHeight=2500

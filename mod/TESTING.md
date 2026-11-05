@@ -3,6 +3,7 @@
 Nothing in this directory has been loaded in TTS yet. The build was validated offline only
 (syntax, GUID cross-references, pack/unpack round-trip), so this walkthrough is the sign-off.
 Expect to tune two HUD numbers (step 6) and possibly the Table Theme panel position (step 4).
+Step 10 is the sign-off for the second strip (TC-023s).
 
 ## 0. Build and install
 
@@ -28,33 +29,28 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 
 ## 2. Start menu (the object at x≈52 behind the Red side)
 
-- Six game-mode buttons under a "GAME MODES" header: 1v1, Solo, Combat Patrol, Onslaught,
-  Colosseum, Boarding Action. The grey "START GAME" button above them is disabled until a
-  mode is chosen.
-- Click **1v1**: the mat rescales to 44"x60", the deployment picker row appears (`<-` name
-  `->`), **Clear Table** sits left of it, and the Table Theme panel (step 4) appears.
-- There must be **no** disposition selectors, no "Generate Missions", no "Random Single
-  Layout", no "SET MISSIONS", no "Back to Selection" button. If any of those render, the
-  strip missed a menu writer.
-- Cycle the deployment picker: an overlay (lines/circles) draws for each zone; "No
-  Deployment Zone" draws nothing. The zone names are still the 40k ones (Hammer and Anvil,
-  Dawn of War...) - that data was kept deliberately, see STRIP-LOG.
+Since TC-023s there is no setup flow. On load the Start Menu shows **one** button, the red
+`Initiative Phase / Next Phase` button (world x≈48.5). There is **no** GAME MODES header,
+no 1v1 / Solo / Combat Patrol / Onslaught / Colosseum / Boarding Action, no deployment
+picker, no Clear Table, no START GAME and no "Red player first" toggle. The mat stays at
+60" x 44". If any of those render, the build is stale.
 
-## 3. Start a game, turns and HUD
+## 3. Turns and HUD
 
-- Toggle "Red player first", press **START GAME** (needs a deployment zone selected). Chat
-  prints `Initiative Phase` and `It's Blue Player's turn`. The deployment overlay disappears.
-- The HUD at the top right now has: `?` help, clock toggle, `-` minimalist; a ROUND badge;
-  two rows (Blue, Red) each with Turn N, **three** phase glyphs (die = Initiative, crossed
-  swords = Activation, skull = Morale; hover for the tooltip), the chess-clock readout and
-  its +/-/play/pause controls; an `X` hide button. There is **no** VP, CP, disposition
-  badge, star/"Show scoring" button, or Scoreboard / Gain CP / Use CP row. Clicking a glyph
-  on your own row jumps to that phase and chat prints its name; the on-table phase button
-  cycles Initiative -> Activation -> Morale -> pass turn. If the three glyphs render as
-  boxes, the font lacks U+2684/U+2694/U+2620 - swap the `text` attributes in
-  `mod/ui/global.xml` for ones from the old strip (✴ ➡ ✜ render).
+- No START GAME is needed: the HUD at the top right is live from load, with the Red row
+  highlighted and its die glyph (Initiative) lit. It has `?` help, clock toggle, `-`
+  minimalist; a ROUND badge; two rows (Blue, Red) each with Turn N, **three** phase glyphs
+  (die = Initiative, crossed swords = Activation, skull = Morale; hover for the tooltip),
+  the chess-clock readout and its +/-/play/pause controls; an `X` hide button. There is
+  **no** VP, CP, disposition badge, star/"Show scoring" button, or Scoreboard / Gain CP /
+  Use CP row. Clicking a glyph on the active row jumps to that phase and chat prints its
+  name; the on-table phase button cycles Initiative -> Activation -> Morale -> pass turn.
+  If the three glyphs render as boxes, the font lacks U+2684/U+2694/U+2620 - swap the
+  `text` attributes in `mod/ui/global.xml` for ones from the old strip (✴ ➡ ✜ render).
 - Click the ROUND badge or the on-table "Pass Turn" button: the turn flips, the Turn counter
   tokens at x≈51 increment, chat prints `Round R, <Colour> Turn T` with **no** CP message.
+  On a fresh table Red's first turn reads Turn 0 (START GAME used to make it 1); left-click
+  the Red Turns token if that matters.
 - Round counter: when the Blue and Red turn counters both pass a value the Game Rounds token
   increments and the ROUND badge follows.
 - Spectator (Grey) HUD: switch to Grey; the panel shows the same minus the pass/phase
@@ -62,11 +58,10 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 
 ## 4. Table theme
 
-- During setup (after choosing a mode, before START GAME) a "Table Theme" panel with 12
-  swatches floats near the deployment picker. Clicking a swatch changes the mat image and
-  highlights the swatch. If the panel is off-centre or overlapping the picker, adjust the
-  anchor object `369707` position in `mod/save.json` (it used to sit left of a wider panel).
-- After START GAME the panel disappears.
+- A "Table Theme" panel with 12 swatches floats left of the mat (anchor `369707` at x=-38.5,
+  z=8) from load and stays up. Clicking a swatch changes the table image and highlights the
+  swatch. Check it does not cover the Warband Importer (x=-22, z=0) or the Turn Tracker
+  (x=-22, z=15); if it does, move the anchor `369707` in `mod/save.json`.
 
 ## 5. Engine features that must still work (all unchanged from LCT)
 
@@ -79,18 +74,17 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
   Scoreboard" must be **gone** from the list.
 - **Dice rollers** (the bowls next to the mats) print results in chat.
 - **Trash bins** (vortices) destroy dropped objects; the counters beside them count.
-- **Token bags**: the LCT infinite bags (Action, Objective, Hidden, Marked, +1/-1, Reroll,
-  banners, d6/d3) dispense. The Mothmy, Legacy, Mission & Utility, Battle Shocked and
-  Objective Secured bags are **gone** (TC-017); the Trench Crusade bags that took their
-  place are checked in step 9.
+- **Token bags**: the LCT infinite bags left (+1/-1, Reroll, banners, d6/d3) dispense. The
+  Mothmy, Legacy, Mission & Utility, Battle Shocked and Objective Secured bags are **gone**
+  (TC-017), and so are Action, Objective, Home Objective, Hidden, Marked Terrain and Marked
+  Unit (TC-023s); the Trench Crusade bags are checked in step 9.
 - **Trackers**: "Spawn game tools" (x≈80, hidden under the Red edge) spawns Squad
   activation / Wounds trackers; HIDE ARMY moves selected models into the hidden zone.
 - **LOS markers**, **selection highlighters** (select a model: a ring appears), **stopwatch**
   (chess clock on the HUD counts down, play/pause per side).
-- **Interactive buttons** (six tokens at x≈45): Table Quarters, Strat Reserves lines, Area
-  Denial circles, Deployment Zone toggle, Territory Line, Show Objectives (places the kept
-  objective markers on objects tagged `obj_*`; with no tagged terrain it prints
-  `0 objective(s) placed`).
+- **Interactive buttons**: the six tokens that stood at x≈45 (Table Quarters, Strat
+  Reserves, Area Denial, Deployment Zone, Territory Line, Show Objectives) are **gone**
+  (TC-023s).
 - **Flex Table Control** (x≈81,z≈-94) resizes the table surface; **Mat url** sets a mat
   image; **Extract terrain** / **Advanced Features** (terrain collider toggle) respond.
 - **Auto-seat**: save the game mid-match, reload, both colours are re-seated.
@@ -109,8 +103,8 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 
 ## 7. Save
 
-Save the table under a new name and reload it: no errors, the chosen mode/size/theme
-persists, the HUD state persists. Then `trash` the test save; `TrenchCrusade-dev.json` is
+Save the table under a new name and reload it: no errors, the theme persists, the turn,
+phase and HUD state persist. Then `trash` the test save; `TrenchCrusade-dev.json` is
 regenerated by `pnpm mod:install`.
 
 ## 8. Warband import (TC-016, object `b91983`)
@@ -291,6 +285,26 @@ TTS; all geometry (shelf height, button sizes, bag icons) is a first guess to tu
   face and apart.
 - **HUD** still works after all of the above (step 3) - the tracker and the LCT round /
   pass-turn machinery are independent by design.
+
+## 10. Second strip (TC-023s)
+
+Offline first: `pnpm mod:test` (lint now also scans `mod/save.json` and every script for the
+"tcejbo gninwapS" virus and for WebRequests to hosts other than `tc.rynfin.org`).
+
+- Load: no red error lines; in particular nothing mentioning `recallAll`, `refreshMat`,
+  `hideFilterMenu`, `shouldShowMapSetupOverlay`, `syncDeploymentZoneButtonImage` or
+  `centerCircle_GUID`.
+- Table: step 2 and step 4 as written. No column of six round toggle tokens at x≈45, no
+  Action / Objective / Home Objective / Hidden / Marked Terrain / Marked Unit bags beside the
+  dice mats (the TC bags and the +1/-1 / Reroll / banner / dice bags remain).
+- With a generated battlefield on the table, play a few phases and turns: nothing on the
+  table disappears (Clear Table, which deleted everything inside the 60" x 44" box including
+  the importer and Turn Tracker, is gone).
+- Two seats filled, pass a turn, save, reload with both players reconnecting: both are put
+  back in their colours (auto-seat is now armed by a pass with both seats filled instead of
+  by START GAME).
+- **Extract terrain** and **Advanced Features** still respond (they used to call the removed
+  Start Menu functions); Disable Terrain Colliders does not affect `tc-terrain` pieces yet.
 
 ## Reporting
 

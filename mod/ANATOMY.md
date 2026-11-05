@@ -18,13 +18,15 @@ Classification used here:
   controller that carries both. Each one is listed with what would resolve it.
 - **REPLACED** - was UNSURE on content only; removed by TC-017 and its slot now holds a
   Trench Crusade object (the ten 40k token bags).
+- **STRIP-2** - kept by the first strip, removed by the second (TC-023s): the 40k table toggles
+  and objectives manager, their templates, and the 40k mission / secondary token bags.
 - **ADDED** - objects this repo adds on top of the fork: the Warband Importer (TC-016) and
   the Trench Crusade content port (TC-014 / TC-017, see *Added: Trench Crusade content*).
 
-Counts over the 218 top-level objects: **KEEP 85, UNSURE 13, REPLACED 10, STRIP 110**.
-Every nested object follows its top-level parent. The table now has 127 top-level / 219
-total objects (98 kept from LCT, 29 added) and packs to about 1.2 MB; the ten replaced
-bags carried 924 nested 40k tokens, which is where the other 1.7 MB went.
+Counts over the 218 top-level objects: **KEEP 68, UNSURE 7, REPLACED 10, STRIP 110,
+STRIP-2 23**. Every nested object follows its top-level parent. The table now has 104
+top-level / 154 total objects (75 kept from LCT, 29 added) and packs to about 1.0 MB; the
+ten replaced bags carried 924 nested 40k tokens, which is where the other 1.7 MB went.
 
 ## Top-level objects
 
@@ -53,8 +55,8 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | +1 to Rolls | `988659` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
 | KEEP | -1 to Rolls | `c54686` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
 | KEEP | -1 to Rolls | `d1c6dd` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Action | `db0a07` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Action | `e6d3ec` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
+| STRIP-2 | Action | `db0a07` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Action | `e6d3ec` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | KEEP | Advanced Features Panel | `ed17d0` | BlockSquare | 3,009 | 0 | terrain collider toggle panel (forwards to the Start Menu) |
 | KEEP | Banner (Blue) | `0dd965` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
 | KEEP | Banner (Red) | `0dd964` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
@@ -76,25 +78,25 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | d6 | `714214` | Infinite_Bag | 0 | 1 | infinite dice bag |
 | KEEP | Extract terrain | `70b9f6` | Custom_Model_Bag | 13,123 | 0 | terrain extraction / mirroring tool |
 | KEEP | Flex Table Control | `bd69bd` | Chinese_Checkers_Piece | 20,270 | 0 | table size / surface controls |
-| KEEP | Full circle | `51ee2f` | Custom_Model | 47 | 0 | overlay template cloned for circles/arcs |
+| STRIP-2 | Full circle | `51ee2f` | Custom_Model | 47 | 0 | TC-023s: circle template cloned only by the Start Menu overlays and Area Denial; no caller left |
 | KEEP | Game Rounds | `ee92cf` | Custom_Token | 6,588 | 0 | round / turn counter feeding the HUD |
-| KEEP | Hidden | `972ea3` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Hidden | `9abea4` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Home Objective | `312600` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Home Objective | `f26331` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Injection Detector | `5c328f` | go_game_piece_white | 2,058 | 2 | malicious-script detector polled by global.lua |
-| KEEP | Interactive Buttons - Deployment Zone | `8aba11` | Custom_Token | 1,069 | 0 | table toggle button (quarters / deployment zone / territory line) |
-| KEEP | Interactive Buttons - Table Quarters | `59decf` | Custom_Token | 2,726 | 0 | table toggle button (quarters / deployment zone / territory line) |
-| KEEP | Interactive Buttons - Territory Line | `7e7711` | Custom_Token | 1,071 | 0 | table toggle button (quarters / deployment zone / territory line) |
-| KEEP | Marked Terrain | `70566d` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Marked Terrain | `b3dab3` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Marked Unit | `2914e3` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Marked Unit | `513c30` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
+| STRIP-2 | Hidden | `972ea3` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Hidden | `9abea4` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Home Objective | `312600` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Home Objective | `f26331` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| KEEP (security) | Injection Detector | `5c328f` | go_game_piece_white | 2,058 | 2 | TTS virus scanner polled by global.lua; state 2 is `899f22` "Malicious Scripts Detected!" (child `6fb2cf`). Caught the self-replicating "tcejbo gninwapS" virus in a live session on 2026-11-05; never strip. `scripts/tts_lint.py` scans the mod for the same virus |
+| STRIP-2 | Interactive Buttons - Deployment Zone | `8aba11` | Custom_Token | 1,069 | 0 | TC-023s: toggled the 40k deployment overlay drawn by the Start Menu picker; picker and presets removed |
+| STRIP-2 | Interactive Buttons - Table Quarters | `59decf` | Custom_Token | 2,726 | 0 | TC-023s: drew 40k table-quarter lines; removed |
+| STRIP-2 | Interactive Buttons - Territory Line | `7e7711` | Custom_Token | 1,071 | 0 | TC-023s: drew the 40k territory divider derived from the 40k deployment preset; removed |
+| STRIP-2 | Marked Terrain | `70566d` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Marked Terrain | `b3dab3` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Marked Unit | `2914e3` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Marked Unit | `513c30` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | KEEP | Mat url | `c5e288` | BlockRectangle | 9,279 | 0 | table mat URL setter |
 | KEEP | matObjSurface | `4ee1f2` | Custom_Model | 3,293 | 0 | table surface mat (mat_GUID) with lighting presets |
-| KEEP | Objective | `4d85d9` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Objective | `d1100e` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Quarter-circle | `51ee3f` | Custom_Model | 0 | 0 | overlay template cloned for circles/arcs |
+| STRIP-2 | Objective | `4d85d9` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Objective | `d1100e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
+| STRIP-2 | Quarter-circle | `51ee3f` | Custom_Model | 0 | 0 | TC-023s: quarter-circle template, read by nothing (`quarterCircle_GUID` had no reader); removed |
 | KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice mat: roll/select/clear, bubbles, save/restore positions, measurement hotkeys (138 KB) |
 | KEEP | Red dice cam | `48dcae` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Red dice camera | `19b9bf` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
@@ -123,21 +125,21 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | REPLACED | Battle Shocked | `3f45f1` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Battle-shocked' bag; its slot now holds the Blue Blood Marker bag `061bfb` (TC-017) |
 | REPLACED | Battle Shocked | `e51f0c` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Battle-shocked' bag; its slot now holds the Red Blood Marker bag `3b0f1d` (TC-017) |
 | UNSURE | Blue Lethal Hit Zone | `71ab21` | Custom_Tile | 0 | 0 | lethal-hit parking zone used by the dice mat's 40k sustained/lethal hits feature; mat kept intact |
-| UNSURE | Center Objective | `3c9b57` | Custom_Model | 0 | 6 | objective marker template used by the kept objectives manager; 40k-styled 'Center Objective' model |
-| UNSURE | Expansion Objective | `7fd7df` | Custom_Model | 0 | 6 | objective marker template used by the kept objectives manager; 40k-styled 'Expansion Objective' model |
-| UNSURE | Home Objective | `e6b8fb` | Custom_Model | 0 | 6 | objective marker template used by the kept objectives manager; 40k-styled 'Home Objective' model |
-| UNSURE | Interactive Buttons - Area Denial | `8c71ab` | Custom_Token | 2,225 | 0 | draws 3"/6" circles from the table centre (named for the 40k Area Denial secondary) - generic measurement geometry |
-| UNSURE | Interactive Buttons - Show Objectives | `15d652` | Custom_Token | 2,343 | 0 | toggles the objectives manager (placeObjectives) which uses the 40k marker templates |
-| UNSURE | Interactive Buttons - Strat Reserves | `7b7ab8` | Custom_Token | 3,029 | 0 | draws lines 6" from each edge (40k strategic reserves) - generic measurement geometry |
+| STRIP-2 | Center Objective | `3c9b57` | Custom_Model | 0 | 6 | TC-023s: 40k objective-marker template, only the removed objectives manager cloned it |
+| STRIP-2 | Expansion Objective | `7fd7df` | Custom_Model | 0 | 6 | TC-023s: 40k objective-marker template, only the removed objectives manager cloned it |
+| STRIP-2 | Home Objective | `e6b8fb` | Custom_Model | 0 | 6 | TC-023s: 40k objective-marker template, only the removed objectives manager cloned it |
+| STRIP-2 | Interactive Buttons - Area Denial | `8c71ab` | Custom_Token | 2,225 | 0 | TC-023s: drew 3"/6" circles for the 40k Area Denial secondary; removed |
+| STRIP-2 | Interactive Buttons - Show Objectives | `15d652` | Custom_Token | 2,343 | 0 | TC-023s: toggled the objectives manager (40k markers on `obj_*`-tagged 40k map terrain); removed with it |
+| STRIP-2 | Interactive Buttons - Strat Reserves | `7b7ab8` | Custom_Token | 3,029 | 0 | TC-023s: drew 40k strategic-reserves lines 6" from each edge; removed |
 | REPLACED | Legacy Tokens (Blue) by Trashpanda | `10a26a` | Bag | 16,208 | 79 | memory bag of 40k status tokens (hit/wound/strength/toughness modifiers, Stealth, Fell Back); nothing in it applies to Trench Crusade, removed with its script and state (TC-017) |
 | REPLACED | Legacy Tokens (Red) by Trashpanda | `7aca71` | Bag | 16,208 | 85 | memory bag of 40k status tokens; removed with its script and state (TC-017) |
-| UNSURE | Map Creator Filter | `369707` | BlockSquare | 23,109 | 0 | was the map-creator filter + Battlemaster mat randomizer + Table Theme swatches; rewritten to keep only the theme swatches (the only UI for table themes) |
+| UNSURE | Map Creator Filter | `369707` | BlockSquare | 23,109 | 0 | was the map-creator filter + Battlemaster mat randomizer + Table Theme swatches; rewritten to keep only the theme swatches (the only UI for table themes). TC-023s: the panel is always shown (it used to appear only between choosing a game mode and START GAME) |
 | REPLACED | Mission & Utility Tokens Red | `3f26fa` | Bag | 36,861 | 87 | memory bag of 40k mission tokens (Beacon, Cleanse, Sensor Sweep, Vital Link...); removed with its script and state (TC-017) |
 | REPLACED | Mission & Utility Tokens Red | `58d30b` | Bag | 36,861 | 87 | memory bag of 40k mission tokens; removed with its script and state (TC-017) |
 | REPLACED | Objective Secured Blue | `04d13e` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Objective Secured' bag; its slot now holds the Blue Blessing Marker bag `c30c00` (TC-017) |
 | REPLACED | Objective Secured Red | `e87880` | Custom_Model_Infinite_Bag | 0 | 2 | 40k 'Objective Secured' bag; its slot now holds the Red Blessing Marker bag `6cecd8` (TC-017) |
 | UNSURE | Red Lethal Hit Zone | `7ac8ba` | Custom_Tile | 0 | 0 | lethal-hit parking zone used by the dice mat's 40k sustained/lethal hits feature; mat kept intact |
-| UNSURE | Start Menu | `738804` | BlockRectangle | 252,625 | 0 | Start Menu is the whole game controller; kept with its mission/disposition/Battlemaster/restore-point code removed (see STRIP-LOG). Sizes, mat themes, deploy-zone overlays, turn/phase HUD (phase strip relabelled Initiative / Activation / Morale by TC-014), territory line, terrain pass-through remain |
+| UNSURE | Start Menu | `738804` | BlockRectangle | 252,625 | 0 | the game controller. After TC-023s it keeps only the table-theme swatch targets, terrain pass-through and the LCT turn / phase / round engine behind the HUD (one on-table "Next Phase / Pass Turn" button); game modes, sizes, deployment presets and picker, Clear Table, START GAME, objectives manager, territory / 9" lines are gone (STRIP-LOG, *Second strip*). Still UNSURE: the turn engine is 40k-shaped (player turns) and runs beside the TC Turn Tracker |
 | REPLACED | Tokens by Mothmy Titania (Blue) | `9d6b2f` | Bag | 16,208 | 289 | memory bag of 89 Mothmy tokens (40k stat modifiers, CP/OC/LD, Battle-Shock, plus a few generic 'General Token' blanks); removed whole rather than curated - the handful of generic blanks did not justify keeping a 289-object bag (TC-017) |
 | REPLACED | Tokens by Mothmy Titania (Red) | `446a11` | Bag | 16,208 | 289 | memory bag of 89 Mothmy tokens; removed whole (TC-017) |
 | STRIP | (no nickname) | `066fd3` | Custom_Tile | 0 | 0 | art tile paired with a mission-matrix bag (GAME_MODE_OBJECTS in the Start Menu) |
@@ -307,7 +309,8 @@ Data in global.lua: the GUID constant block (KEEP, minus mission/CP/zone constan
 `missionPackData`, `missionMatchups`, the secondary zone/label GUID tables, `MAP_INDEX`
 (per-map creator metadata), the primary/deployment card GUID comment block (all STRIP),
 `teamModels`, `nonPlaying`, `allowMenu`/`allowAutoSeat`, `*DiceSpawnTime`, version /
-changelog constants (KEEP).
+changelog constants (KEEP). TC-023s removed `centerCircle_GUID`, `quarterCircle_GUID` and the
+seven `interactiveButton*` toggle-state globals with the objects they served.
 
 ## XmlUI (110,218 bytes) by panel
 
@@ -323,7 +326,9 @@ changelog constants (KEEP).
 
 ## Per-object scripts worth knowing
 
-- **Start Menu `738804`** (252 KB, 6,090 lines) - size changer, deploy-zone manager,
+- **Start Menu `738804`** (252 KB, 6,090 lines in LCT; 23 KB, 592 lines after TC-023s,
+  which removed everything below except mat themes, terrain pass-through and the
+  turn/phase/round HUD) - size changer, deploy-zone manager,
   objectives manager, mission manager, game manager. Subsystems: sizes/modes and mat themes
   (KEEP); deploy-zone data and overlay drawing primitives (UNSURE kept - 40k zone geometry,
   generic drawing); objectives manager (UNSURE kept); dispositions, mission generation,

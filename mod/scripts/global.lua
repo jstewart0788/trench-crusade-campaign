@@ -10,8 +10,6 @@
 -- yes it should. Unfortunately, I saw the documentation for Object.getVar said
 -- "Cannot return a table", and missed that Object.getTable existed, and now I'm
 -- too lazy to change it all again.
-centerCircle_GUID = "51ee2f"
-quarterCircle_GUID = "51ee3f"
 startMenu_GUID = "738804"
 redDiceMat_GUID = "acae21" -- diceTable
 blueDiceMat_GUID = "839fcc" -- diceTable
@@ -366,15 +364,6 @@ redHandZone_GUID = "f7d85a"
 blueHandZone_GUID = "731345"
 redHiddenZone_GUID = "28419e"
 blueHiddenZone_GUID = "e1e91a"
-
-
-interactiveButtonTableQuarters_State = 1
-interactiveButtonAreaDenial = 1
-interactiveButtonStratReserves = 1
-interactiveButtonDeploymentZones = 1
-interactiveButtonTerritoryLine = 1
-interactiveButtonShowObjectives = 1
-interactiveButtonShowObjectivesNextClickAt = 0
 
 
 teamModels = { Red = {}, Blue = {} }

@@ -238,3 +238,151 @@ The ten token bags ANATOMY classed UNSURE on content only, now REPLACED:
   the Start Menu script.
 - Not validated: anything in TTS. `mod/TESTING.md` step 9 is the in-TTS sign-off for this
   cut.
+
+## Second strip - TC-023s (40k setup flow and table toggles)
+
+Jonathan, looking at the live table: "There are still a lot of 40k artifacts, like the game
+modes and the deployment zone selects." Done by `strip_023s.py` (kept outside the repo, like
+the first two) against commit `637fd5a`, every text edit asserting its anchor count; the
+save was checked to round-trip byte-identically through `tts_save` before it was edited.
+
+| | before (TC-017) | after TC-023s |
+|---|---|---|
+| packed save | 1,231,409 bytes | 1,008,549 bytes |
+| top-level objects | 127 | 104 |
+| objects incl. nested | 219 | 154 |
+| scripted objects | 54 | 47 |
+| global.lua | 33,536 bytes / 919 lines | 33,212 bytes / 908 lines |
+| Start Menu `738804` | 116,792 bytes / 2,962 lines | 23,312 bytes / 592 lines |
+| Table Theme `369707` | 182 lines | 139 lines |
+| XmlUI | 33,308 bytes / 323 lines | unchanged |
+
+### Inventory: what is on or around the table, read from the code
+
+| Object / feature | GUID | Where it shows | Verdict | Reason |
+|---|---|---|---|---|
+| "GAME MODES" header + 1v1 / Solo / Combat Patrol / Onslaught / Colosseum / Boarding Action | `738804` buttons | Start Menu, world x≈31-38 by the mat's +x edge | removed | each picks a 40k battlefield size and deployment-preset family, rescales the mat, then shows the picker |
+| Battlefield sizes (`sizeData`), Onslaught menu relocation | `738804` | mat scale | removed | 40k sizes. The mat keeps its saved 60" x 44" (`4ee1f2` scale 1.667 / 1.222); nothing rescales it now |
+| Deployment-zone picker (`<-` "No Deployment Zone" `->`) and the five preset tables (Strike Force, Combat Patrol x2, Colosseum, Edition 11), overlay drawing (`drawLine` ... `spawnLine`) | `738804` | Start Menu row at world x≈45 | removed | every preset is a 40k deployment map; TC-022/023 brings Trench Crusade deployment from the Battle code |
+| START GAME / greyed START GAME / "Red player first" toggle | `738804` | Start Menu, world x≈49 | removed | refused to start without a 40k deployment zone, then turned on the 40k objectives; the first-player toggle is 40k first turn (TC decides it per Turn by roll-off on the Turn Tracker) |
+| Clear Table | `738804` | left of the picker | removed | see below: it destroys our importer, Turn Tracker, generated terrain and models |
+| 9" from DZ lines, territory divider | `738804` | overlays | removed | 40k |
+| Objectives manager (`placeObjectives` on `obj_*`-tagged 40k map terrain) + templates | `738804`, `e6b8fb` `3c9b57` `7fd7df` | templates under the table at x≈80, z≈-90 | removed | 40k objective markers; our generator does not tag `obj_*` and TC has its own Objective bags |
+| Interactive Buttons: Deployment Zone, Table Quarters, Territory Line, Strat Reserves, Area Denial, Show Objectives | `8aba11` `59decf` `7e7711` `7b7ab8` `8c71ab` `15d652` | six tokens in a column at x=45.3 | removed | all six draw 40k geometry or call the removed Start Menu code |
+| Full circle / Quarter-circle templates | `51ee2f` `51ee3f` | under the table at x=80 | removed | only the Start Menu overlays and Area Denial cloned `51ee2f`; `51ee3f` had no reader |
+| 40k token bags: Action, Objective, Home Objective, Hidden, Marked Terrain, Marked Unit (x2 each) | `e6d3ec` `db0a07` `d1100e` `4d85d9` `312600` `f26331` `972ea3` `9abea4` `b3dab3` `70566d` `2914e3` `513c30` | beside each dice mat, x≈±31.6-33.5 | removed | 40k mission / secondary tokens; nothing references them |
+| Next Phase / Pass Turn button, HUD ROUND badge, per-player Turn readouts, phase strip | `738804`, XmlUI | Start Menu at world x≈48.5; HUD top right | kept | the LCT turn engine TC-014 relabelled; drives the HUD and the chess-clock follow. Now runs from load (no START GAME) |
+| Game Rounds, Red Turns, Blue Turns counters | `ee92cf` `055302` `7e4111` | row at x=51 by the Start Menu | kept | feed the HUD ROUND / Turn readouts and are incremented by pass-turn; removing them is removing the turn engine (open question below) |
+| Stopwatch / chess clock (the two player timers) | `f4ee71` | x≈89 and the HUD clock rows | kept | generic |
+| Turn Tracker, Warband Importer, TC dice rollers, Points / Turn / Glory counters, TC token bags, rules shelf | `4ac9e3` `b91983` ... | as before | kept | ours |
+| Dice mats, dice rollers, d6 / d3 bags, loose d6s, trash bins and counters, LOS markers, selection highlighters, banners | `acae21` `839fcc` `17ca2b` `927ca1` ... | either side of the mat | kept | generic. Inside the mats the Lethal Hits / Sustained Hits / Sustained & Lethal buttons are 40k (see below) |
+| +1 / -1 to Rolls, Reroll 1s, Reroll All bags | `988659` `450445` `c54686` `d1c6dd` `adae2a` `389ff7` `404fe0` `af7071` | beside the dice mats | kept, UNSURE | modifier reminders are not obviously 40k-only (their child icon is a 40k Battle-shocked token); a rules call for Jonathan |
+| Lethal Hit Zone tiles | `7ac8ba` `71ab21` | strips at z=±23.6 | kept, UNSURE | 40k, but wired into the dice mat's import / roll / clear code; removing them is dice-mat surgery |
+| Table Theme panel | `369707` | x=-38.5, z=8, left of the mat | kept | the only table-theme UI; now always shown |
+| Advanced Features panel (Disable Terrain Colliders) | `ed17d0` | x=83, z=20 | kept | generic, but its tag list (`CO`, `EF`, `Tower` ...) is LCT map tags: it does nothing to `tc-terrain` pieces |
+| Spawn game tools, Squad activation / Wounds trackers, Army Placer, Flex Table Control, Mat url, Extract terrain | `a76485` `229946`... `8b7aa6` `bd69bd` `c5e288` `70b9f6` | under / beside the table | kept | generic engine (Extract terrain shows no buttons until its own are pressed) |
+| Injection Detector | `5c328f` | under the table | kept (security) | TTS virus scanner; caught "tcejbo gninwapS" live on 2026-11-05 |
+| Go pieces | `138b05` `6f0823` | under the table at x=68 | kept, UNSURE | unscripted, unreferenced, not visible |
+
+### Clear Table, read from the code
+
+`clearMat` set the surface diffuse to the default, hid the setup controls, then spawned a
+ScriptingTrigger centred at (0, 26, 0) scaled 60.12 x 73 x 44.04 and, two frames later,
+`destruct()`ed every object it overlapped except `28865a`, `4ee1f2`, the Start Menu itself
+and anything with GM Notes exactly `MapExclude`. Locking does not protect an object from
+`destruct()`. The box spans x ±30.06, z ±22.02, y -10.5 to 62.5, so it would have
+destroyed every `tc-terrain` piece (the generator centres a 36" board on the mat), every
+imported model, the Warband Importer `b91983` (x=-22, z=0) and the Turn Tracker `4ac9e3`
+(x=-22, z=15), and very probably the table-side asset `9f95fd` at (-29.9, -9.5, 0)
+(inference: it depends on that asset's bounds, not measured). It was a 40k map-card wipe,
+not safe here, so it went with the setup flow. A tag-scoped "Clear battlefield"
+(`getObjectsWithTag("tc-terrain")`) is the replacement to propose for TC-022.
+
+### Start Menu `738804`
+
+Removed: battlefield sizes and the six mode buttons with their header, the Onslaught
+relocation, the deployment-zone manager (preset tables, picker, every overlay drawing
+primitive, overlay tracking and re-adoption), Clear Table, the objectives manager, START
+GAME / first-player toggle / `startGame` / `startCustomTurns`, the territory divider and
+9" lines, `recallAll`, the setup-overlay hooks for `369707`, `initGlobalRefs` / `mat` /
+`refreshMat`, and the `inGame`, `singlesMode`, `simulation`, `gameMode`, `sizeConfirmed`,
+`deploy*`, `missionSetupControlsVisible` state and their save fields.
+
+Edited: the table is in play from load. `onLoad` restores only turn, phase, theme and the
+pass-through state (an LCT-era state with the removed fields is ignored), pushes the HUD
+unconditionally and draws the one remaining on-table button. `writeMenus` draws only the
+Next Phase / Pass Turn button. Turn control behaves as every LCT mode did (all six set
+`singlesMode = "singles"`): any player may pass, a HUD phase glyph only works on the active
+side's row. That removed the `!=` line, so `738804.lua` now passes `luac` and left the lint
+allow-list. `passTurn` now calls Global `recordPlayers` when both Red and Blue are seated:
+auto-seat on reconnect used to be armed by START GAME and would otherwise never arm.
+
+### Other scripts and save
+
+- `369707` Table Theme: builds its panel on every load; the hide / show hooks and
+  `menuHidden` state are gone.
+- `70b9f6` Extract terrain: no longer calls the removed `recallAll` before extracting or
+  deleting terrain.
+- `4ee1f2` mat surface: no longer calls the removed `refreshMat`.
+- `global.lua`: `centerCircle_GUID`, `quarterCircle_GUID` and the seven
+  `interactiveButton*` state globals removed. XmlUI unchanged: every `738804/...` handler
+  it names still exists.
+- `save.json`: 23 top-level objects removed (42 nested with them); the "Gaming
+  instructions" tab says the table has no setup flow and lists what went. Scripts and state
+  files of the removed objects trashed (`8aba11`, `59decf`, `7e7711`, `7b7ab8`, `8c71ab`,
+  `15d652`, `51ee2f`, state `15d652`). `mod/manifest.json` regenerated from the build.
+- `scripts/tts_lint.py`: also scans every Lua file and every LuaScript of a save `.json`
+  (Global and all objects, nested ones included) for the "tcejbo gninwapS" virus markers
+  and for a WebRequest that can reach a host other than `tc.rynfin.org`; `pnpm mod:test`
+  now passes `mod/save.json` too.
+
+### Kept on purpose, open
+
+- **The LCT turn engine** (Next Phase button, HUD ROUND / Turn / phase strip, Game Rounds,
+  Red / Blue Turns) is 40k-shaped: it alternates player turns with a phase sequence each,
+  while a Trench Crusade Turn is shared by both sides. It runs beside the Turn Tracker and
+  they will disagree (HUD "Red Turn 1, Initiative" vs Tracker "Turn 1 - Initiative" moving
+  independently). Keeping both or stripping the LCT engine (with an HUD rework) is
+  Jonathan's call.
+- **Dice-mat 40k buttons** (Lethal Hits, Sustained Hits, Sustained & Lethal) and the Lethal
+  Hit Zone tiles: the zones are read by the mat's opposite-dice import, dice scan, re-roll
+  and clear paths, and `modifyMenu` recolours buttons by fixed index (35-37 are the lethal
+  buttons). Removal is a scoped follow-up with a live check of the mat.
+- **Disable Terrain Colliders** ignores `tc-terrain`; adding the tag to
+  `TERRAIN_PASS_THROUGH_TAGS` is a one-line proposal for TC-022.
+
+### Dangling references
+
+- Every function and variable removed from `738804`, `369707` and the seven removed
+  object scripts (215 names) was searched across `mod/scripts`, `mod/ui`, `mod/test` and
+  `save.json`: no remaining code calls one. The only quoted hits are `mat_GUID` (Global's
+  own variable, still defined) and other objects' own `none` functions.
+- Every `.call("...")` target in the remaining scripts resolves to a function in some
+  script except the two pre-existing ones (`openTerrain`, `changeSustainedHitsThreshold`).
+- `luac -l` on the four edited object scripts: no global is read that is never assigned
+  (the check was proven by turning `writeIngameMenu` local and seeing it reported).
+- None of the 23 removed GUIDs appears anywhere in the mod; every 6-hex literal resolves
+  except `948ce5` (`table_GUID`, justified in the first strip).
+
+### Validation
+
+- `scripts/tts_lint.py mod/scripts mod/test mod/save.json`: luac 48 ok / 2 allowed / 0
+  failed, malware scan 205 scripts / 0 findings, exit 0; on the packed build: 155 scripts,
+  0 findings, exit 0. The scan went red (exit 1) on each of five planted infections: the
+  virus marker after 400 spaces, `--[[Object base code]]`, a literal
+  `WebRequest.get("https://obje.glitch.me/")`, a computed WebRequest in a script quoting a
+  foreign host, and the marker appended to one object's LuaScript in a packed save.
+- `luac -p` (5.5.1) on each edited script: exit 0. `importer_test` 311 checks and
+  `tracker_test` 233 checks, exit 0.
+- Pack: 1,008,549 bytes, parses as JSON, two packs byte-identical; unpacking it with
+  `--verify` is JSON-equal and reproduces `mod/scripts`, `ui`, `state` and `save.json`
+  exactly. Semantically the new `save.json` is the old one minus the 23 objects (the 104
+  kept objects identical and in order) plus the one notebook-tab edit.
+- An offline harness drove the stripped Start Menu and Table Theme under plain Lua with a
+  stubbed TTS API (35 checks): a fresh load draws only the phase button, no GAME / START /
+  Deploy / Clear button; the HUD is pushed at load; HUD phase jumps, Next Phase, pass turn,
+  right-click skip and the counter increments work without a START GAME; players are
+  recorded only with both seats filled; onSave / onLoad keep turn, phase and theme and
+  tolerate an LCT-era state; the theme panel builds with the selected swatch lit. A mutant
+  without the seat guard failed it. The harness is a stub, not TTS.
+- Not validated: anything in TTS (`mod/TESTING.md` step 10 is the sign-off for this strip).

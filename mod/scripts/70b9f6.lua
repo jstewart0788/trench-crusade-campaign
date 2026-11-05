@@ -227,8 +227,6 @@ function extract()
     broadcastToAll("EXTRACTING TERRAIN\nwait a few seconds ...", "Yellow")
     mat=getObjectFromGUID(Global.getVar("mat_GUID"))
     createDebugMat()
-    local startMenu=getObjectFromGUID(Global.getVar("startMenu_GUID"))
-    startMenu.call("recallAll")
     Wait.time(extract2, 2)
 end
 
@@ -318,8 +316,6 @@ end
 
 function deleteTerrain()
     broadcastToAll("DELETING TERRAIN\nwait a few seconds ...", "Red")
-    local startMenu=getObjectFromGUID(Global.getVar("startMenu_GUID"))
-    startMenu.call("recallAll")
     Wait.time(deleteTerrain2, 2)
 end
 

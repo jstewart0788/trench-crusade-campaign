@@ -1,11 +1,9 @@
 -- FTC-GUID: 369707
 -- Table Theme overlay.
 --
--- Anchored on a hidden BlockSquare beside the deployment-zone picker. It shows
--- one swatch per table theme; clicking a swatch forwards to startMenu's
--- setMatTexture<i>, which owns the texture list and the swap. In LCT this object
--- also carried the map-creator filter and the Battlemaster mat randomizer; both
--- were removed with the map system.
+-- Anchored on a hidden BlockSquare left of the mat. It shows one swatch per
+-- table theme; clicking a swatch forwards to startMenu's setMatTexture<i>,
+-- which owns the texture list and the swap.
 
 -- Lifts the panel off the block's face (the THIRD number of the UI `position`,
 -- i.e. perpendicular to a face-up tile). Higher = panel further above the table.
@@ -13,32 +11,10 @@
 -- lift is what brings the panel back up to a readable height.
 UI_VERTICAL_LIFT = -150
 
--- The overlay only applies during setup, so the panel is dropped once the
--- game starts (startMenu calls hideFilterMenu). Persisted so a mid-game reload
--- stays hidden.
-menuHidden = false
-
-function onSave()
-    return JSON.encode({menuHidden = menuHidden})
-end
-
-function onLoad(saved)
-    menuHidden = false
-    if saved and saved ~= "" then
-        local ok, data = pcall(function() return JSON.decode(saved) end)
-        if ok and type(data) == "table" then
-            menuHidden = data.menuHidden == true
-        end
-    end
+function onLoad()
     -- Small delay so startMenu has registered its functions regardless of
     -- onLoad ordering.
-    Wait.time(function()
-        if menuHidden or not shouldShowFromStartMenu() then
-            self.UI.setXml("")
-        else
-            buildFilterUI()
-        end
-    end, 1)
+    Wait.time(buildFilterUI, 1)
 end
 
 -- Uniform scale applied to the whole panel (1.0 = native size).
@@ -53,13 +29,6 @@ FILTER_SPACING = 8
 START_MENU_GUID = "738804"
 
 function startMenuObj() return getObjectFromGUID(START_MENU_GUID) end
-
-function shouldShowFromStartMenu()
-    local sm = startMenuObj()
-    if not sm then return false end
-    local ok, visible = pcall(function() return sm.call("shouldShowMapSetupOverlay") end)
-    return ok and visible == true
-end
 
 -- Panel geometry.
 MAT_RANDO_TITLE_H = 63   -- "Table Theme" heading
@@ -166,17 +135,5 @@ function onTableThemeSwatch(player, value, id)
     local sm = startMenuObj()
     if not sm then return end
     sm.call("setMatTexture" .. string.match(id, "%d+"))
-    buildFilterUI()
-end
-
--- Called by startMenu.startGame: remove the floating panel for the rest of the game.
-function hideFilterMenu()
-    menuHidden = true
-    self.UI.setXml("")
-end
-
--- Bring the panel back (e.g. if a pre-game flow ever needs it again).
-function showFilterMenu()
-    menuHidden = false
     buildFilterUI()
 end
