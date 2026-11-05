@@ -6,6 +6,7 @@ import { ImportPage } from "./pages/ImportPage.js";
 import { NewPage } from "./pages/NewPage.js";
 import { WarbandLayout } from "./pages/WarbandLayout.js";
 import { WarbandScreen } from "./pages/WarbandScreen.js";
+import { FigureLab } from "./lab/FigureLab.js";
 import styles from "./App.module.css";
 
 export function App() {
@@ -39,6 +40,7 @@ export function App() {
               <Route path="barracks" element={<BarracksScreen />} />
               <Route path="armoury" element={<ArmouryScreen />} />
             </Route>
+            {import.meta.env.DEV && <Route path="/lab/figure" element={<FigureLab />} />}
             <Route path="*" element={<p className="muted">Nothing here.</p>} />
           </Routes>
         </main>

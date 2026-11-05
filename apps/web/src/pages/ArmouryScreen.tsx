@@ -197,7 +197,12 @@ export function ArmouryScreen() {
             ) : (
               <>
                 {traits && <SkillsPanel traits={traits} onUndo={undoTrait} onKeep={keepTrait} />}
-                <p className={`panel ${styles.hint}`}>Click a slot on the figure to equip it, or add to the inventory. Changes stay pending until you confirm purchases in the header.</p>
+                <p className={`panel ${styles.hint}`}>
+                  Click a slot on the figure to equip it, or add to the inventory. Changes stay pending until you confirm purchases in the header.
+                  <span className="quiet" style={{ display: "block" }}>
+                    Equipment icons by Lorc, Delapouite and Skoll from <a href="https://game-icons.net">game-icons.net</a>, CC BY 3.0.
+                  </span>
+                </p>
               </>
             )}
           </div>

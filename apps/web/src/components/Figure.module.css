@@ -6,7 +6,7 @@
 .figure {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 0.7fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 1.1fr) minmax(0, 1fr);
   grid-template-areas:
     "head fig torso"
     "ranged-a fig melee-a"
@@ -21,31 +21,69 @@
   align-self: stretch;
   width: 100%;
   height: 100%;
-  min-height: 20rem;
+  min-height: 24rem;
   pointer-events: none;
 }
-.part {
+/* The body is a dark silhouette; equipment icons are bright, cut out from it by a dark keyline. --lit brightens a zone while its slot is hovered or open. */
+.flesh {
+  fill: color-mix(in srgb, currentColor calc(20% + var(--lit, 0) * 22%), var(--bg-sunken));
   stroke: currentColor;
-  stroke-opacity: 0.55;
-  stroke-width: 1.6;
-  stroke-linejoin: round;
-  transition: stroke-opacity 0.15s, fill-opacity 0.15s;
+  stroke-opacity: calc(0.38 + var(--lit, 0) * 0.5);
+  stroke-width: 1;
 }
-.detail {
+.limbEdge,
+.limb {
   fill: none;
-  stroke: currentColor;
-  stroke-opacity: 0.3;
-  stroke-width: 1.2;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.detail circle {
-  fill: currentColor;
-  fill-opacity: 0.35;
-  stroke: none;
+.limbEdge {
+  stroke: color-mix(in srgb, currentColor calc(38% + var(--lit, 0) * 50%), var(--bg-sunken));
+  stroke-width: 20;
 }
-.lens {
-  fill: currentColor;
-  fill-opacity: 0.55;
+.limb {
+  stroke: color-mix(in srgb, currentColor calc(20% + var(--lit, 0) * 22%), var(--bg-sunken));
+  stroke-width: 18;
+}
+.iron {
+  fill: color-mix(in srgb, currentColor calc(62% + var(--lit, 0) * 30%), var(--bg-sunken));
+  stroke: var(--bg-sunken);
+  stroke-width: 1.5;
+}
+.band {
+  fill: none;
+  stroke: var(--bg-sunken);
+  stroke-width: 2;
+  stroke-opacity: 0.7;
+}
+.rivet {
+  fill: var(--bg-sunken);
+}
+.slit {
+  fill: var(--bg-sunken);
+}
+.cloth {
+  fill: color-mix(in srgb, currentColor calc(30% + var(--lit, 0) * 22%), var(--bg-sunken));
+  stroke: currentColor;
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+}
+.seam {
+  fill: none;
+  stroke: var(--bg-sunken);
+  stroke-width: 1.4;
+  stroke-opacity: 0.8;
+}
+.belt {
+  fill: color-mix(in srgb, currentColor 34%, var(--bg-sunken));
+}
+.gear {
+  fill: color-mix(in srgb, currentColor calc(72% + var(--lit, 0) * 28%), var(--bg-sunken));
+  stroke: var(--bg-sunken);
+  stroke-width: 22;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  filter: drop-shadow(0 0 calc(var(--lit, 0) * 5px) currentColor);
 }
 .base ellipse:first-child {
   fill: var(--bg-sunken);
@@ -53,31 +91,24 @@
   stroke-opacity: 0.25;
 }
 .base ellipse:last-child {
-  fill: color-mix(in srgb, var(--bg-raised) 80%, transparent);
+  fill: color-mix(in srgb, currentColor 8%, var(--bg-raised));
   stroke: currentColor;
   stroke-opacity: 0.5;
 }
 .ghost {
   fill: none;
   stroke: currentColor;
-  stroke-opacity: 0;
+  stroke-opacity: calc(var(--lit, 0) * 0.9);
   stroke-width: 1.6;
   stroke-dasharray: 4 3;
-  transition: stroke-opacity 0.15s;
 }
-/* The part for the slot being hovered or open lights up on the figure. */
 .figure:has([data-zone="head"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneHead,
 .figure:has([data-zone="torso"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneTorso,
 .figure:has([data-zone="ranged"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneRanged,
 .figure:has([data-zone="melee"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneMelee,
+.figure:has([data-zone="offhand"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneOffhand,
 .figure:has([data-zone="grenade"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneGrenade {
-  stroke-opacity: 1;
-  stroke-width: 2.2;
-  fill: currentColor;
-  fill-opacity: 0.32;
-}
-.figure:has([data-zone="offhand"]:is(:hover, :focus-visible, [aria-pressed="true"])) .zoneOffhand {
-  stroke-opacity: 0.9;
+  --lit: 1;
 }
 /* Short rules from each slot toward the figure. */
 .slot::after {
