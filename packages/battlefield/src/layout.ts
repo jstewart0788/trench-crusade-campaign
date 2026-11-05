@@ -64,7 +64,7 @@ export const LayoutPiece = z.object({
   cells: z.array(CellRef).nullable(),
   /** Visual footprint centre in board inches. */
   position: Point,
-  /** Visual footprint extents in board inches after rotation (the bounding box, at a non-quarter yaw). */
+  /** Visual footprint extents in board inches already turned to rotY (the bounding box, at a non-quarter yaw): not to be rotated again. */
   footprintIn: z.tuple([z.number().positive(), z.number().positive()]),
   /** The palette footprint before rotation. */
   sizeIn: z.tuple([z.number().positive(), z.number().positive()]),

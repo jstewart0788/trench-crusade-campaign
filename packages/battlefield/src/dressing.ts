@@ -1365,8 +1365,9 @@ const FACE_CATEGORIES = ["scatter-sandbag", "scatter-crate", "scatter-rubble"];
 
 // Single pieces filling a strip of ground one at a time line up in single file (Jonathan, seed 37's east edge):
 // a single never makes a third within ROW_BAND_IN of a line through two others, each within ROW_STEP_IN of the next.
-const ROW_BAND_IN = 1;
-const ROW_STEP_IN = 3.5;
+// Judged a little wide of the measure, so a near miss does not read as a row once positions are rounded.
+const ROW_BAND_IN = 1.05;
+const ROW_STEP_IN = 3.55;
 
 export function extendsRow(ctx: PlacementContext, at: readonly [number, number], ...also: (readonly [number, number])[]): boolean {
   // Any third piece in a run lies within two steps of the new one, so only those nearer count.
@@ -1521,7 +1522,7 @@ export function placeTerrainSlots(ctx: PlacementContext, targets: readonly Compo
 function fillSlots(ctx: PlacementContext, targets: readonly CompositionTarget[], phase: "minimum" | "fill", sizeCap: number): SlotResult {
   const placed: Placed[] = [];
   // The type whose smallest piece is largest goes first, while the open bands are still whole.
-  const smallest = (t: CompositionTarget) => Math.min(...t.categories.flatMap((c) => placeablesIn(ctx.palette, c).filter((p) => !p.cells && Math.max(...p.footprintIn) <= 5).map(area)), Number.POSITIVE_INFINITY);
+  const smallest = (t: CompositionTarget) => Math.min(...t.categories.flatMap((c) => placeablesIn(ctx.palette, c).filter((p) => !p.cells && Math.max(...p.footprintIn) <= minimumSideIn(ctx.palette, c)).map(area)), Number.POSITIVE_INFINITY);
   const order = [...targets].sort((a, b) => Number(a.house) - Number(b.house) || (Number.isFinite(smallest(b)) ? smallest(b) : 0) - (Number.isFinite(smallest(a)) ? smallest(a) : 0));
   const goal = (t: CompositionTarget) => (phase === "minimum" ? t.min : t.target);
   const stuck = new Set<string>();
@@ -1543,7 +1544,7 @@ function fillSlots(ctx: PlacementContext, targets: readonly CompositionTarget[],
         if (blocks.length && phase === "fill" && ctx.rng.chance(0.4)) done = placeGroundBlockPair(ctx, ctx.rng.pick(blocks));
         if (!done.length) {
           // A failed pick steps down to pieces smaller than it, so a crowded board still finds its minimum.
-          const fits = (p: Placeable) => !p.cells && (phase === "fill" || Math.max(...p.footprintIn) <= 5);
+          const fits = (p: Placeable) => !p.cells && (phase === "fill" || Math.max(...p.footprintIn) <= minimumSideIn(ctx.palette, category));
           const all = [...new Set(pool.filter(fits).map(area))].sort((x, y) => y - x);
           const areas = sizeCap === 0 ? [...all].reverse() : Number.isFinite(sizeCap) ? all.slice(Math.floor(all.length * (1 - sizeCap))) : all;
           const steps = phase === "minimum" ? areas : areas.slice(0, 1);
@@ -1573,6 +1574,18 @@ function fillSlots(ctx: PlacementContext, targets: readonly CompositionTarget[],
   const shortfalls = order.filter((t) => (counts.get(t.typeId) ?? 0) < goal(t)).map((t) => ({ typeId: t.typeId, min: t.min, target: goal(t), placed: counts.get(t.typeId) ?? 0 }));
   return { placed, shortfalls };
 }
+
+/**
+ * The longest side a minimum's piece may have: 5in, so every listed type finds
+ * room on a 36in board. A category with nothing that short (the ruined
+ * buildings, 5.2 to 9.9in) takes its pieces up to 2in longer than its shortest,
+ * or the type could never meet its minimum.
+ */
+function minimumSideIn(palette: Palette, category: string): number {
+  const shortest = Math.min(...placeablesIn(palette, category).filter((p) => !p.cells).map((p) => Math.max(...p.footprintIn)), Number.POSITIVE_INFINITY);
+  return shortest > MINIMUM_SIDE_IN ? shortest + 2 : MINIMUM_SIDE_IN;
+}
+const MINIMUM_SIDE_IN = 5;
 
 /** Tall pieces (towers, multi-storey ruins) as a twin pair beside the network. */
 export function placeTallPair(ctx: PlacementContext): Placed[] {

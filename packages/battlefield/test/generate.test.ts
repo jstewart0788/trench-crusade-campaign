@@ -112,6 +112,8 @@ const HILL_GROUPS: { rate: number; boards: Layout[] }[] = [
 const POINT_BOARDS = seedsFrom(1, 40).map((seed) => generateBattlefield({ scenarioId: "relic-hunt", archetype: "trench-lines", seed, options: { parity: "point" } }, env));
 // Their own archetype for the scenarios that list No Man's Land.
 const NML_BOARDS = ["claim-no-mans-land", "relic-hunt", "supply-raid", "the-high-ground"].flatMap((id) => seedsFrom(1, 40).map((seed) => gen(id, seed, "no-mans-land")));
+// Every scenario as it is laid by default: its own archetype at its own size.
+const OWN_BOARDS = env.scenarios.flatMap((s) => seedsFrom(1, 10).map((seed) => generateBattlefield({ scenarioId: s.id, seed }, env)));
 
 describe("generateBattlefield", () => {
   it("is deterministic: the same seed gives byte-identical layouts, different seeds differ", () => {
@@ -649,8 +651,8 @@ describe("generateBattlefield", () => {
         return best;
       };
       // No Man's Land boards are where face dressing lines up most.
-      const all = [...boards, ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...NML_BOARDS];
-      expect(all.length).toBeGreaterThan(700);
+      const all = [...boards, ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...NML_BOARDS, ...OWN_BOARDS];
+      expect(all.length).toBeGreaterThan(800);
       for (const layout of all) {
         const singles = layout.pieces.filter((p) => isScatter(p) && !p.groupId).map((p) => p.position);
         expect(longestRun(singles), `${layout.scenarioId} seed ${layout.seed}`).toBeLessThan(3);
@@ -801,17 +803,33 @@ describe("generateBattlefield", () => {
     // A single wall: one thin side, long against it (measured from the palette footprints).
     const oneWall = (p: { footprintIn: readonly [number, number] }) => Math.min(...p.footprintIn) <= 2.3 && Math.max(...p.footprintIn) >= 2.5 * Math.min(...p.footprintIn);
     for (const p of palette.pieces.filter((x) => x.enabled && (x.role === "ruin" || x.role === "building"))) expect(oneWall(p), p.id).toBe(false);
-    const all = [...[...LAYOUTS.values()].flat(), ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...NML_BOARDS];
+    const all = [...[...LAYOUTS.values()].flat(), ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...NML_BOARDS, ...OWN_BOARDS];
     let tall = 0;
     for (const layout of all) {
       for (const p of layout.pieces) {
         if (p.cells || isScatter(p) || !["ruin", "building", "tower", "cover", "landmark", "wire"].includes(p.role)) continue;
         tall++;
+        // Every pass, measured both ways: the exact turned outline, and the layout's own bounding box (already turned).
         const r = rectOf(p);
+        const [w, d] = p.footprintIn;
+        const box = Math.min(p.position[0] - w / 2, p.position[1] - d / 2, layout.boardIn - p.position[0] - w / 2, layout.boardIn - p.position[1] - d / 2);
         expect(Math.min(r.x0, r.y0, layout.boardIn - r.x1, layout.boardIn - r.y1), `${layout.scenarioId} seed ${layout.seed} ${p.id} ${p.paletteId}`).toBeGreaterThanOrEqual(BASE_32MM_IN - ROUNDING);
+        expect(box, `${layout.scenarioId} seed ${layout.seed} ${p.id} ${p.paletteId} bounds`).toBeGreaterThanOrEqual(BASE_32MM_IN - ROUNDING);
       }
     }
     expect(tall).toBeGreaterThan(5000);
+  });
+
+  it("meets every archetype minimum when each scenario is laid as its own archetype, two ruined buildings on No Man's Land included", () => {
+    let nml = 0;
+    for (const layout of [...OWN_BOARDS, ...NML_BOARDS]) {
+      for (const sf of layout.stats.shortfalls) expect(sf.placed, `${layout.scenarioId} seed ${layout.seed} ${sf.typeId}`).toBeGreaterThanOrEqual(sf.min);
+      if (layout.archetype !== "no-mans-land") continue;
+      nml++;
+      // Ruined buildings (5.2-9.9in) once never met the 5in cap the minimums keep, so No Man's Land boards without building covers had none.
+      expect(layout.pieces.filter((p) => p.role === "building" && !p.groupId).length, `${layout.scenarioId} seed ${layout.seed}`).toBeGreaterThanOrEqual(2);
+    }
+    expect(nml).toBeGreaterThan(200);
   });
 
   it("lays a scenario at its own battlefield size when none is asked for, and its objective covers clear of ramp feet", () => {
