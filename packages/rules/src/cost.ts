@@ -41,7 +41,7 @@ export function itemCost(data: RulesData, scope: RosterScope, unitId: string, it
   const unit = findUnit(data, scope, unitId);
   const access = unit ? accessFor(unit, itemId) : undefined;
   if (access?.cost) return line(itemId, access.cost);
-  if (access?.fixed || access?.group === "loadout") return { ...ZERO, id: itemId };
+  if (access?.fixed || access?.replaceableDefault || access?.group === "loadout") return { ...ZERO, id: itemId };
   return line(itemId, data.equipmentById.get(itemId)?.cost);
 }
 

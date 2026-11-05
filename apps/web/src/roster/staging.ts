@@ -190,15 +190,24 @@ export function hasPending(pending: Pending): boolean {
   return pendingCount(pending) > 0;
 }
 
+/** Clears pre-game choices that name a model no longer on the roster (a dismissed victim). */
+export function prunePreGame(warband: Warband): Warband {
+  const pre = warband.preGame;
+  if (!pre) return warband;
+  const ids = new Set(warband.members.map((m) => m.id));
+  if (Object.values(pre).every((v) => v === null || ids.has(v))) return warband;
+  return { ...warband, preGame: Object.fromEntries(Object.entries(pre).map(([k, v]) => [k, v !== null && ids.has(v) ? v : null])) };
+}
+
 /** The roster as it will be once every pending change is confirmed. Pure; the input is untouched. */
 export function applyPending(warband: Warband, pending: Pending): Warband {
   if (!hasPending(pending)) return warband;
-  return {
+  return prunePreGame({
     ...warband,
     members: stagedMembers(warband, pending)
       .filter((r) => r.pending !== "remove")
       .map((r) => r.member),
-  };
+  });
 }
 
 export function pendingCount(pending: Pending): number {

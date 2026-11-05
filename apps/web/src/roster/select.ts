@@ -90,7 +90,7 @@ export function limitText(min: number | null, max: number | null): string {
 /** Items the unit arrives with (`fixed` rows); added to a new member automatically. */
 export function defaultKit(unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext): string[] {
   return unit.equipmentAccess
-    .filter((a) => a.fixed && gateStatus(evaluateGates(a.onlyWith, a.onlyWithout, warband, data, ctx)) === "open")
+    .filter((a) => (a.fixed || a.replaceableDefault) && gateStatus(evaluateGates(a.onlyWith, a.onlyWithout, warband, data, ctx)) === "open")
     .map((a) => a.itemId);
 }
 

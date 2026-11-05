@@ -22,6 +22,8 @@ interface Props {
   purse: Purse;
   /** What swapping out the slot's current item gives back. */
   refund?: Money;
+  /** The slot holds a replaceable built-in that may be swapped now (at recruitment): its replacements are listed. */
+  replace?: { name: string; text: string; page: number };
   /** `attach` picks are added alongside the slot's weapon; the rest replace it. */
   onPick: (row: PickerRow, attach: boolean) => void;
   onRemove: (entry: KitEntry) => void;
@@ -30,7 +32,7 @@ interface Props {
 }
 
 /** Side panel: what the clicked slot holds and what else it could hold. Escape or Close dismisses it. */
-export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing, purse, refund, onPick, onRemove, onKeep, onClose }: Props) {
+export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing, purse, refund, replace, onPick, onRemove, onKeep, onClose }: Props) {
   const panel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
 
   // Built-in kit is never removed or swapped out; a pending restore of one is still undoable.
   const held = current ?? coveredBy;
-  const locked = held !== undefined && isBuiltIn(held) && held.pending !== "add";
+  const locked = held !== undefined && isBuiltIn(held) && held.pending !== "add" && !replace;
 
   const groups = new Map<string, PickerRow[]>();
   for (const row of listing.rows) {
@@ -69,7 +71,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
         <div className={`${styles.current} ${locked ? styles.currentLocked : ""}`} data-locked={locked ? "true" : undefined}>
           <span className={styles.held}>
             {!current && <span className="muted">Taken by{held.classified.bayonet ? " a fixed bayonet" : " a weapon in both hands"}: </span>}
-            <ItemDescription desc={describeItem(held.item)} expandable struck={held.pending === "remove"} />
+            <ItemDescription desc={describeItem(held.item, held.access)} expandable struck={held.pending === "remove"} />
             {held.pending === "add" && <span className={styles.chipAdd}>pending</span>}
             {held.pending === "remove" && <span className={styles.chipRemove}>removing</span>}
           </span>
@@ -77,7 +79,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
             <button className="small" onClick={() => onKeep(held)}>
               Keep
             </button>
-          ) : locked ? (
+          ) : locked || replace ? (
             <span className={styles.builtIn}>
               <LockGlyph /> built in
             </span>
@@ -104,6 +106,13 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
 
       {locked ? (
         <p className={styles.lockedNote}>Built-in kit: always carried. It cannot be removed or swapped.</p>
+      ) : replace ? (
+        <>
+          <p className={styles.lockedNote}>
+            Built-in, but while recruiting it may be replaced (p{replace.page}). {replace.text}
+          </p>
+          <h3>Replace the {replace.name} with</h3>
+        </>
       ) : (
         <h3>{current ? "Swap for" : coveredBy ? `Replace with (${ZONE_LABELS[zone]})` : "Choose"}</h3>
       )}
@@ -141,7 +150,7 @@ function Row({ row, purse, refund, onBuy }: { row: PickerRow; purse: Purse; refu
   return (
     <div className={styles.row}>
       <span className={styles.main}>
-        <ItemDescription desc={describeItem(row.item)} />
+        <ItemDescription desc={describeItem(row.item, row.access)} />
         {counts.length > 0 && <span className={styles.counts}>{counts.join(" · ")}</span>}
       </span>
       {row.access.fixed ? (

@@ -1,0 +1,72 @@
+{
+  "$schema": "tc-rules-unit-rules-v1",
+  "source": {
+    "file": "Warbands-of-Trench-Crusade.pdf",
+    "edition": "1.0.2",
+    "pages": "59, 61, 63-64",
+    "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
+  },
+  "replaceableBuiltIns": [
+    {
+      "id": "anchorite-catherine-wheel",
+      "name": "Catherine Wheel",
+      "unitIds": ["trench-pilgrims/anchorite-shrine"],
+      "itemId": "catherine-wheel",
+      "page": 59,
+      "text": "An Anchorite Shrine has a Bonebreaker Mace and a Catherine Wheel. These Weapons are built into the Anchorite Shrine and cannot be removed or lost.",
+      "replacements": {
+        "onlyWith": ["trench-pilgrims/war-pilgrimage-of-saint-methodius"],
+        "itemIds": ["anti-materiel-rifle", "autocannon", "gas-censer", "heavy-flamethrower", "punt-gun", "trench-mortar"],
+        "hands": 1,
+        "page": 64,
+        "text": "When you recruit an Anchorite Shrine, you can replace its Catherine Wheel with one of the Anchorite Ranged Weapons. They are counted as 1-Handed weapons when used by an Anchorite Shrine."
+      }
+    }
+  ],
+  "groupLimits": [
+    {
+      "id": "anchorite-battlekit",
+      "name": "Anchorite Battlekit",
+      "unitIds": ["trench-pilgrims/anchorite-shrine"],
+      "itemIds": ["gas-filters", "grand-anchorite", "hallowed-anchorite", "holy-diesel-engine", "piston-legs", "sacred-geometry", "wrathful-cherub-face"],
+      "maxPerModel": 2,
+      "page": 64
+    }
+  ],
+  "permanentItems": [
+    {
+      "id": "anchorite-battlekit",
+      "unitIds": ["trench-pilgrims/anchorite-shrine"],
+      "itemIds": ["gas-filters", "grand-anchorite", "hallowed-anchorite", "holy-diesel-engine", "piston-legs", "sacred-geometry", "wrathful-cherub-face"],
+      "page": 64,
+      "text": "Once equipped, the Battlekit cannot be removed or lost from the Anchorite Shrine for any reason."
+    }
+  ],
+  "statOverrides": [
+    {
+      "id": "anchorite-armoury",
+      "unitIds": ["trench-pilgrims/anchorite-shrine"],
+      "onlyWith": ["trench-pilgrims/war-pilgrimage-of-saint-methodius"],
+      "stats": { "ranged": "+0" },
+      "page": 63,
+      "text": "Anchorite Shrines in a War Pilgrimage of Saint Methodius Warband have a Ranged Characteristic of +0 DICE instead of -."
+    }
+  ],
+  "preGameChoices": [
+    {
+      "key": "brokenOnTheWheel",
+      "name": "Broken on the Wheel",
+      "unitIds": ["trench-pilgrims/anchorite-shrine", "procession-of-the-sacred-affliction/anchorite-shrine"],
+      "page": 59,
+      "onlyWithout": ["trench-pilgrims/war-pilgrimage-of-saint-methodius"],
+      "unavailable": { "text": "Mortal Sin: models in a War Pilgrimage of Saint Methodius cannot be Broken on the Wheel", "page": 64 },
+      "victims": {
+        "unitNames": ["Trench Pilgrim", "Ecclesiastic Prisoner"],
+        "excludeUpgrades": ["Wrath of God"],
+        "excludePage": 61
+      },
+      "summary": "Arm 0, no NEGATE SHRAPNEL or TOUGH, Down counts as a Minor Hit, until its first Out of Action",
+      "effect": "Until the Anchorite Shrine first suffers an Out of Action result: it has an Armour Characteristic of 0 and does not have the NEGATE SHRAPNEL and TOUGH Keywords, and it treats Down results as Minor Hit results. The first Out of Action result is treated as No Effect; its BLOOD MARKERS are removed and these rules end: Armour -3, NEGATE SHRAPNEL and TOUGH return (TOUGH applies from the next Out of Action). The victim is permanently removed from the warband."
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import type { MemberCost, RosterUnit, WarbandMember } from "@tc/rules/browser";
+type Stats = RosterUnit["stats"];
 import type { Dispatch } from "react";
 import type { RosterAction } from "../roster/reducer.js";
 import { Price } from "./Price.js";
@@ -12,11 +13,13 @@ interface Props {
   after: MemberCost | undefined;
   issues: number;
   dispatch: Dispatch<RosterAction>;
+  /** The profile under this roster (variant stat overrides applied); the unit's own when omitted. */
+  stats?: Stats;
 }
 
 /** The selected member's name, stat line and running cost. */
-export function Loadout({ member, unit, before, after, issues, dispatch }: Props) {
-  const s = unit.stats;
+export function Loadout({ member, unit, before, after, issues, dispatch, stats }: Props) {
+  const s = stats ?? unit.stats;
   const changed = before && after && (before.ducats !== after.ducats || before.glory !== after.glory);
   return (
     <div className={`panel ${styles.panel}`}>

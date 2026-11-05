@@ -1,4 +1,4 @@
-import { findUnit, itemCost } from "@tc/rules/browser";
+import { effectiveStats, findUnit, itemCost, type ReplaceableBuiltIn } from "@tc/rules/browser";
 import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Figure } from "../components/Figure.js";
@@ -9,7 +9,7 @@ import { SlotPicker } from "../components/SlotPicker.js";
 import { memberTitle, upgradeRows } from "../roster/select.js";
 import { cardKitEntries, kitEntries, layoutFigure, pickerRows, SLOTS, ZONE_LABELS, type KitEntry, type PickerRow, type SlotView, type Zone } from "../roster/slots.js";
 import { baseMember, stagedUpgrades, type StagedEntry } from "../roster/staging.js";
-import { isBuiltIn, memberTraits, type Trait } from "../roster/traits.js";
+import { isBuiltIn, memberTraits, openReplacements, type Trait } from "../roster/traits.js";
 import { useWarband } from "./warbandContext.js";
 import styles from "./ArmouryScreen.module.css";
 
@@ -20,6 +20,8 @@ interface OpenPicker {
   hint: string;
   current?: KitEntry;
   coveredBy?: KitEntry;
+  /** Replace mode: the slot's replaceable built-in may be swapped now. */
+  replace?: ReplaceableBuiltIn;
 }
 
 export function ArmouryScreen() {
@@ -39,8 +41,17 @@ export function ArmouryScreen() {
   const figure = useMemo(() => (unit ? layoutFigure(kit, unit, card) : undefined), [kit, unit, card]);
   // Built-in kit is never swapped out, so it is never the item a pick replaces.
   const replaceable = (e: KitEntry | undefined) => (e && !isBuiltIn(e) ? e : undefined);
+  // A replaceable built-in may be swapped only while its model is a pending recruit and the rule's gate holds (p64).
+  const recruitPending = rows.find((r) => r.member.id === member?.id)?.pending === "add";
+  const swappable = useMemo(() => (member && unit ? openReplacements(member, unit, warband, rules, ctx, recruitPending) : []), [member, unit, recruitPending, warband, rules, ctx]);
+  const replaceRuleFor = (e: KitEntry | undefined) => (e?.access?.replaceableDefault ? swappable.find((r) => r.itemId === e.itemId) : undefined);
   const listing = useMemo(
-    () => (picker && member && unit ? pickerRows(picker.zone, member, unit, warband, rules, ctx, (replaceable(picker.current) ?? replaceable(picker.coveredBy))?.itemId) : undefined),
+    () =>
+      picker && member && unit
+        ? picker.replace
+          ? pickerRows(picker.zone, member, unit, warband, rules, ctx, picker.replace.itemId, new Set(picker.replace.replacements.itemIds))
+          : pickerRows(picker.zone, member, unit, warband, rules, ctx, (replaceable(picker.current) ?? replaceable(picker.coveredBy))?.itemId)
+        : undefined,
     [picker, member, unit, warband, rules, ctx],
   );
   const traits = useMemo(() => (confirmedMember && unit ? memberTraits(confirmedMember, unit, warband, rules, ctx, pm) : undefined), [confirmedMember, unit, warband, rules, ctx, pm]);
@@ -56,17 +67,35 @@ export function ArmouryScreen() {
   }
   const memberId = member.id;
 
-  const remove = (entry: KitEntry) => stage(entry.pending === "add" ? { type: "unstage-add", memberId, itemId: entry.itemId } : { type: "stage-remove", memberId, itemId: entry.itemId });
-  const keep = (entry: KitEntry) => stage({ type: "unstage-remove", memberId, itemId: entry.itemId });
+  const remove = (entry: KitEntry) => {
+    stage(entry.pending === "add" ? { type: "unstage-add", memberId, itemId: entry.itemId } : { type: "stage-remove", memberId, itemId: entry.itemId });
+    // Undoing a replacement puts the built-in it replaced back.
+    if (entry.pending === "add" && entry.access?.replaces) stage({ type: "unstage-remove", memberId, itemId: entry.access.replaces });
+  };
+  const keep = (entry: KitEntry) => {
+    stage({ type: "unstage-remove", memberId, itemId: entry.itemId });
+    // Keeping the built-in drops whatever was about to replace it: the slot holds one.
+    if (entry.access?.replaceableDefault) for (const r of kit.filter((k) => k.access?.replaces === entry.itemId && k.pending === "add")) stage({ type: "unstage-add", memberId, itemId: r.itemId });
+  };
   const pick = (row: PickerRow, attach: boolean) => {
-    const replacing = attach ? undefined : (replaceable(picker?.current) ?? replaceable(picker?.coveredBy));
+    const builtIn = picker?.replace ? kit.find((k) => k.itemId === picker.replace!.itemId && k.pending !== "remove") : undefined;
+    const replacing = attach ? undefined : (builtIn ?? replaceable(picker?.current) ?? replaceable(picker?.coveredBy));
     if (replacing) remove(replacing);
     stage({ type: "stage-add", memberId, itemId: row.item.id });
     setPicker(undefined);
   };
   const openSlot = (slot: SlotView) => {
     const spec = SLOTS.find((s) => s.id === slot.id)!;
-    setPicker({ zone: slot.zone, slotId: slot.id, slotLabel: `${spec.label} · ${ZONE_LABELS[slot.zone]}`, hint: spec.hint, current: slot.occupant?.entry, coveredBy: slot.coveredBy });
+    const rule = replaceRuleFor(slot.occupant?.entry) ?? replaceRuleFor(slot.coveredBy);
+    setPicker({
+      zone: slot.zone,
+      slotId: slot.id,
+      slotLabel: `${spec.label} · ${ZONE_LABELS[slot.zone]}`,
+      hint: spec.hint,
+      current: slot.occupant?.entry,
+      coveredBy: slot.coveredBy,
+      ...(rule ? { replace: rule } : {}),
+    });
   };
   const openInventory = () => setPicker({ zone: "inventory", slotLabel: "Inventory", hint: "equipment, ammunition and anything without a slot" });
 
@@ -109,6 +138,7 @@ export function ArmouryScreen() {
         <div className={styles.grid}>
           <div className={styles.column}>
             <Loadout
+              stats={effectiveStats(unit, warband, rules, ctx)}
               member={member}
               unit={unit}
               before={delta.before.perMember.find((c) => c.memberId === member.id)}
@@ -116,7 +146,7 @@ export function ArmouryScreen() {
               issues={validation.errors.filter((e) => e.memberId === member.id).length}
               dispatch={dispatch}
             />
-            <Figure figure={figure} openSlot={picker?.slotId} onSlot={openSlot} onRemove={remove} onKeep={keep} />
+            <Figure figure={figure} openSlot={picker?.slotId} onSlot={openSlot} onRemove={remove} onKeep={keep} replaceableNow={(e) => replaceRuleFor(e) !== undefined} />
             <Inventory
               entries={figure.inventory}
               onAdd={openInventory}
@@ -142,6 +172,7 @@ export function ArmouryScreen() {
                 coveredBy={picker.coveredBy}
                 listing={listing}
                 purse={purse}
+                {...(picker.replace ? { replace: { name: picker.replace.name, text: picker.replace.replacements.text, page: picker.replace.replacements.page } } : {})}
                 refund={(() => {
                   const swapped = replaceable(picker.current) ?? replaceable(picker.coveredBy);
                   if (!swapped) return undefined;

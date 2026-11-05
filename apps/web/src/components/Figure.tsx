@@ -12,19 +12,21 @@ interface Props {
   onSlot: (slot: SlotView) => void;
   onRemove: (entry: KitEntry) => void;
   onKeep: (entry: KitEntry) => void;
+  /** Built-in kit that may still be swapped (a pending recruit's replaceable default). */
+  replaceableNow?: (entry: KitEntry) => boolean;
 }
 
 const pendingChip = (entry: KitEntry) =>
   entry.pending === "add" ? <span className={styles.chipAdd}>pending</span> : entry.pending === "remove" ? <span className={styles.chipRemove}>removing</span> : null;
 
 /** The model as a figure: one button per slot, a silhouette behind. */
-export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
+export function Figure({ figure, openSlot, onSlot, onRemove, onKeep, replaceableNow }: Props) {
   return (
     <div className={styles.wrap}>
       <div className={styles.figure}>
         <Silhouette />
         {figure.slots.map((slot) => (
-          <Slot key={slot.id} slot={slot} open={openSlot === slot.id} onClick={() => onSlot(slot)} />
+          <Slot key={slot.id} slot={slot} open={openSlot === slot.id} onClick={() => onSlot(slot)} replaceable={!!slot.occupant && !!replaceableNow?.(slot.occupant.entry)} />
         ))}
       </div>
       {figure.unplaced.length > 0 && (
@@ -33,7 +35,7 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
           <ul className={styles.list}>
             {figure.unplaced.map((e) => (
               <li key={e.index}>
-                <ItemDescription desc={describeItem(e.item)} expandable />
+                <ItemDescription desc={describeItem(e.item, e.access)} expandable />
                 {pendingChip(e)}
                 {isBuiltIn(e) && e.pending !== "add" ? (
                   <span className={styles.builtIn}>built in</span>
@@ -53,7 +55,7 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
           <ul className={styles.list}>
             {figure.leaving.map((e) => (
               <li key={e.index}>
-                <ItemDescription desc={describeItem(e.item)} expandable struck />
+                <ItemDescription desc={describeItem(e.item, e.access)} expandable struck />
                 {pendingChip(e)}
                 <button className="small" onClick={() => onKeep(e)}>
                   Keep
@@ -67,7 +69,7 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
   );
 }
 
-function Slot({ slot, open, onClick }: { slot: SlotView; open: boolean; onClick: () => void }) {
+function Slot({ slot, open, onClick, replaceable }: { slot: SlotView; open: boolean; onClick: () => void; replaceable: boolean }) {
   const o = slot.occupant;
   const held = o?.entry ?? slot.coveredBy;
   // Built-in kit is shown in its slot, locked: clicking opens the picker read-only.
@@ -99,17 +101,17 @@ function Slot({ slot, open, onClick }: { slot: SlotView; open: boolean; onClick:
       {o ? (
         <>
           <span className={styles.item}>
-            <ItemDescription desc={describeItem(o.entry.item)} struck={o.entry.pending === "remove"} />
+            <ItemDescription desc={describeItem(o.entry.item, o.entry.access)} struck={o.entry.pending === "remove"} />
           </span>
           {(o.spans || o.oneHandedByStrength || isBuiltIn(o.entry)) && (
             <span className={styles.note}>
-              {[o.spans && "both hands", o.oneHandedByStrength && "one hand (Strong)", isBuiltIn(o.entry) && "built in"].filter(Boolean).join(" · ")}
+              {[o.spans && "both hands", o.oneHandedByStrength && "one hand (Strong)", isBuiltIn(o.entry) && (replaceable ? "built in · swap while recruiting" : "built in")].filter(Boolean).join(" · ")}
             </span>
           )}
           {pendingChip(o.entry)}
           {o.attachments.map((a) => (
             <span key={a.index} className={styles.attachment}>
-              <ItemDescription desc={describeItem(a.item)} struck={a.pending === "remove"} />
+              <ItemDescription desc={describeItem(a.item, a.access)} struck={a.pending === "remove"} />
               {pendingChip(a)}
             </span>
           ))}

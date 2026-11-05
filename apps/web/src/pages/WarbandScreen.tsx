@@ -1,6 +1,7 @@
 import { findSubfaction, rosterVariants } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { MemberList } from "../components/MemberList.js";
+import { PreGamePanel } from "../components/PreGamePanel.js";
 import { TtsCode } from "../components/TtsCode.js";
 import { ValidationPanel } from "../components/ValidationPanel.js";
 import { memberTraits } from "../roster/traits.js";
@@ -8,7 +9,7 @@ import { armouryHref, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
-  const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage, ctx } = useWarband();
+  const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage, ctx, confirmed } = useWarband();
   const faction = rules.factionsById.get(warband.factionId);
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
@@ -77,6 +78,8 @@ export function WarbandScreen() {
           traitsFor={(row, unit) => memberTraits(row.member, unit, warband, rules, ctx)}
         />
       </section>
+
+      <PreGamePanel warband={confirmed} rules={rules} dispatch={dispatch} />
 
       <ValidationPanel warband={warband} rules={rules} validation={validation} linkTo={(memberId) => armouryHref(base, memberId)} />
     </div>

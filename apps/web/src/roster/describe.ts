@@ -11,11 +11,16 @@ export interface Description {
 
 const clean = (text: string | undefined) => (text && text.trim() !== "-" ? text.trim() : "");
 
-/** Armoury items and card kit read the same: range · hands · keywords, then the rules. */
-export function describeItem(item: Pick<EquipmentItem | ProfileKitEntry, "name" | "range" | "hands" | "keywords" | "rules">): Description {
+/**
+ * Armoury items and card kit read the same: range · hands · keywords, then the
+ * rules. `access` is the unit's armoury row, whose hands win over the item's
+ * (an Anchorite Shrine counts its Anchorite Ranged Weapons as 1-Handed, p64).
+ */
+export function describeItem(item: Pick<EquipmentItem | ProfileKitEntry, "name" | "range" | "hands" | "keywords" | "rules">, access?: { hands?: 1 | 2 } | undefined): Description {
+  const hands = access?.hands ?? item.hands;
   return {
     name: item.name,
-    detail: [item.range, item.hands ? `${item.hands}H` : null, ...item.keywords].filter(Boolean).join(" · "),
+    detail: [item.range, hands ? `${hands}H` : null, ...item.keywords].filter(Boolean).join(" · "),
     rules: clean(item.rules),
   };
 }

@@ -45,7 +45,7 @@ export interface ClassifiedItem {
  * `headgearItemIds` is RulesData.headgearItemIds: Headgear is a property of
  * the item, not of the group one armoury happens to file it under.
  */
-export function classifyItem(item: EquipmentItem, access: Pick<RosterAccess, "group" | "attachesTo"> | undefined, headgearItemIds: ReadonlySet<string>): ClassifiedItem {
+export function classifyItem(item: EquipmentItem, access: Pick<RosterAccess, "group" | "attachesTo" | "hands"> | undefined, headgearItemIds: ReadonlySet<string>): ClassifiedItem {
   const group = access?.group;
   const base = {
     combo: group !== undefined && SHIELD_COMBO_GROUPS.has(group),
@@ -62,9 +62,9 @@ export function classifyItem(item: EquipmentItem, access: Pick<RosterAccess, "gr
     case "grenade":
       return { ...base, kind: "grenade", hands: 0 };
     case "ranged":
-      return { ...base, kind: "ranged", hands: item.hands ?? 0 };
+      return { ...base, kind: "ranged", hands: access?.hands ?? item.hands ?? 0 };
     case "melee":
-      return { ...base, kind: "melee", hands: item.hands ?? 0 };
+      return { ...base, kind: "melee", hands: access?.hands ?? item.hands ?? 0 };
     default:
       if (hasKeyword(item.keywords, /^held$/i)) return { ...base, kind: "held", hands: 1 };
       if (item.hands) return { ...base, kind: "held", hands: item.hands };

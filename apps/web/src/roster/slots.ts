@@ -3,6 +3,7 @@ import {
   checkBattlekit,
   type BattlekitErrorCode,
   classifyItem,
+  groupCounts,
   hasKeyword,
   normaliseName,
   profileKit,
@@ -350,8 +351,15 @@ export function pickerRows(
   data: RulesData,
   ctx: LimitContext,
   replacing?: string,
+  /**
+   * Replace mode: only these items, and they may be `replaces` rows (a
+   * replaceable built-in's alternatives). Outside replace mode those rows are
+   * never offered: the swap happens at recruitment, from the default's slot.
+   */
+  onlyItems?: ReadonlySet<string>,
 ): PickerListing {
   const listing = armouryGroups(member, unit, warband, data, ctx);
+  const groups = groupCounts(member, unit, data);
   const baseIds = replacing ? withoutLast(member.equipmentItemIds, replacing) : member.equipmentItemIds;
   const before = problemCounts(unit, member.equipmentItemIds, data);
   const unfit: PickerListing["unfit"] = {};
@@ -372,15 +380,19 @@ export function pickerRows(
   for (const group of listing.groups) {
     for (const row of group.rows) {
       const classified = classifyItem(row.item, row.access, data.headgearItemIds);
-      if (zoneOf(classified) !== zone) continue;
+      if (!onlyItems && zoneOf(classified) !== zone) continue;
       if (row.item.id === replacing) continue;
+      if (onlyItems ? !onlyItems.has(row.item.id) : row.access.replaces !== undefined) continue;
       const warbandMax = resolveLimit(row.access.limitsText ?? row.item.limits ?? undefined, "max", "warband", row.access.maxPerWarband ?? null, ctx, row.item.name).value;
       const warbandCount = ctx.count(row.item.name) ?? 0;
+      const full = groups.find((g) => g.limit.itemIds.includes(row.item.id) && g.count >= g.limit.maxPerModel);
       const cap: Cap | undefined = row.atMax
         ? { count: row.count, max: row.max, scope: "model" }
-        : warbandMax !== null && warbandCount >= warbandMax
-          ? { count: warbandCount, max: warbandMax, scope: "warband" }
-          : undefined;
+        : full
+          ? { count: full.count, max: full.limit.maxPerModel, scope: "model", what: full.limit.name }
+          : warbandMax !== null && warbandCount >= warbandMax
+            ? { count: warbandCount, max: warbandMax, scope: "warband" }
+            : undefined;
       if (cap) {
         // At its limit: stays on the shelf, priced and blocked, rather than vanishing.
         (classified.bayonet ? attachments : rows).push({ ...row, zone, classified, warbandCount, warbandMax, cap });

@@ -5,7 +5,8 @@ import { accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type M
 import { profileAbilities, profileKit } from "./profile.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import { EquipmentCategory, Movement } from "./schema.js";
-import { validateWarband } from "./validate.js";
+import { validateWarband, effectiveStats, preGameChoices } from "./validate.js";
+import type { PreGameChoice } from "./unit-rules.js";
 
 // The warband payload the TTS mod fetches from /api/tts/warband/{code}
 // (ROADMAP Phase 1, TC-012/TC-016). Everything the mod needs to spawn a model
@@ -88,6 +89,10 @@ const ExportMemberCore = z.object({
   skills: z.array(z.object({ name: z.string(), text: z.string() })),
   injuries: z.array(z.object({ name: z.string(), text: z.string() })),
   notes: z.string().nullable(),
+  /** Pre-game choices this model carries for the game (Broken on the Wheel: the Shrine's protected state). */
+  preGame: z.array(z.object({ name: z.string(), victim: z.string(), summary: z.string(), effect: z.string() })).optional(),
+  /** Chosen away before the game (the Shrine's victim): the mod does not spawn it. */
+  removedForGame: z.literal(true).optional(),
 });
 /** Everything the TTS text renderers need; an ExportMember is a superset. */
 export type ExportMemberCore = z.infer<typeof ExportMemberCore>;
@@ -148,6 +153,15 @@ export function toWarbandExport(warband: Warband, data: RulesData, opts: ExportO
 
   const cost = warbandCost(warband, data);
   const validation = validateWarband(warband, data);
+
+  // Pre-game choices count only when the validator would accept them.
+  const extras: ExportExtras = { removed: new Set(), preGame: [] };
+  for (const p of preGameChoices(warband, data)) {
+    const victim = p.available ? p.candidates.find((m) => m.id === p.chosen) : undefined;
+    if (!victim) continue;
+    extras.removed.add(victim.id);
+    extras.preGame.push({ rule: p.rule, victim: victim.name ?? findUnit(data, warband, victim.unitId)?.name ?? victim.unitId });
+  }
   const now = opts.now === undefined ? new Date() : new Date(opts.now);
 
   return {
@@ -166,12 +180,17 @@ export function toWarbandExport(warband: Warband, data: RulesData, opts: ExportO
       valid: validation.ok,
       errorCount: validation.errors.length,
     },
-    members: warband.members.map((m) => exportMember(m, warband, data, variant?.name, opts.models ?? data.models)),
+    members: warband.members.map((m) => exportMember(m, warband, data, variant?.name, opts.models ?? data.models, extras)),
   };
 }
 
-function exportMember(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined, models: ModelMap | undefined): ExportMember {
-  const core = exportMemberCore(member, warband, data, variantName);
+interface ExportExtras {
+  removed: Set<string>;
+  preGame: { rule: PreGameChoice; victim: string }[];
+}
+
+function exportMember(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined, models: ModelMap | undefined, extras: ExportExtras): ExportMember {
+  const core = exportMemberCore(member, warband, data, variantName, extras);
   return {
     ...core,
     model: exportModel(models?.byUnitId.get(core.unit.id)),
@@ -205,9 +224,10 @@ function exportModel(candidate: ModelCandidate | undefined): ExportModel | null 
   };
 }
 
-function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined): ExportMemberCore {
+function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesData, variantName: string | undefined, extras: ExportExtras = { removed: new Set(), preGame: [] }): ExportMemberCore {
   const unit = findUnit(data, warband, member.unitId);
   if (!unit) throw new WarbandExportError(`Unknown unit "${member.unitId}" on member ${member.id}`);
+  const card = effectiveStats(unit, warband, data);
 
   const equipment: ExportEquipment[] = member.equipmentItemIds.map((itemId) => {
     const item = data.equipmentById.get(itemId);
@@ -223,7 +243,8 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
       rules: item.rules,
       cost: { ducats, glory },
     };
-    if (accessFor(unit, itemId)?.fixed) entry.builtIn = true;
+    const row = accessFor(unit, itemId);
+    if (row?.fixed || row?.replaceableDefault) entry.builtIn = true;
     return entry;
   });
 
@@ -260,9 +281,9 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
     unit: { id: unit.id, name: unit.name, kind: unit.kind, elite: unit.elite, keywords: unit.keywords },
     stats: {
       movement: unit.stats.movement,
-      ranged: unit.stats.ranged,
-      melee: unit.stats.melee,
-      armour: unit.stats.armour + armourBreakdown.reduce((n, b) => n + b.delta, 0),
+      ranged: card.ranged,
+      melee: card.melee,
+      armour: card.armour + armourBreakdown.reduce((n, b) => n + b.delta, 0),
       armourBreakdown,
       base: unit.stats.base,
     },
@@ -272,6 +293,11 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
     skills: [],
     injuries: [],
     notes: null,
+    ...(() => {
+      const preGame = extras.preGame.filter((p) => p.rule.unitIds.includes(unit.id)).map((p) => ({ name: p.rule.name, victim: p.victim, summary: p.rule.summary, effect: p.rule.effect }));
+      return preGame.length ? { preGame } : {};
+    })(),
+    ...(extras.removed.has(member.id) ? { removedForGame: true as const } : {}),
   };
 }
 
@@ -314,6 +340,7 @@ export function renderTtsDescription(member: ExportMemberCore): string {
   if (member.upgrades.length) lines.push(`[b]Upgrades:[/b] ${member.upgrades.map((u) => u.name).join(", ")}`);
   if (member.skills.length) lines.push(`[b]Skills:[/b] ${member.skills.map((s) => s.name).join(", ")}`);
   if (member.injuries.length) lines.push(`[b]Injuries:[/b] ${member.injuries.map((i) => i.name).join(", ")}`);
+  for (const p of member.preGame ?? []) lines.push(`[b]${p.name}:[/b] ${p.victim}. ${p.summary}`);
   return lines.join("\n");
 }
 
@@ -335,6 +362,7 @@ export function renderTtsGmNotes(member: ExportMemberCore): string {
   section("Upgrades", member.upgrades);
   section("Skills", member.skills);
   section("Injuries", member.injuries);
+  section("Before this game", (member.preGame ?? []).map((p) => ({ name: `${p.name} (${p.victim})`, text: p.effect })));
   if (member.notes) lines.push("", `Notes: ${member.notes}`);
   return lines.join("\n");
 }

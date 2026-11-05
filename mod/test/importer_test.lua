@@ -332,6 +332,19 @@ do
   eq(memberRowLabel(1, payload.members[1]), "1. Lieutenant  [default model]", "row label for a default model")
 end
 
+---------------------------------------------------------------- removed for game --
+
+do
+  local broken = copy(payload)
+  broken.members[2].removedForGame = true
+  local out = buildSpawnSpecs(broken, anchor, colourFor("Red"))
+  eq(#out, #payload.members - 1, "a member removed for the game is not spawned")
+  for _, spec in ipairs(out) do
+    check(spec.Tags[2] ~= "tc-member:" .. broken.members[2].id, "the removed member has no spawn spec")
+  end
+  near(out[2].Transform.posX, buildSpawnSpecs(payload, anchor, colourFor("Red"))[2].Transform.posX, "the removed member leaves no gap in the grid")
+end
+
 ---------------------------------------------------------------- keep / tags --
 
 do

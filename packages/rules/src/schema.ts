@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UnitRulesFile } from "./unit-rules.js";
 
 // Shared primitives -------------------------------------------------------
 
@@ -260,4 +261,5 @@ export const DATA_FILES = {
   "data/rules/campaign.json": CampaignFile,
   "data/rules/scenarios.json": ScenariosFile,
   "data/rules/terrain.json": TerrainFile,
+  "data/rules/unit-rules.json": UnitRulesFile,
 } as const;

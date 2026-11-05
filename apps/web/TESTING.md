@@ -227,6 +227,44 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   Fire!, Tough, Leader", and for the Sin Eater "BUILT IN: Combat Helmet, Reinforced Armour,
   Tenderizer Maul". Hover a name for its rules. On that screen the kit line lists only purchases.
 
+## 5e. The Anchorite Shrine (Trench Pilgrims, Warbands p59, p63-64)
+
+- **Core list.** New Trench Pilgrims warband, no variant. Barracks: buy an **Anchorite Shrine**
+  (👑 140, "0 of 1"). It arrives with its **Catherine Wheel**. Armoury: the wheel sits in a
+  Melee hand, oxblood with the lock, "built in"; the card's **Bonebreaker Mace** sits locked in
+  the other Melee hand. The stat line reads `Rng n/a`. Click the wheel: the read-only picker,
+  "Built-in kit: always carried. It cannot be removed or swapped." Even while the Shrine is a
+  pending recruit nothing replaces it (the swap is a Methodius rule). Nothing else is for sale:
+  the Shrine "cannot have any other Battlekit". A second Shrine's price is dimmed, "Limit
+  reached 1/1".
+- **War Pilgrimage of Saint Methodius.** New warband with that variant. The Barracks Shrine row
+  reads "0 of 0–2" and its stat line `Rng +0`. Buy a Shrine and, **before confirming**, open the
+  Armoury: the wheel's slot says "built in · swap while recruiting". Click it: the picker reads
+  "Built-in, but while recruiting it may be replaced (p64)" and lists **Replace the Catherine
+  Wheel with**: Anti-Materiel Rifle 👑 40, Autocannon 👑 55, Gas Censer 👑 50, Heavy Flamethrower
+  👑 45, Punt Gun 👑 10, Trench Mortar 👑 40. Press Autocannon's price: the wheel goes to
+  "Leaving", the Autocannon sits in a Ranged hand marked "1H" with PENDING; the receipt reads
+  +55. **Undo** the Autocannon: the wheel comes back. Buy it again and **Confirm purchases**:
+  the Autocannon is now locked, "built in", and its slot's picker is read-only. A Shrine bought
+  and confirmed with its wheel can never swap it afterwards.
+- **Anchorite Battlekit** (Methodius only): **Shop for kit** lists Gas Filters 👑 5, Grand
+  Anchorite 👑 15, Hallowed Anchorite 👑 10, Holy Diesel Engine 👑 10, Piston Legs 👑 10, Sacred
+  Geometry 👑 10, Wrathful Cherub Face 👑 20. Buy two: every other fitting dims, hover "Limit
+  reached 2/2 Anchorite Battlekit". A staged fitting has Undo; after **Confirm purchases** it
+  shows oxblood with the lock and "permanent", and no Remove.
+- Two Shrines: under Methodius the second Shrine is buyable (Legal, "2 of 0–2"). Grand Anchorite
+  on both: the second one's price dims ("Limit reached 1/1 in the warband").
+- **Broken on the Wheel.** Core list, with a Shrine, a Trench Pilgrim, an Ecclesiastic Prisoner
+  and a War Prophet, confirmed. The Warband screen shows **Before the game · Broken on the
+  Wheel · p59** with a Victim select: "No one", the Trench Pilgrim, the Ecclesiastic Prisoner
+  (no War Prophet). Pick the Pilgrim: a line under it says the Pilgrim is not deployed this game
+  and the Shrine has Armour 0, no NEGATE SHRAPNEL or TOUGH, Down as a Minor Hit, until its
+  first Out of Action. Save; open the TTS URL: the Pilgrim's member has `"removedForGame": true`,
+  the Shrine's `ttsDescription` has "Broken on the Wheel: … Arm 0 …" and its GM notes a "Before
+  this game" section. In TTS the importer spawns every member but the Pilgrim. Dismiss the
+  Pilgrim in the Barracks: the choice clears. Under **Methodius** the panel says "Not allowed:
+  Mortal Sin … (p64)" with no select.
+
 ## 6. Warband screen
 
 - Click the **Warband** tab (or the Legal badge). Left "Campaign" panel: Name editable, then

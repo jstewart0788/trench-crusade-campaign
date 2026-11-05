@@ -14,6 +14,7 @@ export function readRulesFiles(rootDir: string): RulesFiles {
     campaign: read("campaign"),
     scenarios: read("scenarios"),
     terrain: read("terrain"),
+    unitRules: read("unitRules"),
   };
 }
 

@@ -1,4 +1,4 @@
-import type { LimitContext, RosterUnit, RulesData, Warband } from "@tc/rules/browser";
+import { effectiveStats, type LimitContext, type RosterUnit, type RulesData, type Warband } from "@tc/rules/browser";
 import { useMemo } from "react";
 import type { Purse } from "../roster/purse.js";
 import { countChip, hiddenText, unitRows, type UnitRow } from "../roster/select.js";
@@ -14,7 +14,7 @@ interface Props {
   onAdd: (unit: RosterUnit) => void;
 }
 
-const statLine = (u: RosterUnit) => `Mov ${u.stats.movement.raw} · Rng ${u.stats.ranged} · Mel ${u.stats.melee} · Arm ${u.stats.armour}`;
+const statLine = (s: RosterUnit["stats"]) => `Mov ${s.movement.raw} · Rng ${s.ranged} · Mel ${s.melee} · Arm ${s.armour}`;
 
 /** Units this roster can recruit, each priced: the price is the button. Anything a gate closes, or that depends on a campaign selection the data cannot count, is not listed. */
 export function RecruitList({ warband, rules, ctx, purse, onAdd }: Props) {
@@ -38,7 +38,7 @@ export function RecruitList({ warband, rules, ctx, purse, onAdd }: Props) {
                     {row.unit.elite && <span className={styles.tag}>Elite</span>}
                   </span>
                   <span className={styles.sub}>
-                    <span>{statLine(row.unit)}</span>
+                    <span>{statLine(effectiveStats(row.unit, warband, rules, ctx))}</span>
                     {chip && <span className={cx(styles.chip, short && styles.chipShort)}>{short ? `${chip} · required` : chip}</span>}
                   </span>
                 </div>

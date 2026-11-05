@@ -27,6 +27,8 @@ export const Warband = z.object({
   strongboxDucats: z.number().int().nonnegative().optional(),
   /** Glory Points available to spend. When set, glory-priced models and items are checked against it. */
   glory: z.number().int().nonnegative().optional(),
+  /** Choices made before each game, keyed as in unit-rules.json preGameChoices (brokenOnTheWheel: the victim's member id). */
+  preGame: z.record(z.string(), z.string().nullable()).optional(),
 });
 export type Warband = z.infer<typeof Warband>;
 

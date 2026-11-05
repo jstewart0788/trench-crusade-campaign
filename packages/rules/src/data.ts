@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { applyUnitRules, UnitRulesFile, type UnitRulesIndex } from "./unit-rules.js";
 import {
   CampaignFile,
   Cost,
@@ -80,6 +81,15 @@ export const RosterAccess = EquipmentAccess.extend({
   conditionNote: z.string().optional(),
   attachesTo: z.array(z.string()).optional(),
   fixed: z.boolean().optional(),
+  // Set from data/rules/unit-rules.json when the data is built, never by the converter:
+  /** The id of the replaceable built-in rule whose default this row is (the Shrine's Catherine Wheel). */
+  replaceableDefault: z.string().optional(),
+  /** This row may only replace that default item, at recruitment. */
+  replaces: z.string().optional(),
+  /** Hands this item takes on this unit, overriding the item's profile. */
+  hands: z.union([z.literal(1), z.literal(2)]).optional(),
+  /** Once bought, it cannot be removed. */
+  permanent: z.boolean().optional(),
 }).passthrough();
 export type RosterAccess = z.infer<typeof RosterAccess>;
 
@@ -188,6 +198,8 @@ export interface RulesData {
   thresholdTable: ThresholdRow[];
   /** Present when data/tts/models.json was supplied. */
   models?: ModelMap;
+  /** data/rules/unit-rules.json, checked and indexed by unit; its row annotations are already on the units. */
+  unitRules: UnitRulesIndex;
 }
 
 export class RulesDataError extends Error {
@@ -208,6 +220,7 @@ export const RULES_FILES = {
   campaign: "data/rules/campaign.json",
   scenarios: "data/rules/scenarios.json",
   terrain: "data/rules/terrain.json",
+  unitRules: "data/rules/unit-rules.json",
 } as const;
 export type RulesFileKey = keyof typeof RULES_FILES;
 
@@ -236,6 +249,7 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
   const campaign = parseFile("campaign", files.campaign, CampaignFile);
   const scenarios = parseFile("scenarios", files.scenarios, ScenariosFile);
   const terrain = parseFile("terrain", files.terrain, TerrainFile);
+  const unitRulesFile = parseFile("unitRules", files.unitRules, UnitRulesFile);
 
   const table = ThresholdTable.safeParse(campaign.warbandThreshold.table);
   if (!table.success) {
@@ -265,6 +279,10 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
     }
   }
 
+  const applied = applyUnitRules(unitRulesFile, new Map(units.map((u) => [u.id, u])));
+  if (applied.problems.length) throw new RulesDataError(RULES_FILES.unitRules, applied.problems.slice(0, 10));
+  const unitRules = applied.index;
+
   return {
     factions,
     units,
@@ -279,6 +297,7 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
     unitsBySubfaction,
     equipmentById: new Map(equipment.map((e) => [e.id, e])),
     variantsById,
+    unitRules,
     headgearItemIds: new Set(units.flatMap((u) => u.equipmentAccess.filter((a) => a.group === "headgear").map((a) => a.itemId))),
     thresholdTable: [...table.data].sort((a, b) => a.game - b.game),
     models,

@@ -1,5 +1,5 @@
 import type { Warband, WarbandMember } from "@tc/rules/browser";
-import { applyPending, type Pending } from "./staging.js";
+import { applyPending, prunePreGame, type Pending } from "./staging.js";
 
 // The builder's state is the Warband itself: every action returns a new
 // roster that is valid JSON for POST /api/warbands. Nothing here reads the
@@ -21,7 +21,9 @@ export type RosterAction =
   | { type: "add-upgrade"; memberId: string; upgradeId: string }
   | { type: "remove-upgrade"; memberId: string; upgradeId: string }
   /** Confirm purchases: every member's staged changes written to the roster at once. */
-  | { type: "apply-purchases"; pending: Pending };
+  | { type: "apply-purchases"; pending: Pending }
+  /** A choice made before the game (Broken on the Wheel's victim); not a purchase, never staged. */
+  | { type: "set-pre-game"; key: string; memberId: string | null };
 
 export interface NewWarbandInit {
   name: string;
@@ -95,7 +97,7 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
       return { ...state, members: [...state.members.slice(0, at + 1), copy, ...state.members.slice(at + 1)] };
     }
     case "remove-member":
-      return { ...state, members: state.members.filter((m) => m.id !== action.memberId) };
+      return prunePreGame({ ...state, members: state.members.filter((m) => m.id !== action.memberId) });
     case "rename-member":
       return updateMember(state, action.memberId, (m) => withOptional(m, "name", action.name.trim() === "" ? undefined : action.name));
     case "add-item":
@@ -111,5 +113,7 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
       });
     case "apply-purchases":
       return applyPending(state, action.pending);
+    case "set-pre-game":
+      return { ...state, preGame: { ...state.preGame, [action.key]: action.memberId } };
   }
 }

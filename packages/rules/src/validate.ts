@@ -1,4 +1,5 @@
 import { checkBattlekit, type CarriedItem } from "./battlekit.js";
+import type { GroupLimit, PreGameChoice, ReplaceableBuiltIn } from "./unit-rules.js";
 import { warbandCost } from "./cost.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
@@ -40,6 +41,10 @@ export const ROSTER_ERROR_CODES = [
   "item-unknown",
   "item-not-available",
   "item-fixed-missing",
+  "built-in-missing",
+  "built-in-replacement",
+  "item-group-limit",
+  "pre-game-invalid",
   "item-variant-locked",
   "item-max-per-model",
   "item-max-per-warband",
@@ -206,6 +211,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     const where = { memberId: member.id, unitId: unit.id };
     const carried = checkMemberItems(member, unit, data, warband, ctx, fail, warn);
     checkFixedKit(member, unit, data, warband, ctx, fail);
+    checkUnitRules(member, unit, data, warband, ctx, fail);
     const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
     const kit = checkBattlekit(unit, carried, data.headgearItemIds);
     for (const e of kit.errors) fail({ ...where, ...e });
@@ -246,6 +252,8 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
       }
     }
   }
+
+  checkPreGame(warband, data, fail);
 
   return done();
 }
@@ -518,6 +526,114 @@ function checkUnitCounts(
     if (min.value !== null && count < min.value && unitAvailable(unit, warband, data, ctx)) {
       fail({ code: "unit-min", ...where, message: `${count} x ${unit.name}; at least ${min.value} required` });
       warnUnresolved(warn, min.unresolved, where, unit.name);
+    }
+  }
+}
+
+// unit-rules.json mechanics ------------------------------------------------
+
+/** A gate is satisfied only when the data can count everything it names; an uncountable gate never switches a mechanic on. */
+function gateHolds(onlyWith: string[] | undefined, onlyWithout: string[] | undefined, warband: Warband, data: RulesData, ctx: LimitContext): boolean {
+  const g = evaluateGates(onlyWith, onlyWithout, warband, data, ctx);
+  return g.open && !g.unresolved.some((r) => r.list === "onlyWith");
+}
+
+/** The unit's profile under this roster: its card stats with any unit-rules override whose gate holds (Anchorite Armoury, p63). */
+export function effectiveStats(unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext = limitContext(warband, data)): RosterUnit["stats"] {
+  let stats = unit.stats;
+  for (const o of data.unitRules.byUnit.get(unit.id)?.statOverrides ?? []) {
+    if (gateHolds(o.onlyWith, o.onlyWithout, warband, data, ctx)) stats = { ...stats, ...o.stats };
+  }
+  return stats;
+}
+
+export interface ReplaceableState {
+  rule: ReplaceableBuiltIn;
+  /** The roster may replace the default (its gate holds). Recruitment-only is the roster tool's to enforce. */
+  open: boolean;
+  /** How many of the default and its replacements the member carries, and which. */
+  carried: string[];
+}
+
+export function replaceableState(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext = limitContext(warband, data)): ReplaceableState[] {
+  return (data.unitRules.byUnit.get(unit.id)?.replaceable ?? []).map((rule) => {
+    const slot = new Set([rule.itemId, ...rule.replacements.itemIds]);
+    return { rule, open: gateHolds(rule.replacements.onlyWith, rule.replacements.onlyWithout, warband, data, ctx), carried: member.equipmentItemIds.filter((id) => slot.has(id)) };
+  });
+}
+
+/** Items of each per-model group the member carries. */
+export function groupCounts(member: WarbandMember, unit: RosterUnit, data: RulesData): { limit: GroupLimit; count: number }[] {
+  return (data.unitRules.byUnit.get(unit.id)?.groupLimits ?? []).map((limit) => {
+    const ids = new Set(limit.itemIds);
+    return { limit, count: member.equipmentItemIds.filter((id) => ids.has(id)).length };
+  });
+}
+
+function checkUnitRules(member: WarbandMember, unit: RosterUnit, data: RulesData, warband: Warband, ctx: LimitContext, fail: (e: RosterError) => void): void {
+  const where = { memberId: member.id, unitId: unit.id };
+  const name = (id: string) => data.equipmentById.get(id)?.name ?? id;
+  for (const s of replaceableState(member, unit, warband, data, ctx)) {
+    const { rule } = s;
+    if (s.carried.length === 0) {
+      const alt = s.open ? `, or one of its replacements (p${rule.replacements.page})` : "";
+      fail({ ...where, code: "built-in-missing", itemId: rule.itemId, message: `${unit.name} must carry its ${rule.name}${alt} (p${rule.page})` });
+    } else if (s.carried.length > 1) {
+      fail({ ...where, code: "built-in-replacement", message: `${unit.name} carries ${s.carried.map(name).join(" and ")}; its ${rule.name} slot holds exactly one` });
+    } else if (s.carried[0] !== rule.itemId && !s.open) {
+      const where_ = (rule.replacements.onlyWith ?? []).map((g) => data.variantsById.get(g)?.name ?? g).join(" or ");
+      fail({ ...where, code: "built-in-replacement", itemId: s.carried[0], message: `${unit.name} can only swap its ${rule.name} for ${name(s.carried[0]!)}${where_ ? ` in a ${where_} warband` : ""} (p${rule.replacements.page})` });
+    }
+  }
+  for (const { limit, count } of groupCounts(member, unit, data)) {
+    if (count > limit.maxPerModel) {
+      fail({ ...where, code: "item-group-limit", message: `${unit.name}: up to ${limit.maxPerModel} ${limit.name} (has ${count}, p${limit.page})` });
+    }
+  }
+}
+
+export interface PreGameState {
+  rule: PreGameChoice;
+  /** The rule may be used by this roster (its gate holds). */
+  available: boolean;
+  /** Members that may be chosen. Empty when the rule is unavailable. */
+  candidates: WarbandMember[];
+  /** The stored choice, if any. */
+  chosen: string | null;
+}
+
+/** Pre-game choices the roster's units give it (Broken on the Wheel, p59), with who may be chosen. */
+export function preGameChoices(warband: Warband, data: RulesData, ctx: LimitContext = limitContext(warband, data)): PreGameState[] {
+  const rules = new Map<string, PreGameChoice>();
+  for (const m of warband.members) {
+    const unit = findUnit(data, warband, m.unitId);
+    for (const rule of (unit && data.unitRules.byUnit.get(unit.id)?.preGame) ?? []) rules.set(rule.key, rule);
+  }
+  return [...rules.values()].map((rule) => {
+    const available = gateHolds(rule.onlyWith, rule.onlyWithout, warband, data, ctx);
+    const banned = new Set((rule.victims.excludeUpgrades ?? []).map(normaliseName));
+    const candidates = !available
+      ? []
+      : warband.members.filter((m) => {
+          const unit = findUnit(data, warband, m.unitId);
+          if (!unit || !rule.victims.unitNames.includes(unit.name)) return false;
+          return !(m.upgradeIds ?? []).some((id) => banned.has(normaliseName(upgradeFor(unit, id)?.name ?? "")));
+        });
+    return { rule, available, candidates, chosen: warband.preGame?.[rule.key] ?? null };
+  });
+}
+
+function checkPreGame(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
+  const states = new Map(preGameChoices(warband, data).map((s) => [s.rule.key, s]));
+  for (const [key, chosen] of Object.entries(warband.preGame ?? {})) {
+    if (chosen === null) continue;
+    const s = states.get(key);
+    if (!s) {
+      fail({ code: "pre-game-invalid", memberId: chosen, message: `No model in the warband gives it the "${key}" choice` });
+    } else if (!s.available) {
+      fail({ code: "pre-game-invalid", memberId: chosen, message: `${s.rule.name} is not allowed: ${s.rule.unavailable?.text ?? "its condition does not hold"}${s.rule.unavailable ? ` (p${s.rule.unavailable.page})` : ""}` });
+    } else if (!s.candidates.some((m) => m.id === chosen)) {
+      fail({ code: "pre-game-invalid", memberId: chosen, message: `${s.rule.name}: the chosen model must be a ${s.rule.victims.unitNames.join(" or ")}${s.rule.victims.excludeUpgrades?.length ? ` without ${s.rule.victims.excludeUpgrades.join(" or ")}` : ""} (p${s.rule.page})` });
     }
   }
 }

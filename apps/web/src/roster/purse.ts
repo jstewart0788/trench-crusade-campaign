@@ -25,6 +25,8 @@ export interface Cap {
   max: number | null;
   /** Where the limit applies, for the reason text. */
   scope?: "model" | "warband";
+  /** What is limited, when it is a group rather than the item itself ("Anchorite Battlekit"). */
+  what?: string;
 }
 
 export interface Offer {
@@ -61,7 +63,7 @@ export function purchase(purse: Purse, offer: Offer): Purchase {
 
   const cap = offer.cap;
   if (cap && cap.max !== null && cap.count >= cap.max) {
-    return result("capped", `Limit reached ${cap.count}/${cap.max}${cap.scope === "warband" ? " in the warband" : ""}`);
+    return result("capped", `Limit reached ${cap.count}/${cap.max}${cap.what ? ` ${cap.what}` : ""}${cap.scope === "warband" ? " in the warband" : ""}`);
   }
   // Only a purchase that adds to the bill can break the purse; a free or cheaper swap never does.
   if (net.ducats > 0 && after.ducats > purse.threshold) {

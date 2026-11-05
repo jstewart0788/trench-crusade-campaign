@@ -29,7 +29,7 @@ describe("GET /api/rules", () => {
     expect(res.status).toBe(200);
     expect(res.headers["cache-control"]).toBe("public, max-age=300");
     expect(res.headers["etag"]).toMatch(/^"[0-9a-f]{32}"$/);
-    expect(Object.keys(res.body).sort()).toEqual(["campaign", "equipment", "factions", "scenarios", "terrain", "units"]);
+    expect(Object.keys(res.body).sort()).toEqual(["campaign", "equipment", "factions", "scenarios", "terrain", "unitRules", "units"]);
     expect(res.body.units.units).toHaveLength(rules.data.units.length);
   });
 

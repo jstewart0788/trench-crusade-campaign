@@ -53,3 +53,20 @@
   color: var(--blood);
   border: 1px solid var(--blood);
 }
+.locked {
+  border: 1px solid var(--oxblood);
+  background: var(--oxblood-fill);
+  border-radius: 3px;
+  padding: 0.3rem 0.45rem;
+}
+.permanent {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--oxblood-ink);
+  white-space: nowrap;
+}

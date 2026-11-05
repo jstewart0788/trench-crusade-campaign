@@ -293,12 +293,13 @@ end
 
 -- One object state per member, laid out on the grid in member order. Members
 -- listed in `keep` (by id) already have a bound model on the table and are
--- left out so re-importing does not duplicate them.
+-- left out so re-importing does not duplicate them. A member the platform
+-- marks removedForGame (an Anchorite Shrine's victim) is not spawned at all.
 function buildSpawnSpecs(payload, anchor, playerRgb, keep)
   local specs = {}
   local slot = 0
   for _, member in ipairs(payload.members) do
-    if not (keep and keep[member.id]) then
+    if not (keep and keep[member.id]) and not member.removedForGame then
       slot = slot + 1
       specs[#specs + 1] = buildMemberState(member, payload.code, gridPosition(slot, anchor, GRID), anchor.rotY, playerRgb)
     end

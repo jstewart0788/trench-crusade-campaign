@@ -4,8 +4,10 @@ import {
   profileAbilities,
   profileKit,
   resolveLimit,
+  replaceableState,
   rosterVariants,
   upgradeFor,
+  type ReplaceableBuiltIn,
   type LimitContext,
   type RosterUnit,
   type RulesData,
@@ -22,9 +24,33 @@ import { stagedUpgrades, type PendingMember, type StagedEntry } from "./staging.
 // abilities, its built-in kit and the upgrades it must carry. None of these
 // are purchases, so nothing that lists them offers to remove them.
 
-/** Kit the armoury marks `fixed`: the unit arrives with it, it costs nothing, and (63 of 64 rows) its row also says "min 1 per model". */
-export function isBuiltIn(entry: { access?: { fixed?: boolean } | undefined }): boolean {
-  return entry.access?.fixed === true;
+type Locking = { access?: { fixed?: boolean; replaceableDefault?: string; replaces?: string; permanent?: boolean } | undefined; pending?: "add" | "remove" };
+
+/**
+ * Kit the model always has: `fixed` armoury rows, a replaceable built-in's
+ * default (the Shrine's Catherine Wheel), and a replacement once it is no
+ * longer a pending purchase (the swap happens at recruitment only).
+ */
+export function isBuiltIn(entry: Locking): boolean {
+  const a = entry.access;
+  return a?.fixed === true || a?.replaceableDefault !== undefined || (a?.replaces !== undefined && entry.pending !== "add");
+}
+
+/**
+ * Replaceable built-ins the member may swap right now: only while it is a
+ * pending recruit (the swap happens "when you recruit", p64) and only where
+ * the rule's gate holds. Once confirmed, nothing.
+ */
+export function openReplacements(member: WarbandMember, unit: RosterUnit, warband: Warband, data: RulesData, ctx: LimitContext, recruitPending: boolean): ReplaceableBuiltIn[] {
+  if (!recruitPending) return [];
+  return replaceableState(member, unit, warband, data, ctx)
+    .filter((s) => s.open)
+    .map((s) => s.rule);
+}
+
+/** A permanent purchase once confirmed (Anchorite Battlekit, p64): shown locked, never offered for removal. */
+export function isPermanentLocked(entry: Locking): boolean {
+  return entry.access?.permanent === true && entry.pending !== "add";
 }
 
 /** An upgrade the model must take: its per-model minimum resolves to at least one (Atonement Bell). */
@@ -71,7 +97,7 @@ export function memberTraits(member: WarbandMember, unit: RosterUnit, warband: W
   const builtIn: Trait[] = kitEntries(member, unit, data, pm)
     .filter(isBuiltIn)
     .map((e) => {
-      const t: Trait = { key: `k${e.index}`, desc: describeItem(e.item), where: ZONE_PLACE[zoneOf(e.classified)], kit: e };
+      const t: Trait = { key: `k${e.index}`, desc: describeItem(e.item, e.access), where: ZONE_PLACE[zoneOf(e.classified)], kit: e };
       if (e.pending) t.pending = e.pending;
       return t;
     });

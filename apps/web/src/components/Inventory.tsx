@@ -4,7 +4,8 @@ import type { Purse } from "../roster/purse.js";
 import { type UpgradeListing } from "../roster/select.js";
 import type { KitEntry } from "../roster/slots.js";
 import type { StagedEntry } from "../roster/staging.js";
-import { isBuiltIn } from "../roster/traits.js";
+import { isBuiltIn, isPermanentLocked } from "../roster/traits.js";
+import { LockGlyph } from "./LockGlyph.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { PriceButton } from "./PriceButton.js";
 import styles from "./Inventory.module.css";
@@ -47,10 +48,14 @@ export function Inventory({ entries: all, onAdd, onRemove, onKeep, unit, upgrade
       ) : (
         <ul className={styles.list}>
           {entries.map((e) => (
-            <li key={e.index}>
-              <ItemDescription desc={describeItem(e.item)} expandable struck={e.pending === "remove"} />
+            <li key={e.index} className={isPermanentLocked(e) ? styles.locked : undefined} data-locked={isPermanentLocked(e) ? "true" : undefined}>
+              <ItemDescription desc={describeItem(e.item, e.access)} expandable struck={e.pending === "remove"} />
               {chip(e.pending)}
-              {e.pending === "remove" ? (
+              {isPermanentLocked(e) && e.pending !== "remove" ? (
+                <span className={styles.permanent} title="Once equipped it cannot be removed or lost">
+                  <LockGlyph /> permanent
+                </span>
+              ) : e.pending === "remove" ? (
                 <button className="small" onClick={() => onKeep(e)}>
                   Keep
                 </button>
