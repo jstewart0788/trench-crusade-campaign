@@ -8,6 +8,8 @@ export interface IconAction {
   attrs: Record<string, string>;
   /** The glyph and tooltip are hidden from assistive tech, so the name comes from aria-label alone. */
   decorationHidden: boolean;
+  /** The glyph's drawing: the markup inside its <svg>. */
+  drawing: string;
 }
 
 const decode = (s: string) => s.replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
@@ -17,7 +19,7 @@ export function iconActions(html: string): IconAction[] {
   return [...html.matchAll(/<(button|a)\b([^>]*\bdata-glyph="[^"]*"[^>]*)>([\s\S]*?)<\/\1>/g)].map(([, tag, rawAttrs, inner]) => {
     const attrs = Object.fromEntries([...rawAttrs!.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, k, v]) => [k!, decode(v!)]));
     const tip = /<span\b([^>]*)>([^<]*)<\/span>/.exec(inner!);
-    const svg = /<svg\b([^>]*)>/.exec(inner!);
+    const svg = /<svg\b([^>]*)>([\s\S]*?)<\/svg>/.exec(inner!);
     return {
       tag: tag as "button" | "a",
       glyph: attrs["data-glyph"]!,
@@ -25,6 +27,7 @@ export function iconActions(html: string): IconAction[] {
       tip: tip ? decode(tip[2]!) : "",
       attrs,
       decorationHidden: !!svg?.[1]!.includes('aria-hidden="true"') && !!tip?.[1]!.includes('aria-hidden="true"'),
+      drawing: svg?.[2] ?? "",
     };
   });
 }

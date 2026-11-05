@@ -1,4 +1,5 @@
 import { accessFor, findUnit, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
+import { useId, type MouseEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
 import type { Offer, Purse } from "../roster/purse.js";
@@ -32,9 +33,15 @@ interface Props {
     onRemove: (row: StagedMemberRow) => void;
     onKeep: (row: StagedMemberRow) => void;
   };
+  /** Warband screen: each row opens a detail panel, by its chevron or a click anywhere on the row outside its controls. */
+  expand?: {
+    isOpen: (memberId: string) => boolean;
+    onToggle: (memberId: string) => void;
+    details: (row: StagedMemberRow) => ReactNode;
+  };
 }
 
-export function MemberList({ rows, roster, rules, cost, validation, base, onRename, manage, traitsFor }: Props) {
+export function MemberList({ rows, roster, rules, cost, validation, base, onRename, manage, traitsFor, expand }: Props) {
   if (rows.length === 0) {
     return (
       <div className={`panel ${styles.empty}`}>
@@ -56,6 +63,7 @@ export function MemberList({ rows, roster, rules, cost, validation, base, onRena
           onRename={onRename}
           manage={manage}
           traitsFor={traitsFor}
+          expand={expand}
         />
       ))}
     </ul>
@@ -72,12 +80,22 @@ interface RowProps {
   onRename: Props["onRename"];
   manage: Props["manage"];
   traitsFor: Props["traitsFor"];
+  expand: Props["expand"];
 }
 
-function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, traitsFor }: RowProps) {
+// A click on the row toggles its details, except on the row's own controls,
+// inside the open panel, or at the end of a text selection.
+const clickTogglesRow = (e: MouseEvent) => {
+  const target = e.target as Element;
+  return !target.closest("a, button, input, select, textarea, label, [role='region']") && !window.getSelection()?.toString();
+};
+
+function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, traitsFor, expand }: RowProps) {
   const { member } = row;
   const leaving = row.pending === "remove";
   const title = memberTitle(member, unit);
+  const detailsId = useId();
+  const open = expand?.isOpen(member.id) ?? false;
   const traits = unit && traitsFor ? traitsFor(row, unit) : undefined;
   const locked = new Set(traits?.skills.flatMap((t) => (t.upgrade ? [t.upgrade.id] : [])) ?? []);
   const kit = [
@@ -95,7 +113,10 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
       }),
   ];
   return (
-    <li className={`${styles.row} ${row.pending === "add" ? styles.pendingAdd : ""} ${leaving ? styles.pendingRemove : ""}`}>
+    <li
+      className={`${styles.row} ${row.pending === "add" ? styles.pendingAdd : ""} ${leaving ? styles.pendingRemove : ""} ${expand ? styles.expandable : ""}`}
+      onClick={expand ? (e) => clickTogglesRow(e) && expand.onToggle(member.id) : undefined}
+    >
       <div className={styles.title}>
         <span className={`${styles.unit} ${leaving ? styles.struck : ""}`}>{unit?.name ?? member.unitId}</span>
         {unit?.elite && <span className={styles.tag}>Elite</span>}
@@ -142,7 +163,7 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
       <div className={styles.actions}>
         {!leaving && (
           <span className={styles.equip}>
-            <IconLink to={armouryHref(base, member.id)} glyph="equip" label="Equip" subject={title} tone="brass" />
+            <IconLink to={armouryHref(base, member.id)} glyph="armoury" label="Equip" subject={title} tone="brass" />
           </span>
         )}
         {manage &&
@@ -158,7 +179,13 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
               )}
             </>
           ))}
+        {expand && <IconButton glyph="chevron" label="Details" subject={`for ${title}`} expanded={open} controls={detailsId} onClick={() => expand.onToggle(member.id)} />}
       </div>
+      {expand && (
+        <div id={detailsId} className={styles.details} role="region" aria-label={`Details for ${title}`} hidden={!open}>
+          {open && expand.details(row)}
+        </div>
+      )}
     </li>
   );
 }

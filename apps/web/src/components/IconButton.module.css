@@ -56,6 +56,10 @@
 .glyph {
   width: 16px;
   height: 16px;
+  transition: transform 160ms ease;
+}
+.icon[data-glyph="chevron"][aria-expanded="true"] .glyph {
+  transform: rotate(180deg);
 }
 .tip {
   position: absolute;

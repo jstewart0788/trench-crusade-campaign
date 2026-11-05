@@ -93,3 +93,26 @@ export function movePending(from: string, to: string): void {
   map[to] = pending;
   write(PENDING_KEY, map);
 }
+
+// Which member rows are expanded on the Warband screen, per warband code or "draft".
+
+const EXPANDED_KEY = "tc.roster.expanded";
+
+export function loadExpanded(key: string): string[] {
+  const ids = read<Record<string, unknown>>(EXPANDED_KEY)?.[key];
+  return Array.isArray(ids) ? ids.filter((id): id is string => typeof id === "string") : [];
+}
+
+export function saveExpanded(key: string, ids: string[]): void {
+  const map = read<Record<string, string[]>>(EXPANDED_KEY) ?? {};
+  if (ids.length) map[key] = ids;
+  else delete map[key];
+  write(EXPANDED_KEY, Object.keys(map).length ? map : undefined);
+}
+
+export function moveExpanded(from: string, to: string): void {
+  const ids = loadExpanded(from);
+  if (!ids.length) return;
+  saveExpanded(from, []);
+  saveExpanded(to, ids);
+}

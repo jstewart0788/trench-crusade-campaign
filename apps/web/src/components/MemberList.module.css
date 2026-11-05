@@ -115,3 +115,18 @@
 .traits {
   grid-area: traits;
 }
+.expandable {
+  cursor: pointer;
+}
+.expandable:hover {
+  border-color: var(--line-strong);
+}
+/* Placed after the named areas only when shown, so a closed row keeps its exact height. */
+.details {
+  grid-column: 1 / -1;
+  grid-row: -1 / span 1;
+  margin-top: 0.4rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  cursor: auto;
+}

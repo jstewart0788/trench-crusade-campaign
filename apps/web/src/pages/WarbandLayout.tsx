@@ -8,7 +8,7 @@ import { gloryPool, type Purse } from "../roster/purse.js";
 import { rosterReducer } from "../roster/reducer.js";
 import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagedMembers, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
 import { useRules } from "../rules.js";
-import { clearDraft, loadDraft, loadPending, movePending, rememberSaved, saveDraft, savePending } from "../storage.js";
+import { clearDraft, loadDraft, loadPending, moveExpanded, movePending, rememberSaved, saveDraft, savePending } from "../storage.js";
 import { DRAFT_CODE, warbandBase, type WarbandContext } from "./warbandContext.js";
 import styles from "./WarbandLayout.module.css";
 
@@ -149,6 +149,7 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
       if (!code) {
         clearDraft();
         movePending(DRAFT_CODE, saved.code);
+        moveExpanded(DRAFT_CODE, saved.code);
       }
       setSave({ busy: false, snapshot: JSON.stringify(saved.warband) });
       onSaved(saved);

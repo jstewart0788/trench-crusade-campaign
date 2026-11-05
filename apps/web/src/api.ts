@@ -45,8 +45,15 @@ async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (await res.json()) as T;
 }
 
+/** Each unit's default TTS model and the hand-picked ones by loadout, for buildModelMap. */
+export interface TtsModels {
+  models: unknown;
+  picks?: unknown;
+}
+
 export const api = {
   rules: () => call<RulesFiles>("/api/rules"),
+  models: () => call<TtsModels>("/api/tts/models"),
   getWarband: (code: string) => call<SavedWarband>(`/api/warbands/${encodeURIComponent(code)}`),
   createWarband: (warband: Warband) => call<SavedWarband>("/api/warbands", { method: "POST", body: JSON.stringify(warband) }),
   replaceWarband: (code: string, warband: Warband) =>

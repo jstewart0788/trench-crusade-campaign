@@ -66,14 +66,17 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 
 - Header: the name in brass as an editable field, "NEW ANTIOCH · TEMPORAL LORD · GAME 1"
   under it, totals **0 / 700 ducats** and **0 glory of 0**, a red **1 error** badge, "Draft"
-  and a **Save and get code** button. Below it the tabs **Warband · Barracks · Armoury**;
-  Barracks is lit.
+  and a **Save and get code** button. Below it the tabs **Warband · Barracks · Armoury**, each
+  with its glyph before the label: a banner on a pole (Warband), a tent (Barracks), crossed
+  swords (Armoury). Barracks is lit.
 - Edit the name in the header: the change shows on every screen (it is the one field that is
   never locked).
 - **Icon actions.** Every action that is not a purchase is a round 32px glyph with no text:
   crossed swords **Equip**, a door and arrow **Dismiss**, a minus in a circle **Remove**, a
   curved arrow **Undo** and **Keep**, × **Close**, an open book **Rules**, two sheets **Copy**,
-  a tent **Barracks**, a bag **Shop for kit**. At rest they are quiet (Equip, Barracks and Shop
+  a tent **Barracks**, a bag **Shop for kit**, a chevron **Details**. An icon that takes you to a
+  screen wears that screen's tab glyph: Equip the Armoury's crossed swords, Recruit in the
+  Barracks and the Armoury's Barracks link the Barracks tent. At rest they are quiet (Equip, Barracks and Shop
   in soft brass; Dismiss and Remove in a muted oxblood); hovered or focused they fill, Dismiss and
   Remove turning blood red. Hover one, or Tab to it: a small bubble above it shows its name, and
   Tab draws a brass ring around it. In this script a bold action name means that icon. Chrome
@@ -288,6 +291,37 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 - "Rulebook-legal: nothing to fix."
 - Make it illegal to see the list: Barracks → **Dismiss** the Lieutenant → Warband screen lists
   `0 x Lieutenant; at least 1 required` and the badge reads 1 error. **Keep** him.
+
+## 6b. Expanded rows on the Warband screen
+
+- Each roster row has a chevron (**Details**) at the right of its Equip line; the collapsed row is
+  otherwise unchanged. Press it, or click anywhere on the row that is not the name field or a
+  button: the row opens below with the model's full details, and the chevron turns up and brass.
+  Clicking the name field, Equip or anything inside the open panel does not toggle it; selecting
+  text in the row does not either. Several rows can be open at once.
+- The Lieutenant (Sword/Axe, Pistol, Standard Armour): stat boxes **Mov 6"/Infantry · Rng +2 ·
+  Mel +2 · Arm −1 · Base 32mm**, the line "Armour 0 profile, −1 (Standard Armour)", Keywords;
+  **Abilities** Hold Your Fire!, Tough, Leader each with its full text; **Equipment** each item
+  with range · hands · keywords and its rules, its price at the right; **Cost** a ledger
+  Lieutenant 👑70, Sword/Axe 👑4, Pistol 👑6, Standard Armour 👑15, **Total 👑95** (the row's own
+  price); **TTS model** the sculpt's name and "default for this unit".
+- A Witchburner: Combat Helmet and Reinforced Armour marked oxblood **built in** with the lock (and
+  "built in" in the ledger), Gavel of Justice "on the unit card", Dignified Conduct and Divine
+  Judgement among the abilities, a ☼5 price, and no armour breakdown (built-in armour is in the
+  profile already).
+- Heretic Legion → Heretic Naval Raiders: a Heretic Raider with a Submachine Gun reads "your pick
+  for this loadout" in brass; give it a Pistol instead and it reads "default for this unit".
+- A row with an error (a core Anchorite Shrine without its Catherine Wheel) lists it under
+  **Issues**; a Shrine with a Broken on the Wheel victim shows it under **Before this game**, and
+  the victim's row says "Not deployed this game."
+- Everything in the panel comes from the TTS export: open `/api/tts/warband/XXXXXX` after saving
+  and compare a member's stats, armourBreakdown, abilities, equipment, upgrades and model.nickname.
+- Reload: the same rows are still open (remembered per warband in this browser). Network:
+  `GET /api/tts/models` 200, gzip, about 20 KB; if it fails the panel says the model map did not
+  load and everything else still works.
+- Tab to a chevron: focus ring and "Details" bubble; Enter/Space opens it. Accessibility pane:
+  button "Details for Captain Vane (Lieutenant)", expanded true/false, controlling a region with
+  the same name.
 
 ## 7. Save
 

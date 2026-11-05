@@ -14,7 +14,7 @@
 .nameLine > button {
   margin-block: -7px;
 }
-.name {
+.name[title] {
   cursor: help;
 }
 .detail {

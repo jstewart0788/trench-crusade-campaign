@@ -4,6 +4,9 @@
   border-bottom: 1px solid var(--line-strong);
 }
 .tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0.45rem 1rem;
   color: var(--ink-muted);
   text-decoration: none;
@@ -17,6 +20,11 @@
 }
 .tab:hover {
   color: var(--ink);
+}
+.glyph {
+  width: 16px;
+  height: 16px;
+  flex: none;
 }
 .active {
   color: var(--brass);

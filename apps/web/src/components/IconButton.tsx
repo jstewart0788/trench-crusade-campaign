@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { cx } from "./cx.js";
 import styles from "./IconButton.module.css";
 
-export type Glyph = "equip" | "dismiss" | "remove" | "revert" | "close" | "rules" | "copy" | "copied" | "barracks" | "shop";
+/** warband, barracks and armoury are the three screens: the tabs wear them, and every icon that goes to a screen uses its glyph. */
+export type Glyph = "warband" | "barracks" | "armoury" | "dismiss" | "remove" | "revert" | "close" | "rules" | "copy" | "copied" | "shop" | "chevron";
 
 interface Common {
   glyph: Glyph;
@@ -52,12 +53,19 @@ export function KitAction({ pending, name, onRemove, onKeep }: { pending?: "add"
   return <IconButton glyph="remove" label="Remove" subject={name} tone="danger" onClick={onRemove} />;
 }
 
+/** A glyph on its own, decorative: whatever carries it names the action. */
+export function GlyphIcon({ glyph, className }: { glyph: Glyph; className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false" data-glyph-icon={glyph}>
+      {GLYPHS[glyph]}
+    </svg>
+  );
+}
+
 function Inside({ glyph, label }: Common) {
   return (
     <>
-      <svg className={styles.glyph} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
-        {GLYPHS[glyph]}
-      </svg>
+      <GlyphIcon glyph={glyph} className={styles.glyph} />
       <span className={styles.tip} aria-hidden="true">
         {label}
       </span>
@@ -66,7 +74,14 @@ function Inside({ glyph, label }: Common) {
 }
 
 const GLYPHS: Record<Glyph, ReactNode> = {
-  equip: (
+  warband: (
+    <g fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round">
+      <path d="M3.6 14.5V1.6" />
+      <path d="M3.6 2.6h9.2l-2.4 3.1 2.4 3.1H3.6" />
+      <path d="M2.2 14.5h2.8" />
+    </g>
+  ),
+  armoury: (
     <g fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <path d="M2.5 2.5 10.5 10.5M8.8 12.2l3.4-3.4M10.5 10.5l3 3" />
       <path d="M13.5 2.5 5.5 10.5M3.8 8.8l3.4 3.4M5.5 10.5l-3 3" />
@@ -111,6 +126,7 @@ const GLYPHS: Record<Glyph, ReactNode> = {
       <path d="M6.2 13.3 8 9.4l1.8 3.9" />
     </g>
   ),
+  chevron: <path d="M3.8 6.2 8 10.4l4.2-4.2" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />,
   shop: (
     <g fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round">
       <path d="M2.8 6h10.4l-.9 7.5H3.7z" />

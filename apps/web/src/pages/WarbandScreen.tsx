@@ -1,11 +1,16 @@
 import { findSubfaction, rosterVariants } from "@tc/rules/browser";
+import { useEffect, useMemo, useState } from "react";
 import { IconLink } from "../components/IconButton.js";
+import { MemberDetails } from "../components/MemberDetails.js";
 import { MemberList } from "../components/MemberList.js";
 import { PreGamePanel } from "../components/PreGamePanel.js";
 import { TtsCode } from "../components/TtsCode.js";
 import { ValidationPanel } from "../components/ValidationPanel.js";
+import { memberDetails, type Details } from "../roster/details.js";
+import type { StagedMemberRow } from "../roster/staging.js";
 import { memberTraits } from "../roster/traits.js";
-import { armouryHref, useWarband } from "./warbandContext.js";
+import { loadExpanded, saveExpanded } from "../storage.js";
+import { armouryHref, DRAFT_CODE, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
@@ -17,6 +22,28 @@ export function WarbandScreen() {
   const pool = warband.glory ?? (warband.gameNumber === 1 ? (variant?.startingGlory ?? 0) : undefined);
   const over = cost.ducats > threshold.value;
   const n = warband.members.length;
+
+  const storageKey = code ?? DRAFT_CODE;
+  const [expanded, setExpanded] = useState(() => new Set(loadExpanded(storageKey)));
+  useEffect(() => saveExpanded(storageKey, [...expanded]), [expanded, storageKey]);
+  const toggle = (memberId: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(memberId)) next.add(memberId);
+      return next;
+    });
+
+  // Details come from the TTS export of the roster as shown; a member being dismissed is not in it, so it reads from the confirmed roster.
+  const openRows = rows.filter((r) => expanded.has(r.member.id));
+  const needStaged = openRows.some((r) => r.pending !== "remove");
+  const needLeaving = openRows.some((r) => r.pending === "remove");
+  const staged = useMemo<Details | undefined>(() => (needStaged ? memberDetails(warband, rules, storageKey) : undefined), [needStaged, warband, rules, storageKey]);
+  const leaving = useMemo<Details | undefined>(() => (needLeaving ? memberDetails(confirmed, rules, storageKey) : undefined), [needLeaving, confirmed, rules, storageKey]);
+  const detailsOf = (row: StagedMemberRow) => {
+    const source = row.pending === "remove" ? leaving : staged;
+    const found = source && "byId" in source ? source.byId.get(row.member.id) : undefined;
+    return <MemberDetails detail={found} error={source && "error" in source ? source.error : undefined} modelsLoaded={rules.models !== undefined} />;
+  };
 
   return (
     <div className={styles.screen}>
@@ -76,6 +103,7 @@ export function WarbandScreen() {
           base={base}
           onRename={(row, name) => (row.pending === "add" ? stage({ type: "rename-recruit", memberId: row.member.id, name }) : dispatch({ type: "rename-member", memberId: row.member.id, name }))}
           traitsFor={(row, unit) => memberTraits(row.member, unit, warband, rules, ctx)}
+          expand={{ isOpen: (id) => expanded.has(id), onToggle: toggle, details: detailsOf }}
         />
       </section>
 

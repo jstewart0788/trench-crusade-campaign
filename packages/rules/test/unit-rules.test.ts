@@ -44,6 +44,11 @@ describe("unit-rules.json loads, checks and annotates", () => {
     expect(classifyItem(autocannon, accessFor(d.unitsById.get(SHRINE)!, "autocannon"), d.headgearItemIds).hands).toBe(1);
     expect(classifyItem(autocannon, undefined, d.headgearItemIds).hands).toBe(2);
   });
+
+  it("exports a replacement with the hands it takes on the Shrine", () => {
+    const out = toWarbandExport(pilgrims([member(SHRINE, ["autocannon"]), member("trench-pilgrims/trench-pilgrim", ["autocannon"])], METHODIUS), data(), { code: "T" });
+    expect(out.members.map((m) => m.equipment.find((e) => e.id === "autocannon")?.hands)).toEqual([1, 2]);
+  });
 });
 
 describe("1. replaceable built-in: the Catherine Wheel", () => {

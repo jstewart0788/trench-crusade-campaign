@@ -1,6 +1,6 @@
 import { toWarbandExport, validateWarband, warbandCost, Warband as WarbandSchema, WarbandExportError, type Warband } from "@tc/rules";
 import cors from "cors";
-import express, { type Request } from "express";
+import express, { type Request, type Response } from "express";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { generateCode, parseCode } from "./codes.js";
@@ -98,17 +98,24 @@ export function createApp({ rules, store, now = () => new Date(), staticDir, rat
   });
 
   // Express answers a matching If-None-Match with 304 on its own once ETag is set.
-  app.get("/api/rules", (req, res) => {
+  const sendPayload = (req: Request, res: Response, body: { json: Buffer; gzip: Buffer; etag: string }) => {
     res.set("Cache-Control", "public, max-age=300");
-    res.set("ETag", rules.etag);
+    res.set("ETag", body.etag);
     res.set("Vary", "Accept-Encoding");
     res.type("application/json");
     if (req.acceptsEncodings("gzip")) {
       res.set("Content-Encoding", "gzip");
-      res.send(rules.gzip);
+      res.send(body.gzip);
     } else {
-      res.send(rules.json);
+      res.send(body.json);
     }
+  };
+
+  app.get("/api/rules", (req, res) => sendPayload(req, res, rules));
+
+  app.get("/api/tts/models", (req, res) => {
+    if (!rules.models) throw new ApiError(404, "not-found", "This server has no TTS model map");
+    sendPayload(req, res, rules.models);
   });
 
   app.post("/api/warbands", async (req, res) => {

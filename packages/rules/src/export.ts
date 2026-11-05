@@ -234,17 +234,17 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
     const item = data.equipmentById.get(itemId);
     if (!item) throw new WarbandExportError(`Unknown item "${itemId}" on member ${member.id}`);
     const { ducats, glory } = itemCost(data, warband, member.unitId, itemId);
+    const row = accessFor(unit, itemId);
     const entry: ExportEquipment = {
       id: item.id,
       name: item.name,
       category: item.category,
-      hands: item.hands,
+      hands: row?.hands ?? item.hands,
       range: item.range,
       keywords: item.keywords,
       rules: item.rules,
       cost: { ducats, glory },
     };
-    const row = accessFor(unit, itemId);
     if (row?.fixed || row?.replaceableDefault) entry.builtIn = true;
     return entry;
   });

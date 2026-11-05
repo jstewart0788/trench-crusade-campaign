@@ -1,18 +1,14 @@
-import { limitContext, loadRulesData, validateWarband, warbandCost, warbandThreshold, type RulesData, type Warband } from "@tc/rules";
+import { limitContext, loadRulesData, type RulesData, type Warband } from "@tc/rules";
 import { resolve } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
-import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { ArmouryScreen } from "../pages/ArmouryScreen.js";
-import { BarracksScreen } from "../pages/BarracksScreen.js";
-import type { WarbandContext } from "../pages/warbandContext.js";
-import { WarbandScreen } from "../pages/WarbandScreen.js";
+import { contextFor as screenContext, renderScreen } from "../pages/screens.testutil.js";
 import { describeItem, describeUpgrade } from "../roster/describe.js";
-import { gloryPool } from "../roster/purse.js";
 import { createWarband, rosterReducer } from "../roster/reducer.js";
 import { defaultKit } from "../roster/select.js";
 import { kitEntries, layoutFigure, zoneOf, type KitEntry } from "../roster/slots.js";
-import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagedMembers, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
+import { EMPTY_PENDING, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
 import { memberTraits } from "../roster/traits.js";
 import { Figure } from "./Figure.js";
 import { iconActions } from "./iconActions.testutil.js";
@@ -20,6 +16,7 @@ import { Inventory } from "./Inventory.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { SkillsPanel } from "./SkillsPanel.js";
 import { SlotPicker } from "./SlotPicker.js";
+import { Tabs } from "./Tabs.js";
 import { TtsCode } from "./TtsCode.js";
 
 let data: RulesData;
@@ -33,47 +30,7 @@ const unit = (id: string) => data.unitsById.get(id)!;
 const names = (html: string) => iconActions(html).map((a) => a.name);
 const emptyListing = { rows: [], attachments: [], uncheckable: 0, unfit: {} };
 
-/** The warband screens read everything from WarbandLayout's outlet context; this builds it the same way from a roster and its pending changes. */
-function contextFor(confirmed: Warband, pending: Pending): WarbandContext {
-  const staged = applyPending(confirmed, pending);
-  const cost = warbandCost(staged, data);
-  const threshold = warbandThreshold(staged, data);
-  const pool = gloryPool(staged, data);
-  return {
-    rules: data,
-    warband: staged,
-    confirmed,
-    base: "/w/draft",
-    dispatch: noop,
-    pending,
-    rows: stagedMembers(confirmed, pending),
-    stage: noop,
-    pendingCount: pendingCount(pending),
-    delta: pendingDelta(confirmed, pending, data),
-    canConfirm: false,
-    confirmPurchases: noop,
-    discardPurchases: noop,
-    ctx: limitContext(staged, data),
-    validation: validateWarband(staged, data),
-    cost,
-    threshold,
-    purse: { ducats: cost.ducats, threshold: threshold.value, glory: cost.glory, ...(pool !== undefined ? { gloryPool: pool } : {}) },
-  };
-}
-
-function renderScreen(path: string, ctx: WarbandContext) {
-  return renderToStaticMarkup(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/w/:code" element={<Outlet context={ctx} />}>
-          <Route index element={<WarbandScreen />} />
-          <Route path="barracks" element={<BarracksScreen />} />
-          <Route path="armoury" element={<ArmouryScreen />} />
-        </Route>
-      </Routes>
-    </MemoryRouter>,
-  );
-}
+const contextFor = (confirmed: Warband, pending: Pending) => screenContext(data, confirmed, pending);
 
 /** Lieutenant m1 and Yeoman m2 confirmed; m2 is being dismissed and Yeoman m3 recruited. */
 function roster() {
@@ -104,16 +61,19 @@ function expectWellFormed(html: string) {
 }
 
 describe("icon actions carry an accessible name", () => {
-  it("Warband screen: Recruit in the Barracks, and Equip on every model not leaving", () => {
+  it("Warband screen: Recruit in the Barracks, Equip on every model not leaving, Details on every model", () => {
     const { confirmed, pending } = roster();
     const html = renderScreen("/w/draft", contextFor(confirmed, pending));
     const actions = expectWellFormed(html);
     expect(actions.map((a) => [a.name, a.attrs.href])).toEqual([
       ["Recruit in the Barracks", "/w/draft/barracks"],
       ["Equip Captain Vane (Lieutenant)", "/w/draft/armoury?member=m1"],
+      ["Details for Captain Vane (Lieutenant)", undefined],
+      ["Details for Yeoman", undefined],
       ["Equip Yeoman", "/w/draft/armoury?member=m3"],
+      ["Details for Yeoman", undefined],
     ]);
-    expect(actions.map((a) => a.tip)).toEqual(["Recruit in the Barracks", "Equip", "Equip"]);
+    expect(actions.map((a) => a.tip)).toEqual(["Recruit in the Barracks", "Equip", "Details", "Details", "Equip", "Details"]);
     expect(html).not.toContain(">Equip<\/a>");
   });
 
@@ -235,6 +195,32 @@ describe("icon actions carry an accessible name", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+  });
+
+  it("the tabs wear the screen glyphs with their labels, and every icon that goes to a screen draws that screen's glyph", () => {
+    const tabs = renderToStaticMarkup(
+      <MemoryRouter>
+        <Tabs base="/w/draft" />
+      </MemoryRouter>,
+    );
+    const tabGlyphs = [...tabs.matchAll(/<a [^>]*>(<svg[^>]*data-glyph-icon="(\w+)"[^>]*>([\s\S]*?)<\/svg>)([^<]+)<\/a>/g)].map(([, svg, glyph, drawing, label]) => ({ glyph: glyph!, drawing: drawing!, label: label!, hidden: svg!.includes('aria-hidden="true"') }));
+    expect(tabGlyphs.map((t) => [t.label, t.glyph, t.hidden])).toEqual([
+      ["Warband", "warband", true],
+      ["Barracks", "barracks", true],
+      ["Armoury", "armoury", true],
+    ]);
+    const drawingOf = Object.fromEntries(tabGlyphs.map((t) => [t.glyph, t.drawing]));
+    expect(new Set(Object.values(drawingOf)).size).toBe(3);
+
+    const { confirmed, pending } = roster();
+    const ctx = contextFor(confirmed, pending);
+    const links = ["/w/draft", "/w/draft/barracks", "/w/draft/armoury?member=m1"].flatMap((path) => iconActions(renderScreen(path, ctx)).filter((a) => a.tag === "a"));
+    expect(links.map((a) => a.name)).toEqual(expect.arrayContaining(["Recruit in the Barracks", "Equip Captain Vane (Lieutenant)", "Barracks"]));
+    for (const a of links) {
+      const screen = /\/armoury(\?|$)/.test(a.attrs.href!) ? "armoury" : /\/barracks$/.test(a.attrs.href!) ? "barracks" : "warband";
+      expect(a.glyph, a.name).toBe(screen);
+      expect(a.drawing, a.name).toBe(drawingOf[screen]);
+    }
   });
 
   it("TTS code: copy the code and copy the URL", () => {

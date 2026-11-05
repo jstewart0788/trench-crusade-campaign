@@ -1,4 +1,4 @@
-import { WarbandExport, type Warband } from "@tc/rules";
+import { buildModelMap, modelFor, WarbandExport, type Warband } from "@tc/rules";
 import request from "supertest";
 import { beforeAll, describe, expect, it } from "vitest";
 import { newAntioch } from "../../../packages/rules/test/fixtures.js";
@@ -43,6 +43,36 @@ describe("GET /api/rules", () => {
     expect(gz.body.factions.factions).toHaveLength(6);
     const plain = await request(app).get("/api/rules").set("Accept-Encoding", "identity");
     expect(plain.headers["content-encoding"]).toBeUndefined();
+  });
+});
+
+describe("GET /api/tts/models", () => {
+  it("serves each unit's chosen model and the loadout picks, cached like the rules", async () => {
+    const { app } = makeApp();
+    const res = await request(app).get("/api/tts/models").set("Accept-Encoding", "gzip");
+    expect(res.status).toBe(200);
+    expect(res.headers["cache-control"]).toBe("public, max-age=300");
+    expect(res.headers["content-encoding"]).toBe("gzip");
+    expect(Number(res.headers["content-length"])).toBeLessThan(40_000);
+    const again = await request(app).get("/api/tts/models").set("If-None-Match", res.headers["etag"]!);
+    expect(again.status).toBe(304);
+    for (const unit of Object.values(res.body.models.units as Record<string, { candidates: unknown[] }>)) expect(unit.candidates).toHaveLength(1);
+  });
+
+  it("gives the browser the same model for every unit and every picked loadout as the server's export", async () => {
+    const { app } = makeApp();
+    const res = await request(app).get("/api/tts/models");
+    const browser = buildModelMap(res.body.models, res.body.picks);
+    const server = rules.data.models!;
+    expect([...browser.byUnitId.keys()].sort()).toEqual([...server.byUnitId.keys()].sort());
+    const loadouts = rules.data.units.flatMap((u) => [
+      [u.id, []] as const,
+      ...[...(server.picksByUnitId?.get(u.id) ?? [])].map((p) => [u.id, p.matchItemIds] as const),
+    ]);
+    expect(loadouts.length).toBeGreaterThan(rules.data.units.length);
+    // Compared as JSON, the form the export travels in (-0 and 0 are the same there).
+    const json = (unitId: string, items: readonly string[], map: typeof server) => JSON.stringify(modelFor(map, unitId, items) ?? null);
+    for (const [unitId, items] of loadouts) expect(json(unitId, items, browser), `${unitId} ${items.join(",")}`).toBe(json(unitId, items, server));
   });
 });
 
