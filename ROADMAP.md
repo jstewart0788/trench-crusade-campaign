@@ -243,6 +243,14 @@ disagreement left: Death Commando Binoculars missing upstream). Next: TC-014, TC
   editable**), **Barracks** (recruit units), **Armoury** (buy equipment, filterable by
   unit). Options that are not available to this roster are hidden, never shown disabled or annotated
   "not checked here" — including gates the data cannot evaluate.
+- TC-010c Armoury as a body (Jonathan, 2026-11-04): a figure with slots — head (one headgear), torso
+  (one armour), a ranged pair of hands and a melee pair (a 2H weapon fills both of its pair; STRONG
+  lets a 2H melee take one), an off-hand for a shield or HELD item (when filled, each pair drops to
+  one 1H unless shield combo), a grenade slot (one kind) — and an inventory below for everything
+  else. Clicking a slot opens a picker of items eligible for that slot and available to that member.
+  Changes are staged with a running cost delta and validated live; one warband-wide **Confirm
+  purchases** charges the purse and writes the roster. This is the shape the Phase 4 Quartermaster
+  step (buy, sell at half) will wrap.
 - TC-011 NewRecruit import into the roster tool.
 - TC-012 `/api/tts/warband/{code}` JSON contract + endpoint.
 - TC-013 LCT fork: strip 40k systems; keep engine; document what was removed.
