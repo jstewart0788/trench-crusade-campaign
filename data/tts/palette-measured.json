@@ -1,0 +1,611 @@
+{
+  "$schema": "tc-tts-rest-heights-v1",
+  "measuredAt": "2026-11-04T20:33:59",
+  "method": "spawned in the running TTS via the External Editor API, read position/bounds after physics settled",
+  "surfaceTopY": 0.900002598762512,
+  "assets": {
+    "031559734221": {
+      "restY": 2.4,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "boundsCenterY": 2.193,
+      "normalizedSize": [
+        4,
+        2.586,
+        4.0
+      ],
+      "normalizedOffset": [
+        0,
+        0.207,
+        0
+      ],
+      "pivotToBottom": 1.5,
+      "settled": true,
+      "loading": false
+    },
+    "1e7b291cb6a5": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.0,
+      "boundsSize": [
+        0.819,
+        0.019,
+        3.722
+      ],
+      "boundsCenterY": 0.91,
+      "normalizedSize": [
+        1.308,
+        0.019,
+        3.722
+      ],
+      "normalizedOffset": [
+        0.654,
+        -0.01,
+        -0.046
+      ],
+      "pivotToBottom": 0.0,
+      "settled": true,
+      "loading": false
+    },
+    "1f3b59a4693c": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4,
+        2.1,
+        3
+      ],
+      "boundsCenterY": 1.95,
+      "normalizedSize": [
+        4,
+        2.1,
+        3
+      ],
+      "normalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "pivotToBottom": -0.0,
+      "settled": true,
+      "loading": false
+    },
+    "2317e9390c9f": {
+      "restY": 1.96,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.06,
+      "boundsSize": [
+        8.025,
+        2.58,
+        8.0
+      ],
+      "boundsCenterY": 2.19,
+      "normalizedSize": [
+        8,
+        2.5,
+        8
+      ],
+      "normalizedOffset": [
+        2,
+        -0.25,
+        2
+      ],
+      "pivotToBottom": 1.06,
+      "settled": true,
+      "loading": false
+    },
+    "2382640b6cc8": {
+      "restY": 1.034,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.134,
+      "boundsSize": [
+        4.192,
+        0.268,
+        2.679
+      ],
+      "boundsCenterY": 1.034,
+      "normalizedSize": [
+        4.192,
+        0.268,
+        2.679
+      ],
+      "normalizedOffset": [
+        0.393,
+        0,
+        -0.232
+      ],
+      "pivotToBottom": 0.134,
+      "settled": true,
+      "loading": false
+    },
+    "250c813e4ba2": {
+      "restY": 1.889,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.989,
+      "boundsSize": [
+        2.787,
+        0.5,
+        8.6
+      ],
+      "boundsCenterY": 1.15,
+      "normalizedSize": [
+        2.787,
+        1,
+        8.6
+      ],
+      "normalizedOffset": [
+        0.693,
+        0.5,
+        -2.15
+      ],
+      "pivotToBottom": 0.989,
+      "settled": true,
+      "loading": false
+    },
+    "2a650a647efa": {
+      "restY": 0.919,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.019,
+      "boundsSize": [
+        2.278,
+        1.245,
+        0.976
+      ],
+      "boundsCenterY": 1.522,
+      "normalizedSize": [
+        2.278,
+        1.245,
+        0.976
+      ],
+      "normalizedOffset": [
+        0,
+        -0.604,
+        0
+      ],
+      "pivotToBottom": 0.019,
+      "settled": true,
+      "loading": false
+    },
+    "3527ebae2c03": {
+      "restY": 0.947,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.047,
+      "boundsSize": [
+        4.049,
+        2.193,
+        4.002
+      ],
+      "boundsCenterY": 1.996,
+      "normalizedSize": [
+        4,
+        2.1,
+        4
+      ],
+      "normalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "pivotToBottom": 0.047,
+      "settled": true,
+      "loading": false
+    },
+    "3d6f0479de02": {
+      "restY": 2.18,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.28,
+      "boundsSize": [
+        3.96,
+        2.56,
+        4.036
+      ],
+      "boundsCenterY": 2.18,
+      "normalizedSize": [
+        3.96,
+        2.56,
+        4.036
+      ],
+      "normalizedOffset": [
+        0.99,
+        0,
+        0.982
+      ],
+      "pivotToBottom": 1.28,
+      "settled": true,
+      "loading": false
+    },
+    "571fca0839f7": {
+      "restY": 1.928,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.028,
+      "boundsSize": [
+        7.96,
+        2.612,
+        48.006
+      ],
+      "boundsCenterY": 2.206,
+      "normalizedSize": [
+        7.96,
+        2.5,
+        48.0
+      ],
+      "normalizedOffset": [
+        0,
+        -0.25,
+        12.0
+      ],
+      "pivotToBottom": 1.028,
+      "settled": true,
+      "loading": false
+    },
+    "585b630e3cd6": {
+      "restY": 1.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        4,
+        2.5,
+        8
+      ],
+      "boundsCenterY": 2.15,
+      "normalizedSize": [
+        4,
+        2.5,
+        8
+      ],
+      "normalizedOffset": [
+        0,
+        -0.25,
+        2
+      ],
+      "pivotToBottom": 1.0,
+      "settled": true,
+      "loading": false
+    },
+    "5a7d021c6537": {
+      "restY": 2.446,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.546,
+      "boundsSize": [
+        4.058,
+        2.67,
+        4.038
+      ],
+      "boundsCenterY": 2.235,
+      "normalizedSize": [
+        4.0,
+        2.586,
+        4.038
+      ],
+      "normalizedOffset": [
+        0.0,
+        0.207,
+        0.019
+      ],
+      "pivotToBottom": 1.546,
+      "settled": true,
+      "loading": false
+    },
+    "630a887fadde": {
+      "restY": 6,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 5.1,
+      "boundsSize": [
+        0.413,
+        0.074,
+        0.021
+      ],
+      "boundsCenterY": 6,
+      "normalizedSize": [
+        0.413,
+        0.074,
+        0.021
+      ],
+      "normalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "pivotToBottom": 0.037,
+      "settled": true,
+      "loading": false
+    },
+    "65485306a350": {
+      "restY": 0.912,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 0.012,
+      "boundsSize": [
+        2.898,
+        0.141,
+        0.516
+      ],
+      "boundsCenterY": 0.971,
+      "normalizedSize": [
+        2.905,
+        0.148,
+        0.549
+      ],
+      "normalizedOffset": [
+        0,
+        -0.061,
+        0
+      ],
+      "pivotToBottom": 0.012,
+      "settled": true,
+      "loading": false
+    },
+    "72c6b611156e": {
+      "restY": 6,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 5.1,
+      "boundsSize": [
+        0.078,
+        0.081,
+        0.074
+      ],
+      "boundsCenterY": 6,
+      "normalizedSize": [
+        0.078,
+        0.081,
+        0.074
+      ],
+      "normalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "pivotToBottom": 0.04,
+      "settled": true,
+      "loading": false
+    },
+    "79666b195d2d": {
+      "restY": 6,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 5.1,
+      "boundsSize": [
+        0.261,
+        0.017,
+        0.1
+      ],
+      "boundsCenterY": 6,
+      "normalizedSize": [
+        0.261,
+        0.017,
+        0.1
+      ],
+      "normalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "pivotToBottom": 0.008,
+      "settled": true,
+      "loading": false
+    },
+    "7f808a16a2c2": {
+      "restY": 2.4,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.006
+      ],
+      "boundsCenterY": 2.193,
+      "normalizedSize": [
+        4,
+        2.586,
+        4.006
+      ],
+      "normalizedOffset": [
+        0,
+        0.207,
+        0.003
+      ],
+      "pivotToBottom": 1.5,
+      "settled": true,
+      "loading": false
+    },
+    "9767669a9c7f": {
+      "restY": 2.4,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.5,
+      "boundsSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "boundsCenterY": 2.193,
+      "normalizedSize": [
+        4.0,
+        2.586,
+        4.0
+      ],
+      "normalizedOffset": [
+        -0.0,
+        0.207,
+        -0.0
+      ],
+      "pivotToBottom": 1.5,
+      "settled": true,
+      "loading": false
+    },
+    "9ac11b011fa9": {
+      "restY": 0.872,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.028,
+      "boundsSize": [
+        2.38,
+        1.55,
+        3.737
+      ],
+      "boundsCenterY": 1.675,
+      "normalizedSize": [
+        2.383,
+        1.562,
+        3.731
+      ],
+      "normalizedOffset": [
+        0.092,
+        -0.781,
+        -0.069
+      ],
+      "pivotToBottom": -0.028,
+      "settled": true,
+      "loading": false
+    },
+    "b16e09068382": {
+      "error": "never appeared (spawn failed or asset did not load)"
+    },
+    "b189be267d6e": {
+      "restY": 1.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        8,
+        2.5,
+        8
+      ],
+      "boundsCenterY": 2.15,
+      "normalizedSize": [
+        8,
+        2.5,
+        8
+      ],
+      "normalizedOffset": [
+        2,
+        -0.25,
+        2
+      ],
+      "pivotToBottom": 1.0,
+      "settled": true,
+      "loading": false
+    },
+    "b9eb19d606cc": {
+      "restY": 6,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 5.1,
+      "boundsSize": [
+        0.08,
+        0.082,
+        0.08
+      ],
+      "boundsCenterY": 6,
+      "normalizedSize": [
+        0.08,
+        0.082,
+        0.08
+      ],
+      "normalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "pivotToBottom": 0.041,
+      "settled": true,
+      "loading": false
+    },
+    "c1ff472b6f54": {
+      "restY": 6,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 5.1,
+      "boundsSize": [
+        0.406,
+        0.074,
+        0.022
+      ],
+      "boundsCenterY": 6,
+      "normalizedSize": [
+        0.406,
+        0.074,
+        0.022
+      ],
+      "normalizedOffset": [
+        0,
+        0,
+        0
+      ],
+      "pivotToBottom": 0.037,
+      "settled": true,
+      "loading": false
+    },
+    "d654d331ecd3": {
+      "restY": 2.447,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.547,
+      "boundsSize": [
+        4.058,
+        2.67,
+        4.076
+      ],
+      "boundsCenterY": 2.235,
+      "normalizedSize": [
+        4,
+        2.586,
+        4.076
+      ],
+      "normalizedOffset": [
+        0,
+        0.207,
+        -0.0
+      ],
+      "pivotToBottom": 1.547,
+      "settled": true,
+      "loading": false
+    },
+    "e9023347a7a8": {
+      "restY": 1.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": 1.0,
+      "boundsSize": [
+        4,
+        2.5,
+        4
+      ],
+      "boundsCenterY": 2.15,
+      "normalizedSize": [
+        4,
+        2.5,
+        4
+      ],
+      "normalizedOffset": [
+        0,
+        -0.25,
+        0
+      ],
+      "pivotToBottom": 1.0,
+      "settled": true,
+      "loading": false
+    },
+    "f58a16b08b7e": {
+      "restY": 0.9,
+      "surfaceTopY": 0.900002598762512,
+      "restHeightAboveSurface": -0.0,
+      "boundsSize": [
+        4,
+        2.1,
+        4
+      ],
+      "boundsCenterY": 1.95,
+      "normalizedSize": [
+        4,
+        2.1,
+        4
+      ],
+      "normalizedOffset": [
+        0,
+        -1.05,
+        0
+      ],
+      "pivotToBottom": 0.0,
+      "settled": true,
+      "loading": false
+    }
+  }
+}
