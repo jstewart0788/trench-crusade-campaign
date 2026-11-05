@@ -12,6 +12,8 @@ export type RosterAction =
   | { type: "set-glory"; glory: number | undefined }
   | { type: "set-variant"; variantId: string | undefined }
   | { type: "set-patron"; patronId: string | undefined }
+  /** A choice made when the warband is created (unit-rules.json rosterChoices: the Court's Sin). */
+  | { type: "set-choice"; choiceId: string; option: string | undefined }
   | { type: "add-member"; unitId: string; equipmentItemIds?: string[]; upgradeIds?: string[] }
   | { type: "duplicate-member"; memberId: string }
   | { type: "remove-member"; memberId: string }
@@ -88,6 +90,12 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
       return withOptional(state, "glory", action.glory === undefined ? undefined : Math.max(0, Math.floor(action.glory) || 0));
     case "set-variant":
       return withOptional(state, "variantId", action.variantId);
+    case "set-choice": {
+      const choices = { ...state.choices };
+      if (action.option === undefined || action.option === "") delete choices[action.choiceId];
+      else choices[action.choiceId] = action.option;
+      return withOptional(state, "choices", Object.keys(choices).length ? choices : undefined);
+    }
     case "set-patron":
       return withOptional(state, "patronId", action.patronId);
     case "add-member": {

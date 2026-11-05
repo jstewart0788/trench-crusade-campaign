@@ -129,3 +129,14 @@ describe("purchase record and warband armoury", () => {
     expect("armoury" in w).toBe(false);
   });
 });
+
+// TC-003i: a choice made at creation (the Court's Sin), set and cleared.
+describe("roster choices", () => {
+  it("sets a choice and drops the field when none is left", () => {
+    let w = createWarband({ name: "c", factionId: "court-of-the-seven-headed-serpent" }, "w");
+    w = rosterReducer(w, { type: "set-choice", choiceId: "court-sins", option: "Envy" });
+    expect(w.choices).toEqual({ "court-sins": "Envy" });
+    w = rosterReducer(w, { type: "set-choice", choiceId: "court-sins", option: undefined });
+    expect("choices" in w).toBe(false);
+  });
+});

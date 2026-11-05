@@ -29,12 +29,9 @@ describe("resolveLimit", () => {
     expect(resolveLimit(repeat, "max", "warband", 1, ctx({ sipahicaptain: 2 })).value).toBe(3);
   });
 
-  it("leaves a repeat clause that names the limited thing itself unresolved", () => {
+  it("adds nothing for a repeat clause that names the limited thing itself (Brazen Bull 0-1, p88)", () => {
     const text = "max 1 per warband; max increment 1 per warband when repeat per Brazen Bull (roster)";
-    expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Brazen Bull")).toEqual({
-      value: 1,
-      unresolved: ["max increment 1 when repeat per Brazen Bull (roster)"],
-    });
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Brazen Bull")).toEqual({ value: 1, unresolved: [] });
     expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Brazen Bull [Iron Sultanate]").value).toBe(1);
     expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 }), "Janissary").value).toBe(4);
     expect(resolveLimit(text, "max", "warband", 1, ctx({ brazenbull: 3 })).value).toBe(4);
@@ -49,9 +46,17 @@ describe("resolveLimit", () => {
     const text = "max 5 per warband; max increment 1 per warband when repeat per Organized Shocktroopers (roster); lessThan 1200 any (roster)";
     const r = resolveLimit(text, "max", "warband", 5, ctx({}));
     expect(r.value).toBe(5);
-    expect(r.unresolved).toHaveLength(2);
-    expect(r.unresolved.some((u) => u.includes("Organized Shocktroopers"))).toBe(true);
-    expect(r.unresolved).toContain("lessThan 1200 any (roster)");
+    expect(r.unresolved).toEqual(["max increment 1 when repeat per Organized Shocktroopers (roster) / lessThan 1200 any (roster)"]);
+  });
+
+  it("reads lessThan / atMost / equalTo as exclusions that must all hold, and atLeast as alternatives (TC-003i)", () => {
+    // The Sea Hag's +1 (NR): at 1,000 ducats or more, and not in Trench Ghosts, and not in the Naval Raiders.
+    const text = "max 1 per warband; max increment 1 per warband when lessThan 1 Trench Ghosts (roster); lessThan 1 Heretic Naval Raiders Rules (roster); atLeast 1000 any (roster)";
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ trenchghosts: 0, hereticnavalraidersrules: 0, any: 1200 })).value).toBe(2);
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ trenchghosts: 0, hereticnavalraidersrules: 1, any: 1200 })).value).toBe(1);
+    expect(resolveLimit(text, "max", "warband", 1, ctx({ trenchghosts: 0, hereticnavalraidersrules: 0, any: 700 })).value).toBe(1);
+    expect(resolveLimit("max 0 per warband; max set 2 per warband when atMost 0 Lazarist Communicant (roster)", "max", "warband", 0, ctx({ lazaristcommunicant: 0 })).value).toBe(2);
+    expect(resolveLimit("max 3 per warband; max set 0 per warband when equalTo 0 Demonic (roster)", "max", "warband", 3, ctx({ demonic: 0 })).value).toBe(0);
   });
 });
 

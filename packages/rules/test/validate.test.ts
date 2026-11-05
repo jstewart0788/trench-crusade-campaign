@@ -196,7 +196,8 @@ describe("validateWarband: one failing case per error code", () => {
     expect(validate(warband("iron-sultanate", [lead(), ...bulls(1)])).errors).toEqual([]);
     const result = expectCode(warband("iron-sultanate", [lead(), ...bulls(2)]), "unit-max");
     expect(result.errors[0]?.message).toContain("at most 1 per warband");
-    expect(result.warnings.some((x) => x.unitId === "iron-sultanate/brazen-bull" && x.message.includes("with each Brazen Bull"))).toBe(true);
+    // Its own "repeat per Brazen Bull" adds nothing and is not reported (TC-003i).
+    expect(result.warnings).toEqual([]);
     expectCode(warband("iron-sultanate", [lead(), ...bulls(3)]), "unit-max");
   });
 
@@ -218,7 +219,9 @@ describe("validateWarband: one failing case per error code", () => {
   });
 
   it("elite-cap: more than six ELITE models", () => {
-    // Trench Pilgrims can field 7 ELITE: Castigator, Communicant, War Prophet, 3 Huscarls, Witchburner.
+    // 7 ELITE: Castigator, Communicant, War Prophet, 3 Huscarls, Witchburner. The Huscarls are
+    // upstream's Children of Yggdrasil entry, which no list here can take (variant-locked too);
+    // the cap counts them all the same.
     const w: Warband = {
       id: "w2",
       name: "Pilgrims",
@@ -236,7 +239,8 @@ describe("validateWarband: one failing case per error code", () => {
       ],
       glory: 5, // the Witchburner's hire price
     };
-    const result = expectCode(w, "elite-cap");
+    const result = validate(w);
+    expect(codes(result).sort()).toEqual(["elite-cap", "variant-locked"]);
     expect(result.errors.find((e) => e.code === "elite-cap")?.message).toContain(String(MAX_ELITES));
   });
 
@@ -360,8 +364,9 @@ describe("validateWarband: one failing case per error code", () => {
     const moles = (n: number) => warband("new-antioch", [member("new-antioch/lieutenant"), ...Array.from({ length: n }, () => member("new-antioch/yeoman", [], [mole]))]);
     expect(validate(moles(2)).errors).toEqual([]);
     const third = expectCode(moles(5), "upgrade-max-per-warband");
-    // A 3rd Trench Mole is allowed at 1,000+ ducats of other models, which the data only carries as text.
-    expect(third.warnings.some((x) => x.unitId === "new-antioch/yeoman" && x.message.includes("1000"))).toBe(true);
+    // A 3rd Trench Mole is allowed at 1,000+ ducats ("atLeast 1000 any"), now counted (TC-003i).
+    expect(third.warnings).toEqual([]);
+    expect(third.errors[0]?.message).toContain("limit 2");
   });
 
   it("battlekit-ranged: two 2-Handed ranged weapons", () => {
@@ -451,7 +456,7 @@ describe("validateWarband: unmodelled rules surface as warnings, not errors", ()
 // armoury at all; rows that depend on one of its own selections are gated on it.
 describe("validateWarband: armoury rows resolved from BattleScribe availability conditions", () => {
   const sultan = (m: WarbandMember, extra: Partial<Warband> = {}) => warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe"]), m], extra);
-  const court = (m: WarbandMember, extra: Partial<Warband> = {}) => warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["sword-axe"]), m], extra);
+  const court = (m: WarbandMember, extra: Partial<Warband> = {}) => warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["sword-axe"]), m], { choices: { "court-sins": "Wrath" }, ...extra });
   const gone: Array<[string, Warband, string]> = [
     ["Jabirean Alchemist + Flame Cannon (Brazen Bull only, p74)", sultan(member("iron-sultanate/jabirean-alchemist", ["flame-cannon"])), "flame-cannon"],
     ["Azeb + M.U.R.A.D. Bombard (Brazen Bull only, p74)", sultan(member("iron-sultanate/azeb", ["murad-bombard"])), "murad-bombard"],
@@ -480,7 +485,7 @@ describe("validateWarband: armoury rows resolved from BattleScribe availability 
 
   it("Court Praetor + Misericordia is Envious Eyes loot from the Trench Pilgrims armoury (p156, p50)", () => {
     const loot = data().unitsById.get("court-of-the-seven-headed-serpent/praetor")!.upgrades!.find((g) => g.name === "Misericordia")!;
-    const praetor = (upgradeIds: string[]) => warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["misericordia"], upgradeIds)]);
+    const praetor = (upgradeIds: string[]) => warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["misericordia"], upgradeIds)], { choices: { "court-sins": "Envy" } });
     expect(expectCode(praetor([]), "item-variant-locked").errors[0]?.message).toContain("upgrade:Misericordia");
     expect(validate(praetor([loot.bsId])).errors).toEqual([]);
   });
@@ -519,7 +524,7 @@ describe("validateWarband: a legal starting warband for every faction", () => {
     ["New Antioch", newAntioch()],
     ["Heretic Legion", warband("heretic-legion", [member("heretic-legion/heretic-priest", ["sword-axe", "pistol", "standard-armour"]), rifleman("heretic-legion/heretic-trooper"), rifleman("heretic-legion/heretic-trooper"), rifleman("heretic-legion/heretic-trooper")])],
     ["Iron Sultanate", warband("iron-sultanate", [member("iron-sultanate/yuzbasi-captain", ["sword-axe", "pistol", "reinforced-armour"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/janissary", ["sword-axe", "reinforced-armour"])])],
-    ["Court of the Seven-Headed Serpent", warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["sword-axe", "pistol"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"])])],
+    ["Court of the Seven-Headed Serpent", warband("court-of-the-seven-headed-serpent", [member("court-of-the-seven-headed-serpent/praetor", ["sword-axe", "pistol"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"]), member("court-of-the-seven-headed-serpent/wretched", ["trench-knife"])], { choices: { "court-sins": "Wrath" } })],
     ["Trench Pilgrims", warband("trench-pilgrims", [member("trench-pilgrims/war-prophet", ["sword-axe", "pistol"]), rifleman("trench-pilgrims/trench-pilgrim"), rifleman("trench-pilgrims/trench-pilgrim"), rifleman("trench-pilgrims/trench-pilgrim")])],
     ["Black Grail", warband("black-grail", [member("black-grail/lord-of-tumours", ["sword-axe", "pistol", "standard-armour"]), member("black-grail/grail-thrall"), member("black-grail/grail-thrall")])],
     ["Iron Sultanate, Fida'i of Alamut (p89): a Sultanate Assassin leads, no Yüzbaşı", warband("iron-sultanate", [member("iron-sultanate/sultanate-assassin", ["sword-axe", "pistol"]), member("iron-sultanate/azeb", ["jezzail"]), member("iron-sultanate/azeb", ["jezzail"])], { variantId: "iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins" })],

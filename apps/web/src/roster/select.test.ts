@@ -55,7 +55,9 @@ describe("unitRows", () => {
     const listed = listing.rows.map((r) => r.unit.name);
     expect(listed).not.toContain("Homunculus");
     expect(listed).not.toContain("Disciple of St. Roch");
-    expect(listing.uncheckable).toBe(2);
+    // The Homunculus waits on the Book of Golems (an Exploration find, campaign state); the Disciple
+    // needs upstream's third-party option, which no list here has, so it is simply closed (TC-003i).
+    expect(listing.uncheckable).toBe(1);
     expect(listed.join()).not.toMatch(/not checked/);
   });
 
@@ -64,7 +66,7 @@ describe("unitRows", () => {
     const fed = withYeoman(antioch(), ["dog-food"]);
     const dog = unitRows(fed, data, ctxFor(fed)).rows.find((r) => r.unit.name === "Trench Dog");
     expect(dog).toMatchObject({ max: 1, atMax: false });
-    expect(unitRows(fed, data, ctxFor(fed)).uncheckable).toBe(2);
+    expect(unitRows(fed, data, ctxFor(fed)).uncheckable).toBe(1);
   });
 
   it("counts members and reports the variant-adjusted limits", () => {
@@ -174,7 +176,8 @@ describe("upgradeRows", () => {
     expect(names).not.toContain("Phosphorous Rounds");
     expect(names).not.toContain("Menaulatoi");
     expect(names).toContain("Trench Mole");
-    expect(listing.uncheckable).toBeGreaterThanOrEqual(2);
+    // Both are upstream's Remnants of Byzantium, which no list here has: closed, not tallied (TC-003i).
+    expect(listing.uncheckable).toBe(0);
     const abyssinia = withYeoman(antioch("new-antioch/expeditionary-forces-of-abyssinia"));
     expect(upgradeNames(abyssinia)).toContain("Vanguard");
     expect(upgradeNames(plain)).not.toContain("Vanguard");

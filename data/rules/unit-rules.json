@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "35, 37-41, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 137, 142; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39",
+    "pages": "35, 37-41, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 137, 142, 147; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -869,6 +869,84 @@
       "page": 61,
       "source": "Warbands-of-Trench-Crusade.pdf",
       "text": "Wrath of God: In addition, change the base size of the model to 32mm."
+    }
+  ],
+  "rosterChoices": [
+    {
+      "id": "court-sins",
+      "name": "Seven Deadly Sins",
+      "under": ["court-of-the-seven-headed-serpent"],
+      "options": ["Wrath", "Envy", "Lust", "Pride", "Sloth", "Gluttony", "Greed"],
+      "required": true,
+      "page": 147,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Seven Deadly Sins: Before you recruit any models you must choose which of the Seven Deadly Sins your Warband is dedicated to. You can choose either Wrath, Envy, Lust, Pride, Sloth, Gluttony, or Greed."
+    }
+  ],
+  "notInTheBooks": [
+    {
+      "name": "Remnants of Byzantium",
+      "why": "Upstream-only (data/rules/DIFF-REPORT.md, Missing from the PDF): New Antioch variant, not in the books"
+    },
+    {
+      "name": "Nomads of Al-Badia",
+      "why": "Upstream-only (data/rules/DIFF-REPORT.md, Missing from the PDF): Iron Sultanate variant, not in the books"
+    },
+    {
+      "name": "Ghazi of the Golden Path",
+      "why": "Upstream-only (data/rules/DIFF-REPORT.md, Missing from the PDF): Iron Sultanate variant, not in the books"
+    },
+    {
+      "name": "Children of Yggdrasil",
+      "why": "Upstream-only (data/rules/DIFF-REPORT.md, Missing from the PDF): Trench Pilgrims variant, not in the books"
+    },
+    {
+      "name": "Cadaver Corps",
+      "why": "Upstream-only (data/rules/DIFF-REPORT.md, Missing from the PDF): Heretic Legion variant, not in the books"
+    },
+    {
+      "name": "Fang of the Seething Black",
+      "why": "Upstream-only (data/rules/DIFF-REPORT.md, Missing from the PDF): Court variant, not in the books"
+    },
+    {
+      "name": "Allow Third-Party Mercenaries?",
+      "why": "Upstream campaign option for third-party Mercenaries (the Disciple of St. Roch); the books have none"
+    },
+    {
+      "name": "Led by a Plague Knight",
+      "why": "Upstream 'Noble Hierarchy' choice; the Black Grail list in the books has no such choice (Plague Knights 0-2, Lord of Tumours 0-1, p127-136)"
+    },
+    {
+      "name": "Led by a Lord of Tumours",
+      "why": "Upstream 'Noble Hierarchy' choice; not in the books"
+    },
+    {
+      "name": "Sipahi Captain",
+      "why": "Upstream-only entry raising the Janissary limit; not in the books (Janissaries 0-6, p80)"
+    },
+    {
+      "name": "Dervish",
+      "why": "Upstream's separate Dervish entry raising the Janissary limit; in the books Dervishes are the Janissary entry under Fida'i, 0-4 (p90), which variantRenames already caps"
+    },
+    {
+      "name": "Sapper",
+      "why": "Upstream-only count raising the Sultanate Sapper limit; the books give 0-2, 0-4 for the Defenders (p85, p99)"
+    },
+    {
+      "name": "Abrek Sapper",
+      "why": "Upstream-only entry; not in the books"
+    },
+    {
+      "name": "model",
+      "why": "An upstream 'repeat per model' clause on the upstream-only Red Brigade Trench Dogs; no book rule"
+    },
+    {
+      "pattern": "^Entitled [Tt]o ",
+      "why": "Upstream-only allowances raising a Battlekit Limit; no rule in the books grants them"
+    },
+    {
+      "pattern": "^Leveraged on ",
+      "why": "Upstream-only allowances raising a Battlekit Limit; no rule in the books grants them"
     }
   ]
 }

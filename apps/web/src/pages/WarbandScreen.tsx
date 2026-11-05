@@ -70,6 +70,23 @@ export function WarbandScreen() {
             <dd>{variant?.name ?? <span className="muted">None</span>}</dd>
             <dt>Patron</dt>
             <dd>{patron?.name ?? <span className="muted">None</span>}</dd>
+            {rules.unitRules.file.rosterChoices
+              .filter((c) => appliesUnder(c.under, warband))
+              .map((c) => (
+                <div key={c.id} style={{ display: "contents" }}>
+                  <dt>{c.name}</dt>
+                  <dd>
+                    <select aria-label={c.name} value={warband.choices?.[c.id] ?? ""} onChange={(e) => dispatch({ type: "set-choice", choiceId: c.id, option: e.target.value || undefined })}>
+                      <option value="">Choose (p{c.page})</option>
+                      {c.options.map((o) => (
+                        <option key={o} value={o}>
+                          {o}
+                        </option>
+                      ))}
+                    </select>
+                  </dd>
+                </div>
+              ))}
             <dt>Game</dt>
             <dd>{warband.gameNumber}</dd>
             <dt>Ducats</dt>

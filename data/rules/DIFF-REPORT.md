@@ -541,6 +541,21 @@ Regenerative Tissue / Elemental Resistance, Philosophy, the Fly Thrall's FLYING)
 Mechanized Heavy Infantry entry above is resolved by a `statOverrides` entry (Melee +1, Ranged +0, p40)
 and removed. Unresolved: 10.
 
+### TC-003i: every name a gate or limit counts now resolves, or is campaign state
+
+Gate and limit names the roster used to report as "can't check yet" now resolve. Names no list here
+can have resolve to "not taken": upstream-only variants (Remnants of Byzantium, Nomads of Al-Badia,
+Ghazi of the Golden Path, Children of Yggdrasil, Cadaver Corps, Fang of the Seething Black), upstream's
+third-party Mercenary option, the Black Grail "Led by" choice, upstream-only entries (Sipahi Captain,
+the separate Dervish, Sapper, Abrek Sapper) and upstream's "Entitled to" / "Leveraged on" allowances
+(`unit-rules.json` `notInTheBooks`). Names of another list's variants, subfaction rules, entries and
+upgrades count 0; a repeat clause on the limited thing itself adds nothing (Brazen Bull 0-1, p88);
+"lessThan" / "atMost" / "equalTo" are read as exclusions that must all hold; "any" is the warband's
+value; a keyword counts the models that have it (DEMONIC for the Court's Wretched); and the Court's
+Seven Deadly Sins are a choice made at creation (`rosterChoices`, p147). Left as campaign state, until
+the campaign layer keeps it: "Knowledge of the ..." (Knowledge of Sciences, Digital Rulebook p89),
+"Organized ..." (Logistical Skills, p89) and the Book of Golems (Exploration, p118).
+
 ### Missing from upstream
 
 | faction | name | kind | p. | detail |

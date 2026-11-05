@@ -233,7 +233,7 @@ describe("pickerRows", () => {
     const whole = armouryGroups(m, u, lieutenant, data, limitContext(lieutenant, data));
     const zoneCount = whole.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access, data.headgearItemIds)) === "offhand").length;
     expect(offhand.uncheckable).toBe(zoneCount);
-    expect(whole.uncheckable).toBeGreaterThan(zoneCount);
+    expect(whole.uncheckable).toBeGreaterThanOrEqual(zoneCount);
     expect(picks("inventory", lieutenant).uncheckable + offhand.uncheckable).toBeLessThanOrEqual(whole.uncheckable);
     const rowsGated = u.equipmentAccess.filter((a) => gateStatus(evaluateGates(a.onlyWith, a.onlyWithout, lieutenant, data, limitContext(lieutenant, data), { member: m, unit: u })) === "uncheckable");
     expect(whole.uncheckable).toBe(rowsGated.length);

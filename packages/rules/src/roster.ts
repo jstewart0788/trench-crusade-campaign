@@ -44,6 +44,8 @@ export const Warband = z.object({
    * when the warband was created.
    */
   purchases: z.array(Purchase).optional(),
+  /** Choices made when the warband is created, keyed as in unit-rules.json rosterChoices (court-sins: "Wrath"). */
+  choices: z.record(z.string(), z.string()).optional(),
   /** Battlekit the warband holds rather than a model (a Grand Cannon gun battery, Warbands p99), by item id. */
   armoury: z.array(z.string().min(1)).optional(),
 });

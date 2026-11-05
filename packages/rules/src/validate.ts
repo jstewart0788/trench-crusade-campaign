@@ -50,6 +50,8 @@ export const ROSTER_ERROR_CODES = [
   "foreign-armoury-after-creation",
   "armoury-item-not-allowed",
   "model-under-minimum",
+  "choice-missing",
+  "choice-invalid",
   "upgrade-requires",
   "upgrade-excludes",
   "upgrade-keyword",
@@ -223,6 +225,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   }
   checkGrants(warband, data, fail);
   checkForeign(warband, data, fail);
+  checkChoices(warband, data, fail);
   checkMinimumCosts(warband, data, members, fail);
   checkFreeAtCreation(warband, data, fail);
 
@@ -436,21 +439,79 @@ function buildLimitContext(warband: Warband, data: RulesData, members: ResolvedM
     for (const id of rule.unitIds) caps.set(id, Math.min(rule.max, caps.get(id) ?? rule.max));
   }
 
+  // Options of a choice this list makes when it is created (the Court's Sin, p147).
+  const chosen = new Map<string, number>();
+  for (const rule of data.unitRules.file.rosterChoices) {
+    if (!appliesUnder(rule.under, warband)) continue;
+    const pick = normaliseName(warband.choices?.[rule.id] ?? "");
+    for (const o of rule.options) chosen.set(normaliseName(o), normaliseName(o) === pick ? 1 : 0);
+  }
+  const everywhere = namesInData(data);
+  let ducats: number | undefined;
+  const keywordCount = (key: string) => members.filter((m) => memberKeywords(m.member, m.unit, data, warband).some((k) => normaliseName(k) === key)).length;
+
   return {
     unitCap: (unitId) => caps.get(unitId),
+    excluded: (name) => everywhere.notInTheBooks(name),
     count(name) {
       const key = normaliseName(name);
       const variantId = variants.get(key);
       if (variantId !== undefined) return warband.variantId === variantId ? 1 : 0;
       if (mandatory.has(key)) return 1;
+      const choice = chosen.get(key);
+      if (choice !== undefined) return choice;
       let known = false;
       let total = 0;
       if (knownUnits.has(key)) (known = true), (total += unitCounts.get(key) ?? 0);
       if (knownItems.has(key)) (known = true), (total += itemCounts.get(key) ?? 0);
       if (knownUpgrades.has(key)) (known = true), (total += upgradeCounts.get(key) ?? 0);
-      return known ? total : undefined;
+      if (known) return total;
+      // "atLeast 1000 any": the warband's value in ducats.
+      if (key === "any") return (ducats ??= warbandCost(warband, data).ducats);
+      // A variant, subfaction, entry, upgrade or choice of another list cannot be in this one.
+      if (everywhere.otherLists.has(key)) return 0;
+      if (everywhere.keywords.has(key)) return keywordCount(key);
+      if (everywhere.notInTheBooks(name)) return 0;
+      return undefined;
     },
   };
+}
+
+interface DataNames {
+  /** Normalised names of every variant, subfaction, subfaction rules entry, unit, upgrade and choice option in the data. */
+  otherLists: Set<string>;
+  keywords: Set<string>;
+  notInTheBooks: (name: string) => boolean;
+}
+
+const dataNames = new WeakMap<RulesData, DataNames>();
+
+function namesInData(data: RulesData): DataNames {
+  const cached = dataNames.get(data);
+  if (cached) return cached;
+  const otherLists = new Set<string>();
+  for (const f of data.factions) {
+    for (const v of f.variants) otherLists.add(normaliseName(v.name));
+    for (const c of f.configuration ?? []) otherLists.add(normaliseName(c.name));
+    for (const sub of f.subfactions ?? []) {
+      otherLists.add(normaliseName(sub.name));
+      for (const v of sub.variants) otherLists.add(normaliseName(v.name));
+      for (const c of sub.configuration ?? []) otherLists.add(normaliseName(c.name));
+    }
+  }
+  for (const u of data.units) {
+    otherLists.add(normaliseName(u.name));
+    for (const g of u.upgrades ?? []) otherLists.add(normaliseName(g.name));
+  }
+  for (const r of data.unitRules.file.rosterChoices) for (const o of r.options) otherLists.add(normaliseName(o));
+  const keywords = new Set<string>();
+  for (const u of data.units) for (const k of u.keywords) keywords.add(normaliseName(k));
+  for (const r of data.unitRules.file.variantKeywords) for (const k of r.add ?? []) keywords.add(normaliseName(k));
+  const exact = new Set(data.unitRules.file.notInTheBooks.flatMap((n) => (n.name ? [normaliseName(n.name)] : [])));
+  const patterns = data.unitRules.file.notInTheBooks.flatMap((n) => (n.pattern ? [new RegExp(n.pattern, "i")] : []));
+  const names: DataNames = { otherLists, keywords, notInTheBooks: (name) => exact.has(normaliseName(name)) || patterns.some((p) => p.test(name.trim())) };
+  dataNames.set(data, names);
+  return names;
 }
 
 type Gate = { matched: boolean; matchedBy: string[]; unresolved: string[] };
@@ -698,6 +759,19 @@ function checkRequirements(member: WarbandMember, unit: RosterUnit, data: RulesD
   for (const p of requirementProblems(data, warband, member, unit)) {
     const book = p.rule.source === "Heretic-Naval-Raiders-Warband.pdf" ? "Heretic Naval Raiders " : "";
     fail({ code: REQUIREMENT_CODES[p.kind], memberId: member.id, unitId: unit.id, message: `${unitDisplayName(data, warband, unit, member)}: ${p.detail} (${book}p${p.rule.page})` });
+  }
+}
+
+/** Choices the warband makes when it is created (the Court's Sin, p147). */
+function checkChoices(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
+  for (const rule of data.unitRules.file.rosterChoices) {
+    if (!appliesUnder(rule.under, warband)) continue;
+    const pick = warband.choices?.[rule.id];
+    if (pick === undefined) {
+      if (rule.required) fail({ code: "choice-missing", message: `${rule.name}: choose one of ${rule.options.join(", ")} for this warband (p${rule.page})` });
+    } else if (!rule.options.some((o) => normaliseName(o) === normaliseName(pick))) {
+      fail({ code: "choice-invalid", message: `${rule.name}: "${pick}" is not one of ${rule.options.join(", ")} (p${rule.page})` });
+    }
   }
 }
 

@@ -304,6 +304,36 @@ export const UpgradeEffect = z.object({
 });
 export type UpgradeEffect = z.infer<typeof UpgradeEffect>;
 
+/**
+ * A choice the warband makes when it is created that the converted data gates
+ * on by its option names (the Court's Seven Deadly Sins, p147). Stored on
+ * Warband.choices[id].
+ */
+export const RosterChoice = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  name: z.string(),
+  under: Under,
+  options: z.array(z.string()).min(2),
+  required: z.boolean(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type RosterChoice = z.infer<typeof RosterChoice>;
+
+/**
+ * Names the converted data gates or limits on that no list here can ever have:
+ * upstream-only variants, entries and campaign options the books do not have.
+ * A gate or limit naming one resolves to "not taken". `pattern` matches a family
+ * ("Entitled to Machine Guns").
+ */
+export const NotInTheBooks = z.object({
+  name: z.string().optional(),
+  pattern: z.string().optional(),
+  why: z.string(),
+});
+export type NotInTheBooks = z.infer<typeof NotInTheBooks>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -326,6 +356,8 @@ export const UnitRulesFile = z.object({
   minimumModelCosts: z.array(MinimumModelCost),
   upgradeRequirements: z.array(UpgradeRequirement),
   upgradeEffects: z.array(UpgradeEffect),
+  rosterChoices: z.array(RosterChoice),
+  notInTheBooks: z.array(NotInTheBooks),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -662,5 +694,16 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
     }
   }
   for (const rule of file.variantKeywords) if (rule.withUpgrade && !rule.unitIds) problems.push(`variantKeywords.${rule.id}: withUpgrade needs unitIds`);
+  for (const rule of file.rosterChoices) listUnits(`rosterChoices.${rule.id}`, rule.under);
+  for (const [i, n] of file.notInTheBooks.entries()) {
+    if (!n.name === !n.pattern) problems.push(`notInTheBooks[${i}]: give exactly one of name or pattern`);
+    if (n.pattern) {
+      try {
+        new RegExp(n.pattern);
+      } catch {
+        problems.push(`notInTheBooks[${i}]: bad pattern ${n.pattern}`);
+      }
+    }
+  }
   return { index: { file, byUnit, grantsById, effectsByUnit }, problems };
 }

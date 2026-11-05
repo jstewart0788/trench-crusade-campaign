@@ -1,6 +1,7 @@
 import { findSubfaction, rosterUnits, rosterVariants, upgradeFor, type RosterScope, type RosterUnit, type RulesData } from "../data.js";
 import { normaliseName } from "../limits.js";
 import { unitNamesInList } from "../presentation.js";
+import { appliesUnder } from "../unit-rules.js";
 import type { Warband, WarbandMember } from "../roster.js";
 import type { EquipmentItem } from "../schema.js";
 import { patronsForFaction } from "../validate.js";
@@ -354,6 +355,13 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
     const variant = variantFor(sel) ?? (sel.selections.length === 1 ? variantFor(sel.selections[0]!) : undefined);
     if (variant) {
       warband.variantId = variant.id;
+      continue;
+    }
+    // A choice made at creation (the Court's Sin): NewRecruit nests the option under the choice's own selection.
+    const choice = data.unitRules.file.rosterChoices.find((c) => appliesUnder(c.under, scope) && [sel, ...sel.selections].some((s) => c.options.some((o) => normaliseName(o) === normaliseName(s.name))));
+    if (choice) {
+      const option = choice.options.find((o) => [sel, ...sel.selections].some((s) => normaliseName(o) === normaliseName(s.name)))!;
+      warband.choices = { ...warband.choices, [choice.id]: option };
       continue;
     }
     const patron = patrons.find((p) => normaliseName(p.name) === normaliseName(sel.name)) ?? patrons.find((p) => sel.selections.some((c) => normaliseName(c.name) === normaliseName(p.name)));
