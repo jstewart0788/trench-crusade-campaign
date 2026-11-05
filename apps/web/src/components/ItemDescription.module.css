@@ -1,0 +1,34 @@
+.desc {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.05rem;
+}
+.name {
+  cursor: help;
+}
+.detail {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.struck {
+  text-decoration: line-through;
+  color: var(--ink-muted);
+}
+.rules {
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+.rules summary {
+  cursor: pointer;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+}
+.rules p {
+  margin: 0.25rem 0 0;
+  white-space: pre-line;
+  max-width: 40rem;
+}

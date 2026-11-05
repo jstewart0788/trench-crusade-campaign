@@ -19,7 +19,7 @@
 }
 .list li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
 }
 .list li button {

@@ -267,7 +267,7 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
 // Ability gates name a variant by id or by "Name [Catalogue]"; anything else
 // (campaign selections such as the Goetic sins) is unmodelled, so a gate that
 // needs one is treated as closed and a gate that excludes one as open.
-function abilityApplies(ability: RosterAbility, variantId: string | undefined, variantName: string | undefined): boolean {
+export function abilityApplies(ability: RosterAbility, variantId: string | undefined, variantName: string | undefined): boolean {
   const matches = (v: string) => v === variantId || (variantName !== undefined && normaliseName(v) === normaliseName(variantName));
   if (ability.onlyWith?.length && !ability.onlyWith.some(matches)) return false;
   if (ability.onlyWithout?.some(matches)) return false;

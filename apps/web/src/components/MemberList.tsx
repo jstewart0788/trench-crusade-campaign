@@ -1,8 +1,11 @@
-import { findUnit, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
+import { accessFor, findUnit, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
 import { priceText } from "../roster/select.js";
+import { describeItem, describeUpgrade } from "../roster/describe.js";
 import type { StagedMemberRow } from "../roster/staging.js";
+import { isBuiltIn, type MemberTraits } from "../roster/traits.js";
+import { TraitsLine } from "./SkillsPanel.js";
 import styles from "./MemberList.module.css";
 
 interface Props {
@@ -14,6 +17,8 @@ interface Props {
   base: string;
   /** Names are never staged: a confirmed member's name goes to the roster, a recruit's to the pending recruit. */
   onRename: (row: StagedMemberRow, name: string) => void;
+  /** When given, each row shows what the model always has on one line, and its kit line lists only purchases. */
+  traitsFor?: (row: StagedMemberRow, unit: RosterUnit) => MemberTraits;
   /** Barracks mode: duplicate, dismiss or undo. */
   manage?: {
     onDuplicate: (row: StagedMemberRow) => void;
@@ -22,7 +27,7 @@ interface Props {
   };
 }
 
-export function MemberList({ rows, roster, rules, cost, validation, base, onRename, manage }: Props) {
+export function MemberList({ rows, roster, rules, cost, validation, base, onRename, manage, traitsFor }: Props) {
   if (rows.length === 0) {
     return (
       <div className={`panel ${styles.empty}`}>
@@ -43,6 +48,7 @@ export function MemberList({ rows, roster, rules, cost, validation, base, onRena
           base={base}
           onRename={onRename}
           manage={manage}
+          traitsFor={traitsFor}
         />
       ))}
     </ul>
@@ -58,14 +64,27 @@ interface RowProps {
   base: string;
   onRename: Props["onRename"];
   manage: Props["manage"];
+  traitsFor: Props["traitsFor"];
 }
 
-function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage }: RowProps) {
+function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, traitsFor }: RowProps) {
   const { member } = row;
   const leaving = row.pending === "remove";
+  const traits = unit && traitsFor ? traitsFor(row, unit) : undefined;
+  const locked = new Set(traits?.skills.flatMap((t) => (t.upgrade ? [t.upgrade.id] : [])) ?? []);
   const kit = [
-    ...member.equipmentItemIds.map((id) => rules.equipmentById.get(id)?.name ?? id),
-    ...(member.upgradeIds ?? []).map((id) => (unit && upgradeFor(unit, id)?.name) ?? id),
+    ...member.equipmentItemIds
+      .filter((id) => !(traits && unit && isBuiltIn({ access: accessFor(unit, id) })))
+      .map((id) => {
+        const item = rules.equipmentById.get(id);
+        return { key: id, name: item?.name ?? id, rules: item ? describeItem(item).rules : "" };
+      }),
+    ...(member.upgradeIds ?? [])
+      .filter((id) => !locked.has(id))
+      .map((id) => {
+        const upgrade = unit && upgradeFor(unit, id);
+        return { key: id, name: upgrade ? upgrade.name : id, rules: upgrade ? describeUpgrade(upgrade).rules : "" };
+      }),
   ];
   return (
     <li className={`${styles.row} ${row.pending === "add" ? styles.pendingAdd : ""} ${leaving ? styles.pendingRemove : ""}`}>
@@ -94,7 +113,23 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage }: R
         onChange={(e) => onRename(row, e.target.value)}
         onBlur={(e) => onRename(row, e.target.value.trim())}
       />
-      <span className={`${styles.kit} ${leaving ? styles.struck : ""}`}>{kit.length ? kit.join(", ") : <span className="muted">No equipment</span>}</span>
+      <span className={`${styles.kit} ${leaving ? styles.struck : ""}`}>
+        {kit.length ? (
+          kit.map((k, i) => (
+            <span key={`${k.key}-${i}`}>
+              {i > 0 && ", "}
+              <span title={k.rules || undefined}>{k.name}</span>
+            </span>
+          ))
+        ) : (
+          <span className="muted">No equipment</span>
+        )}
+      </span>
+      {traits && (
+        <span className={styles.traits}>
+          <TraitsLine traits={traits} />
+        </span>
+      )}
       <span className={styles.cost}>{cost ? priceText(cost) : ""}</span>
       <div className={styles.actions}>
         {!leaving && (

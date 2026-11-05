@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { MemberList } from "../components/MemberList.js";
 import { TtsCode } from "../components/TtsCode.js";
 import { ValidationPanel } from "../components/ValidationPanel.js";
+import { memberTraits } from "../roster/traits.js";
 import { armouryHref, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
-  const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage } = useWarband();
+  const { rules, warband, code, base, cost, threshold, validation, dispatch, rows, stage, ctx } = useWarband();
   const faction = rules.factionsById.get(warband.factionId);
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
@@ -73,6 +74,7 @@ export function WarbandScreen() {
           validation={validation}
           base={base}
           onRename={(row, name) => (row.pending === "add" ? stage({ type: "rename-recruit", memberId: row.member.id, name }) : dispatch({ type: "rename-member", memberId: row.member.id, name }))}
+          traitsFor={(row, unit) => memberTraits(row.member, unit, warband, rules, ctx)}
         />
       </section>
 

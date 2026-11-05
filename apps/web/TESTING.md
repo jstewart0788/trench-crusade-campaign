@@ -163,6 +163,38 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   confirmed roster: Network → `PUT /api/warbands/…` body has no pending items; after the save
   the PENDING chips are still on the figure.
 
+## 5d. Skills & abilities, built-in kit, and item descriptions
+
+- With no slot open, the right-hand column shows **Skills & abilities** above the hint. For the
+  Lieutenant: **Abilities** Hold Your Fire!, Tough, Leader, each with its rule text on hover and
+  a **Rules** disclosure that expands it. No Remove, Undo or × anywhere in the panel. Open any
+  slot: the picker replaces the panel; Escape brings it back.
+- Descriptions match the picker: in the Ranged picker the Submachine Gun row reads
+  `16" · 2H · ASSAULT` under its name and shows "Quick Bursts…" on hover. Pick it: the slot on the
+  figure shows the same name and the same `16" · 2H · ASSAULT` line, with the same hover. Open the
+  filled slot: the current row shows the same lines plus a **Rules** disclosure with the full
+  text. A bayonet under a rifle and anything in the Inventory read the same way.
+- Built-in kit (Black Grail; any Black Grail warband will do): recruit a **Sin Eater** and confirm.
+  Its Torso reads "Reinforced Armour" with "built in" under it, its Melee slot "Tenderizer Maul ·
+  built in". Click either: the picker shows the item with **built in** where Remove would be, the
+  line "Built-in kit: the model always carries it, so it cannot be removed or swapped", and no
+  Swap list. The Skills & abilities panel lists all three under **Built-in kit** with where they
+  sit: Combat Helmet "Carried" (the data files it as plain equipment, not headgear), Reinforced
+  Armour "Torso", Tenderizer Maul "Melee hands". The Inventory panel does **not** list the Combat
+  Helmet.
+- Profile kit: recruit a **Witchburner** (New Antioch mercenary). Built-in kit lists Gavel of
+  Justice, Dignified Conduct and Divine Judgement marked "Profile" (they are printed on the unit
+  card, not bought).
+- Mandatory upgrade: in a **The Red Brigade** warband, recruit a **Crimson Communicant**. It
+  arrives with the **Atonement Bell**: the panel lists it under **Skills & upgrades** (pending
+  until you confirm the recruit), the Inventory's Upgrades list does not, and nothing offers to
+  remove it.
+- Purchases are unchanged: a bought Medikit in the Inventory still has Remove; a bought rifle's
+  slot still offers Remove and Swap.
+- Warband screen: each roster row has a compact line under its kit, e.g. "ABILITIES: Hold Your
+  Fire!, Tough, Leader", and for the Sin Eater "BUILT IN: Combat Helmet, Reinforced Armour,
+  Tenderizer Maul". Hover a name for its rules. On that screen the kit line lists only purchases.
+
 ## 6. Warband screen
 
 - Click the **Warband** tab (or the Legal badge). Left "Campaign" panel: Name editable, then

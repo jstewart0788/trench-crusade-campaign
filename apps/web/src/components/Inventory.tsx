@@ -1,7 +1,10 @@
 import { upgradeFor, type RosterUnit } from "@tc/rules/browser";
+import { describeItem, describeUpgrade } from "../roster/describe.js";
 import { priceText, type UpgradeListing } from "../roster/select.js";
 import type { KitEntry } from "../roster/slots.js";
 import type { StagedEntry } from "../roster/staging.js";
+import { isBuiltIn } from "../roster/traits.js";
+import { ItemDescription } from "./ItemDescription.js";
 import styles from "./Inventory.module.css";
 
 interface Props {
@@ -15,13 +18,17 @@ interface Props {
   onAddUpgrade: (upgradeId: string) => void;
   onRemoveUpgrade: (entry: StagedEntry) => void;
   onKeepUpgrade: (entry: StagedEntry) => void;
+  /** Mandatory upgrades: listed under Skills & abilities, not here. */
+  lockedUpgrades?: ReadonlySet<string>;
 }
 
 const chip = (pending?: "add" | "remove") =>
   pending === "add" ? <span className={styles.chipAdd}>pending</span> : pending === "remove" ? <span className={styles.chipRemove}>removing</span> : null;
 
-/** Everything carried that has no slot, plus the model's upgrades. */
-export function Inventory({ entries, onAdd, onRemove, onKeep, unit, upgrades, upgradeChoices, onAddUpgrade, onRemoveUpgrade, onKeepUpgrade }: Props) {
+/** What was bought for the model and has no slot, plus its purchasable upgrades. Built-in kit and mandatory upgrades are not purchases; they live under Skills & abilities. */
+export function Inventory({ entries: all, onAdd, onRemove, onKeep, unit, upgrades: allUpgrades, upgradeChoices, onAddUpgrade, onRemoveUpgrade, onKeepUpgrade, lockedUpgrades }: Props) {
+  const entries = all.filter((e) => !isBuiltIn(e));
+  const upgrades = allUpgrades.filter((u) => !lockedUpgrades?.has(u.id));
   // upgradeChoices is computed on the staged member, so a pending upgrade already counts as taken.
   const offer = upgradeChoices.rows.filter((r) => !r.atMax);
   return (
@@ -38,7 +45,7 @@ export function Inventory({ entries, onAdd, onRemove, onKeep, unit, upgrades, up
         <ul className={styles.list}>
           {entries.map((e) => (
             <li key={e.index}>
-              <span className={e.pending === "remove" ? styles.struck : ""}>{e.item.name}</span>
+              <ItemDescription desc={describeItem(e.item)} expandable struck={e.pending === "remove"} />
               {chip(e.pending)}
               {e.pending === "remove" ? (
                 <button className="small" onClick={() => onKeep(e)}>
@@ -63,9 +70,7 @@ export function Inventory({ entries, onAdd, onRemove, onKeep, unit, upgrades, up
                 const upgrade = upgradeFor(unit, u.id);
                 return (
                   <li key={`${u.id}-${i}`}>
-                    <span className={u.pending === "remove" ? styles.struck : ""} title={(upgrade?.rules ?? []).map((r) => `${r.name}: ${r.text}`).join("\n") || undefined}>
-                      {upgrade?.name ?? u.id}
-                    </span>
+                    {upgrade ? <ItemDescription desc={describeUpgrade(upgrade)} expandable struck={u.pending === "remove"} /> : <span>{u.id}</span>}
                     {chip(u.pending)}
                     {u.pending === "remove" ? (
                       <button className="small" onClick={() => onKeepUpgrade(u)}>
@@ -85,8 +90,8 @@ export function Inventory({ entries, onAdd, onRemove, onKeep, unit, upgrades, up
             <ul className={styles.offer}>
               {offer.map((row) => (
                 <li key={row.upgrade.bsId}>
-                  <button className={styles.offerRow} onClick={() => onAddUpgrade(row.upgrade.bsId)} title={(row.upgrade.rules ?? []).map((r) => `${r.name}: ${r.text}`).join("\n") || undefined}>
-                    <span>{row.upgrade.name}</span>
+                  <button className={styles.offerRow} onClick={() => onAddUpgrade(row.upgrade.bsId)}>
+                    <ItemDescription desc={describeUpgrade(row.upgrade)} />
                     <span className={styles.price}>{priceText(row.cost)}</span>
                   </button>
                 </li>

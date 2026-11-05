@@ -1,4 +1,7 @@
+import { describeItem } from "../roster/describe.js";
 import type { FigureView, KitEntry, SlotView } from "../roster/slots.js";
+import { isBuiltIn } from "../roster/traits.js";
+import { ItemDescription } from "./ItemDescription.js";
 import styles from "./Figure.module.css";
 
 interface Props {
@@ -29,11 +32,15 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
           <ul className={styles.list}>
             {figure.unplaced.map((e) => (
               <li key={e.index}>
-                <span>{e.item.name}</span>
+                <ItemDescription desc={describeItem(e.item)} expandable />
                 {pendingChip(e)}
-                <button className="small danger" onClick={() => onRemove(e)}>
-                  {e.pending === "add" ? "Undo" : "Remove"}
-                </button>
+                {isBuiltIn(e) && e.pending !== "add" ? (
+                  <span className={styles.builtIn}>built in</span>
+                ) : (
+                  <button className="small danger" onClick={() => onRemove(e)}>
+                    {e.pending === "add" ? "Undo" : "Remove"}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -45,7 +52,7 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
           <ul className={styles.list}>
             {figure.leaving.map((e) => (
               <li key={e.index}>
-                <span className={styles.struck}>{e.item.name}</span>
+                <ItemDescription desc={describeItem(e.item)} expandable struck />
                 {pendingChip(e)}
                 <button className="small" onClick={() => onKeep(e)}>
                   Keep
@@ -67,21 +74,26 @@ function Slot({ slot, open, onClick }: { slot: SlotView; open: boolean; onClick:
       <span className={styles.label}>{slot.label}</span>
       {o ? (
         <>
-          <span className={`${styles.item} ${o.entry.pending === "remove" ? styles.struck : ""}`}>
-            {o.entry.item.name}
-            {o.spans && <span className={styles.note}> · both hands</span>}
-            {o.oneHandedByStrength && <span className={styles.note}> · one hand (Strong)</span>}
+          <span className={styles.item}>
+            <ItemDescription desc={describeItem(o.entry.item)} struck={o.entry.pending === "remove"} />
           </span>
+          {(o.spans || o.oneHandedByStrength || isBuiltIn(o.entry)) && (
+            <span className={styles.note}>
+              {[o.spans && "both hands", o.oneHandedByStrength && "one hand (Strong)", isBuiltIn(o.entry) && "built in"].filter(Boolean).join(" · ")}
+            </span>
+          )}
           {pendingChip(o.entry)}
           {o.attachments.map((a) => (
-            <span key={a.index} className={`${styles.attachment} ${a.pending === "remove" ? styles.struck : ""}`}>
-              + {a.item.name}
+            <span key={a.index} className={styles.attachment}>
+              <ItemDescription desc={describeItem(a.item)} struck={a.pending === "remove"} />
               {pendingChip(a)}
             </span>
           ))}
         </>
       ) : slot.coveredBy ? (
-        <span className={styles.coveredBy}>{slot.coveredBy.classified.bayonet ? `${slot.coveredBy.item.name} (fixed)` : slot.coveredBy.item.name}</span>
+        <span className={styles.coveredBy} title={describeItem(slot.coveredBy.item).rules || undefined}>
+          {slot.coveredBy.classified.bayonet ? `${slot.coveredBy.item.name} (fixed)` : slot.coveredBy.item.name}
+        </span>
       ) : (
         <span className={styles.hint}>empty</span>
       )}

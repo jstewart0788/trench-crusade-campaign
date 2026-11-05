@@ -4,10 +4,12 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Figure } from "../components/Figure.js";
 import { Inventory } from "../components/Inventory.js";
 import { Loadout } from "../components/Loadout.js";
+import { SkillsPanel } from "../components/SkillsPanel.js";
 import { SlotPicker } from "../components/SlotPicker.js";
 import { memberTitle, upgradeRows } from "../roster/select.js";
 import { kitEntries, layoutFigure, pickerRows, SLOTS, ZONE_LABELS, type KitEntry, type PickerRow, type SlotView, type Zone } from "../roster/slots.js";
 import { baseMember, stagedUpgrades, type StagedEntry } from "../roster/staging.js";
+import { isBuiltIn, memberTraits, type Trait } from "../roster/traits.js";
 import { useWarband } from "./warbandContext.js";
 import styles from "./ArmouryScreen.module.css";
 
@@ -34,10 +36,14 @@ export function ArmouryScreen() {
 
   const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm) : []), [member, confirmedMember, unit, rules, pm]);
   const figure = useMemo(() => (unit ? layoutFigure(kit, unit) : undefined), [kit, unit]);
+  // Built-in kit is never swapped out, so it is never the item a pick replaces.
+  const replaceable = (e: KitEntry | undefined) => (e && !isBuiltIn(e) ? e : undefined);
   const listing = useMemo(
-    () => (picker && member && unit ? pickerRows(picker.zone, member, unit, warband, rules, ctx, picker.current?.itemId ?? picker.coveredBy?.itemId) : undefined),
+    () => (picker && member && unit ? pickerRows(picker.zone, member, unit, warband, rules, ctx, (replaceable(picker.current) ?? replaceable(picker.coveredBy))?.itemId) : undefined),
     [picker, member, unit, warband, rules, ctx],
   );
+  const traits = useMemo(() => (confirmedMember && unit ? memberTraits(confirmedMember, unit, warband, rules, ctx, pm) : undefined), [confirmedMember, unit, warband, rules, ctx, pm]);
+  const lockedUpgrades = useMemo(() => new Set((traits?.skills ?? []).flatMap((t) => (t.upgrade ? [t.upgrade.id] : []))), [traits]);
   const upgradeChoices = useMemo(() => (member && unit ? upgradeRows(member, unit, warband, rules, ctx) : { rows: [], uncheckable: 0 }), [member, unit, warband, rules, ctx]);
 
   if (!member || !confirmedMember) {
@@ -52,7 +58,7 @@ export function ArmouryScreen() {
   const remove = (entry: KitEntry) => stage(entry.pending === "add" ? { type: "unstage-add", memberId, itemId: entry.itemId } : { type: "stage-remove", memberId, itemId: entry.itemId });
   const keep = (entry: KitEntry) => stage({ type: "unstage-remove", memberId, itemId: entry.itemId });
   const pick = (row: PickerRow, attach: boolean) => {
-    const replacing = attach ? undefined : (picker?.current ?? picker?.coveredBy);
+    const replacing = attach ? undefined : (replaceable(picker?.current) ?? replaceable(picker?.coveredBy));
     if (replacing) remove(replacing);
     stage({ type: "stage-add", memberId, itemId: row.item.id });
     setPicker(undefined);
@@ -65,6 +71,14 @@ export function ArmouryScreen() {
 
   const removeUpgrade = (u: StagedEntry) => stage(u.pending === "add" ? { type: "unstage-add-upgrade", memberId, upgradeId: u.id } : { type: "stage-remove-upgrade", memberId, upgradeId: u.id });
   const keepUpgrade = (u: StagedEntry) => stage({ type: "unstage-remove-upgrade", memberId, upgradeId: u.id });
+  const undoTrait = (t: Trait) => {
+    if (t.kit) stage({ type: "unstage-add", memberId, itemId: t.kit.itemId });
+    else if (t.upgrade) stage({ type: "unstage-add-upgrade", memberId, upgradeId: t.upgrade.id });
+  };
+  const keepTrait = (t: Trait) => {
+    if (t.kit) stage({ type: "unstage-remove", memberId, itemId: t.kit.itemId });
+    else if (t.upgrade) stage({ type: "unstage-remove-upgrade", memberId, upgradeId: t.upgrade.id });
+  };
 
   return (
     <div className={styles.screen}>
@@ -113,6 +127,7 @@ export function ArmouryScreen() {
               onAddUpgrade={(upgradeId) => stage({ type: "stage-add-upgrade", memberId, upgradeId })}
               onRemoveUpgrade={removeUpgrade}
               onKeepUpgrade={keepUpgrade}
+              lockedUpgrades={lockedUpgrades}
             />
           </div>
           <div className={styles.column}>
@@ -136,7 +151,10 @@ export function ArmouryScreen() {
                 onClose={closePicker}
               />
             ) : (
-              <p className={`panel ${styles.hint}`}>Click a slot on the figure to equip it, or add to the inventory. Changes stay pending until you confirm purchases in the header.</p>
+              <>
+                {traits && <SkillsPanel traits={traits} onUndo={undoTrait} onKeep={keepTrait} />}
+                <p className={`panel ${styles.hint}`}>Click a slot on the figure to equip it, or add to the inventory. Changes stay pending until you confirm purchases in the header.</p>
+              </>
             )}
           </div>
         </div>

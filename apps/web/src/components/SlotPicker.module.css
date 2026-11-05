@@ -106,3 +106,17 @@
   color: var(--blood);
   border: 1px solid var(--blood);
 }
+.held {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.builtIn {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}

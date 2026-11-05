@@ -2,6 +2,7 @@ import { MemberList } from "../components/MemberList.js";
 import { RecruitList } from "../components/RecruitList.js";
 import { nextMemberId } from "../roster/reducer.js";
 import { defaultKit } from "../roster/select.js";
+import { defaultUpgrades } from "../roster/traits.js";
 import { useWarband } from "./warbandContext.js";
 import styles from "./BarracksScreen.module.css";
 
@@ -40,7 +41,10 @@ export function BarracksScreen() {
           warband={warband}
           rules={rules}
           ctx={ctx}
-          onAdd={(unit) => stage({ type: "stage-recruit", member: { id: freshId(), unitId: unit.id, equipmentItemIds: defaultKit(unit, warband, rules, ctx) } })}
+          onAdd={(unit) => {
+            const upgradeIds = defaultUpgrades(unit, warband, rules, ctx);
+            stage({ type: "stage-recruit", member: { id: freshId(), unitId: unit.id, equipmentItemIds: defaultKit(unit, warband, rules, ctx), ...(upgradeIds.length ? { upgradeIds } : {}) } });
+          }}
         />
       </section>
     </div>

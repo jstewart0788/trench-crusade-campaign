@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
+import { describeItem } from "../roster/describe.js";
 import { hiddenText, priceText } from "../roster/select.js";
 import { unfitLines, ZONE_LABELS, type KitEntry, type PickerListing, type PickerRow, type Zone } from "../roster/slots.js";
+import { isBuiltIn } from "../roster/traits.js";
+import { ItemDescription } from "./ItemDescription.js";
 import styles from "./SlotPicker.module.css";
 
 interface Props {
@@ -32,6 +35,10 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // Built-in kit is never removed or swapped out; a pending restore of one is still undoable.
+  const held = current ?? coveredBy;
+  const locked = held !== undefined && isBuiltIn(held) && held.pending !== "add";
+
   const groups = new Map<string, PickerRow[]>();
   for (const row of listing.rows) {
     const list = groups.get(row.access.group) ?? [];
@@ -51,37 +58,23 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
         </button>
       </div>
 
-      {current && (
+      {held && (
         <div className={styles.current}>
-          <span className={current.pending === "remove" ? styles.struck : ""}>
-            {current.item.name}
-            {current.pending === "add" && <span className={styles.chipAdd}>pending</span>}
-            {current.pending === "remove" && <span className={styles.chipRemove}>removing</span>}
+          <span className={styles.held}>
+            {!current && <span className="muted">Taken by{held.classified.bayonet ? " a fixed bayonet" : " a weapon in both hands"}: </span>}
+            <ItemDescription desc={describeItem(held.item)} expandable struck={held.pending === "remove"} />
+            {held.pending === "add" && <span className={styles.chipAdd}>pending</span>}
+            {held.pending === "remove" && <span className={styles.chipRemove}>removing</span>}
           </span>
-          {current.pending === "remove" ? (
-            <button className="small" onClick={() => onKeep(current)}>
+          {held.pending === "remove" ? (
+            <button className="small" onClick={() => onKeep(held)}>
               Keep
             </button>
+          ) : locked ? (
+            <span className={styles.builtIn}>built in</span>
           ) : (
-            <button className="small danger" onClick={() => onRemove(current)}>
-              {current.pending === "add" ? "Undo" : "Remove"}
-            </button>
-          )}
-        </div>
-      )}
-      {coveredBy && !current && (
-        <div className={styles.current}>
-          <span className="muted">
-            Taken by {coveredBy.item.name}
-            {coveredBy.classified.bayonet ? " (fixed bayonet)" : " (both hands)"}
-          </span>
-          {coveredBy.pending === "remove" ? (
-            <button className="small" onClick={() => onKeep(coveredBy)}>
-              Keep
-            </button>
-          ) : (
-            <button className="small danger" onClick={() => onRemove(coveredBy)}>
-              {coveredBy.pending === "add" ? "Undo" : "Remove"}
+            <button className="small danger" onClick={() => onRemove(held)}>
+              {held.pending === "add" ? "Undo" : "Remove"}
             </button>
           )}
         </div>
@@ -100,8 +93,12 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
         </section>
       )}
 
-      <h3>{current ? "Swap for" : coveredBy ? `Replace with (${ZONE_LABELS[zone]})` : "Choose"}</h3>
-      {listing.rows.length === 0 ? (
+      {locked ? (
+        <p className="muted">Built-in kit: the model always carries it, so it cannot be removed or swapped.</p>
+      ) : (
+        <h3>{current ? "Swap for" : coveredBy ? `Replace with (${ZONE_LABELS[zone]})` : "Choose"}</h3>
+      )}
+      {locked ? null : listing.rows.length === 0 ? (
         <p className="muted">Nothing fits here with the rest of the kit as it is.</p>
       ) : (
         [...groups].map(([group, rows]) => (
@@ -131,10 +128,7 @@ function Row({ row, onClick }: { row: PickerRow; onClick: () => void }) {
   return (
     <button className={styles.row} onClick={onClick}>
       <span className={styles.main}>
-        <span className={styles.name} title={row.item.rules || undefined}>
-          {row.item.name}
-        </span>
-        <span className={styles.detail}>{[row.item.range, row.item.hands ? `${row.item.hands}H` : null, ...row.item.keywords].filter(Boolean).join(" · ")}</span>
+        <ItemDescription desc={describeItem(row.item)} />
       </span>
       <span className={styles.price}>{row.access.fixed ? "built in" : priceText(row.cost)}</span>
       <span className={styles.counts}>
