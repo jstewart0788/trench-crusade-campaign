@@ -42,6 +42,12 @@ MAX_TRAY_DICE = 10
 local function trayMarginScale()
     return self.getScale().x / 3.75
 end
+-- Dice are 0.7" whatever the mat's scale, so spawn spacing is kept in world
+-- inches: offsets in mat units grow as the mat shrinks.
+local function diceSlot(grid, col, row)
+    local k = 3.75 / self.getScale().x
+    return self.positionToWorld({4 - (grid*1.5 + col*0.25)*k, 0.5, -0.3 + row*0.25*k})
+end
 local MEASURING_RING_Y_OFFSET = 0.17
 local VALID_BASE_SIZES_IN_MM = {
     {x = 25, z = 25},
@@ -720,7 +726,7 @@ function spawnD3(n, player, alt)
     end
     local spawnedDice = {}
     for i = 1, n do
-        local pos = self.positionToWorld({4 - grid*1.5 - col*0.25, 0.5, -0.3 + row*0.25})
+        local pos = diceSlot(grid, col, row)
         d3Bag.takeObject({
             position          = pos,
             rotation          = self.getRotation() + Vector(0.0, 180.0, 0.0),
@@ -775,7 +781,7 @@ function spawnDice(n,player,alt)
     for i=1, n do
     local die=spawnObject({
         type              = diceType,
-        position          = self.positionToWorld({4-grid*1.5-col*0.25,0.5,-0.3+row*0.25}),
+        position          = diceSlot(grid, col, row),
         rotation          = self.getRotation() + Vector(0.0, 180.0, 0.0),
         })
         col=col+1
