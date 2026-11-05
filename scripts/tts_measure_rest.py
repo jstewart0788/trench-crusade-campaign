@@ -54,7 +54,8 @@ for _, o in ipairs(getObjectsWithTag("%s")) do
   local id = nil
   for _, t in ipairs(o.getTags()) do if t:sub(1, 11) == "tc-measure:" then id = t:sub(12) end end
   local p = o.getPosition()
-  table.insert(out, {id = id, resting = o.resting, y = p.y, x = p.x, z = p.z, size = {b.size.x, b.size.y, b.size.z}, center = {b.center.x, b.center.y, b.center.z}, loading = o.loading_custom})
+  local n = o.getBoundsNormalized()
+  table.insert(out, {id = id, resting = o.resting, y = p.y, x = p.x, z = p.z, size = {b.size.x, b.size.y, b.size.z}, center = {b.center.x, b.center.y, b.center.z}, nsize = {n.size.x, n.size.y, n.size.z}, noffset = {n.offset.x, n.offset.y, n.offset.z}, loading = o.loading_custom})
 end
 print("MEASURE " .. JSON.encode(out))
 """ % TAG
@@ -83,11 +84,16 @@ def main():
     ap.add_argument("--catalog", default="data/tts/catalog.json")
     ap.add_argument("--out", default="data/tts/rest-heights-measured.json")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--ids", default="", help="comma-separated catalog ids to measure instead of the unmeasured set")
     ap.add_argument("--settle", type=float, default=25.0, help="max seconds to wait for resting")
     args = ap.parse_args()
 
     catalog = json.load(open(args.catalog))
-    todo = [a for a in catalog["assets"] if a.get("restHeight") is None and a.get("tcMapPosY")]
+    if args.ids:
+        wanted = set(args.ids.split(","))
+        todo = [a for a in catalog["assets"] if a["id"] in wanted]
+    else:
+        todo = [a for a in catalog["assets"] if a.get("restHeight") is None and a.get("tcMapPosY")]
     if args.limit:
         todo = todo[: args.limit]
     surface = prints(execute(LUA_SURFACE, wait=2), "SURFACE ")
@@ -121,6 +127,9 @@ def main():
                     "restHeightAboveSurface": round(r["y"] - surface_top, 3) if surface_top is not None else None,
                     "boundsSize": [round(v, 3) for v in r["size"]],
                     "boundsCenterY": round(r["center"][1], 3),
+                    "normalizedSize": [round(v, 3) for v in r["nsize"]],
+                    "normalizedOffset": [round(v, 3) for v in r["noffset"]],
+                    "pivotToBottom": round(r["y"] - (r["center"][1] - r["size"][1] / 2), 3),
                     "settled": bool(r["resting"]),
                     "loading": bool(r.get("loading")),
                 }

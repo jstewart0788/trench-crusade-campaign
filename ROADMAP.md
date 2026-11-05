@@ -145,7 +145,16 @@ code the campaign platform later wraps. Nothing is built twice.
 - **Exit**: a one-off game between Jonathan and a friend played start to finish in the mod
   with both warbands imported by code, on any existing map mod.
 
-### Phase 2 — Map generator v1 (one archetype)
+### Phase 2 — Map generator v1 (one archetype) — **started 2026-11-04 (Jonathan: terrain is critical path
+for introducing anyone else; the playtest waits on it)**
+
+Architecture fixed by what the reference maps actually do: the board is a grid of Landscape ground
+tiles (1x1, 1x2, 1x4, crater, hill ramp, H4x4, plank floor) with trench pieces laid on top (Straight w/
+Ledge, Straight w/ Double Logs, Corner, T-Section, Entrance) and dressing scattered after. Tickets:
+TC-020 palette measured live (footprint, pivot, rest height, trench connectors) · TC-021 generator core
+(pure TS, seeded, plan-view preview) · TC-022 spawner (editor-API push for review; Battle code in the
+mod for play) · TC-023 Battle code (scenario + archetype + two warbands) · TC-024 ten-board review loop
+with screenshots against Square Off / Urban Brawl / Armoured Train.
 - Trench Lines archetype. Scenario overlays for Claim No Man's Land, Trench Warfare, Relic
   Hunt, Supply Raid (the one-off staples). 3–4 templates.
 - Generator → TTS object JSON → mod spawns from `/api/tts/battle/{code}`; for one-offs the
