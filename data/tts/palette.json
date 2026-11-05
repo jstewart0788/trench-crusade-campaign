@@ -2506,20 +2506,22 @@
       "enabled": true,
       "verified": true,
       "terrain": {
-        "label": "Barbed wire",
-        "kind": "area",
+        "label": "Wired wall",
+        "kind": "linear",
         "types": [
-          "dangerous"
+          "open"
         ],
-        "cover": false,
-        "climb": false,
+        "cover": true,
+        "climb": true,
         "heightIn": 3.0,
         "pages": [
           38,
-          54,
-          60,
-          61
-        ]
+          39,
+          43,
+          45,
+          62
+        ],
+        "call": "A low wall with wire strung on posts along its top: linear terrain that gives Cover and is Climbed over (p.62), not barbed-wire area terrain (Jonathan, 2026-11-05)."
       }
     },
     {
