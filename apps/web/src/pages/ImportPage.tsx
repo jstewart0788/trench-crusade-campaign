@@ -1,7 +1,8 @@
 import { findSubfaction, findUnit, importNewRecruit, rosterVariants, unzipRoster, upgradeFor, validateWarband, warbandCost, type ImportResult, type RulesData } from "@tc/rules/browser";
 import { useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { memberTitle, priceText } from "../roster/select.js";
+import { Price } from "../components/Price.js";
+import { memberTitle } from "../roster/select.js";
 import { EMPTY_PENDING } from "../roster/staging.js";
 import { useRules } from "../rules.js";
 import { loadDraft, saveDraft, savePending } from "../storage.js";
@@ -150,7 +151,7 @@ function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: Rules
               <li key={m.id}>
                 <span className={styles.memberTitle}>{memberTitle(m, unit)}</span>
                 <span className={styles.kit}>{kit.length ? kit.join(", ") : <span className="muted">No equipment</span>}</span>
-                <span className="mono muted">{perMember ? priceText(perMember) : ""}</span>
+                <span>{perMember ? <Price cost={perMember} /> : null}</span>
               </li>
             );
           })}

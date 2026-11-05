@@ -28,7 +28,9 @@ const picks = (zone: Parameters<typeof pickerRows>[0], w: Warband, memberIndex =
   const u = data.unitsById.get(m.unitId)!;
   return pickerRows(zone, m, u, w, data, limitContext(w, data), replacing);
 };
-const pickNames = (...args: Parameters<typeof picks>) => picks(...args).rows.map((r) => r.item.name);
+// What can still be bought: rows at a cap stay on the shelf (priced, blocked) and are not counted here.
+const pickNames = (...args: Parameters<typeof picks>) => picks(...args).rows.filter((r) => !r.cap).map((r) => r.item.name);
+const buyable = <T extends { cap?: unknown }>(rows: T[]) => rows.filter((r) => !r.cap);
 
 describe("zoneOf", () => {
   it("sends each kind of item to its slot, and the rest to the inventory", () => {
@@ -166,7 +168,7 @@ describe("pickerRows", () => {
     expect(pickNames("ranged", rifleman)).toEqual([]);
     expect(picks("ranged", rifleman).attachments.map((r) => r.item.name)).toEqual(["Bayonet"]);
     expect(picks("ranged", warbandWith("new-antioch", [["new-antioch/yeoman", ["pistol"]]])).attachments).toEqual([]);
-    expect(picks("ranged", warbandWith("new-antioch", [["new-antioch/yeoman", ["bolt-action-rifle", "bayonet"]]])).attachments).toEqual([]);
+    expect(buyable(picks("ranged", warbandWith("new-antioch", [["new-antioch/yeoman", ["bolt-action-rifle", "bayonet"]]])).attachments)).toEqual([]);
     expect(pickNames("melee", rifleman)).toEqual(expect.arrayContaining(["Sword/Axe", "Great Sword/Axe"]));
     expect(pickNames("offhand", rifleman)).not.toContain("Trench Shield");
     expect(pickNames("head", rifleman)).toEqual(["Combat Helmet"]);
@@ -211,6 +213,8 @@ describe("pickerRows", () => {
     const kits: [string, string[]][] = Array.from({ length: 4 }, () => ["new-antioch/yeoman", ["mountaineer-kit"]]);
     const full = warbandWith("new-antioch", [...kits, ["new-antioch/yeoman", []]]);
     expect(pickNames("inventory", full, 4)).not.toContain("Mountaineer Kit");
+    // Still on the shelf for the fifth Yeoman, blocked by the warband's limit.
+    expect(picks("inventory", full, 4).rows.find((r) => r.item.name === "Mountaineer Kit")?.cap).toEqual({ count: 4, max: 4, scope: "warband" });
     const room = warbandWith("new-antioch", [...kits.slice(0, 3), ["new-antioch/yeoman", []]]);
     const row = picks("inventory", room, 3).rows.find((r) => r.item.name === "Mountaineer Kit")!;
     expect(row).toMatchObject({ warbandCount: 3, warbandMax: 4 });
@@ -238,11 +242,12 @@ describe("pickerRows", () => {
   it("names the battlekit reason: armour, grenade kind, HEAVY, bayonet lug", () => {
     const armoured = warbandWith("new-antioch", [["new-antioch/lieutenant", ["standard-armour"]]]);
     const torso = picks("torso", armoured);
-    expect(torso.rows).toEqual([]);
+    expect(buyable(torso.rows)).toEqual([]);
+    expect(torso.rows.map((r) => [r.item.name, r.cap])).toEqual([["Standard Armour", { count: 1, max: 1, scope: "model" }]]);
     expect(torso.unfit["battlekit-armour"]).toBeGreaterThanOrEqual(1);
     const grenadier = warbandWith("new-antioch", [["new-antioch/yeoman", ["frag-grenades"]]]);
     const pouch = picks("grenade", grenadier);
-    expect(pouch.rows).toEqual([]);
+    expect(buyable(pouch.rows)).toEqual([]);
     expect(pouch.unfit["battlekit-grenade"]).toBeGreaterThanOrEqual(1);
     const gunner = warbandWith("new-antioch", [["new-antioch/yeoman", ["machine-gun"]]]);
     const melee = picks("melee", gunner);
@@ -254,6 +259,16 @@ describe("pickerRows", () => {
     expect(ranged.attachments).toEqual([]);
     expect(ranged.unfit).toEqual({ "bayonet-lug": 1 });
     expect(picks("head", unarmed).unfit).toEqual({});
+  });
+
+  it("says a swap would strand the fitted bayonet, apart from a bayonet with no lug weapon to fit", () => {
+    const fitted = warbandWith("new-antioch", [["new-antioch/yeoman", ["bolt-action-rifle", "bayonet"]]]);
+    const swap = picks("ranged", fitted, 0, "bolt-action-rifle");
+    expect(swap.unfit["bayonet-stranded"]).toBeGreaterThan(0);
+    expect(swap.unfit["bayonet-lug"]).toBeUndefined();
+    expect(unfitLines({ "bayonet-stranded": 7 })).toEqual(["7 items would leave the fitted bayonet without a lug weapon"]);
+    const unarmed = warbandWith("new-antioch", [["new-antioch/yeoman", []]]);
+    expect(picks("ranged", unarmed).unfit).toEqual({ "bayonet-lug": 1 });
   });
 
   it("words each reason for people", () => {

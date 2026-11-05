@@ -2,6 +2,7 @@ import type { LimitContext, RulesData, ValidationResult, Warband, WarbandCost, W
 import type { Dispatch } from "react";
 import { useOutletContext } from "react-router-dom";
 import type { RosterAction } from "../roster/reducer.js";
+import type { Purse } from "../roster/purse.js";
 import type { Pending, PendingDelta, StagedMemberRow, StagingAction } from "../roster/staging.js";
 
 /** The :code that means "the unsaved draft in this browser". Real codes are six uppercase characters, so they never collide. */
@@ -34,6 +35,8 @@ export interface WarbandContext {
   validation: ValidationResult;
   cost: WarbandCost;
   threshold: WarbandThreshold;
+  /** The staged roster's spend against its threshold and glory pool: what every price button weighs. */
+  purse: Purse;
 }
 
 export function useWarband(): WarbandContext {

@@ -39,31 +39,6 @@
   margin: 0;
   padding: 0;
 }
-.row {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas:
-    "main price"
-    "counts counts";
-  gap: 0.1rem 0.75rem;
-  text-align: left;
-  padding: 0.4rem 0.5rem;
-  border: 1px solid transparent;
-  border-bottom-color: var(--line);
-  border-radius: 0;
-  background: transparent;
-}
-.row:hover {
-  background: var(--bg-sunken);
-  border-color: var(--brass-dim);
-}
-.main {
-  grid-area: main;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
 .name {
   font-family: var(--font-display);
 }
@@ -73,17 +48,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.price {
-  grid-area: price;
-  font-family: var(--font-mono);
-  color: var(--brass);
-  white-space: nowrap;
-}
-.counts {
-  grid-area: counts;
-  font-size: 0.75rem;
-  color: var(--ink-muted);
 }
 .struck {
   text-decoration: line-through;
@@ -130,4 +94,22 @@
 .lockedNote {
   margin: 0;
   color: var(--oxblood-ink);
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.counts {
+  font-size: 0.72rem;
+  color: var(--ink-quiet);
 }

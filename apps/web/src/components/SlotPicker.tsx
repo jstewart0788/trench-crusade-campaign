@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import { describeItem } from "../roster/describe.js";
-import { hiddenText, priceText } from "../roster/select.js";
+import type { Money, Purse } from "../roster/purse.js";
+import { hiddenText } from "../roster/select.js";
 import { unfitLines, ZONE_LABELS, type KitEntry, type PickerListing, type PickerRow, type Zone } from "../roster/slots.js";
 import { isBuiltIn } from "../roster/traits.js";
 import { ItemDescription } from "./ItemDescription.js";
 import { LockGlyph } from "./LockGlyph.js";
+import { PriceButton } from "./PriceButton.js";
 import styles from "./SlotPicker.module.css";
 
 interface Props {
@@ -16,6 +18,10 @@ interface Props {
   /** Hands covered by an item anchored in the sibling slot. */
   coveredBy?: KitEntry;
   listing: PickerListing;
+  /** The staged roster's spend; every row's price button weighs against it. */
+  purse: Purse;
+  /** What swapping out the slot's current item gives back. */
+  refund?: Money;
   /** `attach` picks are added alongside the slot's weapon; the rest replace it. */
   onPick: (row: PickerRow, attach: boolean) => void;
   onRemove: (entry: KitEntry) => void;
@@ -24,7 +30,7 @@ interface Props {
 }
 
 /** Side panel: what the clicked slot holds and what else it could hold. Escape or Close dismisses it. */
-export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing, onPick, onRemove, onKeep, onClose }: Props) {
+export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing, purse, refund, onPick, onRemove, onKeep, onClose }: Props) {
   const panel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,7 +95,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
           <ul className={styles.list}>
             {listing.attachments.map((row) => (
               <li key={row.item.id}>
-                <Row row={row} onClick={() => onPick(row, true)} />
+                <Row row={row} purse={purse} onBuy={() => onPick(row, true)} />
               </li>
             ))}
           </ul>
@@ -110,7 +116,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
             <ul className={styles.list}>
               {rows.map((row) => (
                 <li key={row.item.id}>
-                  <Row row={row} onClick={() => onPick(row, false)} />
+                  <Row row={row} purse={purse} refund={refund} onBuy={() => onPick(row, false)} />
                 </li>
               ))}
             </ul>
@@ -127,17 +133,29 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
   );
 }
 
-function Row({ row, onClick }: { row: PickerRow; onClick: () => void }) {
+function Row({ row, purse, refund, onBuy }: { row: PickerRow; purse: Purse; refund?: Money; onBuy: () => void }) {
+  const counts = [
+    row.count > 0 ? `${row.count}${row.max !== null ? `/${row.max}` : ""} on model` : null,
+    row.warbandMax !== null ? `${row.warbandCount}/${row.warbandMax} in warband` : null,
+  ].filter(Boolean);
   return (
-    <button className={styles.row} onClick={onClick}>
+    <div className={styles.row}>
       <span className={styles.main}>
         <ItemDescription desc={describeItem(row.item)} />
+        {counts.length > 0 && <span className={styles.counts}>{counts.join(" · ")}</span>}
       </span>
-      <span className={styles.price}>{row.access.fixed ? "built in" : priceText(row.cost)}</span>
-      <span className={styles.counts}>
-        {row.count > 0 && `${row.count}${row.max !== null ? `/${row.max}` : ""} on model`}
-        {row.warbandMax !== null && ` ${row.warbandCount}/${row.warbandMax} in warband`}
-      </span>
-    </button>
+      {row.access.fixed ? (
+        <span className={styles.builtIn}>
+          <LockGlyph /> built in
+        </span>
+      ) : (
+        <PriceButton
+          offer={{ cost: { ducats: row.cost.ducats, glory: row.cost.glory }, ...(refund ? { refund } : {}), ...(row.cap ? { cap: row.cap } : {}) }}
+          purse={purse}
+          label={`Buy ${row.item.name}`}
+          onBuy={onBuy}
+        />
+      )}
+    </div>
   );
 }

@@ -17,6 +17,7 @@ import {
   type Warband,
   type WarbandMember,
 } from "@tc/rules/browser";
+import type { Cap } from "./purse.js";
 
 // Read-only views over the roster for the Barracks and the Armoury. Every
 // number comes from the engine calls the validator makes, so what a list
@@ -72,6 +73,12 @@ export function unitRows(warband: Warband, data: RulesData, ctx: LimitContext): 
     rows.push({ unit, count, min, max, atMax: max !== null && count >= max });
   }
   return { rows, uncheckable };
+}
+
+/** The count chip on a recruit row: "1 of 0–2", "×3" when there is no limit, nothing for none of an unlimited unit. */
+export function countChip(count: number, min: number | null, max: number | null): string {
+  if (max === null && !min) return count > 0 ? `×${count}` : "";
+  return `${count} of ${limitText(min, max)}`;
 }
 
 export function limitText(min: number | null, max: number | null): string {
@@ -184,6 +191,8 @@ export interface UpgradeRow {
   count: number;
   max: number;
   atMax: boolean;
+  /** Set when the warband already has as many as it may. */
+  cap?: Cap;
 }
 
 export interface UpgradeListing {
@@ -202,13 +211,17 @@ export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Wa
     const count = (member.upgradeIds ?? []).filter((id) => upgradeFor(unit, id)?.name === upgrade.name).length;
     // Warbands p14: once per model unless the entry says otherwise.
     const max = resolveLimit(upgrade.limitsText, "max", "model", upgrade.max ?? null, ctx, upgrade.name).value ?? 1;
-    rows.push({
+    const warbandMax = resolveLimit(upgrade.limitsText, "max", "warband", upgrade.maxPerWarband ?? null, ctx, upgrade.name).value;
+    const warbandCount = ctx.count(upgrade.name) ?? 0;
+    const row: UpgradeRow = {
       upgrade,
       cost: { id: upgrade.bsId, ducats: upgrade.cost?.ducats ?? 0, glory: upgrade.cost?.glory ?? 0 },
       count,
       max,
       atMax: count >= max,
-    });
+    };
+    if (count < max && warbandMax !== null && warbandCount >= warbandMax) row.cap = { count: warbandCount, max: warbandMax, scope: "warband" };
+    rows.push(row);
   }
   return { rows, uncheckable };
 }

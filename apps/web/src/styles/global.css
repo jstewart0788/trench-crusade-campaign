@@ -15,6 +15,17 @@
   --oxblood: #8c2f2b;
   --oxblood-fill: rgba(140, 47, 43, 0.24);
   --oxblood-ink: #d29a92;
+  /* The shop: glory has its own colour beside the brass of ducats. Text colours here pass WCAG AA on the panels. */
+  --glory: #a9c6dc;
+  --blood-ink: #e0675c;
+  --brass-soft: #bfa35f;
+  --ink-quiet: #a39a89;
+  --price-fill: #2a2418;
+  --price-fill-dim: #211e19;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -128,7 +139,7 @@ label > select {
   color: var(--moss);
 }
 .error {
-  color: var(--blood);
+  color: var(--blood-ink);
 }
 .warning {
   color: var(--amber);

@@ -1,4 +1,4 @@
-import { findUnit } from "@tc/rules/browser";
+import { findUnit, itemCost } from "@tc/rules/browser";
 import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Figure } from "../components/Figure.js";
@@ -23,7 +23,7 @@ interface OpenPicker {
 }
 
 export function ArmouryScreen() {
-  const { rules, warband, confirmed, pending, rows, stage, base, ctx, cost, delta, validation, dispatch } = useWarband();
+  const { rules, warband, confirmed, pending, rows, stage, base, ctx, cost, delta, validation, dispatch, purse } = useWarband();
   const [params, setParams] = useSearchParams();
   const wanted = params.get("member");
   const member = warband.members.find((m) => m.id === wanted) ?? warband.members[0];
@@ -129,6 +129,7 @@ export function ArmouryScreen() {
               onRemoveUpgrade={removeUpgrade}
               onKeepUpgrade={keepUpgrade}
               lockedUpgrades={lockedUpgrades}
+              purse={purse}
             />
           </div>
           <div className={styles.column}>
@@ -140,6 +141,13 @@ export function ArmouryScreen() {
                 current={picker.current}
                 coveredBy={picker.coveredBy}
                 listing={listing}
+                purse={purse}
+                refund={(() => {
+                  const swapped = replaceable(picker.current) ?? replaceable(picker.coveredBy);
+                  if (!swapped) return undefined;
+                  const line = itemCost(rules, warband, member.unitId, swapped.itemId);
+                  return { ducats: line.ducats, glory: line.glory };
+                })()}
                 onPick={pick}
                 onRemove={(e) => {
                   remove(e);

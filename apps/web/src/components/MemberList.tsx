@@ -1,10 +1,12 @@
 import { accessFor, findUnit, upgradeFor, type MemberCost, type RosterScope, type RosterUnit, type RulesData, type ValidationResult, type WarbandCost } from "@tc/rules/browser";
 import { Link } from "react-router-dom";
 import { armouryHref } from "../pages/warbandContext.js";
-import { priceText } from "../roster/select.js";
+import type { Offer, Purse } from "../roster/purse.js";
 import { describeItem, describeUpgrade } from "../roster/describe.js";
 import type { StagedMemberRow } from "../roster/staging.js";
 import { isBuiltIn, type MemberTraits } from "../roster/traits.js";
+import { Price } from "./Price.js";
+import { PriceButton } from "./PriceButton.js";
 import { TraitsLine } from "./SkillsPanel.js";
 import styles from "./MemberList.module.css";
 
@@ -21,6 +23,9 @@ interface Props {
   traitsFor?: (row: StagedMemberRow, unit: RosterUnit) => MemberTraits;
   /** Barracks mode: duplicate, dismiss or undo. */
   manage?: {
+    purse: Purse;
+    /** What another one of this model, kit and all, would cost, and whether the roster has room. */
+    duplicateOffer: (row: StagedMemberRow) => Offer;
     onDuplicate: (row: StagedMemberRow) => void;
     onRemove: (row: StagedMemberRow) => void;
     onKeep: (row: StagedMemberRow) => void;
@@ -130,7 +135,7 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
           <TraitsLine traits={traits} />
         </span>
       )}
-      <span className={styles.cost}>{cost ? priceText(cost) : ""}</span>
+      <span className={styles.cost}>{cost ? <Price cost={cost} /> : null}</span>
       <div className={styles.actions}>
         {!leaving && (
           <Link to={armouryHref(base, member.id)} className={styles.equip}>
@@ -144,11 +149,9 @@ function MemberRow({ row, unit, cost, issues, rules, base, onRename, manage, tra
             </button>
           ) : (
             <>
-              <button className="small" onClick={() => manage.onDuplicate(row)}>
-                Duplicate
-              </button>
+              <PriceButton offer={manage.duplicateOffer(row)} purse={manage.purse} label={`Recruit another ${unit?.name ?? "model"} with this kit`} verb="Copy" onBuy={() => manage.onDuplicate(row)} />
               <button className="small danger" onClick={() => manage.onRemove(row)}>
-                {row.pending === "add" ? "Undo" : "Remove"}
+                {row.pending === "add" ? "Undo" : "Dismiss"}
               </button>
             </>
           ))}

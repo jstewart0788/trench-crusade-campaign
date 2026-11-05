@@ -10,7 +10,7 @@
 }
 .issues {
   font-size: 0.75rem;
-  color: var(--blood);
+  color: var(--blood-ink);
 }
 .nameInput {
   background: transparent;
@@ -36,5 +36,8 @@
   padding-top: 0.5rem;
 }
 .was {
-  color: var(--ink-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  opacity: 0.75;
 }

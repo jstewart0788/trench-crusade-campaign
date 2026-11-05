@@ -20,6 +20,7 @@ beforeAll(() => {
 });
 
 const noop = () => {};
+const PURSE = { ducats: 0, threshold: 700, glory: 0, gloryPool: 0 };
 const unit = (id: string) => data.unitsById.get(id)!;
 const recruit = (factionId: string, unitId: string, extra: string[] = []): Warband => {
   const w = createWarband({ name: "t", factionId }, "w");
@@ -34,14 +35,14 @@ const removeButtons = (html: string) => (html.match(/>(Remove|Undo)<\/button>/g)
 describe("built-in kit has no remove control; purchased kit does", () => {
   it("in the slot picker: a fixed weapon is locked, a bought one can be removed or swapped", () => {
     const sinEater = recruit("black-grail", "black-grail/sin-eater");
-    const fixed = renderToStaticMarkup(<SlotPicker zone="melee" slotLabel="Melee" hint="" current={entry(sinEater, "tenderizer-maul")} listing={emptyListing} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
+    const fixed = renderToStaticMarkup(<SlotPicker zone="melee" slotLabel="Melee" hint="" current={entry(sinEater, "tenderizer-maul")} listing={emptyListing} purse={PURSE} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
     expect(fixed).toContain("Tenderizer Maul");
     expect(fixed).toContain("built in");
     expect(removeButtons(fixed)).toBe(0);
     expect(fixed).not.toContain("Swap for");
 
     const yeoman = recruit("new-antioch", "new-antioch/yeoman", ["bolt-action-rifle"]);
-    const bought = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" current={entry(yeoman, "bolt-action-rifle")} listing={emptyListing} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
+    const bought = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" current={entry(yeoman, "bolt-action-rifle")} listing={emptyListing} purse={PURSE} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
     expect(removeButtons(bought)).toBe(1);
     expect(bought).toContain("Swap for");
   });
@@ -60,7 +61,7 @@ describe("built-in kit has no remove control; purchased kit does", () => {
     const figure = layoutFigure(entries(w), archeologist);
     expect(figure.inventory.map((e) => e.itemId)).toEqual(expect.arrayContaining(["shovel", bought.itemId]));
     const html = renderToStaticMarkup(
-      <Inventory entries={figure.inventory} onAdd={noop} onRemove={noop} onKeep={noop} unit={archeologist} upgrades={[]} upgradeChoices={{ rows: [], uncheckable: 0 }} onAddUpgrade={noop} onRemoveUpgrade={noop} onKeepUpgrade={noop} />,
+      <Inventory purse={PURSE} entries={figure.inventory} onAdd={noop} onRemove={noop} onKeep={noop} unit={archeologist} upgrades={[]} upgradeChoices={{ rows: [], uncheckable: 0 }} onAddUpgrade={noop} onRemoveUpgrade={noop} onKeepUpgrade={noop} />,
     );
     expect(html).toContain(data.equipmentById.get(bought.itemId)!.name);
     expect(html).not.toContain(">Shovel<");
@@ -121,7 +122,7 @@ describe("built-in kit is shown locked", () => {
 
   it("opens a locked slot's picker read-only: description, lock, no Remove, no list", () => {
     const sinEater = recruit("black-grail", "black-grail/sin-eater");
-    const html = renderToStaticMarkup(<SlotPicker zone="head" slotLabel="Head" hint="" current={entry(sinEater, "combat-helmet")} listing={emptyListing} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
+    const html = renderToStaticMarkup(<SlotPicker zone="head" slotLabel="Head" hint="" current={entry(sinEater, "combat-helmet")} listing={emptyListing} purse={PURSE} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
     expect(html).toContain("Combat Helmet");
     expect(html).toContain("NEGATE SHRAPNEL");
     expect(html).toContain(LOCK);
@@ -166,7 +167,7 @@ describe("one description for kit, wherever it is shown", () => {
 
     const listing = pickerRows("ranged", w.members[0]!, yeoman, w, data, limitContext(w, data));
     expect(listing.rows.some((r) => r.item.id === rifle.id)).toBe(true);
-    const picker = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" listing={listing} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
+    const picker = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" listing={listing} purse={PURSE} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
     expect(picker).toContain(compact);
 
     const armed = rosterReducer(w, { type: "add-item", memberId: "m1", itemId: rifle.id });
@@ -177,7 +178,7 @@ describe("one description for kit, wherever it is shown", () => {
     const expandable = renderToStaticMarkup(<ItemDescription desc={describeItem(rifle)} expandable />);
     const shared = compact.replace(/<\/span>$/, "");
     expect(expandable.startsWith(shared)).toBe(true);
-    const current = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" current={entry(armed, rifle.id)} listing={emptyListing} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
+    const current = renderToStaticMarkup(<SlotPicker zone="ranged" slotLabel="Ranged" hint="" current={entry(armed, rifle.id)} listing={emptyListing} purse={PURSE} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
     expect(current).toContain(expandable);
   });
 });

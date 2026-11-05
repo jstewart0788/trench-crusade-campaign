@@ -1,0 +1,108 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 4.6rem;
+  justify-content: center;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--brass-dim);
+  border-radius: 999px;
+  background: var(--price-fill);
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.1;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    border-color 120ms ease;
+}
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--brass);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45);
+}
+.button:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: none;
+}
+.verb {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-quiet);
+}
+.blocked {
+  cursor: not-allowed;
+  background: var(--price-fill-dim);
+  border-color: var(--line-strong);
+  border-style: dashed;
+  color: var(--ink-quiet);
+}
+.blocked :global(*) {
+  color: var(--ink-quiet) !important;
+}
+.blocked:hover,
+.blocked:focus-visible {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--line-strong);
+}
+.bought {
+  animation: coin 650ms ease-out;
+}
+@keyframes coin {
+  0% {
+    box-shadow: 0 0 0 0 rgba(217, 179, 82, 0.55);
+    border-color: var(--brass);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(217, 179, 82, 0);
+  }
+}
+.hint {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background: var(--bg-sunken);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(2px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+  z-index: 5;
+}
+.button:hover .hint,
+.button:focus-visible .hint {
+  opacity: 1;
+  transform: none;
+}
+.blocked .hint {
+  font-family: var(--font-body);
+  color: var(--amber) !important;
+}
+.hintPart {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--brass);
+}
+.hintGlory {
+  color: var(--glory);
+}
+.hintGlyph {
+  width: 10px;
+  height: 10px;
+}

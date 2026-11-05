@@ -18,6 +18,7 @@ import {
   type Warband,
   type WarbandMember,
 } from "@tc/rules/browser";
+import type { Cap } from "./purse.js";
 import { armouryGroups, type AccessRow } from "./select.js";
 import { stagedKit, type PendingMember } from "./staging.js";
 
@@ -263,6 +264,8 @@ export interface PickerRow extends AccessRow {
   /** Copies across the whole staged roster, and the warband-wide cap when the row has one. */
   warbandCount: number;
   warbandMax: number | null;
+  /** Set when the model or the warband already has as many as it may: shown, priced, not buyable. */
+  cap?: Cap;
 }
 
 export interface PickerListing {
@@ -272,10 +275,17 @@ export interface PickerListing {
   /** Rows of this zone hidden because their gate names a campaign selection the data cannot count. */
   uncheckable: number;
   /** Rows of this zone the kit cannot take, by the battlekit problem the engine would raise. */
-  unfit: Partial<Record<BattlekitErrorCode, number>>;
+  unfit: Partial<Record<UnfitReason, number>>;
 }
 
-const UNFIT_WORDS: Record<BattlekitErrorCode, { one: string; many: string }> = {
+/**
+ * Why a row is hidden from a picker. The engine raises `bayonet-lug` both for
+ * a bayonet with no lug weapon and for a swap that takes the lug weapon away;
+ * the second is about the bayonet already fitted, so it is worded apart.
+ */
+export type UnfitReason = BattlekitErrorCode | "bayonet-stranded";
+
+const UNFIT_WORDS: Record<UnfitReason, { one: string; many: string }> = {
   "battlekit-hands": { one: "needs a free hand", many: "need a free hand" },
   "battlekit-ranged": { one: "needs a free hand", many: "need a free hand" },
   "battlekit-melee": { one: "needs a free hand", many: "need a free hand" },
@@ -286,12 +296,13 @@ const UNFIT_WORDS: Record<BattlekitErrorCode, { one: string; many: string }> = {
   "battlekit-heavy": { one: "would be a second HEAVY item", many: "would be a second HEAVY item" },
   "battlekit-duplicate": { one: "is already carried", many: "are already carried" },
   "bayonet-lug": { one: "needs a ranged weapon with a bayonet lug", many: "need a ranged weapon with a bayonet lug" },
+  "bayonet-stranded": { one: "would leave the fitted bayonet without a lug weapon", many: "would leave the fitted bayonet without a lug weapon" },
 };
 
 /** One quiet line per reason, in plain words: "2 items need a free hand". */
 export function unfitLines(unfit: PickerListing["unfit"]): string[] {
   const lines: string[] = [];
-  for (const code of Object.keys(UNFIT_WORDS) as BattlekitErrorCode[]) {
+  for (const code of Object.keys(UNFIT_WORDS) as UnfitReason[]) {
     const n = unfit[code];
     if (!n) continue;
     const words = UNFIT_WORDS[code];
@@ -352,7 +363,8 @@ export function pickerRows(
   };
   const offer = (list: PickerRow[], ids: string[], row: PickerRow) => {
     const code = blocker(ids, row.item.id);
-    if (code) unfit[code] = (unfit[code] ?? 0) + 1;
+    const reason: UnfitReason | undefined = code === "bayonet-lug" && !row.classified.bayonet ? "bayonet-stranded" : code;
+    if (reason) unfit[reason] = (unfit[reason] ?? 0) + 1;
     else list.push(row);
   };
   const rows: PickerRow[] = [];
@@ -361,10 +373,19 @@ export function pickerRows(
     for (const row of group.rows) {
       const classified = classifyItem(row.item, row.access, data.headgearItemIds);
       if (zoneOf(classified) !== zone) continue;
-      if (row.atMax || row.item.id === replacing) continue;
+      if (row.item.id === replacing) continue;
       const warbandMax = resolveLimit(row.access.limitsText ?? row.item.limits ?? undefined, "max", "warband", row.access.maxPerWarband ?? null, ctx, row.item.name).value;
       const warbandCount = ctx.count(row.item.name) ?? 0;
-      if (warbandMax !== null && warbandCount >= warbandMax) continue;
+      const cap: Cap | undefined = row.atMax
+        ? { count: row.count, max: row.max, scope: "model" }
+        : warbandMax !== null && warbandCount >= warbandMax
+          ? { count: warbandCount, max: warbandMax, scope: "warband" }
+          : undefined;
+      if (cap) {
+        // At its limit: stays on the shelf, priced and blocked, rather than vanishing.
+        (classified.bayonet ? attachments : rows).push({ ...row, zone, classified, warbandCount, warbandMax, cap });
+        continue;
+      }
       const pickerRow: PickerRow = { ...row, zone, classified, warbandCount, warbandMax };
       if (classified.bayonet) offer(attachments, member.equipmentItemIds, pickerRow);
       else offer(rows, baseIds, pickerRow);

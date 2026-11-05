@@ -63,7 +63,7 @@
   color: var(--moss);
 }
 .bad {
-  color: var(--blood);
+  color: var(--blood-ink);
 }
 .warn {
   color: var(--amber);
@@ -99,4 +99,61 @@
   width: 1px;
   height: 1.4rem;
   background: var(--line-strong);
+}
+.purse {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  justify-self: center;
+}
+.coins {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.coin {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--brass-dim);
+  border-radius: 999px;
+  background: var(--price-fill);
+  color: var(--brass);
+}
+.coinGlory {
+  border-color: #4f6573;
+  color: var(--glory);
+}
+.coinOver {
+  border-color: var(--blood);
+  color: var(--blood-ink);
+}
+.coinGlyph {
+  align-self: center;
+}
+.coinValue {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+.coinOf {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--ink-quiet);
+}
+.receipt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+  border-top: 1px dashed var(--line-strong);
+  font-size: 0.8rem;
+  color: var(--ink-quiet);
+}
+.receiptDots {
+  flex: 1;
+  border-bottom: 1px dotted var(--line-strong);
+  transform: translateY(-3px);
 }

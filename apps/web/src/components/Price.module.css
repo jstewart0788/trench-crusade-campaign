@@ -1,0 +1,31 @@
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+.ducats,
+.glory {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.ducats {
+  color: var(--brass);
+}
+.glory {
+  color: var(--glory);
+}
+.glyph {
+  flex: none;
+}
+.amount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.free {
+  color: var(--ink-quiet);
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+}

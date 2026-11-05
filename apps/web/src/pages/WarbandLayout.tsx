@@ -4,6 +4,7 @@ import { Link, Outlet, useLocation, useNavigate, useParams } from "react-router-
 import { api, ApiRequestError, type SavedWarband } from "../api.js";
 import { Header } from "../components/Header.js";
 import { Tabs } from "../components/Tabs.js";
+import { gloryPool, type Purse } from "../roster/purse.js";
 import { rosterReducer } from "../roster/reducer.js";
 import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagedMembers, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
 import { useRules } from "../rules.js";
@@ -117,6 +118,10 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
   const validation = useMemo(() => validateWarband(staged, rules), [staged, rules]);
   const cost = useMemo(() => warbandCost(staged, rules), [staged, rules]);
   const threshold = useMemo(() => warbandThreshold(staged, rules), [staged, rules]);
+  const purse = useMemo<Purse>(() => {
+    const pool = gloryPool(staged, rules);
+    return { ducats: cost.ducats, threshold: threshold.value, glory: cost.glory, ...(pool !== undefined ? { gloryPool: pool } : {}) };
+  }, [cost, threshold, staged, rules]);
   const delta = useMemo(() => pendingDelta(confirmed, pending, rules), [confirmed, pending, rules]);
   const count = pendingCount(pending);
   const canConfirm = count > 0 && validation.errors.length === 0;
@@ -172,6 +177,7 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
     validation,
     cost,
     threshold,
+    purse,
   };
 
   return (

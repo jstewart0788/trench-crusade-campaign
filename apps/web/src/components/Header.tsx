@@ -3,6 +3,9 @@ import type { Dispatch } from "react";
 import { Link } from "react-router-dom";
 import type { RosterAction } from "../roster/reducer.js";
 import type { PendingDelta } from "../roster/staging.js";
+import { cx } from "./cx.js";
+import { DucatGlyph, GloryGlyph } from "./Glyphs.js";
+import { Price } from "./Price.js";
 import styles from "./Header.module.css";
 
 interface Props {
@@ -24,8 +27,6 @@ interface Props {
   onSave: () => void;
   dispatch: Dispatch<RosterAction>;
 }
-
-const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 
 /** Shown above all three warband screens: the name (always editable), the fixed campaign facts, totals (current → after while purchases are pending), the legality badge, Confirm/Discard and Save. */
 export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, onConfirm, onDiscard, threshold, validation, code, base, dirty, busy, error, onSave, dispatch }: Props) {
@@ -58,23 +59,32 @@ export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, 
         </div>
       </div>
 
-      <div className={styles.totals}>
-        <span className={styles.total} title={staging ? "Ducats now → after confirming" : undefined}>
-          {staging && <span className={styles.was}>{delta.before.ducats} → </span>}
-          <span className={`${styles.big} ${over ? "error" : ""}`}>{cost.ducats}</span>
-          <span className="muted"> / {threshold.value} ducats</span>
-          {staging && <span className={styles.delta}>{signed(delta.ducats)}</span>}
-        </span>
-        <span className={styles.total}>
-          {staging && <span className={styles.was}>{delta.before.glory} → </span>}
-          <span className={styles.big}>{cost.glory}</span>
-          <span className="muted"> glory{pool !== undefined ? ` of ${pool}` : ""}</span>
-          {staging && delta.glory !== 0 && <span className={styles.delta}>{signed(delta.glory)}</span>}
-        </span>
-        <Link to={base} className={`${styles.badge} ${errors ? styles.bad : styles.good}`} title="Open the Warband screen for the full list">
-          {errors === 0 ? "Legal" : `${errors} ${errors === 1 ? "error" : "errors"}`}
-          {warnings > 0 && <span className={styles.warn}> · {warnings} {warnings === 1 ? "warning" : "warnings"}</span>}
-        </Link>
+      <div className={styles.purse}>
+        <div className={styles.coins}>
+          <span className={cx(styles.coin, over && styles.coinOver)} title={over ? `Over the threshold by ${cost.ducats - threshold.value}` : "Ducats spent of the threshold"}>
+            <DucatGlyph className={styles.coinGlyph} />
+            <span className={styles.coinValue}>{cost.ducats}</span>
+            <span className={styles.coinOf}>/ {threshold.value}</span>
+          </span>
+          <span className={cx(styles.coin, styles.coinGlory)} title="Glory spent of the pool">
+            <GloryGlyph className={styles.coinGlyph} />
+            <span className={styles.coinValue}>{cost.glory}</span>
+            {pool !== undefined && <span className={styles.coinOf}>/ {pool}</span>}
+          </span>
+          <Link to={base} className={`${styles.badge} ${errors ? styles.bad : styles.good}`} title="Open the Warband screen for the full list">
+            {errors === 0 ? "Legal" : `${errors} ${errors === 1 ? "error" : "errors"}`}
+            {warnings > 0 && <span className={styles.warn}> · {warnings} {warnings === 1 ? "warning" : "warnings"}</span>}
+          </Link>
+        </div>
+        {staging && (
+          <div className={styles.receipt} aria-label="Pending purchases">
+            <span>
+              Pending · {pendingCount} {pendingCount === 1 ? "line" : "lines"}
+            </span>
+            <span className={styles.receiptDots} aria-hidden="true" />
+            <Price cost={{ ducats: delta.ducats, glory: delta.glory }} signed />
+          </div>
+        )}
       </div>
 
       <div className={styles.save}>

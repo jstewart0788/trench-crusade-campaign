@@ -56,7 +56,7 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   Heretic Captain, Heretic Raider, Anointed Heretic Raider ("0 of 0–4" under the Shoal), Abyssal
   Commando, Heretic Captain "0 of 1", Heretic Raider "0 of any" and the Fallen mercenaries (Goetic
   Warlock, Scripture Guardian, Sin Eater); Drowned Chorister, Sea Hag and Wretched read "0 of 0"
-  (the Shoal bars them); **no** Heretic Priest or Heretic Trooper. Add a Heretic Captain, Confirm, open the
+  (the Shoal bars them); **no** Heretic Priest or Heretic Trooper. Buy a Heretic Captain, Confirm, open the
   Armoury: a Submachine Gun is offered at 25d. The Warband screen's locked facts show **Subfaction
   Heretic Naval Raiders**. Save it: the TTS URL's JSON has
   `"subfaction": {"id": "heretic-naval-raiders", "name": "Heretic Naval Raiders"}` next to
@@ -74,31 +74,42 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 ## 4. Barracks (recruiting is staged)
 
 - Left "Roster · 0 models": "No models yet. Recruit from the list on the right."
-- Right "Recruit": **Units** then **Mercenaries**. Lieutenant "0 of 1", Yeoman "0 of any",
-  Shocktrooper "0 of 0–5". **Not listed anywhere**: Crimson Communicant (Red Brigade only),
+- Right "Recruit": **Units** then **Mercenaries**. Each row is the unit's name (serif), one quiet
+  line with its stat line and a count chip ("0 of 1" for the Lieutenant, "0 of 0–5" for the
+  Shocktrooper, nothing for the unlimited Yeoman until one is recruited, then "×1"), and on the
+  right a **price button**: a crown and the ducat price ("👑 70" drawn as a brass crown, not an
+  emoji). There is no "Add" anywhere. Glory-priced mercenaries show a pale-blue sun instead,
+  dimmed: hover says "Short 7 glory" (a game-1 warband has no glory). **Not listed anywhere**: Crimson Communicant (Red Brigade only),
   Homunculus (Book of Golems), Disciple of St. Roch (third-party mercenaries), Trench Dog (needs
   Dog Food). No row carries "needs …" or "not checked" text. At the bottom of the panel one
   quiet line: **"2 options hidden by campaign rules we can't check yet"**. No row ever reads "0 of 0": a unit whose limit
   is 0 for this roster is left out like any other unavailable option (check with a Heretic Naval
   Raiders warband under **The Leviathan Shoal**: no Sea Hag; without the variant the Sea Hag reads
   "0 of 0–1").
-- **Add** Lieutenant: a roster row appears with a brass outline and a **PENDING** chip (unit
-  name, Elite tag, empty "Custom name" field, "No equipment", 70d, **Equip** link, Duplicate,
-  **Undo**). Header: **0 → 70 / 700 ducats** with "+70", **Discard changes**, **Confirm
-  purchases (1)**, and the badge still reads **Legal** (the staged roster has its Lieutenant).
-  Lieutenant now reads "1 of 1" in the Recruit list and its Add is disabled.
-- Add Yeoman, then **Duplicate** the Yeoman three times: four pending Yeoman rows, 30d each.
-  Add Shocktrooper. Header 0 → 235 (+235), Confirm purchases (6).
+- Hover the Lieutenant's price (or Tab to it): it lifts a pixel and a small bubble shows the purse
+  after buying, "→ 👑 70/700". Press it: the button gives a brief brass pulse and a roster row
+  appears with a brass outline and a **PENDING** chip (unit name, Elite tag, empty "Custom name"
+  field, "No equipment", its crown price, **Equip** link, **Copy 👑 70**, **Undo**). The header's
+  two coin readouts show **👑 70 / 700** and **☼ 0 / 0**, with a receipt line under them,
+  "Pending · 1 line ……… 👑 +70", then **Discard changes** and **Confirm purchases (1)**; the
+  badge still reads **Legal**. The Lieutenant's price is now dimmed with a dashed border; hover
+  says "Limit reached 1/1" and pressing it does nothing (the Copy price on his row is dimmed the
+  same way).
+- Buy a Yeoman, then press **Copy** on the Yeoman row three times: four pending Yeoman rows,
+  30 each. Buy a Shocktrooper. Header 👑 235 / 700, receipt "Pending · 6 lines … +235".
 - Type a custom name on the first Yeoman with a space in it ("Old Tom"): the space is not
   eaten; the row keeps "Yeoman" as its title. Names are never staged.
-- **Undo** one pending Yeoman: the row vanishes, Confirm purchases (5). Add it back.
+- **Undo** one pending Yeoman: the row vanishes, Confirm purchases (5). Buy it back.
 - **Confirm purchases (6)**: outlines and chips vanish, header **235 / 700**, "Unsaved changes",
   Confirm/Discard gone.
-- **Remove** a confirmed Yeoman: the row stays, struck, with a red **LEAVING** chip and a
-  **Keep** button; header **235 → 205 (−30)**, Confirm purchases (1). **Keep**: back to normal.
-  Remove it again and **Discard changes**: back to normal.
-- Add a second Lieutenant: it appears pending, the badge turns red (**1 error**: at most 1 per
-  warband) and **Confirm purchases** is disabled; **Undo** it.
+- **Dismiss** a confirmed Yeoman: the row stays, struck, with a red **LEAVING** chip and a
+  **Keep** button; header 👑 205, receipt "Pending · 1 line … 👑 −30", Confirm purchases (1).
+  **Keep**: back to normal. Dismiss it again and **Discard changes**: back to normal.
+- Over the threshold: keep buying until the purse is within a unit's price of 700. Every price
+  that would break 700 dims; hover one: "Over threshold by N" with the exact overshoot; pressing
+  does nothing. Prices that still fit stay live. Nothing is struck through.
+- **Dismiss** the Lieutenant: the badge turns red (**1 error**: at least 1 Lieutenant required)
+  and **Confirm purchases** is disabled with "Fix the errors before confirming"; **Keep** him.
 
 ## 5. Armoury: the figure
 
@@ -109,18 +120,22 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   **figure**: a brass silhouette with eight dashed slots laid over it: Head on top; Ranged /
   Torso / Melee on the first row; Ranged / Off-hand / Melee on the second; Grenades at the
   bottom. Every slot reads "empty". Below it the **Inventory** panel ("Nothing in the pack",
-  "Add to inventory"). Right column: the hint "Click a slot on the figure to equip it…".
+  "Shop for kit"). Right column: the hint "Click a slot on the figure to equip it…".
 - Click the top **Melee** slot: the right column becomes the picker "Melee · Melee hands" with
-  the hint "one 2-Handed or two 1-Handed Melee Weapons" and a list with prices. Press
-  **Escape**: it closes. Click it again, pick **Sword/Axe** (4d): the slot fills, the item has a
-  brass outline and a "PENDING" chip, the picker closes. Header: **70 → 74 / 700 ducats** with a
-  "+4" chip, buttons **Discard changes** and **Confirm purchases (1)**; Save is no longer the
-  brass button. The model total reads "70d → 74d".
-- Top **Ranged** slot → pick **Pistol** (6d). **Torso** → **Standard Armour** (15d). Header
-  70 → 95 (+25), Confirm purchases (3).
-- Click the filled **Torso** slot: the picker shows "Standard Armour [Undo]" and "Swap for" with
-  "Nothing fits here" (one suit of armour). Click **Undo**: the slot empties, header back to
-  (+10), Confirm (2). Put Standard Armour back.
+  the hint "one 2-Handed or two 1-Handed Melee Weapons" and ledger rows: name and stat line on the
+  left, a crown price button on the right. Press **Escape**: it closes. Click it again and press
+  **Sword/Axe**'s price (👑 4): the slot fills, the item has a brass outline and a "PENDING" chip,
+  the picker closes. Header 👑 74 / 700 with "Pending · 1 line … 👑 +4"; Save is no longer the
+  brass button. The model total reads "👑 70 → 👑 74".
+- Top **Ranged** → **Pistol** (👑 6). **Torso** → **Standard Armour** (👑 15). Receipt +25,
+  Confirm purchases (3).
+- Click the filled **Torso** slot: the picker shows "Standard Armour [Undo]" and, under "Swap
+  for", nothing buyable (one suit of armour); Standard Armour itself is not offered. Click
+  **Undo**: the slot empties, receipt +10, Confirm (2). Put Standard Armour back.
+- Swaps are priced net: on a Yeoman carrying a Bolt-Action Rifle, open its Ranged slot and hover
+  the Automatic Rifle's price (👑 40): the bubble reads the purse after the swap, which is 35 more
+  than now, not 40 (the rifle's 5 comes back). A row at its limit stays listed, dimmed, with its
+  count ("2/2 in warband") and "Limit reached 2/2 in the warband" on hover.
 - **Confirm purchases (3)**: the chips and outlines vanish, header reads **95 / 700**, "Saved"
   turns into "Unsaved changes" (the roster changed), the Confirm/Discard buttons are gone.
 - Network: nothing was sent to `/api/warbands` by any of the above (pending purchases never
@@ -146,22 +161,21 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 - **Grenades** → **Frag Grenades** (7d). Open Grenades again: "Swap for" lists Molotov
   Cocktail, Greek Fire… (one kind at a time, so swapping is the only way to a second kind).
   **Head** → **Combat Helmet** (5d); open Head again: "Nothing fits here".
-- **Add to inventory** → pick **Medikit** (5d): it lists under Inventory with a PENDING chip
-  and "Undo". Confirm purchases.
-- Put **Mountaineer Kit** (3d) in the inventory of four Yeomen (confirming each; on the fourth
-  the row read "3/4 in warband"); on a fifth model the inventory picker no longer offers it.
+- **Shop for kit** → press **Medikit**'s price (👑 5): it lists under Inventory with a PENDING
+  chip and "Undo". Confirm purchases.
+- Put **Mountaineer Kit** (👑 3) in the inventory of four Yeomen (confirming each; on the fourth
+  the row read "3/4 in warband"). On a fifth model it is still listed, dimmed: "4/4 in warband",
+  hover "Limit reached 4/4 in the warband", and pressing it does nothing.
 
 ## 5c. Staging survives, and errors block Confirm
 
 - Stage a purchase and reload the page: the PENDING chip is still there and the header still
   shows the → delta (pending purchases are kept in this browser, per warband). **Discard
   changes**: everything pending vanishes and the totals return.
-- The picker will not offer anything that breaks a model's own battlekit rules, so the error
-  that blocks Confirm is a warband-level one: stage a **Machine Gun** (50d) on every Yeoman via
-  the top Ranged slot's "Swap for" until the header's ducats pass 700. The figure turns red,
-  the badge reads **1 error**, and **Confirm purchases** is disabled with the tooltip "Fix the
-  errors before confirming". Undo one Machine Gun (open its slot, Undo): Confirm re-enables.
-  Discard changes.
+- Neither the pickers nor the price buttons will stage anything that breaks a model's battlekit,
+  passes the threshold or a limit, so the errors that block Confirm come from removals: in the
+  Barracks, dismiss the Lieutenant. The badge reads **1 error** and **Confirm purchases** is disabled with "Fix the errors before
+  confirming". Keep him: Confirm re-enables. Discard changes.
 - With purchases pending, **Save** (or "Save changes") still works and sends only the
   confirmed roster: Network → `PUT /api/warbands/…` body has no pending items; after the save
   the PENDING chips are still on the figure.
@@ -224,8 +238,8 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   field (edit one here; it shows in the Barracks and the Armoury select), its kit in one line,
   its cost and an **Equip** link that opens the Armoury filtered to it.
 - "Rulebook-legal: nothing to fix."
-- Make it illegal to see the list: Barracks → Add a second Lieutenant → Warband screen lists
-  `2 x Lieutenant; at most 1 per warband` and the badge reads 1 error. Remove him.
+- Make it illegal to see the list: Barracks → **Dismiss** the Lieutenant → Warband screen lists
+  `0 x Lieutenant; at least 1 required` and the badge reads 1 error. **Keep** him.
 
 ## 7. Save
 
@@ -247,7 +261,7 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 
 ## 9. Draft survives a reload
 
-- New warband, Add a unit, reload `/w/draft/barracks`: the roster is still there, and
+- New warband, buy a unit, reload `/w/draft/barracks`: the roster is still there, and
   `/w/draft` and `/w/draft/armoury` show the same roster. Home shows the draft banner with
   "Resume". Save it; the banner is gone.
 
@@ -279,6 +293,10 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
 ## 11. Rules cache
 
 - Reload any warband screen: `GET /api/rules` is served from cache or 304 with the same `etag`.
+
+Contrast check (WCAG AA): dimmed price text, error text and the Elite tag must all stay readable
+on the dark panels; nothing relies on a strikethrough or colour alone (dimmed prices also go
+dashed, and say why on hover and to screen readers).
 
 Anything red in the console, any 4xx/5xx other than the deliberate 404 in step 8, any "needs",
 "not with" or "not checked" text on a Barracks row or in a picker, a request to `/api/warbands`

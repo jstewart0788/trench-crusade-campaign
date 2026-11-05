@@ -1,7 +1,7 @@
 import type { MemberCost, RosterUnit, WarbandMember } from "@tc/rules/browser";
 import type { Dispatch } from "react";
 import type { RosterAction } from "../roster/reducer.js";
-import { priceText } from "../roster/select.js";
+import { Price } from "./Price.js";
 import styles from "./Loadout.module.css";
 
 interface Props {
@@ -43,8 +43,12 @@ export function Loadout({ member, unit, before, after, issues, dispatch }: Props
       <div className={styles.total}>
         <span className="muted">Model total</span>
         <span className="mono">
-          {changed && before ? <span className={styles.was}>{priceText(before)} → </span> : null}
-          {after ? priceText(after) : ""}
+          {changed && before ? (
+            <span className={styles.was}>
+              <Price cost={before} /> →{" "}
+            </span>
+          ) : null}
+          {after ? <Price cost={after} /> : null}
         </span>
       </div>
     </div>
