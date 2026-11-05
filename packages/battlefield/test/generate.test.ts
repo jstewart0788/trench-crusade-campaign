@@ -380,23 +380,28 @@ describe("generateBattlefield", () => {
       }
     });
 
-    it("gives every slot on one half a twin of the same category at the mirrored spot on the other", () => {
+    // The role a slot's filling plays: its palette piece's or group's role (a scatter heap is scatter).
+    const roleOf = (fill: string) => palette.pieces.find((x) => x.id === fill)?.role ?? palette.groups.find((g) => g.id === fill)?.role ?? "scatter";
+
+    it("holds a terrain slot of the same category and role at the mirror of every terrain slot, and the same scatter per category on each half", () => {
       for (const layout of boards) {
         const p = parityOf(layout);
         const slots = slotsOf(layout);
-        const byId = new Map(slots.map((x) => [x.id, x]));
-        const categories = (side: SlotRef["side"]) => slots.filter((x) => x.side === side).map((x) => x.category).sort();
-        expect(categories("A").length, `seed ${layout.seed}`).toBeGreaterThan(10);
-        expect(categories("A"), `seed ${layout.seed}`).toEqual(categories("B"));
-        for (const slot of slots.filter((x) => x.side === "A")) {
-          const twin = byId.get(slot.twin!)!;
-          expect(twin.side, `seed ${layout.seed} ${slot.id}`).toBe("B");
-          expect(twin.twin).toBe(slot.id);
-          expect(twin.category).toBe(slot.category);
+        const isScatterSlot = (x: SlotRef) => palette.categories[x.category]!.scatter;
+        const terrain = slots.filter((x) => !isScatterSlot(x) && x.side !== "centre");
+        expect(terrain.length, `seed ${layout.seed}`).toBeGreaterThanOrEqual(8);
+        // Found by position, not through the twin link, so a slot whose twin went astray cannot hide.
+        const at = (x: number, y: number) => terrain.filter((s) => Math.abs(s.at[0] - x) < 1e-6 && Math.abs(s.at[1] - y) < 1e-6);
+        for (const slot of terrain) {
           const [x, y] = mapPoint(p, slot.at[0], slot.at[1]);
-          expect(twin.at[0], `seed ${layout.seed} ${slot.id}`).toBeCloseTo(x, 6);
-          expect(twin.at[1], `seed ${layout.seed} ${slot.id}`).toBeCloseTo(y, 6);
+          const mirror = at(x, y);
+          expect(mirror.length, `seed ${layout.seed} ${slot.id} (${slot.category} at ${slot.at.join(",")}) has nothing at its mirror`).toBe(1);
+          expect(mirror[0]!.side, `seed ${layout.seed} ${slot.id}`).toBe(slot.side === "A" ? "B" : "A");
+          expect(`${mirror[0]!.category}/${roleOf(mirror[0]!.fill)}`, `seed ${layout.seed} ${slot.id} ${slot.fill} vs ${mirror[0]!.id} ${mirror[0]!.fill}`).toBe(`${slot.category}/${roleOf(slot.fill)}`);
+          expect(slot.twin, `seed ${layout.seed} ${slot.id}`).toBe(mirror[0]!.id);
         }
+        const scatter = (side: SlotRef["side"]) => slots.filter((x) => isScatterSlot(x) && x.side === side).map((x) => x.category).sort();
+        expect(scatter("A"), `seed ${layout.seed}`).toEqual(scatter("B"));
         // A single stands on the line (or point) the halves mirror across, or covers the one objective there.
         for (const slot of slots.filter((x) => x.side === "centre")) {
           expect(slot.twin).toBeNull();

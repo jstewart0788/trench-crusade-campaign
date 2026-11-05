@@ -2420,8 +2420,9 @@
       "aesthetics": [
         "any"
       ],
-      "enabled": true,
-      "verified": true
+      "enabled": false,
+      "verified": true,
+      "note": "Renders solid magenta on macOS (seen live on the seed-4 board, 2026-11-05): the bundle (Unity 2019.4.40f1, StandaloneWindows64) carries its own copy of Mobile/Diffuse (fallback Mobile/VertexLit) compiled for D3D11 and OpenGLCore only, with no Metal program, and TTS on Apple silicon draws with Metal; Player.log: \"Shader Mobile/VertexLit shader is not supported on this GPU\". The source maps spawn it the same way (MaterialIndex 0, TypeIndex 0), so the asset itself is the fault."
     },
     {
       "id": "corpse-b",
@@ -2444,8 +2445,9 @@
       "aesthetics": [
         "any"
       ],
-      "enabled": true,
-      "verified": true
+      "enabled": false,
+      "verified": true,
+      "note": "Same fault as corpse-a (not on the seed-4 board, found by scanning every palette bundle): the bundle (Unity 2019.4.40f1, StandaloneWindows64) carries its own Mobile/Diffuse compiled for D3D11 and OpenGLCore only, with no Metal program, so it renders magenta in TTS on macOS."
     },
     {
       "id": "animal-skull",

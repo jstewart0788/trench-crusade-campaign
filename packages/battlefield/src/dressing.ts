@@ -349,20 +349,31 @@ export function pickPlaceable(ctx: PlacementContext, category: string, avoid: re
 }
 
 /**
- * The twin's piece: another variant of the category (within the same picking
- * rules), the one whose footprint is nearest the first's, so both halves keep
- * the same room around it; the first piece again when there is no other.
+ * The twin's piece: another variant of the category that plays the same role
+ * (a corner ruin mirrors a corner ruin, not sandbags of the same silhouette),
+ * within the same picking rules, the one whose footprint is nearest the
+ * first's, so both halves keep the same room around it; the first piece again
+ * when there is no other.
  */
+const categorySaturated = (ctx: PlacementContext, category: string, except: Placeable): boolean => placeablesIn(ctx.palette, category).every((p) => p.key === except.key || (ctx.usage.get(p.key) ?? 0) >= ctx.repeatCap);
+
+/** A piece that can open a twin pair: a role-mate under the cap can mirror it, or it has room under the cap to stand twice. */
+function twinnable(ctx: PlacementContext, category: string, filter: (p: Placeable) => boolean): (p: Placeable) => boolean {
+  return (p) =>
+    (ctx.usage.get(p.key) ?? 0) + 2 <= ctx.repeatCap ||
+    placeablesIn(ctx.palette, category).some((q) => q.key !== p.key && q.role === p.role && filter(q) && (ctx.usage.get(q.key) ?? 0) < ctx.repeatCap) ||
+    categorySaturated(ctx, category, p);
+}
+
 export function pickTwin(ctx: PlacementContext, category: string, first: Placeable, filter: (p: Placeable) => boolean = () => true): Placeable | null {
-  const all = placeablesIn(ctx.palette, category).filter((p) => p.key !== first.key && filter(p));
+  const all = placeablesIn(ctx.palette, category).filter((p) => p.key !== first.key && p.role === first.role && filter(p));
   const used = (p: Placeable) => ctx.usage.get(p.key) ?? 0;
   const looks = looksOf(ctx.aesthetic);
   const under = all.filter((p) => used(p) < ctx.repeatCap);
   const styled = under.filter((p) => p.aesthetics.some((a) => looks.has(a)));
   const pool = styled.length ? styled : under;
   // The first piece again only while the pair keeps it under the cap, or once its whole category is at the cap.
-  const saturated = placeablesIn(ctx.palette, category).every((p) => p.key === first.key || used(p) >= ctx.repeatCap);
-  if (!pool.length) return used(first) + 2 <= ctx.repeatCap || saturated ? first : null;
+  if (!pool.length) return used(first) + 2 <= ctx.repeatCap || categorySaturated(ctx, category, first) ? first : null;
   const dims = (p: Placeable) => [...p.footprintIn].sort((x, y) => x - y);
   const [a0, a1] = dims(first);
   const misfit = (p: Placeable) => {
@@ -444,9 +455,10 @@ interface PairOptions {
  * pass the rules with each other in place. Returns the placed pair, or [].
  */
 export function placePair(ctx: PlacementContext, category: string, opts: PairOptions): Placed[] {
-  const a = pickPlaceable(ctx, category, [], opts.filter);
-  if (!a) return [];
   const twinned = ctx.parity.kind !== "none";
+  const allowed = opts.filter ?? (() => true);
+  const a = pickPlaceable(ctx, category, [], twinned ? (p) => allowed(p) && twinnable(ctx, category, allowed)(p) : allowed);
+  if (!a) return [];
   const b = twinned ? pickTwin(ctx, category, a, opts.filter) : null;
   if (twinned && !b) return [];
   const again = (ctx.usage.get(a.key) ?? 0) + 2 <= ctx.repeatCap;
@@ -688,7 +700,7 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
         const [tw, td] = rotatedFootprint(p, rotY);
         return Math.abs(tw - w) + Math.abs(td - d);
       };
-      const others = rng.shuffle(twinPool.filter((p) => p.key !== placeable.key && p.category === placeable.category && room(p) > 0)).sort((a, b) => misfit(a) - misfit(b));
+      const others = rng.shuffle(twinPool.filter((p) => p.key !== placeable.key && p.category === placeable.category && p.role === placeable.role && room(p) > 0)).sort((a, b) => misfit(a) - misfit(b));
       // The same piece twice only while that keeps it under the repeat cap.
       const twinOrder = twin ? [...others, ...(room(placeable) >= 2 ? [placeable] : [])] : [];
       const slackX = Math.max(0, w / 2 - 0.5);
@@ -1024,7 +1036,7 @@ function twinCoverOnTop(p: PlanInputs, t: ObjectiveSpec, a: CoverChoice, cells: 
   const fits = insideCells(p.grid, cells);
   const [cx, cy] = mapPoint(p.parity, (a.rect.x0 + a.rect.x1) / 2, (a.rect.y0 + a.rect.y1) / 2);
   const rotY = mapRotY(p.parity, a.rotY);
-  for (const placeable of [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category)), a.placeable]) {
+  for (const placeable of [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category && x.role === a.placeable.role)), a.placeable]) {
     const [w, d] = rotatedFootprint(placeable, rotY);
     const rect = rectFromCentre(cx, cy, w, d);
     if (fits(rect) && coverFits(rect, t.position) && rectInside(rect, boardRect(p.grid, p.edgeMarginIn))) return { objectiveId: t.id, placeable, rotY, rect, base: "hill" };

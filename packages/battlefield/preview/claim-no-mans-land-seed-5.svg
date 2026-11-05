@@ -189,17 +189,21 @@
 <rect x="709.08" y="707.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-0 duckboard</title></rect>
 <rect x="57.08" y="627.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-1 duckboard</title></rect>
 <rect x="709.08" y="627.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-1 duckboard</title></rect>
-<rect x="57.08" y="547.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-2 duckboard</title></rect>
-<rect x="709.08" y="547.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-2 duckboard</title></rect>
-<rect x="205.68" y="254.46" width="44.64" height="15.09" fill="#c9a46a" fill-opacity="0.75"><title>k-2-6 duckboard</title></rect>
+<rect x="57.08" y="467.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-3 duckboard</title></rect>
+<rect x="709.08" y="467.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-3 duckboard</title></rect>
+<rect x="285.68" y="254.46" width="44.64" height="15.09" fill="#c9a46a" fill-opacity="0.75"><title>k-3-6 duckboard</title></rect>
 <rect x="365.68" y="254.46" width="44.64" height="15.09" fill="#c9a46a" fill-opacity="0.75"><title>k-4-6 duckboard</title></rect>
-<rect x="525.68" y="254.46" width="44.64" height="15.09" fill="#c9a46a" fill-opacity="0.75"><title>k-6-6 duckboard</title></rect>
+<rect x="445.68" y="254.46" width="44.64" height="15.09" fill="#c9a46a" fill-opacity="0.75"><title>k-5-6 duckboard</title></rect>
 <rect x="57.08" y="147.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-7 duckboard</title></rect>
 <rect x="709.08" y="147.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-7 duckboard</title></rect>
-<rect x="619.20" y="86.90" width="23.60" height="95.60" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group d-5</title></rect>
+<rect x="57.08" y="67.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-8 duckboard</title></rect>
+<rect x="709.08" y="67.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-8 duckboard</title></rect>
+<rect x="616.40" y="661.40" width="23.60" height="95.60" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group d-9</title></rect>
+<rect x="214.32" y="416.34" width="32" height="57.20" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-20</title></rect>
+<rect x="529.68" y="416.34" width="32" height="57.20" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-21</title></rect>
 <rect x="366.80" y="410.80" width="42.40" height="42.40" fill="#5f5fa8" fill-opacity="0.85" stroke="#2a2a6a" stroke-width="2.5"><title>o-obj-3 water-tower rotY 270, rests at 4.6in covers obj-3</title></rect>
 <text x="388" y="436" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">T</text>
-<rect x="213.10" y="116.80" width="149.80" height="75.20" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>o-obj-1 ruins-small-b rotY 0, rests at 2.5in covers obj-1</title></rect>
+<rect x="213.10" y="116.80" width="149.80" height="75.20" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>o-obj-1 ruins-small-b rotY 0, rests at 2.58in covers obj-1</title></rect>
 <text x="288" y="158.40" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
 <rect x="427.50" y="115.20" width="121" height="78.40" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>o-obj-2 ruins-small-a rotY 0, rests at 2.5in covers obj-2</title></rect>
 <text x="488" y="158.40" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
@@ -207,68 +211,68 @@
 <text x="298" y="695.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
 <rect x="426.40" y="639.60" width="103.20" height="103.20" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>o-obj-5 ruins-medium-a rotY 0, rests at 2.58in covers obj-5</title></rect>
 <text x="478.00" y="695.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
-<rect x="138" y="494.60" width="72.20" height="97.40" fill="#9c8f7a" fill-opacity="0.85" stroke="#4f463a" stroke-width="1.5"><title>d-0 wrecked-brick-wall-a rotY 180, rests at 2.58in</title></rect>
+<rect x="138" y="494.60" width="72.20" height="97.40" fill="#9c8f7a" fill-opacity="0.85" stroke="#4f463a" stroke-width="1.5"><title>d-0 wrecked-brick-wall-a rotY 180, rests at 2.5in</title></rect>
 <text x="174.10" y="547.30" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">c</text>
-<rect x="568.90" y="505.90" width="66" height="74.80" fill="#9c8f7a" fill-opacity="0.85" stroke="#4f463a" stroke-width="1.5"><title>d-1 sandbags-corner rotY 180, rests at 2.58in</title></rect>
+<rect x="568.90" y="505.90" width="66" height="74.80" fill="#9c8f7a" fill-opacity="0.85" stroke="#4f463a" stroke-width="1.5"><title>d-1 sandbags-corner rotY 180, rests at 2.5in</title></rect>
 <text x="601.90" y="547.30" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">c</text>
-<rect x="158" y="338.40" width="45.80" height="93.60" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-2 lumber-pile-b rotY 0, rests at 2.5in</title></rect>
-<text x="180.90" y="389.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
-<rect x="574.30" y="339.70" width="41.60" height="91" fill="#9c8f7a" fill-opacity="0.85" stroke="#4f463a" stroke-width="1.5"><title>d-3 tall-rock rotY 90, rests at 2.5in</title></rect>
-<text x="595.10" y="389.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">c</text>
-<rect x="138" y="97.40" width="14" height="74.60" fill="#d9534f" fill-opacity="0.85" stroke="#8a2420" stroke-width="1.5"><title>d-4 barbed-wall rotY 0, rests at 2.5in</title></rect>
-<text x="145" y="138.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">W</text>
-<rect x="621.20" y="88.90" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-5.0 difficult-dangerous rotY 90, rests at 2.5in</title></rect>
-<text x="631" y="115.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
-<rect x="621.20" y="134.90" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-5.1 difficult-dangerous rotY 90, rests at 2.5in</title></rect>
-<text x="631" y="161.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
-<rect x="298" y="545.40" width="15.40" height="26.60" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-6 pillar rotY 180, rests at 2.58in</title></rect>
-<text x="305.70" y="562.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
-<rect x="458.70" y="542.10" width="23.20" height="33.20" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-7 statue-tall rotY 270, rests at 2.5in</title></rect>
-<text x="470.30" y="562.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
-<rect x="138" y="670.80" width="37.60" height="41.20" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-8 rock rotY 90, rests at 2.5in</title></rect>
-<text x="156.80" y="695.40" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
-<rect x="595.40" y="654.10" width="47.60" height="74.60" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-9 difficult-mound rotY 0, rests at 2.5in</title></rect>
-<text x="619.20" y="695.40" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
-<rect x="378.20" y="526.40" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-10 difficult-dangerous rotY 90, rests at 2.5in</title></rect>
-<text x="388.00" y="553.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
-<rect x="332.96" y="485.42" width="24.60" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-11 barrels-group rotY 180, rests at 2.58in</title></rect>
-<rect x="421.54" y="485.42" width="18.40" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-12 barrel rotY 270, rests at 2.5in</title></rect>
-<rect x="269.76" y="327.06" width="11.20" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-13 first-aid-small rotY 270, rests at 2.5in</title></rect>
-<rect x="492.34" y="325.16" width="16.60" height="16.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-14 box rotY 90, rests at 2.5in</title></rect>
-<rect x="316.46" y="325.14" width="30.80" height="17.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-15 crates-small rotY 180, rests at 2.5in</title></rect>
-<rect x="428.74" y="325.14" width="30.80" height="17.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-16 crates-small rotY 180, rests at 2.5in</title></rect>
-<rect x="231.28" y="558.20" width="13" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-17 barrel-small rotY 180, rests at 2.58in</title></rect>
-<rect x="531.72" y="558.20" width="13" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-18 barrel-small rotY 180, rests at 2.58in</title></rect>
-<rect x="332.32" y="89.06" width="20.80" height="5.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-19 radio rotY 270, rests at 2.5in</title></rect>
-<rect x="422.88" y="89.06" width="20.80" height="5.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-20 radio rotY 90, rests at 2.5in</title></rect>
-<rect x="224.04" y="434.74" width="20.40" height="36.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-21 wood-barrier rotY 270, rests at 2.58in</title></rect>
-<rect x="532.36" y="436.34" width="18.80" height="33.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-22 makeshift-defense-tall rotY 90, rests at 2.58in</title></rect>
-<rect x="348.92" y="528.82" width="5.60" height="20.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-23 radio rotY 180, rests at 2.5in</title></rect>
-<rect x="419.08" y="527.12" width="10.40" height="24.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-24 training-dummy rotY 270, rests at 2.5in</title></rect>
-<rect x="333.58" y="593.66" width="30.80" height="17.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-25 crates-small rotY 0, rests at 2.58in</title></rect>
-<rect x="411.82" y="591.96" width="30.40" height="20.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-26 first-aid-crate rotY 90, rests at 2.5in</title></rect>
-<rect x="175.38" y="80.42" width="16" height="22.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-27 camp-fire rotY 90, rests at 2.5in</title></rect>
-<rect x="587.42" y="79.42" width="10.40" height="24.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-28 training-dummy rotY 270, rests at 2.5in</title></rect>
-<rect x="138.50" y="749.22" width="18.20" height="18.40" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-29 barrel rotY 0, rests at 2.5in</title></rect>
-<rect x="621.90" y="751.92" width="13" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-30 barrel-small rotY 0, rests at 2.5in</title></rect>
-<rect x="248.50" y="491.54" width="24.60" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-31 barrels-group rotY 180, rests at 2.58in</title></rect>
-<rect x="506" y="491.54" width="18.40" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-32 barrel rotY 270, rests at 2.58in</title></rect>
-<rect x="200.84" y="734.52" width="16.80" height="16.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-33 box rotY 0, rests at 2.5in</title></rect>
-<rect x="558.36" y="734.52" width="16.80" height="16.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-34 box rotY 0, rests at 2.5in</title></rect>
-<rect x="200.12" y="619.60" width="18.20" height="24.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-35 barrels-group rotY 90, rests at 2.58in</title></rect>
-<rect x="557.68" y="619.60" width="18.20" height="24.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-36 barrels-group rotY 270, rests at 2.58in</title></rect>
-<rect x="258.06" y="595.60" width="24.20" height="10.40" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-37 training-dummy rotY 180, rests at 2.58in</title></rect>
-<rect x="494.74" y="592.80" width="22.20" height="16" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-38 camp-fire rotY 180, rests at 2.58in</title></rect>
-<rect x="266.12" y="78.28" width="22.20" height="16" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-39 camp-fire rotY 180, rests at 2.5in</title></rect>
-<rect x="487.68" y="78.28" width="22.20" height="16" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-40 camp-fire rotY 180, rests at 2.5in</title></rect>
-<rect x="233.56" y="338.44" width="11" height="58" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-41 stray-planks rotY 270, rests at 2.5in</title></rect>
-<rect x="531.44" y="338.44" width="11" height="58" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-42 stray-planks rotY 90, rests at 2.5in</title></rect>
-<rect x="301.48" y="488.46" width="11.20" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-43 first-aid-small rotY 270, rests at 2.58in</title></rect>
-<rect x="463.32" y="488.46" width="11.20" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-44 first-aid-small rotY 90, rests at 2.5in</title></rect>
+<rect x="138" y="338.40" width="45.80" height="93.60" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-2 lumber-pile-b rotY 0, rests at 2.58in</title></rect>
+<text x="160.90" y="389.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
+<rect x="587.20" y="339.90" width="55.80" height="90.60" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-3 difficult-flat rotY 90, rests at 2.5in</title></rect>
+<text x="615.10" y="389.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
+<rect x="138" y="77.40" width="14" height="74.60" fill="#d9534f" fill-opacity="0.85" stroke="#8a2420" stroke-width="1.5"><title>d-4 barbed-wall rotY 180, rests at 2.5in</title></rect>
+<text x="145" y="118.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">W</text>
+<rect x="624" y="77.40" width="14" height="74.60" fill="#d9534f" fill-opacity="0.85" stroke="#8a2420" stroke-width="1.5"><title>d-5 barbed-wall rotY 180, rests at 2.5in</title></rect>
+<text x="631" y="118.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">W</text>
+<rect x="318" y="538.80" width="23.20" height="33.20" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-6 statue-tall rotY 270, rests at 2.58in</title></rect>
+<text x="329.60" y="559.40" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
+<rect x="434.20" y="538.20" width="24.40" height="34.40" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-7 statue rotY 90, rests at 2.5in</title></rect>
+<text x="446.40" y="559.40" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
+<rect x="138" y="686.40" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-8 difficult-dangerous rotY 270, rests at 2.5in</title></rect>
+<text x="147.80" y="713.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
+<rect x="618.40" y="663.40" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-9.0 difficult-dangerous rotY 90, rests at 2.5in</title></rect>
+<text x="628.20" y="690.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
+<rect x="618.40" y="709.40" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-9.1 difficult-dangerous rotY 90, rests at 2.5in</title></rect>
+<text x="628.20" y="736.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
+<rect x="366.20" y="328.84" width="5.60" height="20.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-10 radio rotY 180, rests at 2.5in</title></rect>
+<rect x="401.80" y="327.14" width="10.40" height="24.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-11 training-dummy rotY 270, rests at 2.5in</title></rect>
+<rect x="188.66" y="704.28" width="22.60" height="54.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-12 crates-long rotY 90, rests at 2.5in</title></rect>
+<rect x="561.94" y="710.68" width="28.20" height="41.40" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-13 supplies rotY 0, rests at 2.5in</title></rect>
+<rect x="273.86" y="77.20" width="30.80" height="17.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-14 crates-small rotY 0, rests at 2.58in</title></rect>
+<rect x="471.34" y="77.20" width="30.80" height="17.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-15 crates-small rotY 0, rests at 2.5in</title></rect>
+<rect x="238.52" y="331.46" width="18.80" height="33.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-16 makeshift-defense-tall rotY 270, rests at 2.58in</title></rect>
+<rect x="518.68" y="331.46" width="18.80" height="33.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-17 makeshift-defense-tall rotY 90, rests at 2.5in</title></rect>
+<rect x="296.40" y="601.70" width="11.20" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-18 first-aid-small rotY 270, rests at 2.58in</title></rect>
+<rect x="465.70" y="599.80" width="16.60" height="16.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-19 box rotY 90, rests at 2.5in</title></rect>
+<rect x="219.22" y="418.34" width="22.20" height="28" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-20.0 animal-skull rotY 0, rests at 2.58in</title></rect>
+<rect x="216.32" y="449.34" width="28" height="22.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-20.1 animal-skull rotY 90, rests at 2.58in</title></rect>
+<rect x="534.58" y="418.34" width="22.20" height="28" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-21.0 animal-skull rotY 0, rests at 2.5in</title></rect>
+<rect x="531.68" y="449.34" width="28" height="22.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-21.1 animal-skull rotY 270, rests at 2.5in</title></rect>
+<rect x="192.74" y="658.20" width="18.40" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-22 barrel rotY 270, rests at 2.5in</title></rect>
+<rect x="567.56" y="660.80" width="13" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-23 barrel-small rotY 90, rests at 2.5in</title></rect>
+<rect x="362.32" y="563.72" width="13" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-24 barrel-small rotY 0, rests at 2.58in</title></rect>
+<rect x="400.68" y="563.72" width="13" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-25 barrel-small rotY 0, rests at 2.58in</title></rect>
+<rect x="234.82" y="522.78" width="18.40" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-26 barrel rotY 270, rests at 2.5in</title></rect>
+<rect x="519.68" y="522.78" width="24.60" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-27 barrels-group rotY 180, rests at 2.5in</title></rect>
+<rect x="172.36" y="151.96" width="16.60" height="16.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-28 box rotY 90, rests at 2.58in</title></rect>
+<rect x="586.74" y="144.96" width="17.20" height="30.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-29 crates-small rotY 270, rests at 2.5in</title></rect>
+<rect x="238.32" y="580.38" width="18.20" height="24.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-30 barrels-group rotY 90, rests at 2.5in</title></rect>
+<rect x="519.48" y="583.48" width="18.20" height="18.40" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-31 barrel rotY 0, rests at 2.5in</title></rect>
+<rect x="289.66" y="325.20" width="24.60" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-32 barrels-group rotY 180, rests at 2.5in</title></rect>
+<rect x="461.74" y="325.20" width="24.60" height="18.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-33 barrels-group rotY 180, rests at 2.5in</title></rect>
+<rect x="303.20" y="496.20" width="16" height="22.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-34 camp-fire rotY 270, rests at 2.5in</title></rect>
+<rect x="462" y="496.90" width="5.60" height="20.80" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-35 radio rotY 180, rests at 2.5in</title></rect>
+<rect x="342.24" y="486.50" width="13" height="11.20" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-36 first-aid-small rotY 180, rests at 2.5in</title></rect>
+<rect x="418.86" y="483.80" width="16.80" height="16.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-37 box rotY 180, rests at 2.5in</title></rect>
+<rect x="148.76" y="623.06" width="58" height="11" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-38 stray-planks rotY 0, rests at 2.5in</title></rect>
+<rect x="569.24" y="623.06" width="58" height="11" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-39 stray-planks rotY 0, rests at 2.5in</title></rect>
+<rect x="150.60" y="457.46" width="24.20" height="10.40" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-40 training-dummy rotY 180, rests at 2.58in</title></rect>
+<rect x="602.90" y="459.86" width="20.80" height="5.60" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-41 radio rotY 270, rests at 2.5in</title></rect>
+<rect x="274.98" y="549.70" width="11.20" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-42 first-aid-small rotY 90, rests at 2.58in</title></rect>
+<rect x="489.82" y="549.70" width="11.20" height="13" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>x-43 first-aid-small rotY 270, rests at 2.5in</title></rect>
 <polygon points="388,396.80 382,406.80 394,406.80" fill="#2a2a6a"/>
 <text x="397" y="405.80" font-size="10" font-weight="bold" fill="#2a2a6a">13in</text>
 <polygon points="288,102.80 282,112.80 294,112.80" fill="#2a2a6a"/>
-<text x="297" y="111.80" font-size="10" font-weight="bold" fill="#2a2a6a">9.30in</text>
+<text x="297" y="111.80" font-size="10" font-weight="bold" fill="#2a2a6a">9.40in</text>
 <polygon points="488,101.20 482,111.20 494,111.20" fill="#2a2a6a"/>
 <text x="497" y="110.20" font-size="10" font-weight="bold" fill="#2a2a6a">12.20in</text>
 <polygon points="298,638 292,648 304,648" fill="#2a2a6a"/>
@@ -307,13 +311,13 @@
 <rect x="776" y="124" width="14" height="14" fill="#7a4f2a" stroke="#3f2812" stroke-width="1"/>
 <text x="796" y="136" font-size="12" fill="#2b2620">Log fence: 30</text>
 <rect x="776" y="142" width="14" height="14" fill="#c9a46a" stroke="#7a5a2a" stroke-width="1"/>
-<text x="796" y="154" font-size="12" fill="#2b2620">Duckboard: 11</text>
+<text x="796" y="154" font-size="12" fill="#2b2620">Duckboard: 13</text>
 <rect x="776" y="160" width="14" height="14" fill="#8fb97a" stroke="#4f7a3c" stroke-width="1"/>
 <text x="796" y="172" font-size="12" fill="#2b2620">Hill (H4x4) (H): 5</text>
 <rect x="776" y="178" width="14" height="14" fill="#c4c08f" stroke="#7d7a4a" stroke-width="1"/>
-<text x="796" y="190" font-size="12" fill="#2b2620">Difficult (D): 3</text>
+<text x="796" y="190" font-size="12" fill="#2b2620">Difficult (D): 2</text>
 <rect x="776" y="196" width="14" height="14" fill="#d9534f" stroke="#8a2420" stroke-width="1"/>
-<text x="796" y="208" font-size="12" fill="#2b2620">Barbed wire (W): 1</text>
+<text x="796" y="208" font-size="12" fill="#2b2620">Barbed wire (W): 2</text>
 <rect x="776" y="214" width="14" height="14" fill="#e5a04a" stroke="#9a5f14" stroke-width="1"/>
 <text x="796" y="226" font-size="12" fill="#2b2620">Dangerous (X): 3</text>
 <rect x="776" y="232" width="14" height="14" fill="#8e6a4a" stroke="#4a2f17" stroke-width="1"/>
@@ -321,11 +325,11 @@
 <rect x="776" y="250" width="14" height="14" fill="#5f5fa8" stroke="#2a2a6a" stroke-width="1"/>
 <text x="796" y="262" font-size="12" fill="#2b2620">Tower (T): 1</text>
 <rect x="776" y="268" width="14" height="14" fill="#9c8f7a" stroke="#4f463a" stroke-width="1"/>
-<text x="796" y="280" font-size="12" fill="#2b2620">Upright cover (c): 3</text>
+<text x="796" y="280" font-size="12" fill="#2b2620">Upright cover (c): 2</text>
 <rect x="776" y="286" width="14" height="14" fill="#6f6fb8" stroke="#33337a" stroke-width="1"/>
 <text x="796" y="298" font-size="12" fill="#2b2620">Landmark (L): 2</text>
 <rect x="776" y="304" width="14" height="14" fill="#e8e1cf" stroke="#cfc6ad" stroke-width="1"/>
-<text x="796" y="316" font-size="12" fill="#2b2620">Ground tile: 38</text>
+<text x="796" y="316" font-size="12" fill="#2b2620">Ground tile: 37</text>
 <rect x="776" y="322" width="14" height="14" fill="url(#raised)" stroke="#6d5c34" stroke-width="1"/>
 <text x="796" y="334" font-size="12" fill="#2b2620">Plateau (stacked tiles): none</text>
 <rect x="776" y="340" width="14" height="14" fill="#d8b878" stroke="#7a5a2a" stroke-width="1"/>
@@ -343,15 +347,15 @@
 <text x="776" y="526" font-size="14" font-weight="bold" fill="#2b2620">Board</text>
 <text x="776" y="540" font-size="12"  fill="#2b2620">36in square, 4in cells (9x9); north is up</text>
 <text x="776" y="554" font-size="12"  fill="#2b2620">parity: mirror-x; look: field-fortification + urban-ruin</text>
-<text x="776" y="568" font-size="12"  fill="#2b2620">dressing share 32%; 34 scatter</text>
-<text x="776" y="582" font-size="12"  fill="#2b2620">38 ground + 0 stacked tiles, 16 terrain pieces</text>
-<text x="776" y="596" font-size="12"  fill="#2b2620">160 objects to spawn</text>
+<text x="776" y="568" font-size="12"  fill="#2b2620">dressing share 32%; 36 scatter</text>
+<text x="776" y="582" font-size="12"  fill="#2b2620">37 ground + 0 stacked tiles, 15 terrain pieces</text>
+<text x="776" y="596" font-size="12"  fill="#2b2620">162 objects to spawn</text>
 <text x="776" y="610" font-size="12"  fill="#2b2620">objectives: 5 (cover required)</text>
 <text x="776" y="624" font-size="12"  fill="#2b2620">circle on edge = trench runs off the board</text>
 <text x="776" y="636" font-size="10"  fill="#55504a">off the archetype list: hill, ruined-building</text>
 <text x="776" y="660" font-size="14" font-weight="bold" fill="#8a2420">Shortfalls</text>
 <text x="776" y="674" font-size="12"  fill="#7a5a14">corner-ruin: 2 placed, min 2, target 4</text>
-<text x="776" y="688" font-size="12"  fill="#7a5a14">dangerous-terrain: 3 placed, min 2, target 4</text>
+<text x="776" y="688" font-size="12"  fill="#7a5a14">difficult-terrain: 2 placed, min 2, target 4</text>
 <text x="776" y="702" font-size="12"  fill="#7a5a14">landmark: 3 placed, min 2, target 4</text>
 <text x="776" y="716" font-size="12"  fill="#7a5a14">cover: 0 placed, min 0, target 4</text>
 <text x="776" y="740" font-size="14" font-weight="bold" fill="#8a2420">Warnings</text>
