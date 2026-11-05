@@ -178,16 +178,18 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   filled slot: the current row shows the same lines plus a **Rules** disclosure with the full
   text. A bayonet under a rifle and anything in the Inventory read the same way.
 - Built-in kit (Black Grail; any Black Grail warband will do): recruit a **Sin Eater** and confirm.
-  Its Torso reads "Reinforced Armour" with "built in" under it, its Melee slot "Tenderizer Maul ·
-  built in". Click either: the picker shows the item with **built in** where Remove would be, the
-  line "Built-in kit: the model always carries it, so it cannot be removed or swapped", and no
-  Swap list. The Skills & abilities panel lists all three under **Built-in kit** with where they
-  sit: Combat Helmet "Carried" (the data files it as plain equipment, not headgear), Reinforced
-  Armour "Torso", Tenderizer Maul "Melee hands". The Inventory panel does **not** list the Combat
-  Helmet.
+  Its Head reads "Combat Helmet", its Torso "Reinforced Armour", its Melee slot "Tenderizer
+  Maul", each with "built in", a small lock next to the slot name, and an oxblood border and fill
+  that read clearly apart from a pending item's brass and from a removal's red. Click either: the picker shows the item with **built in** where Remove would be, the
+  line "Built-in kit: always carried. It cannot be removed or swapped.", and no Swap list. The Skills & abilities panel lists all three under **Built-in kit** with where they
+  sit, each in the same oxblood with the lock: Combat Helmet "Head", Reinforced Armour "Torso",
+  Tenderizer Maul "Melee hands". The Inventory panel does **not** list the Combat Helmet.
 - Profile kit: recruit a **Witchburner** (New Antioch mercenary). Built-in kit lists Combat Helmet
-  ("Carried"), Reinforced Armour ("Torso") and **Gavel of Justice** marked "Profile" (printed on the
-  unit card, not bought). **Dignified Conduct** and **Divine Judgement** are card *abilities*, so
+  ("Head"), Reinforced Armour ("Torso") and **Gavel of Justice** marked "Profile" (printed on the
+  unit card, not bought). On the figure the Gavel sits locked in a Melee hand; buy a Great
+  Sword/Axe and the sword takes both hands while the Gavel stays listed in the panel only (card kit
+  never pushes a purchase aside). A Court **Hell Knight** shows its Infernal Iron Armour locked on
+  the Torso. **Dignified Conduct** and **Divine Judgement** are card *abilities*, so
   they are under Abilities. A Court **Hunter of the Left-Hand Path** shows its spells under
   Abilities with their cost ("Spell (Cost 3): …" on expand).
 - Built-in kit is required: import or hand-edit a roster whose Sin Eater lacks its Tenderizer Maul
@@ -197,6 +199,10 @@ The api line should print `rules: .../data/rules (130 units, 225 items)` and
   Combat Helmet and Reinforced Armour with `"builtIn": true`, then
   `{"id": "profile/gavel-of-justice", …, "builtIn": true}`; its `abilities` end with Dignified
   Conduct and Divine Judgement; `ttsDescription` names the Gavel. Bought kit has no `builtIn` key.
+- Headgear: in a Trench Pilgrims warband, give a **Huscarl** its Combat Helmet (a free purchase,
+  not built in) through Head. Open Head again: "Swap for" offers the Iron Capirote, as a swap only;
+  nothing lets it wear both. An imported roster carrying both shows **1 error**, "Huscarl: one
+  piece of Headgear (has 2)". A Yeoman with one bought Combat Helmet stays Legal, unlocked.
 - Mandatory upgrade: in a **The Red Brigade** warband, recruit a **Crimson Communicant**. It
   arrives with the **Atonement Bell**: the panel lists it under **Skills & upgrades** (pending
   until you confirm the recruit), the Inventory's Upgrades list does not, and nothing offers to

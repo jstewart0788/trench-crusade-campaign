@@ -5,6 +5,7 @@ import {
   classifyItem,
   hasKeyword,
   normaliseName,
+  profileKit,
   resolveLimit,
   strongChoice,
   type CarriedItem,
@@ -83,6 +84,8 @@ export interface KitEntry {
   access: RosterAccess | undefined;
   classified: ClassifiedItem;
   pending?: "add" | "remove";
+  /** Printed on the unit card (`builtInWeapons` / `builtInEquipment`), not a roster item. */
+  card?: true;
 }
 
 /** The member's kit with pending changes marked; items the data does not know are left to the validator. */
@@ -91,7 +94,7 @@ export function kitEntries(member: WarbandMember, unit: RosterUnit, data: RulesD
     const item = data.equipmentById.get(e.id);
     if (!item) return [];
     const access = accessFor(unit, e.id);
-    const entry: KitEntry = { index, itemId: e.id, item, access, classified: classifyItem(item, access) };
+    const entry: KitEntry = { index, itemId: e.id, item, access, classified: classifyItem(item, access, data.headgearItemIds) };
     if (e.pending) entry.pending = e.pending;
     return [entry];
   });
@@ -125,7 +128,29 @@ export interface FigureView {
 
 const pairOf = (zone: "ranged" | "melee"): [SlotId, SlotId] => (zone === "ranged" ? ["ranged-a", "ranged-b"] : ["melee-a", "melee-b"]);
 
-export function layoutFigure(kit: KitEntry[], unit: RosterUnit): FigureView {
+/**
+ * Card kit as figure entries, locked like fixed kit. An entry named like a
+ * data item ("Combat Helmet" on the Mamluk Faris's card) is classified as
+ * that item, so it goes to the slot the item would; otherwise its own
+ * category and hands decide. Negative indices keep it apart from roster kit.
+ */
+export function cardKitEntries(unit: RosterUnit, data: RulesData): KitEntry[] {
+  const byName = new Map(data.equipment.map((i) => [normaliseName(i.name), i]));
+  return profileKit(unit).map((k, i) => {
+    const item: EquipmentItem = { id: k.id, name: k.name, category: k.category, hands: k.hands, cost: { ducats: 0, glory: 0 }, range: k.range, keywords: k.keywords, rules: k.rules, modifiers: [], limits: null };
+    const access = { itemId: k.id, group: "direct", fixed: true } as RosterAccess;
+    const twin = byName.get(normaliseName(k.name));
+    return { index: -(i + 1), itemId: k.id, item, access, classified: classifyItem(twin ?? item, access, data.headgearItemIds), card: true };
+  });
+}
+
+/**
+ * Seats the roster kit, then the card kit (`card`) in whatever natural slots
+ * the roster kit left free. The validator does not count card kit against
+ * battlekit limits, so card kit never displaces a purchase or lands under
+ * "No room"; where it does not fit it is listed in Skills & abilities only.
+ */
+export function layoutFigure(kit: KitEntry[], unit: RosterUnit, card: KitEntry[] = []): FigureView {
   const slots = new Map<SlotId, SlotView>(SLOTS.map((s) => [s.id, { ...s }]));
   const inventory: KitEntry[] = [];
   const unplaced: KitEntry[] = [];
@@ -210,6 +235,25 @@ export function layoutFigure(kit: KitEntry[], unit: RosterUnit): FigureView {
     }
   }
 
+  for (const e of card) {
+    const zone = zoneOf(e.classified);
+    if (zone === "ranged" || zone === "melee") {
+      const [a, b] = pairOf(zone);
+      if (e.classified.hands === 2) {
+        if (free(a) && free(b)) {
+          slots.get(a)!.occupant = { entry: e, spans: true, oneHandedByStrength: false, attachments: [] };
+          slots.get(b)!.coveredBy = e;
+        }
+      } else {
+        const target = free(a) ? a : free(b) ? b : undefined;
+        if (target) slots.get(target)!.occupant = { entry: e, spans: false, oneHandedByStrength: false, attachments: [] };
+      }
+    } else if (zone !== "inventory") {
+      const id = SLOTS.find((x) => x.zone === zone)!.id;
+      if (free(id)) slots.get(id)!.occupant = { entry: e, spans: false, oneHandedByStrength: false, attachments: [] };
+    }
+  }
+
   return { slots: SLOTS.map((s) => slots.get(s.id)!), inventory, unplaced, leaving };
 }
 
@@ -270,7 +314,7 @@ function toCarried(ids: string[], unit: RosterUnit, data: RulesData): CarriedIte
 
 function problemCounts(unit: RosterUnit, ids: string[], data: RulesData): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const e of checkBattlekit(unit, toCarried(ids, unit, data)).errors) counts.set(e.code, (counts.get(e.code) ?? 0) + 1);
+  for (const e of checkBattlekit(unit, toCarried(ids, unit, data), data.headgearItemIds).errors) counts.set(e.code, (counts.get(e.code) ?? 0) + 1);
   return counts;
 }
 
@@ -315,7 +359,7 @@ export function pickerRows(
   const attachments: PickerRow[] = [];
   for (const group of listing.groups) {
     for (const row of group.rows) {
-      const classified = classifyItem(row.item, row.access);
+      const classified = classifyItem(row.item, row.access, data.headgearItemIds);
       if (zoneOf(classified) !== zone) continue;
       if (row.atMax || row.item.id === replacing) continue;
       const warbandMax = resolveLimit(row.access.limitsText ?? row.item.limits ?? undefined, "max", "warband", row.access.maxPerWarband ?? null, ctx, row.item.name).value;
@@ -326,6 +370,6 @@ export function pickerRows(
       else offer(rows, baseIds, pickerRow);
     }
   }
-  const uncheckable = listing.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access)) === zone).length;
+  const uncheckable = listing.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access, data.headgearItemIds)) === zone).length;
   return { rows, attachments, uncheckable, unfit };
 }

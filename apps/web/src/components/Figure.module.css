@@ -141,3 +141,16 @@
   letter-spacing: 0.08em;
   color: var(--ink-muted);
 }
+.locked {
+  border-style: solid;
+  border-color: var(--oxblood);
+  background: linear-gradient(var(--oxblood-fill), var(--oxblood-fill)), rgba(21, 19, 15, 0.92);
+}
+.locked .note {
+  color: var(--oxblood-ink);
+}
+.lock {
+  margin-left: 0.35rem;
+  color: var(--oxblood-ink);
+  vertical-align: -1px;
+}

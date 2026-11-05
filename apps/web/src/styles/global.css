@@ -11,6 +11,10 @@
   --blood: #c8463c;
   --amber: #d9a63a;
   --moss: #7fa352;
+  /* Built-in kit: locked, distinct from pending (brass) and from errors and removals (blood). */
+  --oxblood: #8c2f2b;
+  --oxblood-fill: rgba(140, 47, 43, 0.24);
+  --oxblood-ink: #d29a92;
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;

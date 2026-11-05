@@ -4,6 +4,7 @@ import { hiddenText, priceText } from "../roster/select.js";
 import { unfitLines, ZONE_LABELS, type KitEntry, type PickerListing, type PickerRow, type Zone } from "../roster/slots.js";
 import { isBuiltIn } from "../roster/traits.js";
 import { ItemDescription } from "./ItemDescription.js";
+import { LockGlyph } from "./LockGlyph.js";
 import styles from "./SlotPicker.module.css";
 
 interface Props {
@@ -59,7 +60,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
       </div>
 
       {held && (
-        <div className={styles.current}>
+        <div className={`${styles.current} ${locked ? styles.currentLocked : ""}`} data-locked={locked ? "true" : undefined}>
           <span className={styles.held}>
             {!current && <span className="muted">Taken by{held.classified.bayonet ? " a fixed bayonet" : " a weapon in both hands"}: </span>}
             <ItemDescription desc={describeItem(held.item)} expandable struck={held.pending === "remove"} />
@@ -71,7 +72,9 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
               Keep
             </button>
           ) : locked ? (
-            <span className={styles.builtIn}>built in</span>
+            <span className={styles.builtIn}>
+              <LockGlyph /> built in
+            </span>
           ) : (
             <button className="small danger" onClick={() => onRemove(held)}>
               {held.pending === "add" ? "Undo" : "Remove"}
@@ -94,7 +97,7 @@ export function SlotPicker({ zone, slotLabel, hint, current, coveredBy, listing,
       )}
 
       {locked ? (
-        <p className="muted">Built-in kit: the model always carries it, so it cannot be removed or swapped.</p>
+        <p className={styles.lockedNote}>Built-in kit: always carried. It cannot be removed or swapped.</p>
       ) : (
         <h3>{current ? "Swap for" : coveredBy ? `Replace with (${ZONE_LABELS[zone]})` : "Choose"}</h3>
       )}

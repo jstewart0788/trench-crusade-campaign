@@ -5,7 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { describeItem } from "../roster/describe.js";
 import { createWarband, rosterReducer } from "../roster/reducer.js";
 import { defaultKit, gateStatus } from "../roster/select.js";
-import { kitEntries, layoutFigure, pickerRows, zoneOf, type KitEntry } from "../roster/slots.js";
+import { cardKitEntries, kitEntries, layoutFigure, pickerRows, zoneOf, type KitEntry } from "../roster/slots.js";
 import { memberTraits } from "../roster/traits.js";
 import { Figure } from "./Figure.js";
 import { Inventory } from "./Inventory.js";
@@ -81,6 +81,61 @@ describe("built-in kit has no remove control; purchased kit does", () => {
     const html = renderToStaticMarkup(<SkillsPanel traits={traits} onUndo={noop} onKeep={noop} />);
     for (const name of ["Combat Helmet", "Reinforced Armour", "Tenderizer Maul"]) expect(html).toContain(name);
     expect(removeButtons(html)).toBe(0);
+  });
+});
+
+describe("built-in kit is shown locked", () => {
+  const LOCK = 'aria-label="Built in, cannot be edited"';
+  // The markup of the figure's slot button whose label is `label`.
+  const slotHtml = (html: string, label: string) => {
+    const buttons = html.split("<button").slice(1).map((b) => "<button" + b.slice(0, b.indexOf("</button>")));
+    return buttons.find((b) => b.includes(`>${label}`))!;
+  };
+
+  it("marks the Sin Eater's built-in slots locked with the lock glyph, and a bought helmet's slot not", () => {
+    const sinEater = recruit("black-grail", "black-grail/sin-eater");
+    const html = renderToStaticMarkup(<Figure figure={layoutFigure(entries(sinEater), unit("black-grail/sin-eater"))} onSlot={noop} onRemove={noop} onKeep={noop} />);
+    for (const label of ["Head", "Torso"]) {
+      const b = slotHtml(html, label);
+      expect(b).toContain('data-locked="true"');
+      expect(b).toContain(LOCK);
+      expect(b).toContain("built in");
+    }
+    expect(slotHtml(html, "Head")).toContain("Combat Helmet");
+
+    const yeoman = recruit("new-antioch", "new-antioch/yeoman", ["combat-helmet"]);
+    const bought = renderToStaticMarkup(<Figure figure={layoutFigure(entries(yeoman), unit("new-antioch/yeoman"))} onSlot={noop} onRemove={noop} onKeep={noop} />);
+    const head = slotHtml(bought, "Head");
+    expect(head).toContain("Combat Helmet");
+    expect(head).not.toContain("data-locked");
+    expect(head).not.toContain(LOCK);
+  });
+
+  it("locks card kit on the figure the same way", () => {
+    const knight = unit("court-of-the-seven-headed-serpent/hell-knight");
+    const html = renderToStaticMarkup(<Figure figure={layoutFigure([], knight, cardKitEntries(knight, data))} onSlot={noop} onRemove={noop} onKeep={noop} />);
+    const torso = slotHtml(html, "Torso");
+    expect(torso).toContain("Infernal Iron Armour");
+    expect(torso).toContain('data-locked="true"');
+  });
+
+  it("opens a locked slot's picker read-only: description, lock, no Remove, no list", () => {
+    const sinEater = recruit("black-grail", "black-grail/sin-eater");
+    const html = renderToStaticMarkup(<SlotPicker zone="head" slotLabel="Head" hint="" current={entry(sinEater, "combat-helmet")} listing={emptyListing} onPick={noop} onRemove={noop} onKeep={noop} onClose={noop} />);
+    expect(html).toContain("Combat Helmet");
+    expect(html).toContain("NEGATE SHRAPNEL");
+    expect(html).toContain(LOCK);
+    expect(html).toContain("Built-in kit: always carried");
+    expect(removeButtons(html)).toBe(0);
+    expect(html).not.toContain("Swap for");
+  });
+
+  it("gives the Skills panel's built-in kit the same lock", () => {
+    const sinEater = recruit("black-grail", "black-grail/sin-eater");
+    const traits = memberTraits(sinEater.members[0]!, unit("black-grail/sin-eater"), sinEater, data, limitContext(sinEater, data));
+    const html = renderToStaticMarkup(<SkillsPanel traits={traits} />);
+    expect((html.match(/data-locked="true"/g) ?? []).length).toBe(traits.builtIn.length);
+    expect((html.match(new RegExp(LOCK, "g")) ?? []).length).toBe(traits.builtIn.length);
   });
 });
 

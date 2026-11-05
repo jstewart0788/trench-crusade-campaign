@@ -67,15 +67,15 @@ describe("memberTraits: built-in kit", () => {
     const sinEater = unit("black-grail/sin-eater");
     const w = rosterReducer(grail, { type: "add-member", unitId: sinEater.id, equipmentItemIds: defaultKit(sinEater, grail, data, limitContext(grail, data)) });
     expect(traitsOf(w).builtIn.map((t) => [t.desc.name, t.where])).toEqual([
-      // In the data's `direct` group, not `headgear`, so the engine does not count it as Headgear.
-      ["Combat Helmet", "Carried"],
+      // Filed under `direct`, but some armoury lists it as headgear, so it is Headgear here too.
+      ["Combat Helmet", "Head"],
       ["Reinforced Armour", "Torso"],
       ["Tenderizer Maul", "Melee hands"],
     ]);
     // The card's kit is built in; the card's "Ability" entries are abilities, as in the TTS export.
     const witchburner = withMember("new-antioch", "new-antioch/witchburner", ["combat-helmet", "reinforced-armour"]);
     expect(traitsOf(witchburner).builtIn.map((t) => [t.desc.name, t.where])).toEqual([
-      ["Combat Helmet", "Carried"],
+      ["Combat Helmet", "Head"],
       ["Reinforced Armour", "Torso"],
       ["Gavel of Justice", "Profile"],
     ]);

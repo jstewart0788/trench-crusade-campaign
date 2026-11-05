@@ -7,7 +7,7 @@ import { Loadout } from "../components/Loadout.js";
 import { SkillsPanel } from "../components/SkillsPanel.js";
 import { SlotPicker } from "../components/SlotPicker.js";
 import { memberTitle, upgradeRows } from "../roster/select.js";
-import { kitEntries, layoutFigure, pickerRows, SLOTS, ZONE_LABELS, type KitEntry, type PickerRow, type SlotView, type Zone } from "../roster/slots.js";
+import { cardKitEntries, kitEntries, layoutFigure, pickerRows, SLOTS, ZONE_LABELS, type KitEntry, type PickerRow, type SlotView, type Zone } from "../roster/slots.js";
 import { baseMember, stagedUpgrades, type StagedEntry } from "../roster/staging.js";
 import { isBuiltIn, memberTraits, type Trait } from "../roster/traits.js";
 import { useWarband } from "./warbandContext.js";
@@ -35,7 +35,8 @@ export function ArmouryScreen() {
   const pm = member ? pending.members[member.id] : undefined;
 
   const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm) : []), [member, confirmedMember, unit, rules, pm]);
-  const figure = useMemo(() => (unit ? layoutFigure(kit, unit) : undefined), [kit, unit]);
+  const card = useMemo(() => (unit ? cardKitEntries(unit, rules) : []), [unit, rules]);
+  const figure = useMemo(() => (unit ? layoutFigure(kit, unit, card) : undefined), [kit, unit, card]);
   // Built-in kit is never swapped out, so it is never the item a pick replaces.
   const replaceable = (e: KitEntry | undefined) => (e && !isBuiltIn(e) ? e : undefined);
   const listing = useMemo(

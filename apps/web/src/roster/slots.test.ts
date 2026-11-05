@@ -2,7 +2,7 @@ import { accessFor, classifyItem, evaluateGates, limitContext, loadRulesData, ty
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createWarband, rosterReducer } from "./reducer.js";
-import { kitEntries, layoutFigure, pickerRows, unfitLines, zoneOf, type FigureView, type SlotId } from "./slots.js";
+import { cardKitEntries, kitEntries, layoutFigure, pickerRows, unfitLines, zoneOf, type FigureView, type SlotId } from "./slots.js";
 import { armouryGroups, gateStatus } from "./select.js";
 import type { PendingMember } from "./staging.js";
 
@@ -33,7 +33,7 @@ const pickNames = (...args: Parameters<typeof picks>) => picks(...args).rows.map
 describe("zoneOf", () => {
   it("sends each kind of item to its slot, and the rest to the inventory", () => {
     const yeoman = unit("new-antioch/yeoman");
-    const z = (id: string) => zoneOf(classifyItem(data.equipmentById.get(id)!, accessFor(yeoman, id)));
+    const z = (id: string) => zoneOf(classifyItem(data.equipmentById.get(id)!, accessFor(yeoman, id), data.headgearItemIds));
     expect(z("combat-helmet")).toBe("head");
     expect(z("standard-armour")).toBe("torso");
     expect(z("bolt-action-rifle")).toBe("ranged");
@@ -129,6 +129,37 @@ describe("layoutFigure", () => {
   });
 });
 
+describe("built-in kit on the figure", () => {
+  const withCard = (unitId: string, items: string[]) => layoutFigure(kitEntries(memberOf(unitId, items), unit(unitId), data, undefined), unit(unitId), cardKitEntries(unit(unitId), data));
+
+  it("puts the Sin Eater's built-in Combat Helmet in the Head slot", () => {
+    const f = withCard("black-grail/sin-eater", ["combat-helmet", "reinforced-armour", "tenderizer-maul"]);
+    expect(slot(f, "head").occupant?.entry).toMatchObject({ itemId: "combat-helmet", access: { fixed: true } });
+    expect(name(f, "torso")).toBe("Reinforced Armour");
+    expect(name(f, "melee-a")).toBe("Tenderizer Maul");
+    expect(f.inventory).toEqual([]);
+  });
+
+  it("seats card kit in its natural slot: armour on the torso, a card weapon in a hand, a card helmet on the head", () => {
+    expect(slot(withCard("court-of-the-seven-headed-serpent/hell-knight", []), "torso").occupant?.entry).toMatchObject({ itemId: "profile/infernal-iron-armour", card: true });
+    const burner = withCard("new-antioch/witchburner", ["combat-helmet", "reinforced-armour"]);
+    expect(slot(burner, "melee-a").occupant?.entry).toMatchObject({ itemId: "profile/gavel-of-justice", card: true });
+    expect(slot(withCard("new-antioch/scripture-guardian", []), "head").occupant?.entry.itemId).toBe("profile/combat-helmet");
+  });
+
+  it("never lets card kit displace a purchase or land under No room", () => {
+    const burner = withCard("new-antioch/witchburner", ["combat-helmet", "reinforced-armour", "great-sword-axe"]);
+    expect(name(burner, "melee-a")).toBe("Great Sword/Axe");
+    expect(burner.unplaced).toEqual([]);
+    const faris = unit("new-antioch/mamluk-faris");
+    expect(slot(withCard(faris.id, []), "ranged-a").occupant).toMatchObject({ spans: true, entry: { itemId: "profile/alchemical-jezzail" } });
+    const pistol = withCard(faris.id, ["sword-axe", "pistol"]);
+    expect(name(pistol, "ranged-a")).toBe("Pistol");
+    expect(pistol.unplaced).toEqual([]);
+    expect([slot(pistol, "ranged-a"), slot(pistol, "ranged-b")].some((x) => x.occupant?.entry.card || x.coveredBy?.card)).toBe(false);
+  });
+});
+
 describe("pickerRows", () => {
   it("offers only what the slot takes and what the engine would still accept", () => {
     const rifleman = warbandWith("new-antioch", [["new-antioch/yeoman", ["bolt-action-rifle"]]]);
@@ -196,7 +227,7 @@ describe("pickerRows", () => {
     const m = lieutenant.members[0]!;
     const u = data.unitsById.get(m.unitId)!;
     const whole = armouryGroups(m, u, lieutenant, data, limitContext(lieutenant, data));
-    const zoneCount = whole.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access)) === "offhand").length;
+    const zoneCount = whole.uncheckableRows.filter((h) => zoneOf(classifyItem(h.item, h.access, data.headgearItemIds)) === "offhand").length;
     expect(offhand.uncheckable).toBe(zoneCount);
     expect(whole.uncheckable).toBeGreaterThan(zoneCount);
     expect(picks("inventory", lieutenant).uncheckable + offhand.uncheckable).toBeLessThanOrEqual(whole.uncheckable);

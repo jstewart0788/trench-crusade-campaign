@@ -207,7 +207,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     const carried = checkMemberItems(member, unit, data, warband, ctx, fail, warn);
     checkFixedKit(member, unit, data, warband, ctx, fail);
     const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
-    const kit = checkBattlekit(unit, carried);
+    const kit = checkBattlekit(unit, carried, data.headgearItemIds);
     for (const e of kit.errors) fail({ ...where, ...e });
     for (const w of kit.warnings) warn({ ...where, ...w });
     for (const c of carried) {

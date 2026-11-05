@@ -1,6 +1,7 @@
 import type { MemberTraits, Trait } from "../roster/traits.js";
 import { cx } from "./cx.js";
 import { ItemDescription } from "./ItemDescription.js";
+import { LockGlyph } from "./LockGlyph.js";
 import styles from "./SkillsPanel.module.css";
 
 interface Props {
@@ -19,22 +20,23 @@ export function SkillsPanel({ traits, onUndo, onKeep }: Props) {
       <h2>Skills &amp; abilities</h2>
       {empty && <p className="muted">Nothing beyond its kit.</p>}
       <Group title="Abilities" traits={traits.abilities} />
-      <Group title="Built-in kit" traits={traits.builtIn} onUndo={onUndo} onKeep={onKeep} />
+      <Group title="Built-in kit" traits={traits.builtIn} onUndo={onUndo} onKeep={onKeep} locked />
       <Group title="Skills & upgrades" traits={traits.skills} onUndo={onUndo} onKeep={onKeep} />
     </section>
   );
 }
 
-function Group({ title, traits, onUndo, onKeep }: { title: string; traits: Trait[]; onUndo?: Props["onUndo"]; onKeep?: Props["onKeep"] }) {
+function Group({ title, traits, onUndo, onKeep, locked = false }: { title: string; traits: Trait[]; onUndo?: Props["onUndo"]; onKeep?: Props["onKeep"]; locked?: boolean }) {
   if (traits.length === 0) return null;
   return (
     <div>
       <h3>{title}</h3>
       <ul className={styles.list}>
         {traits.map((t) => (
-          <li key={t.key} className={styles.item}>
+          <li key={t.key} className={cx(styles.item, locked && !t.pending && styles.locked)} data-locked={locked && !t.pending ? "true" : undefined}>
             <ItemDescription desc={t.desc} expandable struck={t.pending === "remove"} />
             <span className={styles.meta}>
+              {locked && !t.pending && <LockGlyph className={styles.lock} />}
               {t.where && <span className={styles.where}>{t.where}</span>}
               {t.pending === "add" && <span className={styles.chipAdd}>pending</span>}
               {t.pending === "remove" && <span className={styles.chipRemove}>removing</span>}

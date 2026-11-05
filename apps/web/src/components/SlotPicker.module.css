@@ -114,9 +114,20 @@
   min-width: 0;
 }
 .builtIn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ink-muted);
+  color: var(--oxblood-ink);
   white-space: nowrap;
+}
+.currentLocked {
+  border-color: var(--oxblood);
+  background: var(--oxblood-fill);
+}
+.lockedNote {
+  margin: 0;
+  color: var(--oxblood-ink);
 }

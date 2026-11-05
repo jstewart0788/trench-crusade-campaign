@@ -63,3 +63,15 @@
   color: var(--ink);
   cursor: help;
 }
+.locked {
+  border: 1px solid var(--oxblood);
+  background: var(--oxblood-fill);
+  border-radius: 3px;
+  padding: 0.3rem 0.45rem;
+}
+.locked:last-child {
+  border-bottom: 1px solid var(--oxblood);
+}
+.lock {
+  color: var(--oxblood-ink);
+}

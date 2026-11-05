@@ -2,6 +2,7 @@ import { describeItem } from "../roster/describe.js";
 import type { FigureView, KitEntry, SlotView } from "../roster/slots.js";
 import { isBuiltIn } from "../roster/traits.js";
 import { ItemDescription } from "./ItemDescription.js";
+import { LockGlyph } from "./LockGlyph.js";
 import styles from "./Figure.module.css";
 
 interface Props {
@@ -68,10 +69,33 @@ export function Figure({ figure, openSlot, onSlot, onRemove, onKeep }: Props) {
 
 function Slot({ slot, open, onClick }: { slot: SlotView; open: boolean; onClick: () => void }) {
   const o = slot.occupant;
-  const state = o ? (o.entry.pending === "add" ? styles.pendingAdd : o.entry.pending === "remove" ? styles.pendingRemove : styles.filled) : slot.coveredBy ? styles.covered : styles.empty;
+  const held = o?.entry ?? slot.coveredBy;
+  // Built-in kit is shown in its slot, locked: clicking opens the picker read-only.
+  const locked = held !== undefined && isBuiltIn(held) && held.pending === undefined;
+  const state = o
+    ? o.entry.pending === "add"
+      ? styles.pendingAdd
+      : o.entry.pending === "remove"
+        ? styles.pendingRemove
+        : locked
+          ? styles.locked
+          : styles.filled
+    : slot.coveredBy
+      ? `${styles.covered} ${locked ? styles.locked : ""}`
+      : styles.empty;
   return (
-    <button className={`${styles.slot} ${state} ${open ? styles.open : ""}`} style={{ gridArea: slot.id }} onClick={onClick} title={slot.hint} aria-pressed={open}>
-      <span className={styles.label}>{slot.label}</span>
+    <button
+      className={`${styles.slot} ${state} ${open ? styles.open : ""}`}
+      style={{ gridArea: slot.id }}
+      onClick={onClick}
+      title={locked ? "Built-in kit: always carried" : slot.hint}
+      aria-pressed={open}
+      data-locked={locked ? "true" : undefined}
+    >
+      <span className={styles.label}>
+        {slot.label}
+        {locked && <LockGlyph className={styles.lock} />}
+      </span>
       {o ? (
         <>
           <span className={styles.item}>

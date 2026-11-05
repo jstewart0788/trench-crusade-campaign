@@ -179,6 +179,12 @@ export interface RulesData {
   unitsBySubfaction: Map<string, RosterUnit[]>;
   equipmentById: Map<string, EquipmentItem>;
   variantsById: Map<string, { factionId: string; subfactionId?: string; id: string; name: string }>;
+  /**
+   * Items some armoury lists under its `headgear` group (Combat Helmet, Iron
+   * Capirote, Anfarro). They are Headgear on every model, whichever group a
+   * given unit files them under (the Sin Eater's built-in helmet is `direct`).
+   */
+  headgearItemIds: ReadonlySet<string>;
   thresholdTable: ThresholdRow[];
   /** Present when data/tts/models.json was supplied. */
   models?: ModelMap;
@@ -273,6 +279,7 @@ export function buildRulesData(files: RulesFiles, models?: ModelMap): RulesData 
     unitsBySubfaction,
     equipmentById: new Map(equipment.map((e) => [e.id, e])),
     variantsById,
+    headgearItemIds: new Set(units.flatMap((u) => u.equipmentAccess.filter((a) => a.group === "headgear").map((a) => a.itemId))),
     thresholdTable: [...table.data].sort((a, b) => a.game - b.game),
     models,
   };

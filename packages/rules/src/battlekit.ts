@@ -40,13 +40,17 @@ export interface ClassifiedItem {
   attachesTo: string[];
 }
 
-/** How the battlekit rules see one item on one unit's armoury row. */
-export function classifyItem(item: EquipmentItem, access: Pick<RosterAccess, "group" | "attachesTo"> | undefined): ClassifiedItem {
+/**
+ * How the battlekit rules see one item on one unit's armoury row.
+ * `headgearItemIds` is RulesData.headgearItemIds: Headgear is a property of
+ * the item, not of the group one armoury happens to file it under.
+ */
+export function classifyItem(item: EquipmentItem, access: Pick<RosterAccess, "group" | "attachesTo"> | undefined, headgearItemIds: ReadonlySet<string>): ClassifiedItem {
   const group = access?.group;
   const base = {
     combo: group !== undefined && SHIELD_COMBO_GROUPS.has(group),
     heavy: hasKeyword(item.keywords, /^heavy(\s|$)/i),
-    headgear: group === "headgear",
+    headgear: group === "headgear" || headgearItemIds.has(item.id),
     bayonet: group === "bayonet",
     attachesTo: access?.attachesTo ?? [],
   };
@@ -100,7 +104,7 @@ export interface BattlekitTally {
   duplicates: CarriedItem[];
 }
 
-export function tallyBattlekit(unit: RosterUnit, carried: CarriedItem[]): BattlekitTally {
+export function tallyBattlekit(unit: RosterUnit, carried: CarriedItem[], headgearItemIds: ReadonlySet<string>): BattlekitTally {
   const strong = hasKeyword(unit.keywords, /^strong$/i);
   const t: BattlekitTally = {
     strong,
@@ -122,7 +126,7 @@ export function tallyBattlekit(unit: RosterUnit, carried: CarriedItem[]): Battle
 
   for (const carriedItem of carried) {
     const { item, access, count } = carriedItem;
-    const c = classifyItem(item, access);
+    const c = classifyItem(item, access, headgearItemIds);
     if (c.heavy) t.heavy += count;
     if (c.headgear) t.headgear += count;
     if (c.bayonet) t.bayonets.push(carriedItem);
@@ -184,10 +188,10 @@ export interface BattlekitReport {
 }
 
 /** The battlekit problems of one model's kit; the validator attaches the member and unit ids. */
-export function checkBattlekit(unit: RosterUnit, carried: CarriedItem[]): BattlekitReport {
+export function checkBattlekit(unit: RosterUnit, carried: CarriedItem[], headgearItemIds: ReadonlySet<string>): BattlekitReport {
   const errors: BattlekitProblem[] = [];
   const warnings: BattlekitReport["warnings"] = [];
-  const t = tallyBattlekit(unit, carried);
+  const t = tallyBattlekit(unit, carried, headgearItemIds);
 
   for (const d of t.duplicates) {
     errors.push({ code: "battlekit-duplicate", itemId: d.item.id, message: `${d.item.name} taken ${d.count} times; one piece of Equipment with the same name per model` });
