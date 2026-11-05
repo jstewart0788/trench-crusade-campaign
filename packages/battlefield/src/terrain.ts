@@ -35,7 +35,9 @@ export function terrainReminder(t: TerrainRules, palette: Palette): string {
     said.push(Object.entries(fill).reduce((text, [k, v]) => text.replace(`{${k}}`, v), rule.text));
     for (const page of rule.pages) pages.add(page);
   };
-  if (t.kind === "trench" && t.label === "Trench") say("trench");
+  // A trench side of 3in or more is Climbed or Jumped Down (p.62), which says what the climbing reminder would.
+  const deepTrench = t.kind === "trench" && (t.playedAsIn ?? t.heightIn ?? 0) >= 3;
+  if (t.kind === "trench") say(deepTrench ? "trenchDeep" : "trench");
   if (t.fireStepIn) say("fireStep", { fireStep: String(t.fireStepIn) });
   if (t.kind === "hill") say("hill");
   if (t.kind === "ramp") say("ramp");
@@ -47,7 +49,7 @@ export function terrainReminder(t: TerrainRules, palette: Palette): string {
   if (t.keywords?.length) say("keywords", { keywords: t.keywords.join(", ") });
   if (t.types.includes("impassable")) say("impassable");
   if (t.cover) say("cover");
-  if (t.climb) say("climb");
+  if (t.climb && !deepTrench) say("climb");
   if (!said.length) say("open");
   for (const page of t.pages) pages.add(page);
   return `${said.join("; ")}; p.${[...pages].sort((a, b) => a - b).join(", ")}`;

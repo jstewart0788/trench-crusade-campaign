@@ -625,6 +625,35 @@ describe("generateBattlefield", () => {
       }
     });
 
+    it("never lines single pieces up in single file: no three within 1in of a common line, each within 3.5in of the next", { timeout: 120_000 }, () => {
+      // Lines through every near pair; the run is the chain along it with no gap over a step.
+      const longestRun = (points: (readonly [number, number])[]): number => {
+        let best = 0;
+        for (const a of points) {
+          for (const b of points) {
+            const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            if (len === 0 || len > 3.5) continue;
+            const [ux, uy] = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+            const along = points.filter((p) => Math.abs((p[1] - a[1]) * ux - (p[0] - a[0]) * uy) <= 1).map((p) => (p[0] - a[0]) * ux + (p[1] - a[1]) * uy).sort((x, y) => x - y);
+            const from = along.indexOf(0);
+            let [lo, hi] = [from, from];
+            while (lo > 0 && along[lo]! - along[lo - 1]! <= 3.5) lo--;
+            while (hi < along.length - 1 && along[hi + 1]! - along[hi]! <= 3.5) hi++;
+            best = Math.max(best, hi - lo + 1);
+          }
+        }
+        return best;
+      };
+      // Their own archetype for the scenarios that list No Man's Land, where face dressing lines up most.
+      const own = ["claim-no-mans-land", "relic-hunt", "supply-raid", "the-high-ground"].flatMap((id) => seedsFrom(1, 40).map((seed) => gen(id, seed, "no-mans-land")));
+      const all = [...boards, ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...own];
+      expect(all.length).toBeGreaterThan(700);
+      for (const layout of all) {
+        const singles = layout.pieces.filter((p) => isScatter(p) && !p.groupId).map((p) => p.position);
+        expect(longestRun(singles), `${layout.scenarioId} seed ${layout.seed}`).toBeLessThan(3);
+      }
+    });
+
     it("gives every scatter piece a placement role, counted in the stats, and uses every role somewhere", () => {
       const seen = new Set<string>();
       for (const layout of boards) {
@@ -685,6 +714,23 @@ describe("generateBattlefield", () => {
     }
     expect(buildings / covers).toBeGreaterThanOrEqual(0.6);
     expect(raised).toBeGreaterThanOrEqual(50);
+  });
+
+  it("lays a scenario as its own archetype when none is asked for: the first it lists that the generator lays, Trench Lines for any", () => {
+    const own = (scenarioId: string) => generateBattlefield({ scenarioId, seed: 3 }, env);
+    for (const [id, archetype] of [["claim-no-mans-land", "no-mans-land"], ["dragon-hunt", "no-mans-land"], ["supply-raid", "no-mans-land"], ["fields-of-glory", "trench-lines"], ["great-war", "trench-lines"]] as const) {
+      const layout = own(id);
+      expect(layout.archetype, id).toBe(archetype);
+      expect(layout.stats.archetypeMatchesScenario, id).toBe(true);
+      expect(layout.stats.warnings.some((w) => w.includes(" lists ")), id).toBe(false);
+    }
+    // A scenario listing only an archetype the generator does not lay is laid as Trench Lines, with a warning.
+    const ruins = { ...env, scenarios: env.scenarios.map((s) => (s.id === "great-war" ? { ...s, archetypes: ["decimated-ruins"] } : s)) };
+    const fallback = generateBattlefield({ scenarioId: "great-war", seed: 3 }, ruins);
+    expect(fallback.archetype).toBe("trench-lines");
+    expect(fallback.stats.warnings).toContain("scenario great-war lists decimated-ruins, which the generator does not lay; laid as trench-lines");
+    // Asking for one still lays it, and says when the scenario lists another.
+    expect(generateBattlefield({ scenarioId: "claim-no-mans-land", archetype: "trench-lines", seed: 3 }, env).stats.warnings).toContain("scenario claim-no-mans-land lists no-mans-land, not trench-lines");
   });
 
   it("skips the deployment lines where the scenario bans terrain in the zones, and says so", () => {

@@ -184,7 +184,7 @@ export const Palette = z
     categories: z.record(Category),
     sources: z.record(z.string()).optional(),
     /** One reminder per rule a piece can carry, the book's wording cut short, with its pages. */
-    terrainRules: z.record(z.enum(["open", "difficult", "dangerous", "impassable", "keywords", "cover", "climb", "trench", "fireStep", "hill", "ramp", "landmark", "ruined-building", "corner-ruin", "scattered"]), z.object({ text: z.string(), pages: z.array(z.number().int().positive()) }).strict()),
+    terrainRules: z.record(z.enum(["open", "difficult", "dangerous", "impassable", "keywords", "cover", "climb", "trench", "trenchDeep", "fireStep", "hill", "ramp", "landmark", "ruined-building", "corner-ruin", "scattered"]), z.object({ text: z.string(), pages: z.array(z.number().int().positive()) }).strict()),
     pieces: z.array(PalettePiece).min(1),
     groups: z.array(PaletteGroup).default([]),
   })

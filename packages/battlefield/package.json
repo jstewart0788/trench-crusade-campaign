@@ -10,7 +10,7 @@
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
     "generate": "tsx src/cli.ts generate",
-    "preview": "tsx src/cli.ts preview"
+    "preview": "tsx src/cli.ts preview --archetype trench-lines"
   },
   "dependencies": {
     "@tc/rules": "workspace:*",

@@ -1,5 +1,5 @@
 import { cellCentre, DELTA, DIRS, inGrid, rectArea, rectDistance, rectFromCentre, rectInside, rectOverlapArea, rectPointDistance, type Cell, type Rect } from "./grid.js";
-import { HEAP_PREFIX, looksOf, makePlaced, pickPlaceable, pickTwin, placeablesIn, rectAllowed, SCATTER_WEIGHTS, type Hill, type Placeable, type PlaceableMember, type Placed, type PlacementContext, type Plateau } from "./dressing.js";
+import { extendsRow, HEAP_PREFIX, looksOf, makePlaced, pickPlaceable, pickTwin, placeablesIn, rectAllowed, SCATTER_WEIGHTS, type Hill, type Placeable, type PlaceableMember, type Placed, type PlacementContext, type Plateau } from "./dressing.js";
 import { pieceById, turnedRect, type RotYSense } from "./palette.js";
 import { mapPoint, mapRotY, sideOf } from "./parity.js";
 
@@ -167,26 +167,29 @@ function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1
   // A heap that does not fit is drawn again, then shrinks a piece at a time.
   for (let count = spot.count; count >= fewest; count--) {
     for (let draw = 0; draw < (count > 1 ? 3 : 4); draw++) {
-    const drawn = organicHeap(ctx, role, pc.fits, count);
-    if (!drawn) return [];
-    const heap = { ...drawn, members: centred(drawn.members) };
-    const twinMembers = pc.twinned ? twinHeap(ctx, heap.members, pc.fits) : [];
-    // The heap settles near its spot: backed off along `away` (out from a wall or a trench lip) or nudged about it.
-    for (let k = 0; k < (role === "open" ? 3 : 6); k++) {
-      const shift: [number, number] = spot.away ? [spot.away[0] * 0.35 * k, spot.away[1] * 0.35 * k] : k === 0 ? [0, 0] : [(ctx.rng.next() - 0.5) * 0.6 * k, (ctx.rng.next() - 0.5) * 0.6 * k];
-      const centre: [number, number] = [spot.at[0] + shift[0], spot.at[1] + shift[1]];
-      if (pc.twinned && !onSideA(ctx, ...centre)) continue;
-      const rects = shifted(heap.members, centre);
-      if (!heapAllowed(ctx, rects)) continue;
-      let twin: Rect[] | null = null;
-      if (pc.twinned) {
-        const trects = shifted(twinMembers, mapPoint(ctx.parity, centre[0], centre[1]));
-        if (rects.some((a) => trects.some((b) => rectDistance(a, b) < ctx.scatterGapIn))) continue;
-        if (!heapAllowed(ctx, trects)) continue;
-        twin = trects;
+      const drawn = organicHeap(ctx, role, pc.fits, count);
+      if (!drawn) return [];
+      // A heap that could not gather its pieces comes back smaller.
+      if (drawn.members.length < fewest) continue;
+      const heap = { ...drawn, members: centred(drawn.members) };
+      const twinMembers = pc.twinned ? twinHeap(ctx, heap.members, pc.fits) : [];
+      // The heap settles near its spot: backed off along `away` (out from a wall or a trench lip) or nudged about it.
+      for (let k = 0; k < (role === "open" ? 3 : 6); k++) {
+        const shift: [number, number] = spot.away ? [spot.away[0] * 0.35 * k, spot.away[1] * 0.35 * k] : k === 0 ? [0, 0] : [(ctx.rng.next() - 0.5) * 0.6 * k, (ctx.rng.next() - 0.5) * 0.6 * k];
+        const centre: [number, number] = [spot.at[0] + shift[0], spot.at[1] + shift[1]];
+        if (pc.twinned && !onSideA(ctx, ...centre)) continue;
+        const rects = shifted(heap.members, centre);
+        if (!heapAllowed(ctx, rects)) continue;
+        let twin: Rect[] | null = null;
+        if (pc.twinned) {
+          const trects = shifted(twinMembers, mapPoint(ctx.parity, centre[0], centre[1]));
+          if (rects.some((a) => trects.some((b) => rectDistance(a, b) < ctx.scatterGapIn))) continue;
+          if (!heapAllowed(ctx, trects)) continue;
+          twin = trects;
+        }
+        if (heap.members.length === 1 && (extendsRow(ctx, centreOf(rects)) || (twin && extendsRow(ctx, centreOf(twin), centreOf(rects))))) continue;
+        return commitHeaps(ctx, role, { members: heap.members, rects, category: heap.category }, twin ? { members: twinMembers, rects: twin, category: heap.category } : null);
       }
-      return commitHeaps(ctx, role, { members: heap.members, rects, category: heap.category }, twin ? { members: twinMembers, rects: twin, category: heap.category } : null);
-    }
     }
   }
   return [];
@@ -330,7 +333,10 @@ function raisedSpots(ctx: PlacementContext, raised: readonly (Plateau | Hill)[])
       const foot = { c: ramp.cell.c - DELTA[ramp.up][0], r: ramp.cell.r - DELTA[ramp.up][1] };
       const [fx, fy] = centreOfCell(ctx, foot);
       for (const side of [-1, 1]) {
-        const at: [number, number] = DELTA[ramp.up][0] ? [fx, fy + side * (g.cellIn / 2 + 1.6)] : [fx + side * (g.cellIn / 2 + 1.6), fy];
+        // Off the cell's centre line, so the flanks of ramps side by side do not line up along an edge.
+        const off = g.cellIn / 2 + 1.2 + ctx.rng.next() * 0.8;
+        const along = (ctx.rng.next() - 0.5) * 2;
+        const at: [number, number] = DELTA[ramp.up][0] ? [fx + along, fy + side * off] : [fx + side * off, fy + along];
         if (onSideA(ctx, ...at)) out.push({ at, count: ctx.rng.intBetween(1, 3), away: DELTA[ramp.up][0] ? [0, side] : [side, 0] });
       }
     }
@@ -457,14 +463,15 @@ export function placeScatter(ctx: PlacementContext, pieces: number, raised: read
   fill("trench", trenchSpots(ctx), ROLE_BUDGET.trench);
   fill("raised", raisedSpots(ctx, raised), ROLE_BUDGET.raised);
   pc.out.push(...breakLanes(pc, Math.round(pieces * ROLE_BUDGET.lane)));
-  // Heaps take the open ground first; single pieces then go into the gaps they leave.
+  // Heaps take the open ground first; single pieces then go into the gaps they leave. No heap runs past the budget.
   const spots = openSpots(ctx);
+  const room = () => Math.floor((pieces - objects()) / (pc.twinned ? 2 : 1));
   for (const spot of spots) {
-    if (objects() >= pieces) break;
-    if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", spot, 2));
+    if (room() < 2) break;
+    if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", { ...spot, count: Math.min(spot.count, room()) }, 2));
   }
   for (const spot of spots) {
-    if (objects() >= pieces) break;
+    if (room() < 1) break;
     if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", { ...spot, count: 1 }));
   }
   return pc.out;

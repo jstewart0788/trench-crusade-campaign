@@ -44,6 +44,12 @@ describe("terrain rules in the palette", () => {
     }
     expect(depth).toBe(2);
     expect(piece("trench-straight-ledge").terrain.fireStepIn).toBe(1);
+    // Trenches keep their measured 2in and are played at 3in, so their sides are Climbed (p.62).
+    for (const p of palette.pieces.filter((x) => x.terrain.kind === "trench")) {
+      expect(p.terrain.heightIn, p.id).toBe(2);
+      expect(p.terrain.playedAsIn, p.id).toBe(3);
+      expect(p.terrain.climb, p.id).toBe(true);
+    }
   });
 
   it("rejects a piece without a classification", () => {
@@ -61,7 +67,9 @@ describe("terrain names", () => {
     expect(terrainName(piece("crater").terrain)).toBe("Crater · Difficult · Cover");
     expect(terrainName(piece("crater-2x2").terrain)).toBe("Crater · Difficult");
     expect(terrainName(piece("statue").terrain)).toBe("Statue · Impassable · Cover");
-    expect(terrainName(piece("trench-straight-ledge").terrain)).toBe('Trench · 2" deep · Fire step · Cover');
+    expect(terrainName(piece("trench-straight-ledge").terrain)).toBe('Trench · 3" deep · Fire step · Cover · Climb');
+    expect(terrainName(piece("trench-corner").terrain)).toBe('Trench · 3" deep · Cover · Climb');
+    expect(terrainName(piece("log-fence").terrain)).toBe('Trench wall · 3" · Climb');
     expect(terrainName(piece("landscape-1x2").terrain)).toBe("Ground · Open");
     expect(terrainName(piece("landscape-1x2").stackedTerrain!)).toBe('Hill · 3" · Elevated · Climb');
     expect(piece("landscape-1x2").stackedTerrain!.heightIn).toBe(2.5);
@@ -77,7 +85,9 @@ describe("terrain names", () => {
     const wall = terrainReminder(piece("brick-wall").terrain, palette);
     expect(wall).toMatch(/^Cover: .*; Over 1" high: Climb it as a sheer surface \(Risky Success Roll\); p\.38, 39, 43, 45, 62$/);
     expect(terrainReminder(piece("landscape-1x1").terrain, palette)).toBe("Open: models move freely; p.38");
-    expect(terrainReminder(piece("trench-straight-ledge").terrain, palette)).toMatch(/^Trench sides under 3" cross as Open; a model may Jump across as a gap; Fire step 1" above the floor; Cover: /);
+    expect(terrainReminder(piece("trench-straight-ledge").terrain, palette)).toMatch(/^Trench sides 3" or more: Climb or Jump Down them \(Jumping Down 3" counts as Falling\); a model may Jump across as a gap; Fire step 1" above the floor; Cover: [^;]*; [^;]*; p\.38, 39, 40, 43, 45, 62$/);
+    // Under 3in, the trench side is crossed as Open.
+    expect(terrainReminder({ ...piece("trench-corner").terrain, playedAsIn: undefined, climb: false }, palette)).toMatch(/^Trench sides under 3" cross as Open; /);
     expect(terrainReminder(piece("statue").terrain, palette)).toMatch(/^Landmark: only FLYING models cross it; Impassable: models cannot move onto or across it; Cover: /);
   });
 });

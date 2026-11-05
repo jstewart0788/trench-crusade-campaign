@@ -391,17 +391,20 @@
           "open"
         ],
         "cover": true,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "playedAsIn": 3,
         "fireStepIn": 1.0,
         "pages": [
           38,
+          39,
+          40,
           43,
           45,
           62
         ],
-        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+        "call": "Measured 2in deep, floor to parapet; played at 3in by the players' agreement, so a trench side is Climbed or Jumped Down rather than crossed as Open (p.62, p.39). A model in the trench has the parapet between it and attackers outside, so it counts as in cover (p.38)."
       }
     },
     {
@@ -450,16 +453,19 @@
           "open"
         ],
         "cover": true,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "playedAsIn": 3,
         "pages": [
           38,
+          39,
+          40,
           43,
           45,
           62
         ],
-        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+        "call": "Measured 2in deep, floor to parapet; played at 3in by the players' agreement, so a trench side is Climbed or Jumped Down rather than crossed as Open (p.62, p.39). A model in the trench has the parapet between it and attackers outside, so it counts as in cover (p.38)."
       }
     },
     {
@@ -500,16 +506,19 @@
           "open"
         ],
         "cover": true,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "playedAsIn": 3,
         "pages": [
           38,
+          39,
+          40,
           43,
           45,
           62
         ],
-        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+        "call": "Measured 2in deep, floor to parapet; played at 3in by the players' agreement, so a trench side is Climbed or Jumped Down rather than crossed as Open (p.62, p.39). A model in the trench has the parapet between it and attackers outside, so it counts as in cover (p.38)."
       }
     },
     {
@@ -550,16 +559,19 @@
           "open"
         ],
         "cover": true,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "playedAsIn": 3,
         "pages": [
           38,
+          39,
+          40,
           43,
           45,
           62
         ],
-        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+        "call": "Measured 2in deep, floor to parapet; played at 3in by the players' agreement, so a trench side is Climbed or Jumped Down rather than crossed as Open (p.62, p.39). A model in the trench has the parapet between it and attackers outside, so it counts as in cover (p.38)."
       }
     },
     {
@@ -609,16 +621,19 @@
           "open"
         ],
         "cover": true,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "playedAsIn": 3,
         "pages": [
           38,
+          39,
+          40,
           43,
           45,
           62
         ],
-        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+        "call": "Measured 2in deep, floor to parapet; played at 3in by the players' agreement, so a trench side is Climbed or Jumped Down rather than crossed as Open (p.62, p.39). A model in the trench has the parapet between it and attackers outside, so it counts as in cover (p.38)."
       }
     },
     {
@@ -657,16 +672,19 @@
           "open"
         ],
         "cover": true,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "deep: trench floor to parapet (profile 0.51 to 2.50in above the piece's base)",
+        "playedAsIn": 3,
         "pages": [
           38,
+          39,
+          40,
           43,
           45,
           62
         ],
-        "call": "A trench's sides are 2in, under the 3in the book sets for crossing a trench side as Open (p.62); a model in the trench has the parapet between it and attackers outside, so we count it as in cover (p.38)."
+        "call": "Measured 2in deep, floor to parapet; played at 3in by the players' agreement, so a trench side is Climbed or Jumped Down rather than crossed as Open (p.62, p.39). A model in the trench has the parapet between it and attackers outside, so it counts as in cover (p.38)."
       }
     },
     {
@@ -3230,13 +3248,17 @@
           "open"
         ],
         "cover": false,
-        "climb": false,
+        "climb": true,
         "heightIn": 2.0,
         "measure": "the trench side it lines: floor to parapet",
+        "playedAsIn": 3,
         "pages": [
           38,
+          39,
+          40,
           62
-        ]
+        ],
+        "call": "The log fence lines a trench side, so it plays as that side does: 3in by the players' agreement, Climbed or Jumped Down (p.62, p.39)."
       }
     },
     {
@@ -5701,6 +5723,14 @@
       "text": "Trench sides under 3\" cross as Open; a model may Jump across as a gap",
       "pages": [
         62,
+        40
+      ]
+    },
+    "trenchDeep": {
+      "text": "Trench sides 3\" or more: Climb or Jump Down them (Jumping Down 3\" counts as Falling); a model may Jump across as a gap",
+      "pages": [
+        62,
+        39,
         40
       ]
     },

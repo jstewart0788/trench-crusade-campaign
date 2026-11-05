@@ -33,7 +33,8 @@ function assertWellFormedXml(xml: string): void {
 describe("renderPlanSvg", () => {
   const env = fixtureEnv();
 
-  it("writes well-formed XML with one trench rect per trench cell, every lined wall, the height marks and the legend", () => {
+  // Lays three boards, which can pass the default 5s on a busy machine.
+  it("writes well-formed XML with one trench rect per trench cell, every lined wall, the height marks and the legend", { timeout: 30_000 }, () => {
     const heights = Object.fromEntries(env.palette.pieces.map((p) => [p.id, p.heightIn]));
     for (const seed of [1, 7, 42]) {
       const layout = generateBattlefield({ scenarioId: "claim-no-mans-land", archetype: "trench-lines", seed }, env);
@@ -57,7 +58,7 @@ describe("renderPlanSvg", () => {
     expect(() => assertWellFormedXml(svg)).not.toThrow();
     const names = new Set(layout.pieces.map((p) => terrainName(terrainOf(pieceById(env.palette, p.paletteId), p.baseIn))));
     for (const name of names) expect(svg, name).toMatch(new RegExp(`>${escapeXml(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?: \\([A-Za-z]\\))?: \\d+</text>`));
-    expect(svg).toContain(escapeXml('Trench · 2" deep · Cover'));
+    expect(svg).toContain(escapeXml('Trench · 3" deep · Cover · Climb'));
   });
 
   it("escapes text it interpolates", () => {

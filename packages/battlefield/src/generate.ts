@@ -110,7 +110,8 @@ export const DEFAULT_GENERATE_OPTIONS: GenerateOptions = {
 
 export interface GenerateInput {
   scenarioId: string;
-  archetype: Archetype;
+  /** Left out, the scenario's own (see scenarioArchetype). */
+  archetype?: Archetype;
   seed: number;
   boardIn?: number;
   options?: Partial<GenerateOptions>;
@@ -131,6 +132,21 @@ export class GenerateError extends Error {
 
 const BRANCHES_BY_DENSITY = { sparse: [0, 1], medium: [1, 3], dense: [2, 4] } as const;
 const ARCHETYPES: readonly Archetype[] = ["trench-lines", "no-mans-land"];
+
+/**
+ * The archetype a scenario is laid as when none is asked for: the first one it
+ * lists that the generator lays, Trench Lines for "any". A scenario that lists
+ * none the generator lays (Decimated Ruins only) falls back to Trench Lines,
+ * and says so.
+ */
+export function scenarioArchetype(scenario: ScenarioGeometry): { archetype: Archetype; fallback: string | null } {
+  for (const listed of scenario.archetypes) {
+    if (listed === "any") return { archetype: "trench-lines", fallback: null };
+    const known = ARCHETYPES.find((a) => a === listed);
+    if (known) return { archetype: known, fallback: null };
+  }
+  return { archetype: "trench-lines", fallback: `scenario ${scenario.id} lists ${scenario.archetypes.join("/")}, which the generator does not lay; laid as trench-lines` };
+}
 
 /**
  * Hills on 60% of boards whose scenario has objectives, relics or supplies to
@@ -353,11 +369,13 @@ const STRUCTURAL_NAMES: Partial<Record<Role, string>> = {
 };
 
 function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatterOnlyIfSettled = false): Layout {
-  if (!ARCHETYPES.includes(input.archetype)) throw new GenerateError(`archetype ${String(input.archetype)} is not supported; v1 lays Trench Lines and No Man's Land`);
   const scenario = env.scenarios.find((s) => s.id === input.scenarioId);
   if (!scenario) throw new GenerateError(`unknown scenario "${input.scenarioId}"`);
-  const archetype = env.archetypes.find((a) => a.id === input.archetype);
-  if (!archetype) throw new GenerateError(`archetype ${input.archetype} missing from terrain data`);
+  const own = scenarioArchetype(scenario);
+  const archetypeId = input.archetype ?? own.archetype;
+  if (!ARCHETYPES.includes(archetypeId)) throw new GenerateError(`archetype ${String(archetypeId)} is not supported; v1 lays Trench Lines and No Man's Land`);
+  const archetype = env.archetypes.find((a) => a.id === archetypeId);
+  if (!archetype) throw new GenerateError(`archetype ${archetypeId} missing from terrain data`);
   const opts: GenerateOptions = { ...DEFAULT_GENERATE_OPTIONS, ...input.options };
   const boardIn = input.boardIn ?? 36;
   const grid = createGrid(boardIn, env.palette.cellIn);
@@ -366,8 +384,9 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
   const decide = createRng(input.seed);
   const warnings: string[] = [];
   if (scenario.battlefield.widthIn !== boardIn || scenario.battlefield.depthIn !== boardIn) warnings.push(`scenario expects ${scenario.battlefield.widthIn}x${scenario.battlefield.depthIn}in, laying ${boardIn}x${boardIn}`);
-  const archetypeMatchesScenario = scenario.archetypes.includes("any") || scenario.archetypes.includes(input.archetype);
-  if (!archetypeMatchesScenario) warnings.push(`scenario ${scenario.id} lists ${scenario.archetypes.join("/")}, not ${input.archetype}`);
+  const archetypeMatchesScenario = scenario.archetypes.includes("any") || scenario.archetypes.includes(archetypeId);
+  if (!input.archetype && own.fallback) warnings.push(own.fallback);
+  else if (!archetypeMatchesScenario) warnings.push(`scenario ${scenario.id} lists ${scenario.archetypes.join("/")}, not ${archetypeId}`);
 
   const overlay = scenarioOverlay(scenario);
   const parity = chooseParity(overlay, boardIn, opts.parity);
@@ -383,7 +402,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
   );
   const blocked = baseBlocked(grid, overlay.objectives, zoneMasks);
   const tracks = opts.deploymentLines ? deploymentTracks(grid, overlay.zones, warnings) : [];
-  const mode = input.archetype === "no-mans-land" ? "deployment-only" : "trench-lines";
+  const mode = archetypeId === "no-mans-land" ? "deployment-only" : "trench-lines";
   if (tracks.length && opts.axis !== "auto" && opts.axis !== tracks[0]!.along) warnings.push(`axis ${opts.axis} overridden: the spine runs alongside the deployment lines`);
 
   // Raised ground planned before the trench: the centre raised as its own
@@ -670,7 +689,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
     version: LAYOUT_VERSION,
     seed: input.seed,
     scenarioId: scenario.id,
-    archetype: input.archetype,
+    archetype: archetypeId,
     boardIn,
     cellIn: grid.cellIn,
     parity: { kind: parity.kind, objectivesMatch: parity.objectivesMatch },

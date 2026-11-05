@@ -6,7 +6,7 @@ import { loadCatalog, loadGeneratorEnv } from "./load.js";
 import { renderPlanSvg } from "./preview.js";
 import { layoutToObjectStates } from "./tts.js";
 
-// pnpm --filter @tc/battlefield generate --scenario claim-no-mans-land --seed 7 --out layout.json [--tts out.json] [--svg out.svg] [--archetype trench-lines|no-mans-land]
+// pnpm --filter @tc/battlefield generate --scenario claim-no-mans-land --seed 7 --out layout.json [--tts out.json] [--svg out.svg] [--archetype trench-lines|no-mans-land, default the scenario's own]
 // pnpm --filter @tc/battlefield preview [--scenario claim-no-mans-land] [--seeds 1-10] [--out-dir preview]
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -59,8 +59,8 @@ function writeOut(path: string, content: string): void {
 }
 
 function usage(): never {
-  console.error("usage: generate --scenario <id> --seed <n> [--archetype trench-lines|no-mans-land] [--board 36] [--axis x|y|auto] [--branches n|auto] [--out layout.json] [--tts objects.json] [--svg plan.svg] [--mat-top 0.95] [--root <repo>]");
-  console.error("       preview [--scenario <id>] [--archetype trench-lines|no-mans-land] [--seeds 1-10] [--out-dir packages/battlefield/preview] [--root <repo>]");
+  console.error("usage: generate --scenario <id> --seed <n> [--archetype trench-lines|no-mans-land, default the scenario's own] [--board 36] [--axis x|y|auto] [--branches n|auto] [--out layout.json] [--tts objects.json] [--svg plan.svg] [--mat-top 0.95] [--root <repo>]");
+  console.error("       preview [--scenario <id>] [--archetype trench-lines|no-mans-land, default the scenario's own] [--seeds 1-10] [--out-dir packages/battlefield/preview] [--root <repo>]");
   process.exit(2);
 }
 
@@ -70,9 +70,10 @@ function main(): void {
   const env = loadGeneratorEnv(root);
   const boardIn = Number(flags.get("board") ?? 36);
   const options = optionsFromFlags(flags);
-  const archetypeFlag = flags.get("archetype") ?? "trench-lines";
-  if (archetypeFlag !== "trench-lines" && archetypeFlag !== "no-mans-land") usage();
-  const archetype: Archetype = archetypeFlag;
+  // Left out, each scenario is laid as its own archetype.
+  const archetypeFlag = flags.get("archetype");
+  if (archetypeFlag !== undefined && archetypeFlag !== "trench-lines" && archetypeFlag !== "no-mans-land") usage();
+  const archetype: Archetype | undefined = archetypeFlag;
   const heights = Object.fromEntries(env.palette.pieces.map((p) => [p.id, p.heightIn]));
 
   if (command === "generate") {

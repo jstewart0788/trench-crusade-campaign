@@ -1350,6 +1350,35 @@ export function registerRaised(ctx: PlacementContext, id: string, cells: Cell[],
 
 const FACE_CATEGORIES = ["scatter-sandbag", "scatter-crate", "scatter-rubble"];
 
+// Single pieces filling a strip of ground one at a time line up in single file (Jonathan, seed 37's east edge):
+// a single never makes a third within ROW_BAND_IN of a line through two others, each within ROW_STEP_IN of the next.
+const ROW_BAND_IN = 1;
+const ROW_STEP_IN = 3.5;
+
+export function extendsRow(ctx: PlacementContext, at: readonly [number, number], ...also: (readonly [number, number])[]): boolean {
+  // Any third piece in a run lies within two steps of the new one, so only those nearer count.
+  const near = [...ctx.placed.filter((p) => p.scatter && p.placeable?.members.length === 1).map((p) => p.centre), ...also].filter((p) => Math.hypot(p[0] - at[0], p[1] - at[1]) <= 2 * ROW_STEP_IN);
+  const points = [...near, at];
+  for (let i = 0; i < points.length; i++) {
+    for (let j = i + 1; j < points.length; j++) {
+      const [a, b] = [points[i]!, points[j]!];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len === 0 || len > ROW_STEP_IN) continue;
+      const [ux, uy] = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+      const offLine = (p: readonly [number, number]) => Math.abs((p[1] - a[1]) * ux - (p[0] - a[0]) * uy);
+      if (offLine(at) > ROW_BAND_IN) continue;
+      const along = points.filter((p) => offLine(p) <= ROW_BAND_IN).map((p) => ({ p, t: (p[0] - a[0]) * ux + (p[1] - a[1]) * uy })).sort((x, y) => x.t - y.t);
+      // The run through the new piece, out each way while the next piece along is within a step.
+      let lo = along.findIndex((x) => x.p === at);
+      let hi = lo;
+      while (lo > 0 && along[lo]!.t - along[lo - 1]!.t <= ROW_STEP_IN) lo--;
+      while (hi < along.length - 1 && along[hi + 1]!.t - along[hi]!.t <= ROW_STEP_IN) hi++;
+      if (hi - lo + 1 >= 3) return true;
+    }
+  }
+  return false;
+}
+
 /**
  * Dresses the tile faces a plateau shows to open ground (dark from across the
  * table) with sandbags, crates or rubble against them, twin faces together.
@@ -1406,6 +1435,9 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
       pb = place(twin, b, true);
       if (!rectAllowed(ctx, pb.rect, b.role, { scatter: true, faceOf: twin.plateau.id }) || rectDistance(pa.rect, pb.rect) < ctx.scatterGapIn) continue;
     }
+    // Dressing down the length of a face would stand in single file.
+    const mid = (r: Rect): [number, number] => [(r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2];
+    if (extendsRow(ctx, mid(pa.rect)) || (pb && extendsRow(ctx, mid(pb.rect), mid(pa.rect)))) continue;
     const pair = commitPair(ctx, "face", pa, pb, { faceOf: face.plateau.id, placement: "raised" });
     // A face slot stands at the middle of the face it dresses, so twins mirror exactly whatever their depth.
     const anchor = (f: { cell: Cell; dir: Dir }): [number, number] => {
