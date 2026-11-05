@@ -6,7 +6,7 @@ import { armouryHref, useWarband } from "./warbandContext.js";
 import styles from "./WarbandScreen.module.css";
 
 export function WarbandScreen() {
-  const { rules, warband, code, base, cost, threshold, validation, dispatch } = useWarband();
+  const { rules, warband, code, base, cost, threshold, validation, dispatch, pending } = useWarband();
   const faction = rules.factionsById.get(warband.factionId);
   const variant = faction?.variants.find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
@@ -57,7 +57,7 @@ export function WarbandScreen() {
           </h2>
           <Link to={`${base}/barracks`}>Recruit in the Barracks</Link>
         </div>
-        <MemberList warband={warband} rules={rules} cost={cost} validation={validation} base={base} dispatch={dispatch} />
+        <MemberList warband={warband} rules={rules} cost={cost} validation={validation} base={base} dispatch={dispatch} pending={pending} />
       </section>
 
       <ValidationPanel warband={warband} rules={rules} validation={validation} linkTo={(memberId) => armouryHref(base, memberId)} />

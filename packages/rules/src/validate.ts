@@ -1,3 +1,4 @@
+import { checkBattlekit, type CarriedItem } from "./battlekit.js";
 import { warbandCost } from "./cost.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
@@ -86,23 +87,9 @@ export interface ValidateOptions {
 /** Warbands of Trench Crusade p10, "Maximum Elites". */
 export const MAX_ELITES = 6;
 
-// Access groups whose weapons carry the Shield Combo stipulation in every
-// faction armoury (Warbands of Trench Crusade p24, p50, p74, p106, p129). The
-// dataset has no stipulation field, so the BattleScribe group name stands in.
-// A mercenary's `loadout` is its fixed kit, and the Mamluk Faris's Polearm
-// comes paired with a Trench Shield (p179).
-const SHIELD_COMBO_GROUPS = new Set(["shield-combo", "shield-combos", "bayonet", "loadout"]);
-
 interface ResolvedMember {
   member: WarbandMember;
   unit: RosterUnit;
-}
-
-interface CarriedItem {
-  itemId: string;
-  item: EquipmentItem;
-  access: RosterAccess;
-  count: number;
 }
 
 interface TakenUpgrade {
@@ -110,8 +97,6 @@ interface TakenUpgrade {
   unit: RosterUnit;
   count: number;
 }
-
-const hasKeyword = (keywords: string[], re: RegExp) => keywords.some((k) => re.test(k.trim()));
 
 export function validateWarband(input: Warband, data: RulesData, opts: ValidateOptions = {}): ValidationResult {
   const errors: RosterError[] = [];
@@ -204,9 +189,12 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   const carriedByItem = new Map<string, { total: number; sample: CarriedItem; memberId: string }>();
   const takenByUpgrade = new Map<string, { total: number; rows: TakenUpgrade[] }>();
   for (const { member, unit } of members) {
+    const where = { memberId: member.id, unitId: unit.id };
     const carried = checkMemberItems(member, unit, data, warband, ctx, fail, warn);
     const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
-    checkBattlekit(member, unit, carried, fail, warn);
+    const kit = checkBattlekit(unit, carried);
+    for (const e of kit.errors) fail({ ...where, ...e });
+    for (const w of kit.warnings) warn({ ...where, ...w });
     for (const c of carried) {
       const entry = carriedByItem.get(c.itemId);
       if (entry) entry.total += c.count;
@@ -597,125 +585,4 @@ function checkMemberUpgrades(
     }
   }
   return [...taken.values()];
-}
-
-interface TwoHanded {
-  name: string;
-  combo: boolean;
-}
-
-// Digital Rulebook p69 "Battlekit Limits" and "Shields"; HELD p55, HEAVY p55,
-// STRONG p57; Headgear and Bayonet Lugs from Warbands of Trench Crusade p11.
-function checkBattlekit(
-  member: WarbandMember,
-  unit: RosterUnit,
-  carried: CarriedItem[],
-  fail: (e: RosterError) => void,
-  warn: (w: Omit<RosterWarning, "code">) => void,
-): void {
-  const where = { memberId: member.id, unitId: unit.id };
-  const strong = hasKeyword(unit.keywords, /^strong$/i);
-  const negateHeavy = strong || hasKeyword(unit.keywords, /^negate heavy$/i);
-
-  let shields = 0;
-  let armour = 0;
-  let headgear = 0;
-  let heavy = 0;
-  let heldHands = 0;
-  let ranged1 = 0;
-  let melee1 = 0;
-  const ranged2: TwoHanded[] = [];
-  const melee2: TwoHanded[] = [];
-  const grenadeTypes: string[] = [];
-  const rangedNames: string[] = [];
-  const bayonets: CarriedItem[] = [];
-
-  for (const { item, access, count } of carried) {
-    const combo = SHIELD_COMBO_GROUPS.has(access.group);
-    if (hasKeyword(item.keywords, /^heavy(\s|$)/i)) heavy += count;
-    if (access.group === "headgear") headgear += count;
-    if (access.group === "bayonet") bayonets.push({ item, access, count, itemId: item.id });
-
-    switch (item.category) {
-      case "shield":
-        shields += count;
-        break;
-      case "armour":
-        armour += count;
-        break;
-      case "grenade":
-        grenadeTypes.push(item.name);
-        break;
-      case "ranged":
-        rangedNames.push(item.name);
-        if (item.hands === 2) for (let i = 0; i < count; i++) ranged2.push({ name: item.name, combo });
-        else if (item.hands === 1) ranged1 += count;
-        break;
-      case "melee":
-        if (item.hands === 2) for (let i = 0; i < count; i++) melee2.push({ name: item.name, combo });
-        else if (item.hands === 1) melee1 += count;
-        break;
-      default:
-        if (hasKeyword(item.keywords, /^held$/i)) heldHands += count;
-        else if (item.hands) heldHands += item.hands * count;
-        if (item.category === "equipment" && count > 1) {
-          fail({ ...where, code: "battlekit-duplicate", itemId: item.id, message: `${item.name} taken ${count} times; one piece of Equipment with the same name per model` });
-        }
-    }
-  }
-
-  // STRONG: one 2-Handed Melee Weapon is used as if 1-Handed (p57). Spend it
-  // on a weapon without Shield Combo first, since that is the one a shield blocks.
-  if (strong && melee2.length > 0) {
-    const idx = Math.max(0, melee2.findIndex((w) => !w.combo));
-    melee2.splice(idx, 1);
-    melee1 += 1;
-  }
-
-  const slotViolation = (two: number, one: number) => two > 1 || (two === 1 && one > 0) || one > 2;
-  if (slotViolation(ranged2.length, ranged1)) {
-    fail({ ...where, code: "battlekit-ranged", message: `${unit.name}: one 2-Handed or two 1-Handed Ranged Weapons (has ${ranged2.length} x 2H, ${ranged1} x 1H)` });
-  }
-  if (slotViolation(melee2.length, melee1)) {
-    fail({ ...where, code: "battlekit-melee", message: `${unit.name}: one 2-Handed or two 1-Handed Melee Weapons (has ${melee2.length} x 2H, ${melee1} x 1H)` });
-  }
-  if (grenadeTypes.length > 1) {
-    fail({ ...where, code: "battlekit-grenade", message: `${unit.name}: one type of Grenade (has ${grenadeTypes.join(", ")})` });
-  }
-  if (armour > 1) fail({ ...where, code: "battlekit-armour", message: `${unit.name}: one suit of Armour (has ${armour})` });
-  if (shields > 1) fail({ ...where, code: "battlekit-shield", message: `${unit.name}: one Shield (has ${shields})` });
-  if (headgear > 1) fail({ ...where, code: "battlekit-headgear", message: `${unit.name}: one piece of Headgear (has ${headgear})` });
-  if (heavy > 1 && !negateHeavy) {
-    fail({ ...where, code: "battlekit-heavy", message: `${unit.name}: one piece of HEAVY Battlekit unless STRONG (has ${heavy})` });
-  }
-
-  const occupied = shields + heldHands;
-  const weapons = ranged1 + melee1 + ranged2.length + melee2.length;
-  if (occupied > 2) {
-    fail({ ...where, code: "battlekit-hands", message: `${unit.name}: Shields and HELD Battlekit need ${occupied} hands; a model has two` });
-  } else if (occupied > 0) {
-    if (heldHands > 0 && shields > 0 && weapons > 0) {
-      fail({ ...where, code: "battlekit-hands", message: `${unit.name}: a model with HELD Battlekit cannot carry both a Weapon and a Shield` });
-    } else if (occupied >= 2 && weapons > 0) {
-      fail({ ...where, code: "battlekit-hands", message: `${unit.name}: both hands are taken by Shields/HELD Battlekit; no Weapons can be carried` });
-    } else {
-      if (ranged1 > 1 || melee1 > 1) {
-        fail({ ...where, code: "battlekit-hands", message: `${unit.name}: with a Shield or HELD Battlekit, at most one 1-Handed Melee and one 1-Handed Ranged Weapon` });
-      }
-      for (const w of [...ranged2, ...melee2]) {
-        if (shields > 0 && heldHands === 0 && w.combo) {
-          warn({ ...where, message: `${w.name} with a Shield relies on Shield Combo; the Shield's own stipulation is not encoded in the data, so it is assumed` });
-        } else {
-          fail({ ...where, code: "battlekit-hands", message: `${unit.name}: ${w.name} is 2-Handed and cannot be carried with a Shield or HELD Battlekit${w.combo ? "" : " (no Shield Combo)"}` });
-        }
-      }
-    }
-  }
-
-  for (const b of bayonets) {
-    const lugs = (b.access.attachesTo ?? []).map(normaliseName);
-    if (!rangedNames.some((n) => lugs.includes(normaliseName(n)))) {
-      fail({ ...where, code: "bayonet-lug", itemId: b.item.id, message: `${b.item.name} needs a Ranged Weapon with a Bayonet Lug (${(b.access.attachesTo ?? []).join(", ")})` });
-    }
-  }
 }

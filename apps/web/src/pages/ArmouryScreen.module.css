@@ -14,7 +14,7 @@
 }
 .grid {
   display: grid;
-  grid-template-columns: minmax(300px, 2fr) minmax(360px, 3fr);
+  grid-template-columns: minmax(360px, 1fr) minmax(320px, 1fr);
   gap: 1rem;
   align-items: start;
 }
@@ -22,4 +22,13 @@
   .grid {
     grid-template-columns: 1fr;
   }
+}
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+.hint {
+  color: var(--ink-muted);
 }

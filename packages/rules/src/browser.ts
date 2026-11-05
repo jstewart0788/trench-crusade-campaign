@@ -6,5 +6,6 @@ export * from "./data.js";
 export * from "./roster.js";
 export * from "./cost.js";
 export * from "./limits.js";
+export * from "./battlekit.js";
 export * from "./validate.js";
 export * from "./export.js";

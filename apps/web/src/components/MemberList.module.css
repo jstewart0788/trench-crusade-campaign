@@ -84,3 +84,12 @@
   margin-right: auto;
   font-size: 0.9rem;
 }
+.pending {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brass);
+  border: 1px solid var(--brass);
+  border-radius: 2px;
+  padding: 0 0.3rem;
+}

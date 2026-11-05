@@ -1,12 +1,13 @@
 import { limitContext, validateWarband, warbandCost, warbandThreshold, type RulesData, type Warband } from "@tc/rules/browser";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api, ApiRequestError, type SavedWarband } from "../api.js";
 import { Header } from "../components/Header.js";
 import { Tabs } from "../components/Tabs.js";
 import { rosterReducer } from "../roster/reducer.js";
+import { applyPending, EMPTY_PENDING, pendingCount, pendingDelta, stagingReducer, type Pending, type StagingAction } from "../roster/staging.js";
 import { useRules } from "../rules.js";
-import { clearDraft, loadDraft, rememberSaved, saveDraft } from "../storage.js";
+import { clearDraft, loadDraft, loadPending, movePending, rememberSaved, saveDraft, savePending } from "../storage.js";
 import { DRAFT_CODE, warbandBase, type WarbandContext } from "./warbandContext.js";
 import styles from "./WarbandLayout.module.css";
 
@@ -85,31 +86,60 @@ interface ShellProps {
 }
 
 function Shell({ rules, initial, code, onSaved }: ShellProps) {
-  const [warband, dispatch] = useReducer(rosterReducer, initial);
+  const storageKey = code ?? DRAFT_CODE;
+  const [confirmed, dispatch] = useReducer(rosterReducer, initial);
+  const [pending, setPending] = useState<Pending>(() => loadPending(storageKey));
   const [save, setSave] = useState<{ busy: boolean; error?: string; snapshot?: string }>({ busy: false, snapshot: code ? JSON.stringify(initial) : undefined });
 
-  const ctx = useMemo(() => limitContext(warband, rules), [warband, rules]);
-  const validation = useMemo(() => validateWarband(warband, rules), [warband, rules]);
-  const cost = useMemo(() => warbandCost(warband, rules), [warband, rules]);
-  const threshold = useMemo(() => warbandThreshold(warband, rules), [warband, rules]);
+  const stage = useCallback((action: StagingAction) => setPending((p) => stagingReducer(p, action)), []);
+  const staged = useMemo(() => applyPending(confirmed, pending), [confirmed, pending]);
+
+  // Members removed in the Barracks take their pending purchases with them.
+  const memberKey = confirmed.members.map((m) => m.id).join("\u0000");
+  useEffect(() => {
+    const memberIds = memberKey ? memberKey.split("\u0000") : [];
+    setPending((p) => (Object.keys(p).every((id) => memberIds.includes(id)) ? p : stagingReducer(p, { type: "prune", memberIds })));
+  }, [memberKey]);
 
   useEffect(() => {
-    if (!code) saveDraft(warband);
-  }, [warband, code]);
+    if (!code) saveDraft(confirmed);
+  }, [confirmed, code]);
+  useEffect(() => {
+    savePending(storageKey, pending);
+  }, [pending, storageKey]);
 
-  const dirty = JSON.stringify(warband) !== save.snapshot;
+  const ctx = useMemo(() => limitContext(staged, rules), [staged, rules]);
+  const validation = useMemo(() => validateWarband(staged, rules), [staged, rules]);
+  const cost = useMemo(() => warbandCost(staged, rules), [staged, rules]);
+  const threshold = useMemo(() => warbandThreshold(staged, rules), [staged, rules]);
+  const delta = useMemo(() => pendingDelta(confirmed, pending, rules), [confirmed, pending, rules]);
+  const count = pendingCount(pending);
+  const canConfirm = count > 0 && validation.errors.length === 0;
 
+  const confirmPurchases = () => {
+    if (!canConfirm) return;
+    dispatch({ type: "apply-purchases", pending });
+    setPending(EMPTY_PENDING);
+  };
+  const discardPurchases = () => setPending(EMPTY_PENDING);
+
+  const dirty = JSON.stringify(confirmed) !== save.snapshot;
+
+  // The API only ever receives the confirmed roster; staged purchases stay in this browser.
   async function persist() {
     setSave((s) => ({ ...s, busy: true, error: undefined }));
     try {
-      const saved = code ? await api.replaceWarband(code, warband) : await api.createWarband(warband);
+      const saved = code ? await api.replaceWarband(code, confirmed) : await api.createWarband(confirmed);
       rememberSaved({
         code: saved.code,
         name: saved.warband.name,
         factionName: rules.factionsById.get(saved.warband.factionId)?.name ?? saved.warband.factionId,
         savedAt: saved.updatedAt,
       });
-      if (!code) clearDraft();
+      if (!code) {
+        clearDraft();
+        movePending(DRAFT_CODE, saved.code);
+      }
       setSave({ busy: false, snapshot: JSON.stringify(saved.warband) });
       onSaved(saved);
     } catch (e) {
@@ -118,14 +148,37 @@ function Shell({ rules, initial, code, onSaved }: ShellProps) {
   }
 
   const base = warbandBase(code);
-  const context: WarbandContext = { rules, warband, code, base, dispatch, ctx, validation, cost, threshold };
+  const context: WarbandContext = {
+    rules,
+    warband: staged,
+    confirmed,
+    code,
+    base,
+    dispatch,
+    pending,
+    stage,
+    pendingCount: count,
+    delta,
+    canConfirm,
+    confirmPurchases,
+    discardPurchases,
+    ctx,
+    validation,
+    cost,
+    threshold,
+  };
 
   return (
     <div className={styles.shell}>
       <Header
-        warband={warband}
+        warband={staged}
         rules={rules}
         cost={cost}
+        delta={delta}
+        pendingCount={count}
+        canConfirm={canConfirm}
+        onConfirm={confirmPurchases}
+        onDiscard={discardPurchases}
         threshold={threshold}
         validation={validation}
         code={code}

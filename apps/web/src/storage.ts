@@ -1,4 +1,5 @@
 import type { Warband } from "@tc/rules/browser";
+import type { Pending } from "./roster/staging.js";
 
 // Everything this browser remembers: the codes it has saved and the one
 // unsaved draft. localStorage can be absent or throw (private windows), so
@@ -55,4 +56,36 @@ export function saveDraft(warband: Warband): void {
 
 export function clearDraft(): void {
   write(DRAFT_KEY, undefined);
+}
+
+// Staged (unconfirmed) purchases, keyed by the warband code or "draft", so a
+// reload keeps them and the saved roster never carries them.
+
+const PENDING_KEY = "tc.roster.pending";
+
+function readPendingMap(): Record<string, Pending> {
+  const map = read<Record<string, Pending>>(PENDING_KEY);
+  return map && typeof map === "object" ? map : {};
+}
+
+export function loadPending(key: string): Pending {
+  const pending = readPendingMap()[key];
+  return pending && typeof pending === "object" ? pending : {};
+}
+
+export function savePending(key: string, pending: Pending): void {
+  const map = readPendingMap();
+  if (Object.keys(pending).length === 0) delete map[key];
+  else map[key] = pending;
+  write(PENDING_KEY, Object.keys(map).length ? map : undefined);
+}
+
+/** When a draft gets its code, its pending purchases follow it. */
+export function movePending(from: string, to: string): void {
+  const map = readPendingMap();
+  const pending = map[from];
+  if (!pending) return;
+  delete map[from];
+  map[to] = pending;
+  write(PENDING_KEY, map);
 }

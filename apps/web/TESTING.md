@@ -63,28 +63,70 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
   eaten; the row keeps "Yeoman" as its title.
 - **Remove** one Yeoman, then Add it back: the roster is six rows again.
 
-## 5. Armoury
+## 5. Armoury: the figure
 
-- Click **Equip** on the Lieutenant row: URL `/w/draft/armoury?member=m1`, Armoury tab lit,
-  the "Equipping" select shows "Lieutenant". Left panel: "Lieutenant", custom name field, stat
-  line `Mov 6"/Infantry · Rng +2 · Mel +2 · Arm 0 · 32mm`, "Carrying: Nothing yet", model total
-  70d.
-- Right panel groups in this order: Ranged 1-handed, Ranged 2-handed, Bayonets, Melee
-  1-handed, Melee 2-handed, Shield combo, Shields, Armour, Headgear, Grenades, Equipment, …
-  Every row shows a price; no row shows "needs …", "not with …" or "not checked". The panel
-  ends with a quiet "N options hidden by campaign rules we can't check yet" line.
-- **+ Sword/Axe** (4d), **+ Pistol** (6d), **+ Standard Armour** (15d): chips appear in the
-  left panel, model total 95d, header 260 / 700. Standard Armour shows "1/1" and its + is
-  disabled. Click the chip's × on Sword/Axe, then + again: back to 95d.
-- Same-model gate: Heavy Ballistic Shield is **absent** from Shields. **+ Machine Armour**
-  (Armour): Heavy Ballistic Shield now appears under Shields, and the header shows **1 error**
-  because two suits of armour are on. Remove Machine Armour with −: the shield row disappears
-  again and the error clears.
-- Change the "Equipping" select to a Yeoman: URL updates, the lists re-filter. **+ Bolt-Action
-  Rifle** (5d), **+ Bayonet** (2d). Add a second Bolt-Action Rifle: header shows **1 error**;
-  remove it with −.
-- Repeat rifle + bayonet on the other three Yeomen via the select; give the Shocktrooper a
-  **Submachine Gun** (30d, under Shield combo). Header: **318 / 700 ducats**, **Legal**.
+- Click **Equip** on the Lieutenant row: URL `/w/draft/armoury?member=m1`, Armoury tab lit, the
+  "Equipping" select shows "Lieutenant". Left column: the Lieutenant panel (custom name field,
+  stat line `Mov 6"/Infantry · Rng +2 · Mel +2 · Arm 0 · 32mm`, "Model total 70d"), then the
+  **figure**: a brass silhouette with eight dashed slots laid over it: Head on top; Ranged /
+  Torso / Melee on the first row; Ranged / Off-hand / Melee on the second; Grenades at the
+  bottom. Every slot reads "empty". Below it the **Inventory** panel ("Nothing in the pack",
+  "Add to inventory"). Right column: the hint "Click a slot on the figure to equip it…".
+- Click the top **Melee** slot: the right column becomes the picker "Melee · Melee hands" with
+  the hint "one 2-Handed or two 1-Handed Melee Weapons" and a list with prices. Press
+  **Escape**: it closes. Click it again, pick **Sword/Axe** (4d): the slot fills, the item has a
+  brass outline and a "PENDING" chip, the picker closes. Header: **70 → 74 / 700 ducats** with a
+  "+4" chip, buttons **Discard changes** and **Confirm purchases (1)**; Save is no longer the
+  brass button. The model total reads "70d → 74d".
+- Top **Ranged** slot → pick **Pistol** (6d). **Torso** → **Standard Armour** (15d). Header
+  70 → 95 (+25), Confirm purchases (3).
+- Click the filled **Torso** slot: the picker shows "Standard Armour [Undo]" and "Swap for" with
+  "Nothing fits here" (one suit of armour). Click **Undo**: the slot empties, header back to
+  (+10), Confirm (2). Put Standard Armour back.
+- **Confirm purchases (3)**: the chips and outlines vanish, header reads **95 / 700**, "Saved"
+  turns into "Unsaved changes" (the roster changed), the Confirm/Discard buttons are gone.
+- Network: nothing was sent to `/api/warbands` by any of the above (pending purchases never
+  leave the browser; only Save sends, and it sends the confirmed roster).
+
+## 5b. Armoury: hands, shields and bayonets
+
+- Select a Yeoman. Top **Ranged** → **Bolt-Action Rifle** (5d): the slot reads "Bolt-Action
+  Rifle · both hands" and the second Ranged slot turns dotted with "Bolt-Action Rifle" in
+  italics. Click that covered slot: the picker says "Taken by Bolt-Action Rifle (both hands)",
+  then an **Attach** section with **Bayonet** (2d), then "Replace with" listing Pistol,
+  Submachine Gun, Machine Gun… but not Bolt-Action Rifle itself. Press Escape.
+- Open the filled top Ranged slot: the same Attach / "Swap for" split. Pick **Bayonet** under
+  Attach: the rifle stays, "+ Bayonet" with a PENDING chip appears under it, and both **Melee**
+  slots turn dotted with "Bayonet (fixed)". Click a Melee slot: "Taken by Bayonet (fixed
+  bayonet)" and "Nothing fits here" (the bayonet is the model's 2-handed melee weapon).
+- **Confirm purchases**. Header Legal. **Off-hand** → the list has no Trench Shield (a
+  2-handed rifle cannot pair with a shield). Open the rifle slot, **Swap for** →
+  **Submachine Gun** (30d): the SMG fills the slot with PENDING, the rifle appears struck with
+  REMOVING under **Leaving** (Keep brings it back), and the bayonet drops to **No room** (no
+  lug any more): remove it there. **Off-hand** → **Trench Shield** (10d) is now offered
+  (Shield Combo): pick it. Header shows 1 warning and no error. Confirm purchases.
+- **Grenades** → **Frag Grenades** (7d). Open Grenades again: "Swap for" lists Molotov
+  Cocktail, Greek Fire… (one kind at a time, so swapping is the only way to a second kind).
+  **Head** → **Combat Helmet** (5d); open Head again: "Nothing fits here".
+- **Add to inventory** → pick **Medikit** (5d): it lists under Inventory with a PENDING chip
+  and "Undo". Confirm purchases.
+- Put **Mountaineer Kit** (3d) in the inventory of four Yeomen (confirming each; on the fourth
+  the row read "3/4 in warband"); on a fifth model the inventory picker no longer offers it.
+
+## 5c. Staging survives, and errors block Confirm
+
+- Stage a purchase and reload the page: the PENDING chip is still there and the header still
+  shows the → delta (pending purchases are kept in this browser, per warband). **Discard
+  changes**: everything pending vanishes and the totals return.
+- The picker will not offer anything that breaks a model's own battlekit rules, so the error
+  that blocks Confirm is a warband-level one: stage a **Machine Gun** (50d) on every Yeoman via
+  the top Ranged slot's "Swap for" until the header's ducats pass 700. The figure turns red,
+  the badge reads **1 error**, and **Confirm purchases** is disabled with the tooltip "Fix the
+  errors before confirming". Undo one Machine Gun (open its slot, Undo): Confirm re-enables.
+  Discard changes.
+- With purchases pending, **Save** (or "Save changes") still works and sends only the
+  confirmed roster: Network → `PUT /api/warbands/…` body has no pending items; after the save
+  the PENDING chips are still on the figure.
 
 ## 6. Warband screen
 
@@ -129,5 +171,6 @@ The api line should print `rules: .../data/rules (103 units, 213 items)` and
 - Reload any warband screen: `GET /api/rules` is served from cache or 304 with the same `etag`.
 
 Anything red in the console, any 4xx/5xx other than the deliberate 404 in step 8, any "needs",
-"not with" or "not checked" text on a Barracks or Armoury row, or any figure that disagrees
-with this script is a defect: note the step and the exact text.
+"not with" or "not checked" text on a Barracks row or in a picker, a request to `/api/warbands`
+carrying an unconfirmed item, or any figure that disagrees with this script is a defect: note
+the step and the exact text.

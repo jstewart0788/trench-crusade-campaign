@@ -82,3 +82,21 @@
   letter-spacing: 0.15em;
   color: var(--brass);
 }
+.was {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}
+.delta {
+  margin-left: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--brass);
+  border: 1px solid var(--brass-dim);
+  border-radius: 2px;
+  padding: 0 0.3rem;
+}
+.divider {
+  width: 1px;
+  height: 1.4rem;
+  background: var(--line-strong);
+}

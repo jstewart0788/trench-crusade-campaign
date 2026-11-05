@@ -5,7 +5,7 @@ import { useWarband } from "./warbandContext.js";
 import styles from "./BarracksScreen.module.css";
 
 export function BarracksScreen() {
-  const { rules, warband, base, ctx, cost, validation, dispatch } = useWarband();
+  const { rules, warband, base, ctx, cost, validation, dispatch, pending } = useWarband();
   const n = warband.members.length;
   return (
     <div className={styles.grid}>
@@ -13,7 +13,7 @@ export function BarracksScreen() {
         <h2>
           Roster · {n} {n === 1 ? "model" : "models"}
         </h2>
-        <MemberList warband={warband} rules={rules} cost={cost} validation={validation} base={base} dispatch={dispatch} manage />
+        <MemberList warband={warband} rules={rules} cost={cost} validation={validation} base={base} dispatch={dispatch} manage pending={pending} />
       </section>
       <section className={styles.column}>
         <RecruitList

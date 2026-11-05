@@ -1,0 +1,108 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+}
+.panel:focus {
+  outline: 1px solid var(--brass);
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.head .quiet {
+  margin: 0;
+}
+.current {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background: var(--bg-sunken);
+}
+.group {
+  margin-top: 0.4rem;
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "main price"
+    "counts counts";
+  gap: 0.1rem 0.75rem;
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid transparent;
+  border-bottom-color: var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.row:hover {
+  background: var(--bg-sunken);
+  border-color: var(--brass-dim);
+}
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.name {
+  font-family: var(--font-display);
+}
+.detail {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.price {
+  grid-area: price;
+  font-family: var(--font-mono);
+  color: var(--brass);
+  white-space: nowrap;
+}
+.counts {
+  grid-area: counts;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+.struck {
+  text-decoration: line-through;
+  color: var(--ink-muted);
+}
+.chipAdd,
+.chipRemove {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  padding: 0 0.3rem;
+  margin-left: 0.4rem;
+}
+.chipAdd {
+  color: var(--brass);
+  border: 1px solid var(--brass);
+}
+.chipRemove {
+  color: var(--blood);
+  border: 1px solid var(--blood);
+}

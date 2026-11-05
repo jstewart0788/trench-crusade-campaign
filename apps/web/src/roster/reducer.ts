@@ -1,4 +1,5 @@
 import type { Warband, WarbandMember } from "@tc/rules/browser";
+import { applyPending, type Pending } from "./staging.js";
 
 // The builder's state is the Warband itself: every action returns a new
 // roster that is valid JSON for POST /api/warbands. Nothing here reads the
@@ -18,7 +19,9 @@ export type RosterAction =
   | { type: "add-item"; memberId: string; itemId: string }
   | { type: "remove-item"; memberId: string; itemId: string }
   | { type: "add-upgrade"; memberId: string; upgradeId: string }
-  | { type: "remove-upgrade"; memberId: string; upgradeId: string };
+  | { type: "remove-upgrade"; memberId: string; upgradeId: string }
+  /** Confirm purchases: every member's staged changes written to the roster at once. */
+  | { type: "apply-purchases"; pending: Pending };
 
 export interface NewWarbandInit {
   name: string;
@@ -104,5 +107,7 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
         const upgradeIds = removeLast(m.upgradeIds ?? [], action.upgradeId);
         return withOptional({ ...m, upgradeIds }, "upgradeIds", upgradeIds.length ? upgradeIds : undefined);
       });
+    case "apply-purchases":
+      return applyPending(state, action.pending);
   }
 }
