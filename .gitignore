@@ -4,6 +4,7 @@ dist/
 .env
 .env.*
 *.log
+*.tsbuildinfo
 .DS_Store
 
 # Copyrighted source material stays local — never commit the rulebooks or raw workshop dumps
@@ -12,3 +13,10 @@ data/raw/
 
 # Packed TTS saves are derived from mod/ (pnpm mod:build)
 mod/build/
+
+# The roster API's local SQLite database (apps/api/data/roster.sqlite by default)
+apps/api/data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm

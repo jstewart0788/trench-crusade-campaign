@@ -1,0 +1,51 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.nav {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-raised);
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
+  color: var(--brass);
+  text-decoration: none;
+}
+.sub {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-left: 0.5rem;
+}
+.links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.links a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.primary {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--brass);
+  border-radius: 3px;
+  color: var(--brass) !important;
+}
+.main {
+  flex: 1;
+  padding: 1.25rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}

@@ -1,0 +1,105 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.empty {
+  color: var(--ink-muted);
+}
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 4px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  cursor: pointer;
+}
+.card:hover {
+  border-color: var(--line-strong);
+}
+.selected {
+  border-left-color: var(--brass);
+  background: #221e17;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.unit {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+.tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brass-dim);
+  border: 1px solid var(--brass-dim);
+  border-radius: 2px;
+  padding: 0 0.3rem;
+}
+.issues {
+  font-size: 0.75rem;
+  color: var(--blood);
+}
+.cost {
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.nameInput {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--line-strong);
+  border-radius: 0;
+  padding: 0.1rem 0;
+  font-size: 0.9rem;
+}
+.nameInput:focus {
+  outline: none;
+  border-bottom-color: var(--brass);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 0.05rem 0.2rem 0.05rem 0.45rem;
+}
+.upgradeChip {
+  border-color: var(--brass-dim);
+}
+.chipRemove {
+  background: none;
+  border: none;
+  padding: 0 0.2rem;
+  color: var(--ink-muted);
+  line-height: 1;
+}
+.chipRemove:hover {
+  color: var(--blood);
+}
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}

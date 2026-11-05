@@ -1,0 +1,35 @@
+.ok {
+  color: var(--moss);
+  padding: 0.5rem 1rem;
+}
+.panel {
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.list li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+.subject {
+  font-weight: 600;
+}

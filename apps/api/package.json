@@ -1,0 +1,31 @@
+{
+  "name": "@tc/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @tc/rules build && tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@tc/rules": "workspace:*",
+    "better-sqlite3": "^12.2.0",
+    "cors": "^2.8.5",
+    "drizzle-orm": "^0.44.0",
+    "express": "^5.1.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/supertest": "^6.0.3",
+    "drizzle-kit": "^0.31.0",
+    "supertest": "^7.1.0",
+    "tsx": "^4.20.0"
+  }
+}

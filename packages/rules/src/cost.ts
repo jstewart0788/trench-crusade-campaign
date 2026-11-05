@@ -1,4 +1,4 @@
-import { accessFor, findUnit, upgradeFor, type RulesData } from "./load.js";
+import { accessFor, findUnit, upgradeFor, type RulesData } from "./data.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import type { Cost } from "./schema.js";
 

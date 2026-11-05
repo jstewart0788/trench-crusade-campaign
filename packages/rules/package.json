@@ -12,5 +12,15 @@
   },
   "dependencies": {
     "zod": "^3.24.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./src/browser.ts",
+      "default": "./dist/browser.js"
+    }
   }
 }

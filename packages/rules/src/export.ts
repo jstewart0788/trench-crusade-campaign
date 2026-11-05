@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { itemCost, warbandCost } from "./cost.js";
 import { normaliseName } from "./limits.js";
-import { findUnit, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./load.js";
+import { findUnit, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
 import type { Warband, WarbandMember } from "./roster.js";
 import { EquipmentCategory, Movement } from "./schema.js";
 import { validateWarband } from "./validate.js";

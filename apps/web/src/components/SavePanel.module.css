@@ -1,0 +1,41 @@
+.panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.code {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+}
+.value {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  letter-spacing: 0.2em;
+  color: var(--brass);
+  padding: 0.1rem 0.5rem;
+  border: 1px dashed var(--brass-dim);
+  border-radius: 3px;
+}
+.url {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}

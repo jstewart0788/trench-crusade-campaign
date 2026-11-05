@@ -1,6 +1,17 @@
 import { warbandCost } from "./cost.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
-import { accessFor, findUnit, thresholdFor, upgradeFor, type RosterAccess, type RosterUnit, type RulesData, type Upgrade } from "./load.js";
+import {
+  accessFor,
+  findUnit,
+  thresholdFor,
+  upgradeFor,
+  type Campaign,
+  type RosterAccess,
+  type RosterUnit,
+  type RulesData,
+  type ThresholdRow,
+  type Upgrade,
+} from "./data.js";
 import { Warband as WarbandSchema, type Warband, type WarbandMember } from "./roster.js";
 import type { EquipmentItem } from "./schema.js";
 
@@ -166,10 +177,9 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   const cost = warbandCost(warband, data);
   let threshold = opts.threshold;
   if (threshold === undefined) {
-    const t = thresholdFor(data, warband.gameNumber);
-    threshold = t.row.threshold;
+    const t = warbandThreshold(warband, data);
+    threshold = t.value;
     if (t.clamped) warn({ message: `Threshold table ends at game ${t.row.game}; using ${t.row.threshold} for game ${warband.gameNumber}` });
-    if (variant?.startingDucats !== undefined) threshold -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
   }
   if (cost.ducats > threshold) {
     fail({ code: "over-threshold", message: `Warband costs ${cost.ducats} ducats; Threshold Value is ${threshold}` });
@@ -242,6 +252,93 @@ function sameFactionName(a: string, b: string): boolean {
   return norm(a) === norm(b);
 }
 
+/** Patrons that sponsor the faction (campaign.json spells faction names slightly differently from factions.json). */
+export function patronsForFaction(data: RulesData, factionId: string): Campaign["patrons"] {
+  const faction = data.factionsById.get(factionId);
+  if (!faction) return [];
+  return data.campaign.patrons.filter((p) => p.factions.some((name) => sameFactionName(name, faction.name)));
+}
+
+export interface WarbandThreshold {
+  /** Threshold Value the roster is checked against. */
+  value: number;
+  /** The table row it came from, before any variant adjustment. */
+  row: ThresholdRow;
+  clamped: boolean;
+}
+
+/**
+ * Threshold Value for this roster: the table row for its game number, less
+ * the shortfall of a variant that starts with a smaller purse (Papal States:
+ * "Threshold Value is reduced by 200", Warbands p35).
+ */
+export function warbandThreshold(warband: Pick<Warband, "factionId" | "variantId" | "gameNumber">, data: RulesData): WarbandThreshold {
+  const t = thresholdFor(data, warband.gameNumber);
+  let value = t.row.threshold;
+  const variant = data.factionsById.get(warband.factionId)?.variants.find((v) => v.id === warband.variantId);
+  if (variant?.startingDucats !== undefined) value -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
+  return { value, row: t.row, clamped: t.clamped };
+}
+
+/** The counting context the validator uses for limit text and gates, for callers that show limits before validating. */
+export function limitContext(warband: Warband, data: RulesData): LimitContext {
+  const members: ResolvedMember[] = [];
+  for (const member of warband.members) {
+    const unit = findUnit(data, warband.factionId, member.unitId);
+    if (unit && unit.factionId === warband.factionId) members.push({ member, unit });
+  }
+  return buildLimitContext(warband, data, members);
+}
+
+/** Effective per-warband min/max for a unit under this roster (null: no limit). */
+export function unitLimits(unit: RosterUnit, ctx: LimitContext): { min: number | null; max: number | null } {
+  return { min: unitLimit(unit, "min", ctx).value, max: capMax(unit, unitLimit(unit, "max", ctx).value) };
+}
+
+function capMax(unit: RosterUnit, resolved: number | null): number | null {
+  const cap = [resolved, unit.maxPerWarband ?? null].filter((n): n is number => n !== null);
+  return cap.length ? Math.min(...cap) : null;
+}
+
+export interface GateRef {
+  gate: string;
+  list: "onlyWith" | "onlyWithout";
+}
+
+export interface GateResult {
+  /** False when a gate is closed by something the data can count; the validator fails these. */
+  open: boolean;
+  /** What closed it: every onlyWith entry when none matched, or the onlyWithout entries that did. */
+  blockedBy: GateRef[];
+  /** Entries the data cannot count; the validator warns about these instead of failing. */
+  unresolved: GateRef[];
+}
+
+/** Evaluates a unit's, access row's or upgrade's gates the way validateWarband does, for callers that want to show availability before the fact. */
+export function evaluateGates(
+  onlyWith: string[] | undefined,
+  onlyWithout: string[] | undefined,
+  warband: Warband,
+  data: RulesData,
+  ctx: LimitContext,
+  model?: ModelScope,
+): GateResult {
+  const result: GateResult = { open: true, blockedBy: [], unresolved: [] };
+  if (onlyWith && onlyWith.length > 0) {
+    const gate = evalGate(onlyWith, warband, data, ctx, model);
+    if (!gate.matched) {
+      if (gate.unresolved.length > 0) result.unresolved.push(...gate.unresolved.map((g) => ({ gate: g, list: "onlyWith" as const })));
+      else (result.open = false), result.blockedBy.push(...onlyWith.map((g) => ({ gate: g, list: "onlyWith" as const })));
+    }
+  }
+  if (onlyWithout && onlyWithout.length > 0) {
+    const gate = evalGate(onlyWithout, warband, data, ctx, model);
+    if (gate.matched) (result.open = false), result.blockedBy.push(...gate.matchedBy.map((g) => ({ gate: g, list: "onlyWithout" as const })));
+    else result.unresolved.push(...gate.unresolved.map((g) => ({ gate: g, list: "onlyWithout" as const })));
+  }
+  return result;
+}
+
 function warnUnresolved(
   warn: (w: Omit<RosterWarning, "code">) => void,
   unresolved: string[],
@@ -294,9 +391,9 @@ function buildLimitContext(warband: Warband, data: RulesData, members: ResolvedM
   };
 }
 
-type Gate = { matched: boolean; unresolved: string[] };
+type Gate = { matched: boolean; matchedBy: string[]; unresolved: string[] };
 
-interface ModelScope {
+export interface ModelScope {
   member: WarbandMember;
   unit: RosterUnit;
 }
@@ -315,20 +412,21 @@ function countOnModel(model: ModelScope, kind: string, ref: string): number {
  * "Name [Catalogue]" strings counted across the roster. Any match satisfies the gate.
  */
 function evalGate(values: string[] | undefined, warband: Warband, data: RulesData, ctx: LimitContext, model?: ModelScope): Gate {
-  const gate: Gate = { matched: false, unresolved: [] };
+  const gate: Gate = { matched: false, matchedBy: [], unresolved: [] };
+  const match = (v: string) => ((gate.matched = true), gate.matchedBy.push(v));
   for (const v of values ?? []) {
     if (data.variantsById.has(v)) {
-      if (warband.variantId === v) gate.matched = true;
+      if (warband.variantId === v) match(v);
       continue;
     }
     const scoped = SAME_MODEL_GATE.exec(v);
     if (scoped && model) {
-      if (countOnModel(model, scoped[1]!, scoped[2]!) > 0) gate.matched = true;
+      if (countOnModel(model, scoped[1]!, scoped[2]!) > 0) match(v);
       continue;
     }
     const count = ctx.count(scoped ? scoped[2]! : v);
     if (count === undefined) gate.unresolved.push(v);
-    else if (count > 0) gate.matched = true;
+    else if (count > 0) match(v);
   }
   return gate;
 }
@@ -402,8 +500,7 @@ function checkUnitCounts(
     }
 
     const max = unitLimit(unit, "max", ctx);
-    const cap = [max.value, unit.maxPerWarband ?? null].filter((n): n is number => n !== null);
-    const effectiveMax = cap.length ? Math.min(...cap) : null;
+    const effectiveMax = capMax(unit, max.value);
     if (effectiveMax !== null && count > effectiveMax) {
       fail({
         code: unit.mercenary ? "mercenary-limit" : "unit-max",
