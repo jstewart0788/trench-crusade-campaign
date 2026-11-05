@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1104" height="810" viewBox="0 0 1104 810" font-family="Helvetica, Arial, sans-serif">
+<title>Trench Lines — claim-no-mans-land — seed 1</title>
+<rect width="1104" height="810" fill="#f6f3ea"/>
+<text x="28" y="46" font-size="18" font-weight="bold" fill="#2b2620">Trench Lines — claim-no-mans-land — seed 1</text>
+<rect x="28" y="62" width="720" height="720" fill="#e8e1cf" stroke="#2b2620" stroke-width="2"/>
+<polygon points="28,782 148,782 148,62 28,62" fill="rgba(200,40,40,0.16)" stroke="#55504a" stroke-width="1"><title>Deployment Zone (west strip) (A)</title></polygon>
+<text x="32" y="776" font-size="11" fill="#55504a">A</text>
+<polygon points="628,782 748,782 748,62 628,62" fill="rgba(40,80,200,0.16)" stroke="#55504a" stroke-width="1"><title>Deployment Zone (east strip) (B)</title></polygon>
+<text x="632" y="776" font-size="11" fill="#55504a">B</text>
+<line x1="28" y1="782" x2="28" y2="62" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="28" y1="782" x2="748" y2="782" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="108" y1="782" x2="108" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="28" y1="702" x2="748" y2="702" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="188" y1="782" x2="188" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="28" y1="622" x2="748" y2="622" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="268" y1="782" x2="268" y2="62" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="28" y1="542" x2="748" y2="542" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="348" y1="782" x2="348" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="28" y1="462" x2="748" y2="462" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="428" y1="782" x2="428" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="28" y1="382" x2="748" y2="382" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="508" y1="782" x2="508" y2="62" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="28" y1="302" x2="748" y2="302" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="588" y1="782" x2="588" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="28" y1="222" x2="748" y2="222" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="668" y1="782" x2="668" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="28" y1="142" x2="748" y2="142" stroke="#b9b09a" stroke-width="0.6"/>
+<line x1="748" y1="782" x2="748" y2="62" stroke="#8d8572" stroke-width="1.2"/>
+<line x1="28" y1="62" x2="748" y2="62" stroke="#8d8572" stroke-width="1.2"/>
+<rect x="28" y="702" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="108" y="622" width="160" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="268" y="622" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="702" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="428" y="622" width="160" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="668" y="702" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="28" y="542" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="622" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="668" y="542" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="108" y="542" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="188" y="462" width="160" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="462" width="160" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="508" y="542" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="28" y="462" width="160" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="668" y="462" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="28" y="302" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="108" y="382" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="188" y="382" width="160" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="382" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="428" y="382" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="588" y="382" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="668" y="302" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="108" y="302" width="160" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="268" y="302" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="222" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="428" y="302" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="28" y="222" width="160" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="188" y="142" width="160" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="428" y="142" width="160" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="668" y="142" width="80" height="160" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="28" y="142" width="160" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="142" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="28" y="62" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="108" y="62" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="188" y="62" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="268" y="62" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="348" y="62" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="428" y="62" width="160" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="668" y="62" width="80" height="80" fill="none" stroke="#cfc6ad" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="588" y="702" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-0 trench-straight-ledge rotY 0 open NS</title></rect>
+<line x1="628" y1="742" x2="628" y2="702" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="742" x2="628" y2="782" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="742" r="16" fill="#2a241b"/>
+<rect x="588" y="622" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-1 trench-straight-logs rotY 0 open NS</title></rect>
+<line x1="628" y1="662" x2="628" y2="622" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="662" x2="628" y2="702" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="662" r="16" fill="#2a241b"/>
+<rect x="588" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-2 trench-straight-ledge rotY 0 open NS</title></rect>
+<line x1="628" y1="582" x2="628" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="582" x2="628" y2="622" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="582" r="16" fill="#2a241b"/>
+<rect x="508" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-6-3 trench-corner rotY 270 open NE</title></rect>
+<line x1="548" y1="502" x2="548" y2="462" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="548" y1="502" x2="588" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="548" cy="502" r="16" fill="#2a241b"/>
+<rect x="588" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-3 trench-corner rotY 90 open SW</title></rect>
+<line x1="628" y1="502" x2="628" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="502" x2="588" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="502" r="16" fill="#2a241b"/>
+<rect x="508" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-6-4 trench-straight-ledge rotY 0 open NS</title></rect>
+<line x1="548" y1="422" x2="548" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="548" y1="422" x2="548" y2="462" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="548" cy="422" r="16" fill="#2a241b"/>
+<rect x="508" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-6-5 trench-corner rotY 0 open ES</title></rect>
+<line x1="548" y1="342" x2="588" y2="342" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="548" y1="342" x2="548" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="548" cy="342" r="16" fill="#2a241b"/>
+<rect x="588" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-5 trench-corner rotY 180 open NW</title></rect>
+<line x1="628" y1="342" x2="628" y2="302" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="342" x2="588" y2="342" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="342" r="16" fill="#2a241b"/>
+<rect x="588" y="222" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-6 trench-straight-logs rotY 0 open NS</title></rect>
+<line x1="628" y1="262" x2="628" y2="222" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="262" x2="628" y2="302" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="262" r="16" fill="#2a241b"/>
+<rect x="588" y="142" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-7 trench-straight-logs rotY 0 open NS</title></rect>
+<line x1="628" y1="182" x2="628" y2="142" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="182" x2="628" y2="222" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="182" r="16" fill="#2a241b"/>
+<rect x="588" y="62" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-8 trench-straight-logs rotY 0 open NS</title></rect>
+<line x1="628" y1="102" x2="628" y2="62" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="102" x2="628" y2="142" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="102" r="16" fill="#2a241b"/>
+<rect x="259" y="157" width="18.00" height="50" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>o-obj-1 concrete-cover rotY 0 covers obj-1</title></rect>
+<text x="268" y="186" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="471.10" y="144.90" width="73.80" height="74.20" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>o-obj-2 tower rotY 0 covers obj-2</title></rect>
+<text x="508" y="186" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="363.50" y="400.10" width="49.00" height="43.80" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>o-obj-3 sandbags-corner rotY 90 covers obj-3</title></rect>
+<text x="388" y="426" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="251.40" y="646.10" width="33.20" height="31.80" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>o-obj-4 tower-small rotY 0 covers obj-4</title></rect>
+<text x="268" y="666.00" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="470.90" y="625.10" width="74.20" height="73.80" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>o-obj-5 tower rotY 90 covers obj-5</title></rect>
+<text x="508" y="666" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="348" y="607.80" width="29.40" height="54.20" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-0 water-tank rotY 270</title></rect>
+<text x="362.70" y="638.90" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
+<rect x="478" y="759.60" width="32.60" height="22.40" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-1 artillery rotY 90</title></rect>
+<text x="494.30" y="774.80" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
+<rect x="188" y="492.60" width="54.20" height="29.40" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>d-2 water-tank rotY 180</title></rect>
+<text x="215.10" y="511.30" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
+<rect x="688" y="653.40" width="48.20" height="48.60" fill="#d9534f" fill-opacity="0.85" stroke="#8a2420" stroke-width="1.5"><title>d-3 barbed-wire rotY 180</title></rect>
+<text x="712.10" y="681.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">W</text>
+<rect x="718" y="116.40" width="19.60" height="45.60" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>d-4 difficult-dangerous rotY 90</title></rect>
+<text x="727.80" y="143.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
+<rect x="348" y="153.80" width="48.60" height="48.20" fill="#d9534f" fill-opacity="0.85" stroke="#8a2420" stroke-width="1.5"><title>d-5 barbed-wire rotY 90</title></rect>
+<text x="372.30" y="181.90" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">W</text>
+<rect x="148" y="276.40" width="138.80" height="145.60" fill="#b9a67c" fill-opacity="0.85" stroke="#7a6a47" stroke-width="1.5"><title>d-6 heavy-crater rotY 90</title></rect>
+<text x="217.40" y="353.20" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">C</text>
+<rect x="78" y="637.20" width="47.60" height="74.80" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-7 difficult-mound rotY 180</title></rect>
+<text x="101.80" y="678.60" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
+<rect x="348" y="262" width="80" height="60" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>d-8 difficult-block rotY 180</title></rect>
+<text x="388" y="296" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
+<circle cx="268" cy="182" r="12" fill="#ffffff" fill-opacity="0.9" stroke="#1f1a14" stroke-width="1.5"><title>obj-1: Objective (NW) (covered by o-obj-1)</title></circle>
+<line x1="256" y1="182" x2="280" y2="182" stroke="#1f1a14" stroke-width="1"/>
+<line x1="268" y1="170" x2="268" y2="194" stroke="#1f1a14" stroke-width="1"/>
+<text x="268" y="167" font-size="9" text-anchor="middle" fill="#1f1a14">obj-1</text>
+<circle cx="508" cy="182" r="12" fill="#ffffff" fill-opacity="0.9" stroke="#1f1a14" stroke-width="1.5"><title>obj-2: Objective (NE) (covered by o-obj-2)</title></circle>
+<line x1="496" y1="182" x2="520" y2="182" stroke="#1f1a14" stroke-width="1"/>
+<line x1="508" y1="170" x2="508" y2="194" stroke="#1f1a14" stroke-width="1"/>
+<text x="508" y="167" font-size="9" text-anchor="middle" fill="#1f1a14">obj-2</text>
+<circle cx="388" cy="422" r="12" fill="#ffffff" fill-opacity="0.9" stroke="#1f1a14" stroke-width="1.5"><title>obj-3: Objective (Midpoint) (covered by o-obj-3)</title></circle>
+<line x1="376" y1="422" x2="400" y2="422" stroke="#1f1a14" stroke-width="1"/>
+<line x1="388" y1="410" x2="388" y2="434" stroke="#1f1a14" stroke-width="1"/>
+<text x="388" y="407" font-size="9" text-anchor="middle" fill="#1f1a14">obj-3</text>
+<circle cx="268" cy="662" r="12" fill="#ffffff" fill-opacity="0.9" stroke="#1f1a14" stroke-width="1.5"><title>obj-4: Objective (SW) (covered by o-obj-4)</title></circle>
+<line x1="256" y1="662" x2="280" y2="662" stroke="#1f1a14" stroke-width="1"/>
+<line x1="268" y1="650" x2="268" y2="674" stroke="#1f1a14" stroke-width="1"/>
+<text x="268" y="647" font-size="9" text-anchor="middle" fill="#1f1a14">obj-4</text>
+<circle cx="508" cy="662" r="12" fill="#ffffff" fill-opacity="0.9" stroke="#1f1a14" stroke-width="1.5"><title>obj-5: Objective (SE) (covered by o-obj-5)</title></circle>
+<line x1="496" y1="662" x2="520" y2="662" stroke="#1f1a14" stroke-width="1"/>
+<line x1="508" y1="650" x2="508" y2="674" stroke="#1f1a14" stroke-width="1"/>
+<text x="508" y="647" font-size="9" text-anchor="middle" fill="#1f1a14">obj-5</text>
+<circle cx="628" cy="62" r="4" fill="#ffffff" stroke="#2a241b" stroke-width="1.5"><title>exit N at 7,8</title></circle>
+<circle cx="628" cy="782" r="4" fill="#ffffff" stroke="#2a241b" stroke-width="1.5"><title>exit S at 7,0</title></circle>
+<text x="776" y="82" font-size="14" font-weight="bold" fill="#2b2620">Legend</text>
+<rect x="776" y="88" width="14" height="14" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"/>
+<text x="796" y="100" font-size="12" fill="#2b2620">Trench straight: 7</text>
+<rect x="776" y="106" width="14" height="14" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"/>
+<text x="796" y="118" font-size="12" fill="#2b2620">Trench corner: 4</text>
+<rect x="776" y="124" width="14" height="14" fill="#b9a67c" stroke="#7a6a47" stroke-width="1"/>
+<text x="796" y="136" font-size="12" fill="#2b2620">Crater (C): 1</text>
+<rect x="776" y="142" width="14" height="14" fill="#c4c08f" stroke="#7d7a4a" stroke-width="1"/>
+<text x="796" y="154" font-size="12" fill="#2b2620">Difficult (D): 2</text>
+<rect x="776" y="160" width="14" height="14" fill="#d9534f" stroke="#8a2420" stroke-width="1"/>
+<text x="796" y="172" font-size="12" fill="#2b2620">Barbed wire (W): 2</text>
+<rect x="776" y="178" width="14" height="14" fill="#e5a04a" stroke="#9a5f14" stroke-width="1"/>
+<text x="796" y="190" font-size="12" fill="#2b2620">Dangerous (X): 1</text>
+<rect x="776" y="196" width="14" height="14" fill="#a97c50" stroke="#5e3f1f" stroke-width="1"/>
+<text x="796" y="208" font-size="12" fill="#2b2620">Ruin / wall (R): 5</text>
+<rect x="776" y="214" width="14" height="14" fill="#6f6fb8" stroke="#33337a" stroke-width="1"/>
+<text x="796" y="226" font-size="12" fill="#2b2620">Landmark (L): 3</text>
+<rect x="776" y="232" width="14" height="14" fill="#e8e1cf" stroke="#cfc6ad" stroke-width="1"/>
+<text x="796" y="244" font-size="12" fill="#2b2620">Ground tile: 39</text>
+<text x="776" y="268" font-size="14" font-weight="bold" fill="#2b2620">Trench</text>
+<text x="776" y="282" font-size="12"  fill="#2b2620">axis south-north, 11 cells, main run 11</text>
+<text x="776" y="296" font-size="12"  fill="#2b2620">0 branches (0 loops), 2 edge exits</text>
+<text x="776" y="310" font-size="12"  fill="#2b2620">straight 7 · corner 4 · T 0</text>
+<text x="776" y="324" font-size="12"  fill="#2b2620">search: 2 attempt(s), 0 cover shrink(s)</text>
+<text x="776" y="348" font-size="14" font-weight="bold" fill="#2b2620">Board</text>
+<text x="776" y="362" font-size="12"  fill="#2b2620">36in square, 4in cells (9x9); north is up</text>
+<text x="776" y="376" font-size="12"  fill="#2b2620">39 ground tiles, 14 dressing, 64 objects</text>
+<text x="776" y="390" font-size="12"  fill="#2b2620">objectives: 5 (cover required)</text>
+<text x="776" y="404" font-size="12"  fill="#2b2620">circle on edge = trench runs off the board</text>
+<text x="776" y="428" font-size="14" font-weight="bold" fill="#8a2420">Warnings</text>
+<text x="776" y="440" font-size="10"  fill="#8a2420">scenario claim-no-mans-land lists no-mans-land, not trench-lines</text>
+</svg>

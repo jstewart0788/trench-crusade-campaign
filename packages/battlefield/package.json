@@ -1,0 +1,28 @@
+{
+  "name": "@tc/battlefield",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+    "generate": "tsx src/cli.ts generate",
+    "preview": "tsx src/cli.ts preview"
+  },
+  "dependencies": {
+    "@tc/rules": "workspace:*",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}

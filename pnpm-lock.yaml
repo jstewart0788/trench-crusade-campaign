@@ -92,6 +92,19 @@ importers:
         specifier: ^7.0.0
         version: 7.3.7(@types/node@22.20.5)(tsx@4.23.15)
 
+  packages/battlefield:
+    dependencies:
+      '@tc/rules':
+        specifier: workspace:*
+        version: link:../rules
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+
   packages/rules:
     dependencies:
       zod:
