@@ -2735,6 +2735,18 @@
       "page": 131,
       "confidence": "high",
       "note": "Jealous Obsession: 'The cost of the second Grail Devotee taken for a model is paid in glory'; the second needs a first on the same model. The first may itself be paid in glory (unit-rules.json currencyChoices, TC-003f)"
+    },
+    {
+      "file": "units.json",
+      "id": "iron-sultanate/azeb",
+      "path": "upgrades[name=Light Skirmisher].onlyWithout",
+      "upstream": [
+        "iron-sultanate/the-house-of-wisdom"
+      ],
+      "pdf": null,
+      "page": 94,
+      "confidence": "high",
+      "note": "Kavasses: only the Azebs that take Studied Blade lose Light Skirmisher; upstream bars it from every House of Wisdom Azeb. The exclusion is unit-rules.json upgradeRequirements wisdom-kavasses (TC-003g)"
     }
   ],
   "unresolved": [

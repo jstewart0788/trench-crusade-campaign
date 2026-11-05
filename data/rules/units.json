@@ -27517,9 +27517,6 @@
           "limitsText": "max 1 per model",
           "max": 1,
           "name": "Light Skirmisher",
-          "onlyWithout": [
-            "iron-sultanate/the-house-of-wisdom"
-          ],
           "rules": [
             {
               "name": "Skirmisher",

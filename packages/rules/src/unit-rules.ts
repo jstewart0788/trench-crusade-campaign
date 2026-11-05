@@ -255,6 +255,31 @@ export const MinimumModelCost = z.object({
 });
 export type MinimumModelCost = z.infer<typeof MinimumModelCost>;
 
+/**
+ * What an upgrade needs, or rules out, on the same model, by upgrade name:
+ * every `requires` (a Legionnaire before its +1, NR p28), none of `excludes`
+ * unless the model has `unless` (Hawk Eyes and Hypnotic Eyes need Two Heads,
+ * p96), at most `maxOf` of the rule's own upgrades ("either Ranged or Melee"),
+ * none of `excludesItems`, none of `withoutKeywords` (Unseen Advance: models
+ * without ELITE).
+ */
+export const UpgradeRequirement = z.object({
+  id: z.string(),
+  name: z.string(),
+  unitIds: Ids,
+  upgrades: Ids,
+  requires: z.array(z.string()).optional(),
+  excludes: z.array(z.string()).optional(),
+  unless: z.string().optional(),
+  maxOf: z.number().int().positive().optional(),
+  excludesItems: z.array(z.string()).optional(),
+  withoutKeywords: z.array(z.string()).optional(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type UpgradeRequirement = z.infer<typeof UpgradeRequirement>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -275,6 +300,7 @@ export const UnitRulesFile = z.object({
   warbandHeldItems: z.array(WarbandHeldItem),
   currencyChoices: z.array(CurrencyChoice),
   minimumModelCosts: z.array(MinimumModelCost),
+  upgradeRequirements: z.array(UpgradeRequirement),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -489,6 +515,19 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
   for (const rule of file.warbandHeldItems) {
     const where = `warbandHeldItems.${rule.id}`;
     if (!listUnits(where, rule.under).some((u) => u.equipmentAccess.some((a) => a.itemId === rule.itemId))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers "${rule.itemId}"`);
+  }
+  for (const rule of file.upgradeRequirements) {
+    const where = `upgradeRequirements.${rule.id}`;
+    for (const unitId of rule.unitIds) {
+      const unit = unitOf(where, unitId);
+      if (!unit) continue;
+      const names = new Set((unit.upgrades ?? []).map((g) => g.name));
+      for (const n of [...rule.upgrades, ...(rule.requires ?? []), ...(rule.excludes ?? []), ...(rule.unless ? [rule.unless] : [])]) {
+        if (!names.has(n)) problems.push(`${where}: ${unitId} has no upgrade "${n}"`);
+      }
+      for (const itemId of rule.excludesItems ?? []) rowOf(where, unit, itemId);
+    }
+    if (!rule.requires?.length && !rule.excludes?.length && !rule.maxOf && !rule.excludesItems?.length && !rule.withoutKeywords?.length) problems.push(`${where}: requires and rules out nothing`);
   }
   for (const rule of file.minimumModelCosts) {
     const where = `minimumModelCosts.${rule.id}`;

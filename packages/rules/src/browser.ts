@@ -13,6 +13,7 @@ export * from "./grants.js";
 export * from "./presentation.js";
 export * from "./history.js";
 export * from "./armoury.js";
+export * from "./requirements.js";
 export * from "./validate.js";
 export * from "./export.js";
 export * from "./import/index.js";

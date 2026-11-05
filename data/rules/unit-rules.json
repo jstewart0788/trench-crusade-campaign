@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "35, 38-40, 43, 59, 61, 63-64, 69, 90, 94-95, 99, 118, 120, 131, 142; Heretic-Naval-Raiders-Warband.pdf 37, 39",
+    "pages": "35, 37-40, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 142; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -511,6 +511,144 @@
       "page": 120,
       "source": "Warbands-of-Trench-Crusade.pdf",
       "text": "Mammon's Chosen: A Knights of Avarice Warband cannot include a model if the cost of the model and its Battlekit is less than 80 ducats, unless the model is a Wretched."
+    }
+  ],
+  "upgradeRequirements": [
+    {
+      "id": "heretic-legionnaire-characteristic",
+      "name": "Heretic Legionnaires",
+      "unitIds": ["heretic-legion/heretic-trooper"],
+      "upgrades": ["Ranged", "Melee"],
+      "requires": ["Legionnaire"],
+      "maxOf": 1,
+      "page": 112,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Heretic Legionnaires: You can upgrade Heretic Troopers in your Warband to Heretic Legionnaires, at a cost of +10 ducats each. When you upgrade a Heretic Trooper to a Heretic Legionnaire, you can change either their Ranged Characteristic or their Melee Characteristic from 0 to +1."
+    },
+    {
+      "id": "raider-legionnaire-characteristic",
+      "name": "Heretic Raider Legionnaires",
+      "unitIds": ["heretic-naval-raiders/heretic-raider"],
+      "upgrades": ["Ranged", "Melee"],
+      "requires": ["Heretic Raider Legionnaire"],
+      "maxOf": 1,
+      "page": 28,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "Heretic Raider Legionnaires: You can upgrade Heretic Raiders in your Warband to Heretic Raider Legionnaires, at a cost of 10 ducats each. When you upgrade a Heretic Raider to a Heretic Raider Legionnaire, you can change either their Ranged Characteristic or their Melee Characteristic from 0 to +1."
+    },
+    {
+      "id": "plague-knight-ranks",
+      "name": "Plague Knight Ranks",
+      "unitIds": ["black-grail/plague-knight"],
+      "upgrades": ["Plague Almoner", "Knight Companion of the Fly", "Knight of the Rotten Cross"],
+      "maxOf": 1,
+      "page": 128,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Plague Knight Ranks: Each Plague Knight in a Warband can be given one of the following Plague Knight Ranks at the indicated cost in ducats."
+    },
+    {
+      "id": "knight-companion-of-the-fly",
+      "name": "Knight Companion of the Fly",
+      "unitIds": ["black-grail/plague-knight"],
+      "upgrades": ["Ranged", "Melee"],
+      "requires": ["Knight Companion of the Fly"],
+      "maxOf": 1,
+      "page": 128,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Knight Companion of the Fly (5 ducats): Add +1 DICE to either the Ranged or the Melee Characteristic of this Plague Knight (you can choose which of the Characteristics to increase)."
+    },
+    {
+      "id": "knight-of-the-rotten-cross",
+      "name": "Knight of the Rotten Cross",
+      "unitIds": ["black-grail/plague-knight"],
+      "upgrades": ["Anti-Materiel Rifle", "Automatic Pistol", "Automatic Rifle", "Automatic Shotgun", "Blasphemous Staff", "Flamethrower", "Grenade Launcher", "Grenades", "Heavy Flamethrower", "Heavy Shotgun", "Hellblade", "Incendiary Grenades", "Machine Gun", "Sacrificial Blade", "Satchel Charge", "Semi-Automatic Rifle", "Silenced Pistol", "Sniper Rifle", "Submachine Gun"],
+      "requires": ["Knight of the Rotten Cross"],
+      "maxOf": 1,
+      "page": 128,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Knight of the Rotten Cross (5 ducats, Limit: 1): You can purchase 1 Ranged Weapon or 1 Melee Weapon from the New Antioch or Heretic Legions Armoury Tables for this model."
+    },
+    {
+      "id": "takwin-gargantuan-size",
+      "name": "Gargantuan Size",
+      "unitIds": ["iron-sultanate/takwin-homunculus"],
+      "upgrades": ["Gargantuan Size"],
+      "requires": ["Human Hands", "Inhuman Strength", "Massive Size"],
+      "page": 96,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Gargantuan Size (20 ducats): A Takwin Homunculus can only have this Alchemical Formula if it already has the Human Hands, Inhuman Strength, and Massive Size Alchemical Formulas."
+    },
+    {
+      "id": "takwin-hawk-eyes",
+      "name": "Hawk Eyes",
+      "unitIds": ["iron-sultanate/takwin-homunculus"],
+      "upgrades": ["Hawk Eyes"],
+      "excludes": ["Hypnotic Eyes"],
+      "unless": "Two Heads",
+      "page": 96,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Hawk Eyes (10 ducats): A Homunculus cannot have the Hawk Eyes Alchemical Formula if it has the Hypnotic Eyes Alchemical Formula unless it also has the Two Heads Alchemical Formula."
+    },
+    {
+      "id": "takwin-hypnotic-eyes",
+      "name": "Hypnotic Eyes",
+      "unitIds": ["iron-sultanate/takwin-homunculus"],
+      "upgrades": ["Hypnotic Eyes"],
+      "excludes": ["Hawk Eyes"],
+      "unless": "Two Heads",
+      "page": 97,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Hypnotic Eyes (15 ducats): A Homunculus cannot have the Hypnotic Eyes Alchemical Formula if it has the Hawk Eyes Alchemical Formula unless it also has the Two Heads Alchemical Formula."
+    },
+    {
+      "id": "eire-berserker-fianna",
+      "name": "Berserker",
+      "unitIds": ["new-antioch/shocktrooper"],
+      "upgrades": ["Berserker"],
+      "requires": ["Fianna"],
+      "page": 37,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Berserker: The Lieutenant or one of the Fianna in an Éire Rangers Warband can be upgraded to a Berserker for +15 ducats."
+    },
+    {
+      "id": "wisdom-kavasses",
+      "name": "Kavasses",
+      "unitIds": ["iron-sultanate/azeb"],
+      "upgrades": ["Studied Blade"],
+      "excludes": ["Light Skirmisher"],
+      "page": 94,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Kavasses: You can change the Melee Characteristic of up to 3 Azebs in a House of Wisdom Warband from -1 DICE to +0 DICE at a cost of +5 ducats each. However, these Azebs lose the Light Skirmisher ability."
+    },
+    {
+      "id": "wisdom-kavasses-skirmisher",
+      "name": "Kavasses",
+      "unitIds": ["iron-sultanate/azeb"],
+      "upgrades": ["Light Skirmisher"],
+      "excludes": ["Studied Blade"],
+      "page": 94,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Kavasses: However, these Azebs lose the Light Skirmisher ability."
+    },
+    {
+      "id": "wisdom-medicine",
+      "name": "Medicine",
+      "unitIds": ["iron-sultanate/jabirean-alchemist"],
+      "upgrades": ["Medicine"],
+      "excludesItems": ["medikit"],
+      "page": 94,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Medicine (15 ducats): This Alchemist is a student of Ibn Sina's School of Medicine. This Alchemist cannot have a Medi-kit."
+    },
+    {
+      "id": "unseen-advance",
+      "name": "Unseen Advance",
+      "unitIds": ["heretic-naval-raiders/heretic-raider", "heretic-naval-raiders/anointed-heretic-raider", "heretic-naval-raiders/sea-hag"],
+      "upgrades": ["Unseen Infiltrator"],
+      "withoutKeywords": ["ELITE"],
+      "page": 12,
+      "source": "Heretic-Naval-Raiders-Warband.pdf",
+      "text": "Unseen Advance: Up to 3 models without the ELITE Keyword in a Heretic Naval Raiders Warband can be given the INFILTRATOR Keyword at a cost of +10 ducats each."
     }
   ]
 }

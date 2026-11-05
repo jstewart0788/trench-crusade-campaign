@@ -517,6 +517,18 @@ one-per-armoury rules read. Five overrides added (175 total): the Brazen Bull ca
 Cannon (p99), and a Second Grail Devotee needs a first on the same model (p131) on the four Black Grail
 entries that have one (the Takwin Homunculus row already carries a Seal of Solomon gate and is left).
 
+### TC-003g: upgrades that need, or rule out, another on the same model
+
+`unit-rules.json` `upgradeRequirements`: Heretic Legionnaires (p112) and Heretic Raider Legionnaires
+(NR p28) take +1 Ranged or +1 Melee only after the Legionnaire upgrade, and only one; Plague Knight
+Ranks (p128) are one per Knight, the +1 needs Knight Companion of the Fly and a claimed weapon needs
+Knight of the Rotten Cross (one); Gargantuan Size needs all three of Human Hands, Inhuman Strength and
+Massive Size (p96; upstream's gate accepts any one), Hawk Eyes and Hypnotic Eyes need Two Heads to be
+taken together (p96-97); a Shock Trooper Berserker must be one of the Fianna (p37); Kavasses' Studied
+Blade and Light Skirmisher exclude each other (p94); Medicine rules out a Medi-kit (p94); Unseen
+Advance is for models without ELITE (NR p12). One override (176 total) drops upstream's bar on Light
+Skirmisher for every House of Wisdom Azeb: only the Kavasses lose it.
+
 ### Missing from upstream
 
 | faction | name | kind | p. | detail |

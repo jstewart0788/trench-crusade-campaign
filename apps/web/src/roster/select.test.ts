@@ -289,3 +289,46 @@ describe("lent Battlekit on the shelf", () => {
     expect(shelf(replacing, 1)).toContain("musket");
   });
 });
+
+// TC-003g: an upgrade that needs another is not offered until that one is held or staged.
+describe("upgrade prerequisites on the shelf", () => {
+  it("offers a Heretic Raider's +1 Ranged/Melee only after its Legionnaire is staged, and the staged pair confirms as legal", async () => {
+    const { applyPending, EMPTY_PENDING, stagingReducer } = await import("./staging.js");
+    const { validateWarband } = await import("@tc/rules");
+    const RAIDER = "heretic-naval-raiders/heretic-raider";
+    const raider = data.unitsById.get(RAIDER)!;
+    const legionnaire = raider.upgrades!.find((g) => g.name === "Heretic Raider Legionnaire")!.bsId;
+    const ranged = raider.upgrades!.find((g) => g.name === "Ranged")!.bsId;
+    let w = createWarband({ name: "t", factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" }, "w");
+    w = rosterReducer(w, { type: "add-member", unitId: "heretic-naval-raiders/heretic-captain", equipmentItemIds: ["sword-axe"] });
+    w = rosterReducer(w, { type: "add-member", unitId: RAIDER });
+    w = rosterReducer(w, { type: "add-member", unitId: RAIDER });
+    const offered = (roster: Warband) => upgradeRows(roster.members[1]!, raider, roster, data, ctxFor(roster)).rows.map((r) => r.upgrade.name);
+    expect(offered(w)).toContain("Heretic Raider Legionnaire");
+    expect(offered(w)).not.toContain("Ranged");
+    expect(offered(w)).not.toContain("Melee");
+
+    let pending = stagingReducer(EMPTY_PENDING, { type: "stage-add-upgrade", memberId: "m2", upgradeId: legionnaire });
+    expect(offered(applyPending(w, pending))).toEqual(expect.arrayContaining(["Ranged", "Melee"]));
+    pending = stagingReducer(pending, { type: "stage-add-upgrade", memberId: "m2", upgradeId: ranged });
+    const staged = applyPending(w, pending);
+    expect(offered(staged)).toContain("Ranged");
+    expect(offered(staged)).not.toContain("Melee");
+    expect(validateWarband(staged, data).errors).toEqual([]);
+
+    // Taking the Legionnaire away leaves the +1 in place, reported for the player to fix.
+    const dropped = applyPending(w, stagingReducer(EMPTY_PENDING, { type: "stage-add-upgrade", memberId: "m2", upgradeId: ranged }));
+    expect(validateWarband(dropped, data).errors.map((e) => e.code)).toEqual(["upgrade-requires"]);
+  });
+
+  it("does not offer a Medi-kit to an Alchemist with Medicine", () => {
+    const AL = "iron-sultanate/jabirean-alchemist";
+    const alchemist = data.unitsById.get(AL)!;
+    let w = createWarband({ name: "t", factionId: "iron-sultanate", variantId: "iron-sultanate/the-house-of-wisdom" }, "w");
+    w = rosterReducer(w, { type: "add-member", unitId: AL });
+    const items = (roster: Warband) => armouryGroups(roster.members[0]!, alchemist, roster, data, ctxFor(roster)).groups.flatMap((g) => g.rows.map((r) => r.item.id));
+    expect(items(w)).toContain("medikit");
+    w = rosterReducer(w, { type: "add-upgrade", memberId: "m1", upgradeId: alchemist.upgrades!.find((g) => g.name === "Medicine")!.bsId });
+    expect(items(w)).not.toContain("medikit");
+  });
+});

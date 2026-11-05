@@ -1,6 +1,8 @@
 import {
   evaluateGates,
   foreignBuyable,
+  itemsRuledOut,
+  upgradeAllowed,
   lentBy,
   findUnit,
   grantRoom,
@@ -171,6 +173,7 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
   const model = { member, unit };
   const byGroup = new Map<string, AccessRow[]>();
   const uncheckableRows: HiddenRow[] = [];
+  const ruledOut = itemsRuledOut(data, member, unit);
   for (const access of unit.equipmentAccess) {
     const item = data.equipmentById.get(access.itemId);
     if (!item) continue;
@@ -181,6 +184,8 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
     // Lent Battlekit (Corrupt Merchants, Weapon Collections) is on the shelf only while it may be bought: at creation, or to replace.
     const lender = lentBy(data, access);
     if (lender && count === 0 && !foreignBuyable(data, warband, lender, access.itemId).ok) continue;
+    // An upgrade the model holds may rule an item out (Medicine: no Medi-kit, p94).
+    if (count === 0 && ruledOut.has(access.itemId)) continue;
     const max = resolveLimit(access.limitsText ?? item.limits ?? undefined, "max", "model", access.max ?? null, ctx, item.name).value;
     const row: AccessRow = {
       access,
@@ -225,6 +230,8 @@ export function upgradeRows(member: WarbandMember, unit: RosterUnit, warband: Wa
     if (status === "uncheckable") uncheckable += 1;
     if (status !== "open") continue;
     const count = (member.upgradeIds ?? []).filter((id) => upgradeFor(unit, id)?.name === upgrade.name).length;
+    // Not offered until what it needs is held or staged (a Legionnaire before its +1, NR p28); one already taken stays listed so it can be removed.
+    if (count === 0 && !upgradeAllowed(data, warband, member, unit, upgrade)) continue;
     // Warbands p14: once per model unless the entry says otherwise.
     const max = resolveLimit(upgrade.limitsText, "max", "model", upgrade.max ?? null, ctx, upgrade.name).value ?? 1;
     const warbandMax = resolveLimit(upgrade.limitsText, "max", "warband", upgrade.maxPerWarband ?? null, ctx, upgrade.name).value;

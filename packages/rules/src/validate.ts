@@ -5,6 +5,7 @@ import { memberCost, variantItemLimit, warbandCost } from "./cost.js";
 import { grantStates, isEliteMember, memberKeywords } from "./grants.js";
 import { unitDisplayName } from "./presentation.js";
 import { appliesUnder } from "./unit-rules.js";
+import { requirementProblems } from "./requirements.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
   accessFor,
@@ -48,6 +49,9 @@ export const ROSTER_ERROR_CODES = [
   "foreign-armoury-after-creation",
   "armoury-item-not-allowed",
   "model-under-minimum",
+  "upgrade-requires",
+  "upgrade-excludes",
+  "upgrade-keyword",
   "item-unknown",
   "item-not-available",
   "item-fixed-missing",
@@ -228,6 +232,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
     const carried = checkMemberItems(member, unit, data, warband, ctx, fail, warn);
     checkFixedKit(member, unit, data, warband, ctx, fail);
     checkUnitRules(member, unit, data, warband, ctx, fail);
+    checkRequirements(member, unit, data, warband, fail);
     const taken = checkMemberUpgrades(member, unit, data, warband, ctx, fail, warn);
     // The model as its list presents it: its name there, and the keywords the list gives or takes (Highland Strength STRONG, p39).
     const shown = { ...unit, name: unitDisplayName(data, warband, unit, member), keywords: memberKeywords(member, unit, data, warband) };
@@ -680,6 +685,16 @@ function checkGrants(warband: Warband, data: RulesData, fail: (e: RosterError) =
 }
 
 /** Lent Battlekit (Corrupt Merchants p120, Weapon Collections p95): the allowance per armoury, and only bought at creation or bought again to replace that. */
+const REQUIREMENT_CODES = { requires: "upgrade-requires", excludes: "upgrade-excludes", "one-of": "upgrade-excludes", keyword: "upgrade-keyword" } as const;
+
+/** upgradeRequirements: e.g. "Heretic Raider: Ranged needs Heretic Raider Legionnaire first (Heretic Naval Raiders p28)". */
+function checkRequirements(member: WarbandMember, unit: RosterUnit, data: RulesData, warband: Warband, fail: (e: RosterError) => void): void {
+  for (const p of requirementProblems(data, warband, member, unit)) {
+    const book = p.rule.source === "Heretic-Naval-Raiders-Warband.pdf" ? "Heretic Naval Raiders " : "";
+    fail({ code: REQUIREMENT_CODES[p.kind], memberId: member.id, unitId: unit.id, message: `${unitDisplayName(data, warband, unit, member)}: ${p.detail} (${book}p${p.rule.page})` });
+  }
+}
+
 function checkForeign(warband: Warband, data: RulesData, fail: (e: RosterError) => void): void {
   const holdings = foreignHoldings(data, warband);
   const byRule = new Map<string, typeof holdings>();
