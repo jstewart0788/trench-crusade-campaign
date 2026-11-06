@@ -282,6 +282,27 @@ do
   check(not looksLikeMat({ x = 136, y = 0.2, z = 199 }), "the table tile does not")
   check(not looksLikeMat({ x = 16, y = 0.2, z = 12 }), "the importer tile does not")
 
+  local function piece(cx, cz, sx, sz, top, tags)
+    local set = {}
+    for _, t in ipairs(tags) do set[t] = true end
+    return {
+      hasTag = function(t) return set[t] == true end,
+      getBounds = function() return { center = { x = cx, y = top - 1.25, z = cz }, size = { x = sx, y = 2.5, z = sz } } end,
+    }
+  end
+  local board = battlefieldBounds({
+    piece(-16, 16, 4, 4, 3.45, { "tc-terrain", "tc-role:ground" }),
+    piece(16, -16, 4, 4, 3.45, { "tc-terrain", "tc-role:ground" }),
+    piece(0, 0, 4, 4, 5.95, { "tc-terrain", "tc-role:ground" }),
+    piece(40, 40, 6, 6, 9, { "not-terrain" }),
+  })
+  near(board.size.x, 36, "a battlefield's footprint spans its terrain")
+  near(board.center.y + board.size.y / 2, 3.45, "its surface is the lowest ground-tile top, not a stacked hill")
+  local onBoard = anchorsFromMat(board)
+  near(onBoard.Red.z, 15, "Red's row sits 3 inside the battlefield's +z edge")
+  near(onBoard.Red.y, 4.45, "models drop from 1 above the battlefield surface")
+  check(battlefieldBounds({ piece(40, 40, 6, 6, 9, { "not-terrain" }) }) == nil, "no terrain, no battlefield frame")
+
   local big = copy(payload)
   for i = 7, 14 do
     local m = copy(payload.members[2])

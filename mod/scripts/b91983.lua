@@ -817,9 +817,32 @@ function spawnWarband(payload, colour)
   setStatus(string.format("%s: spawned %d model(s) for %s%s.", payload.warband.name or payload.code, #specs, colour, suffix))
 end
 
--- The mat by GUID, else the first flat object about its size; nil falls back
--- to the measured default in DEFAULT_MAT.
+-- A generated battlefield on the table, as mat-shaped bounds: its footprint from every
+-- tc-terrain piece, and its playing surface from the lowest ground-tile top (stacked
+-- hill tiles are higher and must not lift the whole warband). nil when no board is up.
+function battlefieldBounds(objects)
+  local minX, maxX, minZ, maxZ, top
+  for _, obj in ipairs(objects) do
+    if obj.hasTag and obj.hasTag("tc-terrain") then
+      local b = obj.getBounds()
+      minX = math.min(minX or math.huge, b.center.x - b.size.x / 2)
+      maxX = math.max(maxX or -math.huge, b.center.x + b.size.x / 2)
+      minZ = math.min(minZ or math.huge, b.center.z - b.size.z / 2)
+      maxZ = math.max(maxZ or -math.huge, b.center.z + b.size.z / 2)
+      if obj.hasTag("tc-role:ground") then
+        top = math.min(top or math.huge, b.center.y + b.size.y / 2)
+      end
+    end
+  end
+  if not minX or not top then return nil end
+  return { center = { x = (minX + maxX) / 2, y = top - 0.5, z = (minZ + maxZ) / 2 }, size = { x = maxX - minX, y = 1, z = maxZ - minZ } }
+end
+
+-- The battlefield when one is spawned, else the mat by GUID, else the first flat
+-- object about its size; nil falls back to the measured default in DEFAULT_MAT.
 function findMat()
+  local board = battlefieldBounds(getAllObjects())
+  if board then return board end
   local mat = getObjectFromGUID(MAT_GUID)
   if mat then return mat.getBounds() end
   for _, obj in ipairs(getAllObjects()) do
