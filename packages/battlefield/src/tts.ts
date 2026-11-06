@@ -8,13 +8,16 @@ import { terrainName, terrainOf, terrainReminder } from "./terrain.js";
 // Every piece is Locked, so it stays exactly where its stack puts it.
 
 export interface TtsEmitOptions {
-  /** World y of the mat's top surface. */
+  /** World y of the surface the board stands on. */
   matTopY: number;
   /** World x, z of the mat (and board) centre. */
   matCenter: [number, number];
 }
 
-export const DEFAULT_TTS_OPTIONS: TtsEmitOptions = { matTopY: 0.95, matCenter: [0, 0] };
+// The mod's table felt 28865a: posY 0.70 plus its 0.2 tile thickness (a Custom_Tile's mesh
+// spans local y 0..thickness from a bottom-face pivot, measured on the importer tile). The
+// LCT 40k mat that used to sit 0.06 above it is parked under the felt.
+export const DEFAULT_TTS_OPTIONS: TtsEmitOptions = { matTopY: 0.9, matCenter: [0, 0] };
 
 export interface TtsTransform {
   posX: number;

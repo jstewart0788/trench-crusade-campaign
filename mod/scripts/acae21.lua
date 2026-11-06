@@ -17,19 +17,12 @@ function createToolButtonWithBorder(params, borderColor)
     border.color = resolvedBorderColor
     border.hover_color = resolvedBorderColor
     border.press_color = resolvedBorderColor
-    self.createButton(border)
+    self.createButton(place(border))
 
     local top = {}
     for k, v in pairs(params) do top[k] = v end
     top.position = {params.position[1], params.position[2] + 0.01, params.position[3]}
-    self.createButton(top)
-end
-
-local currentMat
-if self.getPosition().z < 0 then
-    currentMat="Blue"
-else
-    currentMat="Red"
+    self.createButton(place(top))
 end
 
 local MM_TO_INCH = 0.0393701
@@ -37,16 +30,54 @@ local MM_TO_INCH = 0.0393701
 -- model carries at most 6 BLOOD MARKERS (p19), each worth -1 DICE: 2 + 6 + 2 more
 -- modifiers covers every roll in the book with room to spare.
 MAX_TRAY_DICE = 10
--- The dice-area margins below were measured on LCT's 3.75-scale mat; scale them
--- with the tray so a resized tray keeps the same proportions.
-local function trayMarginScale()
-    return self.getScale().x / 3.75
+
+-- The layout is in world inches from the tray's centre, in the seated player's view: u to
+-- their right, v toward them. Widget sizes were tuned on LCT's uniform 3.75 mat; the tray
+-- is now stretched (half as long, same depth), so place() divides positions by each axis
+-- and counter-scales every widget's x, keeping text square and at its tuned world size.
+AUTHORED_SCALE = 3.75
+DICE_AREA = { u0 = -9.0, u1 = 14.1, v0 = -3.35, v1 = 5.5 }
+SPAWN_SLOTS = { u = 11.9, v = -0.2, pitch = 0.9375, cols = 2 }
+RESULT_LAYOUT = { u = 0.05, v = -2.0, cols = 10, eject = { u = 12.6, v = 8.0 } }
+
+function place(params)
+    local s = self.getScale()
+    local p = {}
+    for k, v in pairs(params) do p[k] = v end
+    if params.position then
+        p.position = {params.position[1] / s.x, params.position[2], params.position[3] / s.z}
+    end
+    local b = params.scale or {1, 1, 1}
+    p.scale = {b[1] * AUTHORED_SCALE / s.x, b[2], b[3] * AUTHORED_SCALE / s.z}
+    return p
 end
--- Dice are 0.7" whatever the mat's scale, so spawn spacing is kept in world
--- inches: offsets in mat units grow as the mat shrinks.
-local function diceSlot(grid, col, row)
-    local k = 3.75 / self.getScale().x
-    return self.positionToWorld({4 - (grid*1.5 + col*0.25)*k, 0.5, -0.3 + row*0.25*k})
+
+-- Button x renders mirrored against positionToWorld x, hence the minus on u.
+function trayPoint(u, v, dy)
+    local p = self.getPosition()
+    local a = math.rad(self.getRotation().y)
+    return {
+        x = p.x - u * math.cos(a) + v * math.sin(a),
+        y = p.y + (dy or 0),
+        z = p.z + u * math.sin(a) + v * math.cos(a),
+    }
+end
+
+function diceAreaBounds()
+    local a = trayPoint(DICE_AREA.u0, DICE_AREA.v0)
+    local b = trayPoint(DICE_AREA.u1, DICE_AREA.v1)
+    return math.min(a.x, b.x), math.max(a.x, b.x), math.min(a.z, b.z), math.max(a.z, b.z)
+end
+
+function diceSlot(i)
+    local col = i % SPAWN_SLOTS.cols
+    local row = math.floor(i / SPAWN_SLOTS.cols)
+    return trayPoint(SPAWN_SLOTS.u + col * SPAWN_SLOTS.pitch, SPAWN_SLOTS.v + row * SPAWN_SLOTS.pitch, 0.5)
+end
+
+-- The roller lays its result rows out from this (17ca2b.lua resultLayout).
+function getResultLayout()
+    return RESULT_LAYOUT
 end
 local MEASURING_RING_Y_OFFSET = 0.17
 local VALID_BASE_SIZES_IN_MM = {
@@ -84,67 +115,68 @@ local VALID_BASE_SIZES_IN_MM = {
 
 clearAllDiceBtn={
     label="Clear mat\n(right click)", click_function="clearDiceAll", function_owner=self,
-    position={-4.6, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=400,
+    position = {-2.07, Yoffset, -4.95}, rotation={0,0,0}, height=50, width=400,
     font_size=60, color={0,0,0}, font_color={1,1,1}
 }
 
 rollAllBtn={
     label="Roll all dice", tooltip="Roll all dice on the mat.", click_function="RollAllDice", function_owner=self,
-    position={-3.5, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=520,
+    position = {1.53, Yoffset, -4.95}, rotation={0,0,0}, height=50, width=520,
     font_size=60, color={1,1,1}, font_color={0,0,0}
 }
 
 add1d6Btn={
     label="+ 1d6", click_function="spawnDice1", function_owner=self,
     tooltip="Left click: Spawns 1d6\nRight click: Quick-roll 1d6 (instant)",
-    position={-0.5, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    position = {-1.23, Yoffset, -3.85}, rotation={0,0,0}, height=50, width=250,
     font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
 }
 add2d6Btn={
     label="+ 2d6", click_function="spawnDice2", function_owner=self,
     tooltip="Left click: Spawns 2d6\nRight click: Quick-roll 2d6 (instant)",
-    position={-0.03, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    position = {0.82, Yoffset, -3.85}, rotation={0,0,0}, height=50, width=250,
     font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
 }
 add3d6Btn={
     label="+ 3d6", click_function="spawnDice3", function_owner=self,
     tooltip="Left click: Spawns 3d6\nRight click: Quick-roll 3d6 (instant)",
-    position={0.44, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    position = {2.87, Yoffset, -3.85}, rotation={0,0,0}, height=50, width=250,
     font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
 }
 add4d6Btn={
     label="+ 4d6", click_function="spawnDice4", function_owner=self,
     tooltip="Left click: Spawns 4d6\nRight click: Quick-roll 4d6 (instant)",
-    position={0.91, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    position = {4.92, Yoffset, -3.85}, rotation={0,0,0}, height=50, width=250,
     font_size=60, color={0.7,0.7,0.7}, font_color={0,0,0}
 }
 add1d3Btn={
     label="+ 1d3", click_function="spawnDice1d3", function_owner=self,
     tooltip="Left click: Spawns 1d3\nRight click: Quick-roll 1d3 (instant)",
-    position={2.79, Yoffset ,-0.87}, rotation={0,0,0}, height=50, width=250,
+    position = {6.95, Yoffset, -3.85}, rotation={0,0,0}, height=50, width=250,
     font_size=60, color={1,1,1}, font_color={0,0,0}
 }
 
 colorBtnDimension=150
-colorBtnOffset=3.2
+colorBtnOffset=4.24
+colorBtnPitch=1.3
 color1Btn={
     label="", click_function="modifyMenu1", function_owner=self,
-    position={colorBtnOffset, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    position={colorBtnOffset, Yoffset, -4.95}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
     font_size=60, color="Red", font_color={0,0,0}
 }
 color2Btn={
     label="", click_function="modifyMenu2", function_owner=self,
-    position={colorBtnOffset+0.35, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    position={colorBtnOffset+colorBtnPitch, Yoffset, -4.95}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
     font_size=60, color="Blue", font_color={0,0,0}
 }
 color3Btn={
     label="", click_function="modifyMenu3", function_owner=self,
-    position={colorBtnOffset+0.35*2, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    position={colorBtnOffset+colorBtnPitch*2, Yoffset, -4.95}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
     font_size=60, color="Black", font_color={0,0,0}
 }
 color4Btn={
     label="", click_function="modifyMenu4", function_owner=self,
-    position={colorBtnOffset+0.35*3, Yoffset ,-0.87}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
+    position={colorBtnOffset+colorBtnPitch*3, Yoffset, -4.95}, rotation={0,0,0}, height=colorBtnDimension, width=colorBtnDimension,
     font_size=60, color="Green", font_color={0,0,0}
 }
 -- Pip-colour toggle, right of the Green swatch. Click flips every
@@ -154,20 +186,20 @@ color4Btn={
 pipColorBtn=
 {
   label="White", click_function="swapPipColor", function_owner=self,
-  position={colorBtnOffset + 0.35 * 4 + 0.1, Yoffset, -0.87}, rotation={0, 0, 0}, height=50, width=250,
+  position={9.79, Yoffset, -4.95}, rotation={0, 0, 0}, height=50, width=250,
   font_size=60, color="White", font_color="Black"
 }
 
 customDiceBtn={
     label="Custom Dice", click_function="customDice", function_owner=self,
-    position={colorBtnOffset+0.35*9, Yoffset ,-0.85}, rotation={0,0,0}, height=50, width=420,
+    position = {9.67, Yoffset, -3.85}, rotation={0,0,0}, height=50, width=420,
     font_size=60, color={1,1,1}, font_color={0,0,0}
 }
 
 savePositionLabel = "Save"
 saveBtn={
     label=savePositionLabel, tooltip=savePositionTip, click_function="save", function_owner=self,
-    position={-7.5, Yoffset ,-0.84}, rotation={0,0,0},
+    position = {-11.5625, Yoffset, -2.55}, rotation={0,0,0},
     width = 1300, height = 300, font_size = 150,
     color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
     font_color = {1, 1, 1}, -- White text for high contrast
@@ -178,7 +210,7 @@ saveBtn={
 restorePositionLabel = "Restore Position"
 restoreBtn={
     label=restorePositionLabel, click_function="restore", function_owner=self,
-    position={-7.5, Yoffset ,-0.50}, rotation={0,0,0},
+    position = {-11.5625, Yoffset, -0.95}, rotation={0,0,0},
     width = 1300, height = 300, font_size = 150,
     color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
     font_color = {1, 1, 1}, -- White text for high contrast
@@ -189,20 +221,20 @@ restoreBtn={
 
 clearMeasureAllBtn={
     label='Clear Bubbles', tooltip='LEFT CLICK: Clear all measuring bubbles from the table\nRIGHT CLICK: Clear all measuring bubbles from highlighted objects only', click_function='clearMeasuringCircles', function_owner=self,
-    position={-7.93, Yoffset ,-1.65}, rotation={0,0,0}, height=1000, width=4200, scale={0.1,0.1,0.1},
+    position = {-12.4, Yoffset, -4.95}, rotation={0,0,0}, height=1000, width=4200, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 clearLinesBtn={
     label='Clear Lines', tooltip='Clear all hand-drawn lines, keep measuring bubbles', click_function='clearHandDrawnLines', function_owner=self,
-    position={-7.03, Yoffset ,-1.65}, rotation={0,0,0}, height=1000, width=4200, scale={0.1,0.1,0.1},
+    position = {-9.05, Yoffset, -4.95}, rotation={0,0,0}, height=1000, width=4200, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 
 highlightBtn={
     label='Highlight', tooltip='LEFT CLICK: Highlight the selected model(s) in the swatch color (permanent)\nRIGHT CLICK: Remove ALL highlights from every object on the table', click_function='applyHighlightPaint', function_owner=self,
-    position={-6.50, Yoffset ,-1.15}, rotation={0,0,0}, height=1000, width=3100, scale={0.1,0.1,0.1},
+    position = {-6.11, Yoffset, -4.95}, rotation={0,0,0}, height=1000, width=3100, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
@@ -210,62 +242,62 @@ highlightBtn={
 -- colour; clicking cycles the palette (recoloured live via refreshHighlightSwatch).
 highlightSwatchBtn={
     label='', tooltip='Highlight color\nLEFT CLICK: next color\nRIGHT CLICK: previous color', click_function='cycleHighlightColor', function_owner=self,
-    position={-6.02, Yoffset ,-1.15}, rotation={0,0,0}, height=1000, width=1000, scale={0.1,0.1,0.1},
+    position = {-4.37, Yoffset, -4.95}, rotation={0,0,0}, height=1000, width=1000, scale={0.1,0.1,0.1},
     font_size=700, color={1,1,0}, font_color={0,0,0}
 }
 
 measure1Btn={
     label='1"', tooltip='Toggle 1" bubble', click_function='toggle1Bubble', function_owner=self,
-    position={-8.23, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    position = {-13.45, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure2Btn={
     label='2"', tooltip='Toggle 2" bubble', click_function='toggle2Bubble', function_owner=self,
-    position={-7.93, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    position = {-12.25, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure3Btn={
     label='3"', tooltip='Toggle 3" bubble', click_function='toggle3Bubble', function_owner=self,
-    position={-7.63, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    position = {-11.05, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure6Btn={
     label='6"', tooltip='Toggle 6" bubble', click_function='toggle6Bubble', function_owner=self,
-    position={-7.33, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    position = {-9.85, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure8Btn={
     label='8"', tooltip='Toggle 8" bubble', click_function='toggle8Bubble', function_owner=self,
-    position={-7.03, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    position = {-8.65, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure9Btn={
     label='9"', tooltip='Toggle 9" bubble', click_function='toggle9Bubble', function_owner=self,
-    position={-6.73, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
+    position = {-7.45, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1400, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure12Btn={
     label='12"', tooltip='Toggle 12" bubble', click_function='toggle12Bubble', function_owner=self,
-    position={-6.41, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1600, scale={0.1,0.1,0.1},
+    position = {-6.17, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1600, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 measure15Btn={
     label='15"', tooltip='Toggle 15" bubble', click_function='toggle15Bubble', function_owner=self,
-    position={-6.07, Yoffset ,-1.40}, rotation={0,0,0}, height=1000, width=1600, scale={0.1,0.1,0.1},
+    position = {-4.82, Yoffset, -3.85}, rotation={0,0,0}, height=1000, width=1600, scale={0.1,0.1,0.1},
     font_size=700, color='White', font_color={0,0,0}
 }
 
 -- Custom Bubble Input BG
 customBubbleInputBG = {
     label = "", click_function = "none", function_owner = self,
-    position = {-5.78, Yoffset, -1.40}, rotation = {0, 0, 0},
+    position = {-3.69, Yoffset, -3.85}, rotation = {0, 0, 0},
     width = 1100, height = 1000, font_size = 100,
     color = {0.95, 0.95, 0.95, 1},
     scale = {0.1, 0.1, 0.1}
@@ -274,7 +306,7 @@ customBubbleInputBG = {
 -- Custom Bubble Input Field
 customBubbleInput = {
     label = "Size", input_function = "setCustomBubbleSize", function_owner = self,
-    position = {-5.78, Yoffset, -1.40}, rotation = {0, 0, 0},
+    position = {-3.69, Yoffset, -3.85}, rotation = {0, 0, 0},
     width = 900, height = 800, font_size = 500, alignment = 3, scale = {0.1, 0.1, 0.1},
     color = {1, 1, 1, 1}, font_color = {0.2, 0.2, 0.2}
 }
@@ -285,7 +317,7 @@ customBubbleInput = {
 -- clears the bubbles on the selected models.
 customBubbleBtn = {
     label = "Go", tooltip = "LEFT CLICK: apply size from the box\nRIGHT CLICK: on-screen size entry (0/blank clears selected)", click_function = "applyCustomBubble", function_owner = self,
-    position = {-5.58, Yoffset, -1.40}, rotation = {0, 0, 0},
+    position = {-2.87, Yoffset, -3.85}, rotation = {0, 0, 0},
     width = 800, height = 1000, font_size = 500,
     color = {0.13, 0.13, 0.13, 1}, font_color = {1, 1, 1},
     hover_color = {0.2, 0.2, 0.2, 1},
@@ -334,7 +366,7 @@ local auto2D6 = {
     tooltip="Show or hide your HUD (help, clock)",
     click_function = "toggleHudOverlay",
     function_owner = self,
-    position       = {-7.5, Yoffset, 0.52},
+    position = {-11.5625, Yoffset, 3.85},
     rotation       = { 0, 0, 0 },
     width = 1300, height = 300, font_size = 150,
     color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
@@ -350,7 +382,7 @@ local revertRollBtn = {
     tooltip="It takes 1 second after rolling to 'lock in'",
     click_function = "revertRoll",
     function_owner = self,
-    position       = {-7.5, Yoffset, 0.18},
+    position = {-11.5625, Yoffset, 2.25},
     rotation       = { 0, 0, 0 },
     width = 1300, height = 300, font_size = 150,
     color = {0.13, 0.13, 0.13, 1}, -- Black button (not pure black for smoother look)
@@ -363,7 +395,7 @@ local revertRollBtn = {
 -- Modern Black "Last 5 Rolls" Button
 local customDiceSpawnButton = {
     label = "Last 5 Rolls", click_function = "callLast5Rolls", function_owner = self,
-    position = {-7.5, Yoffset, -0.16}, rotation = {0, 0, 0},
+    position = {-11.5625, Yoffset, 0.65}, rotation = {0, 0, 0},
     width = 1300, height = 300, font_size = 150,
     color = {0.13, 0.13, 0.13, 1},
     font_color = {1, 1, 1},
@@ -560,23 +592,9 @@ end
 function getDice()
     local dice = {}
     local b = self.getBounds()
-    local left  = b.center.x - b.size.x/2
-    local right = b.center.x + b.size.x/2
-    local back  = b.center.z - b.size.z/2
-    local front = b.center.z + b.size.z/2
+    local left, right, back, front = diceAreaBounds()
     local ybot  = b.center.y - b.size.y/2
     local ytop  = b.center.y + b.size.y/2 + 3
-
-    local k = trayMarginScale()
-    if currentMat == "Red" then
-        right = right - 5 * k
-        back  = back  + 2.9 * k
-        front = front - 0.5 * k
-    else
-        left  = left  + 5 * k
-        back  = back  + 0.5 * k
-        front = front - 2.9 * k
-    end
 
     for _, o in ipairs(getAllObjects()) do
         if o.tag == "Dice" and o.resting and o.held_by_color == nil then
@@ -711,13 +729,6 @@ function spawnD3(n, player, alt)
     lastClickTimestamp = currentTime
     local offset = #getDice()
     if offset + n > MAX_TRAY_DICE then printToColor("The tray holds " .. MAX_TRAY_DICE .. " dice.", player, "Orange") end
-    local grid, row, col = 0, 0, 0
-    for i = 1, offset do
-        col = col + 1
-        if col > 4 then col = 0; row = row + 1
-            if row > 4 then row = 0; grid = grid + 1 end
-        end
-    end
     if offset + n > MAX_TRAY_DICE then n = MAX_TRAY_DICE - offset end
     local d3Bag = getObjectFromGUID("2d9705")
     if not d3Bag then
@@ -726,7 +737,7 @@ function spawnD3(n, player, alt)
     end
     local spawnedDice = {}
     for i = 1, n do
-        local pos = diceSlot(grid, col, row)
+        local pos = diceSlot(offset + i - 1)
         d3Bag.takeObject({
             position          = pos,
             rotation          = self.getRotation() + Vector(0.0, 180.0, 0.0),
@@ -743,10 +754,6 @@ function spawnD3(n, player, alt)
                 end
             end
         })
-        col = col + 1
-        if col > 4 then col = 0; row = row + 1
-            if row > 4 then row = 0; grid = grid + 1 end
-        end
     end
 end
 
@@ -761,38 +768,14 @@ function spawnDice(n,player,alt)
     lastClickTimestamp=currentTime
     local offset=#getDice()
     if offset+n>MAX_TRAY_DICE then printToColor("The tray holds " .. MAX_TRAY_DICE .. " dice.", player, "Orange")  end
-    local grid=0
-    local row=0
-    local col=0
-    for i=1, offset do
-        col=col+1
-        if col>4 then
-            col=0
-            row= row+1
-            if row > 4 then
-                row=0
-                grid=grid+1
-            end
-        end
-    end
-
     if offset+n>MAX_TRAY_DICE then n=MAX_TRAY_DICE-offset end
     local spawnedDice = {}
     for i=1, n do
     local die=spawnObject({
         type              = diceType,
-        position          = diceSlot(grid, col, row),
+        position          = diceSlot(offset + i - 1),
         rotation          = self.getRotation() + Vector(0.0, 180.0, 0.0),
         })
-        col=col+1
-        if col>4 then
-            col=0
-            row= row+1
-            if row > 4 then
-                row=0
-                grid=grid+1
-            end
-        end
 
         if customDiceImage ~= nil then
             die.setCustomObject({
@@ -994,21 +977,20 @@ function onload()
     fontSize=defaultFontSize
     lineCount=0
     defaultDivisionLabel="|\n|"
-    self.createButton({
+    self.createButton(place({
         label="---", click_function="none", function_owner=Global,
-        -- Right of the tool column and below the dice frame, so the tallest readout stays on the mat.
-        position={-4.9,0.11,0.2}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
+        position={-4.7,0.11,1.1}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
         font_color={1, 1, 1},
         scale={0.25, 0.25, 0.25},
 		alignment=2
-    })
-    self.createButton({
+    }))
+    self.createButton(place({
         label="", click_function="none", function_owner=Global,
-        position={0.75,0.11,0.01}, rotation={0,0,0}, height=0, width=0, font_size=500,
+        position={-0.55,0.11,1.1}, rotation={0,0,0}, height=0, width=0, font_size=500,
         font_color={1, 1, 1},
         scale={0.25,2,1},
 		alignment=2
-    })
+    }))
 
 	if self.getDescription() == '' then
 		setDefaultState()
@@ -1018,22 +1000,22 @@ function onload()
 	data2 = JSON.decode(self.getDescription())
 	Wait.time(checkDice, data2.Update_Frequency*1,-1)
 
-    self.createButton(clearAllDiceBtn)
-    self.createButton(rollAllBtn)
-    self.createButton(add1d3Btn)
-    self.createButton(add1d6Btn)
-    self.createButton(add2d6Btn)
-    self.createButton(color1Btn)
-    self.createButton(color2Btn)
-    self.createButton(color3Btn)
-    self.createButton(color4Btn)
-    self.createButton(customDiceBtn)
-    self.createButton(add3d6Btn)
-    self.createButton(add4d6Btn)
-    self.createButton(auto2D6)
-    self.createButton(revertRollBtn)  -- Add this near the end of the button creations
-    self.createButton(saveBtn)
-    self.createButton(restoreBtn)
+    self.createButton(place(clearAllDiceBtn))
+    self.createButton(place(rollAllBtn))
+    self.createButton(place(add1d3Btn))
+    self.createButton(place(add1d6Btn))
+    self.createButton(place(add2d6Btn))
+    self.createButton(place(color1Btn))
+    self.createButton(place(color2Btn))
+    self.createButton(place(color3Btn))
+    self.createButton(place(color4Btn))
+    self.createButton(place(customDiceBtn))
+    self.createButton(place(add3d6Btn))
+    self.createButton(place(add4d6Btn))
+    self.createButton(place(auto2D6))
+    self.createButton(place(revertRollBtn))
+    self.createButton(place(saveBtn))
+    self.createButton(place(restoreBtn))
     createToolButtonWithBorder(measure1Btn)
     createToolButtonWithBorder(measure2Btn)
     createToolButtonWithBorder(measure3Btn)
@@ -1042,9 +1024,9 @@ function onload()
     createToolButtonWithBorder(measure9Btn)
     createToolButtonWithBorder(measure12Btn)
     createToolButtonWithBorder(measure15Btn)
-    self.createButton(customBubbleInputBG)
-    self.createInput(customBubbleInput)
-    self.createButton(customBubbleBtn)
+    self.createButton(place(customBubbleInputBG))
+    self.createInput(place(customBubbleInput))
+    self.createButton(place(customBubbleBtn))
     createToolButtonWithBorder(clearMeasureAllBtn)
     createToolButtonWithBorder(clearLinesBtn)
     createToolButtonWithBorder(highlightBtn)
@@ -1059,10 +1041,10 @@ function onload()
         end
     end
     refreshHighlightSwatch()
-    self.createButton(customDiceSpawnButton)
+    self.createButton(place(customDiceSpawnButton))
     -- Created last so it doesn't shift the fixed indices modifyMenu() relies on;
     -- capture its real index so swapPipColor's editButton flips the right button.
-    self.createButton(pipColorBtn)
+    self.createButton(place(pipColorBtn))
     for _, b in ipairs(self.getButtons() or {}) do
         if b.click_function == "swapPipColor" then pipColorBtn.index = b.index break end
     end
@@ -1132,20 +1114,7 @@ function checkDice()
     if not self.resting then return end
 
     local b = self.getBounds()
-    local leftBound  = b.center.x - b.size.x/2
-    local rightBound = b.center.x + b.size.x/2
-    local lowerBound = b.center.z - b.size.z/2
-    local upperBound = b.center.z + b.size.z/2
-    local k = trayMarginScale()
-    if currentMat == "Red" then
-        rightBound = rightBound - 5 * k
-        lowerBound = lowerBound + 2.9 * k
-        upperBound = upperBound - 0.5 * k
-    else
-        leftBound  = leftBound  + 5 * k
-        lowerBound = lowerBound + 0.5 * k
-        upperBound = upperBound - 2.9 * k
-    end
+    local leftBound, rightBound, lowerBound, upperBound = diceAreaBounds()
     local ylowerBound = b.center.y - b.size.y/2
 
     local valueToCounter, valuesToSort, totaldice, diceSum, rolled = {}, {}, 0, 0, {}
@@ -1282,7 +1251,7 @@ function swapPipColor()
 
     setDiceType()
 
-    self.editButton(pipColorBtn)
+    self.editButton(place(pipColorBtn))
 end
 
 function determineBaseInInches(model)

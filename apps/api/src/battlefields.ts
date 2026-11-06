@@ -1,4 +1,4 @@
-import { compactBattlefield, generateBattlefield, loadCatalog, loadGeneratorEnv, scenarioArchetype, scenarioBoardIn, type BattlefieldPayload, type Catalog, type GeneratorEnv } from "@tc/battlefield";
+import { compactBattlefield, DEFAULT_TTS_OPTIONS, generateBattlefield, loadCatalog, loadGeneratorEnv, scenarioArchetype, scenarioBoardIn, type BattlefieldPayload, type Catalog, type GeneratorEnv } from "@tc/battlefield";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "zod";
@@ -6,8 +6,8 @@ import { z } from "zod";
 export const SEEDS_FILE = "data/tts/battlefield-seeds.json";
 /** Seeds the mod may ask for; the random-board button picks inside it. */
 export const MAX_SEED = 999_999;
-/** World height of the mat's top surface the mod spawns onto (the emitter's default). */
-export const MAT_TOP_Y = 0.95;
+/** World height of the table surface the mod spawns boards onto. */
+export const MAT_TOP_Y = DEFAULT_TTS_OPTIONS.matTopY;
 const CACHE_LIMIT = 64;
 
 const SeedsFile = z.object({ scenarios: z.array(z.object({ id: z.string(), seeds: z.array(z.number().int().positive()) })) }).passthrough();

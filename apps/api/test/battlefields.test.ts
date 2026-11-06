@@ -59,6 +59,7 @@ describe("GET /api/battlefields/:scenario/:seed", () => {
     const body = res.body as BattlefieldPayload;
     const layout = generateBattlefield({ scenarioId: "claim-no-mans-land", seed }, env);
     expect(expandBattlefield(body)).toEqual(layoutToObjectStates(layout, env.palette, catalog, { matTopY: MAT_TOP_Y }));
+    expect(expandBattlefield(body)).toEqual(layoutToObjectStates(layout, env.palette, catalog));
     expect(body.objectives).toEqual(objectiveMarkers(layout, env.palette, catalog, { matTopY: MAT_TOP_Y }));
     expect(body.objectives.length).toBeGreaterThan(0);
   });

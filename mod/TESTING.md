@@ -31,7 +31,7 @@ Start TTS, create a single-player game, then **Games > Save & Load > TrenchCrusa
 
 Since TC-023t the Start Menu draws **no** buttons (it only owns the table theme and terrain
 pass-through). No GAME MODES, deployment picker, Clear Table, START GAME, or Next Phase /
-Pass Turn button. The mat stays at 60" x 44". If any of those render, the build is stale.
+Pass Turn button. Since TC-023v there is no visible 60" x 44" mat (step 14). If any of those render, the build is stale.
 
 ## 3. HUD
 
@@ -45,14 +45,15 @@ Pass Turn button. The mat stays at 60" x 44". If any of those render, the build 
 
 ## 4. Table theme
 
-- A "Table Theme" panel with 12 swatches floats left of the mat (anchor `369707` at x=-38.5,
-  z=8) from load and stays up. Clicking a swatch changes the table image and highlights the
-  swatch. Check it does not cover the Warband Importer (x=-22, z=0) or the Turn Tracker
-  (x=-22, z=15); if it does, move the anchor `369707` in `mod/save.json`.
+- A "Table Theme" panel with 12 swatches floats in the side column (anchor `369707` at
+  x=-40, z=16.6, beside the Turn Tracker) from load and stays up. Clicking a swatch changes
+  the table image and highlights the swatch. Check it does not cover the Warband Importer
+  (x=-33.5, z=0) or the Turn Tracker (x=-31.5, z=16.6); if it does, move the anchor
+  `369707` in `mod/save.json`.
 
 ## 5. Engine features that must still work
 
-- **Dice trays** (TC-023t: half size, in front of each TC roller): see step 11.
+- **Dice trays** (TC-023v: half length, full depth, at the end of each player's row): see step 14.
 - **Hotkeys** (Options > Game Keys): 1. Save Position, 2. Restore Position, 3. Custom
   Bubble, 4. Roll All Dice, Clear Bubbles / Bubbles (Selected) / Lines / Mat, Show/Hide UI,
   the 1/2/3/6/8/9/12 inch measurement circles. Coherency Check, Engagement Range, the gap
@@ -131,7 +132,8 @@ These are the facts the layout is built on; the scripts re-measure the first thr
   follows the API's "(font_size * # of lines) + 23".
 - **The mat.** Object `4ee1f2` "matObjSurface" (Custom_Model): `getBounds()` centre
   (0, -0.5, 0), size (60, 2.9, 44) - playing surface x -30..30, z -22..22, top at y 0.95.
-  The 136x199 tile `28865a` is the table, not the mat. The old fixed anchors at z = +/-44
+  The 136x199 tile `28865a` is the table, not the mat. (TC-023v parks `4ee1f2` under that
+  felt; the importer still reads its x / z.) The old fixed anchors at z = +/-44
   put a real import (YPFTBM) at (13.8..18.8, 0.9, 44) where nobody saw it.
 - **Spawn structure.** A default-model spawn carries the Gannel figure as a child
   (`m1` has one attachment with the Gannel mesh URL); whether it renders is still a visual
@@ -144,7 +146,7 @@ These are the facts the layout is built on; the scripts re-measure the first thr
 
 - The save loads into the host camera at x≈-31 looking toward +x (`CameraStates[0]` yaw
   90; both hand zones sit at x=-42 with rotY 270; the LCT Start Menu at x=52 is rotY 270
-  for the same reason). The importer tile at (-22, 1, 0) is 20" in front of that camera
+  for the same reason). The importer tile at (-33.5, 1, 0) (TC-023v side column) is under that camera
   with `rotY: 270` in `mod/save.json`; its widgets keep rotation `{0,0,0}` (label top at
   local -z), so they read upright from there. **If the panel is still rotated, change
   `rotY` on object `b91983` in `mod/save.json` by +-90**; the Lua positions are local and
@@ -238,10 +240,10 @@ TTS; all geometry (shelf height, button sizes, bag icons) is a first guess to tu
   Press **-** until `-1` and roll again: three dice, chat prints `LOW : <two lowest>`. At
   `0` it rolls two and prints the total. Clear removes the dice. Right-click shows **no**
   alternate-art states (dropped on purpose). Save/reload keeps the +/- setting.
-- **Counters** (three per side at z≈±38: Points, Turn, Glory): left click +1, right click
+- **Counters** (three per side at z≈±31: Glory, Turn, Points): left click +1, right click
   -1; Turn will not go below 1, the others not below 0. The label is editable in place.
-- **Token bags** (both sides, where the 40k bags were: x≈±33.5 column holds Blood and
-  Blessing, x≈±37 column holds Activated, Down, Tough, Objective). Each shows a small icon
+- **Token bags** (one row per side at z≈±27: Blood, Blessing, Activated, Down, Tough,
+  Objective). Each shows a small icon
   of its content. Drag out a Blood Marker: a red d6. Blessing: a d6. Activated / Down /
   Tough: Gannel's tokens (Down stands upright). Objective: the green glowing marker.
   Right-click a drawn token > Tags: `tc-token:<role>`. If an icon is too small, too large or
@@ -291,8 +293,7 @@ Offline first: `pnpm mod:test`.
   `SyncClockToTurn`, `changeSustainedHitsThreshold`, `getLethalZoneBounds` or
   `SELECTION_HIGHLIGHTER_GUID`. No Game Rounds / Red Turns / Blue Turns tokens at x≈51, no
   Lethal Hit Zone strips at z≈±23.6, no +1/-1 / Reroll bags beside the trays.
-- **Dice tray** (Red at x -12.8..15.7, z 25.7..31.3, in front of the TC roller; Blue
-  mirrored): half the old length and depth. Buttons kept: Clear mat (right click), Roll all,
+- **Dice tray** (position and size superseded by TC-023v, step 14). Buttons kept: Clear mat (right click), Roll all,
   +1d3, +1d6 ... +4d6, the four colour swatches, pip colour, Custom Dice, Show/Hide UI,
   Revert Roll, Last 5 Rolls, Save / Restore Position, the bubble row, custom bubble, Clear
   Bubbles / Lines, Highlight + swatch. **No** Lethal / Sustained, Del / Roll rows, - / +
@@ -305,7 +306,7 @@ Offline first: `pnpm mod:test`.
   With 3 dice the High / Low pair is a +1 DICE / -1 DICE Success Roll. Clear mat (right click)
   removes them.
 - Click the Green swatch: only the five spawn buttons turn green.
-- The two loose d6 now sit on the trays at (±9.7, ±30.4).
+- The two loose d6 sit on the trays' first spawn slot (step 14).
 - Stopwatch: the HUD clocks start, pause and switch per side on their own.
 
 ## 12. Objective markers (TC-023u)
@@ -326,7 +327,7 @@ Offline first: `pnpm mod:test`.
 Needs the API with the battlefield routes (`pnpm --filter @tc/api dev` locally, or the
 deployed `https://tc.rynfin.org`); the panel uses the Warband Importer's API base URL.
 
-- The dark tile at (-22, -15), below the Warband Importer, reads `1/12  Claim No Man's Land
+- The dark tile at (-31.5, -16.6), below the Warband Importer, reads `1/12  Claim No Man's Land
   (36")`, `Board 1/5: seed 25` and `Pick a scenario and a board, then Spawn battlefield.`
   With the API stopped it reads `Can't reach <url> for the scenario list: ...`; any button
   retries.
@@ -338,6 +339,37 @@ deployed `https://tc.rynfin.org`); the panel uses the Warband Importer's API bas
   trays are untouched. Hover a piece: its name has the `·` separators intact.
 - **Clear battlefield** removes the terrain and markers only.
 - Save and reload: the panel keeps the scenario and board.
+
+## 14. Player-side layout (TC-023v)
+
+Offline first: `pnpm mod:test` (`mod/test/layout_test.lua` drives the real tray, roller and
+importer scripts against `mod/save.json`). Nothing below has been seen in TTS yet; the
+tray's widget and text sizes, the bowl size and the camera framing are numbers read off
+screenshots of the 3.75 tray, not measurements.
+
+- **No visible 40k mat**: the table theme shows edge to edge; nothing stands inside the
+  51" square in the middle. Spawn a 48" board (Armoured Train): it clears the trays, the
+  TC rollers, the bags and the side column. Raycast the felt at the origin with
+  `scripts/tts_exec.py` (`Physics.cast` down at (0, 60, 0), first hit `28865a`) and compare
+  with 0.9; if it differs, set `DEFAULT_TTS_OPTIONS.matTopY` and the felt check in
+  `packages/battlefield/test/table.test.ts` follows. Board tiles should neither float nor
+  sink at the board edge.
+- **Tray** (Red at x -0.8 .. 27.8, z 26.0 .. 37.2): every label reads undistorted (not
+  squashed sideways) and at the size it had on the old tray; nothing hangs off the mat. If
+  text is squashed, `place()` counter-scaling did not take and buttons need the tray at a
+  uniform scale with a new image instead.
+- Spawn 10 dice and Roll all: the dice go through the bowl (on the tray, right of the
+  result area) and land in value rows right of the readout, none on the readout, the
+  buttons or the bowl, all counted (`10 ∑ ...`). Repeat with 1 and 4 dice and a d3.
+- Drop a die into a bowl while a roll is running: it is ejected behind that tray (toward
+  its player), not onto the battlefield.
+- The opponent's dice screen (`c09349` / `48dcae`, beyond each tray's outer end) shows the
+  other tray's readout and result rows; if the framing is off, move the source camera
+  (`19b9bf` / `96a319`) over the rows.
+- **TC roller** beside each tray: its ring of rolled dice lands clear of the tray and the
+  bags. Trash bins swallow objects; each counter sits 4.52" inboard of its bin.
+- **Side column**: importer, tracker, Battlefield panel and theme panel readable from the
+  host camera; Import still lands Red's rows at z≈19, Blue's at z≈-19.
 
 ## Reporting
 

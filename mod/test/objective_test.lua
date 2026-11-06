@@ -4,7 +4,7 @@
 --
 -- Stubs the TTS object API: the chip is sized to 40mm, its colliders become triggers, the
 -- spot and ring are drawn at one height, a covered objective gets its band, the marker
--- seats on terrain (also on a tile seam), and Move / Delete / save-load behave.
+-- seats on terrain (also on a tile seam) or else the table felt, and Move / Delete / save-load behave.
 
 local here = (arg and arg[0] or ""):match("^(.*)[/\\]") or "."
 local root = here .. "/../.."
@@ -19,23 +19,26 @@ local function near(a, b, what) check(type(a) == "number" and math.abs(a - b) < 
 
 JSON = { encode = function(t) return t end, decode = function(s) return s end }
 Wait = { condition = function(f) f() end }
-Global = { getVar = function(k) if k == "mat_GUID" then return "4ee1f2" end end }
+local VARS = { mat_GUID = "4ee1f2", felt_GUID = "28865a" }
+Global = { getVar = function(k) return VARS[k] end }
 function broadcastToColor() end
 
 local function tagged(guid, tags)
   return { getGUID = function() return guid end, hasTag = function(t) return tags[t] == true end }
 end
 local mat = tagged("4ee1f2", {})
+local felt = tagged("28865a", {})
 local tile = tagged("tile01", { ["tc-terrain"] = true })
 local ruin = tagged("ruin01", { ["tc-terrain"] = true })
 local model = tagged("mdl001", { ["tc-spawned"] = true })
 local other = tagged("obj002", { ["tc-token:objective"] = true })
 
--- Board: ground tiles 3.45 high with a seam along x = 0; a ruin floor at 4.2 around x = 10.
+-- Board: a 36" board of ground tiles 3.45 high with a seam along x = 0 and a ruin floor at 4.2
+-- around x = 10, on the table felt (top 0.90); the old 40k mat is parked under the felt.
 Physics = { cast = function(p)
   local x = p.origin.x
-  local hits = { { hit_object = mat, point = { y = 0.95 } }, { hit_object = model, point = { y = 6 } }, { hit_object = other, point = { y = 5 } } }
-  if math.abs(x) > 1e-9 then hits[#hits + 1] = { hit_object = tile, point = { y = 3.45 } } end
+  local hits = { { hit_object = felt, point = { y = 0.90 } }, { hit_object = mat, point = { y = 0.68 } }, { hit_object = model, point = { y = 6 } }, { hit_object = other, point = { y = 5 } } }
+  if math.abs(x) > 1e-9 and math.abs(x) < 18 then hits[#hits + 1] = { hit_object = tile, point = { y = 3.45 } } end
   if x > 9 and x < 11 then hits[#hits + 1] = { hit_object = ruin, point = { y = 4.2 } } end
   return hits
 end }
@@ -96,7 +99,12 @@ near(a.pos.y - CHIP_H * a.scale.y / 2, 3.45, "seated on the ground tile, ignorin
 ---------------------------------------------------------------- seam --
 
 local s = load(newMarker({ x = 0, y = 9, z = -12 }))
-near(s.pos.y - CHIP_H * s.scale.y / 2, 3.45, "a marker on a tile seam still seats on the tiles, not the mat")
+near(s.pos.y - CHIP_H * s.scale.y / 2, 3.45, "a marker on a tile seam still seats on the tiles, not the table")
+
+---------------------------------------------------------------- off the board --
+
+local off = load(newMarker({ x = 21, y = 9, z = 0 }))
+near(off.pos.y - CHIP_H * off.scale.y / 2, 0.90, "off the board a marker seats on the table felt, not the mat parked under it")
 
 ---------------------------------------------------------------- covered objective --
 

@@ -14,7 +14,7 @@ RING_COLOR = {1, 1, 1}
 -- Every marker draws its lines this far above its own pivot, so rings sit at one height.
 RING_LIFT_IN = 0.06
 -- Rays a little off the marker's centre, for a point that lands exactly on the seam
--- between two ground tiles (a centre ray there passes through to the mat).
+-- between two ground tiles (a centre ray there passes through to the table).
 SEAM_OFFSETS_IN = {{0.3, 0}, {-0.3, 0}, {0, 0.3}, {0, -0.3}}
 
 -- ringIn: radius of the control ring (nil = 1" beyond the marker). band: for a covered
@@ -123,15 +123,15 @@ function drawRings()
     self.setVectorLines(lines)
 end
 
--- Highest battlefield surface under (x, z): generated terrain or the mat, never a model or
--- another marker. Returns the height and whether it was terrain.
+-- Highest battlefield surface under (x, z): generated terrain or the table felt, never a model
+-- or another marker. Returns the height and whether it was terrain.
 local function castTop(x, z)
     local best, onTerrain = nil, false
     for _, hit in ipairs(Physics.cast({origin = {x = x, y = 60, z = z}, direction = {x = 0, y = -1, z = 0}, type = 1, max_distance = 120}) or {}) do
         local o = hit.hit_object
         if o and o ~= self and not o.hasTag(OBJECTIVE_TAG) then
             local terrain = o.hasTag(SURFACE_TAG)
-            if terrain or o.getGUID() == Global.getVar("mat_GUID") then
+            if terrain or o.getGUID() == Global.getVar("felt_GUID") then
                 if best == nil or hit.point.y > best then best, onTerrain = hit.point.y, terrain end
             end
         end

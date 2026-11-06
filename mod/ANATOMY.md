@@ -63,7 +63,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | Advanced Features Panel | `ed17d0` | BlockSquare | 3,009 | 0 | terrain collider toggle panel (forwards to the Start Menu) |
 | KEEP | Banner (Blue) | `0dd965` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
 | KEEP | Banner (Red) | `0dd964` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Blue Custom Dice Table | `839fcc` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout, scale 3.75 -> 1.875 (57.1 x 11.2 -> 28.6 x 5.6 world units) in front of the TC roller |
+| KEEP | Blue Custom Dice Table | `839fcc` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout. TC-023v: half the length only (scale (1.875, 1, 3.75), 28.6 x 11.15), widgets counter-scaled to their old world size, at the end of its player's row (see *Table layout*) |
 | KEEP | Blue dice cam | `96a319` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Blue dice camera | `c09349` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Blue Dice Roller | `927ca1` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing |
@@ -96,11 +96,11 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP-2 | Marked Unit | `2914e3` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Marked Unit | `513c30` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | KEEP | Mat url | `c5e288` | BlockRectangle | 9,279 | 0 | table mat URL setter |
-| KEEP | matObjSurface | `4ee1f2` | Custom_Model | 3,293 | 0 | table surface mat (mat_GUID) with lighting presets |
+| KEEP | matObjSurface | `4ee1f2` | Custom_Model | 3,293 | 0 | table surface mat (mat_GUID) with lighting presets. TC-023v: parked under the felt `28865a` (posY -9.52 -> -9.80), kept as the importer's anchor; boards stand on the felt |
 | STRIP-2 | Objective | `4d85d9` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Objective | `d1100e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Quarter-circle | `51ee3f` | Custom_Model | 0 | 0 | TC-023s: quarter-circle template, read by nothing (`quarterCircle_GUID` had no reader); removed |
-| KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout, scale 3.75 -> 1.875 (57.1 x 11.2 -> 28.6 x 5.6 world units) in front of the TC roller |
+| KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout. TC-023v: half the length only (scale (1.875, 1, 3.75), 28.6 x 11.15), widgets counter-scaled to their old world size, at the end of its player's row (see *Table layout*) |
 | KEEP | Red dice cam | `48dcae` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Red dice camera | `19b9bf` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
 | KEEP | Red Dice Roller | `17ca2b` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing |
@@ -361,8 +361,8 @@ seven `interactiveButton*` toggle-state globals with the objects they served.
 
 ## Added: Warband Importer `b91983` (TC-016)
 
-A locked Custom_Tile at (-22, 1, 0), 20" in front of the host camera between the two hand
-zones, turned to `rotY: 270` so its widgets read upright from the seats (every seat faces
+A locked Custom_Tile at (-33.5, 1, 0) in the side column (TC-023v; it was at (-22, 1, 0)),
+between the two hand zones, turned to `rotY: 270` so its widgets read upright from the seats (every seat faces
 +x: the hand zones sit at x=-42 with rotY 270 and `CameraStates[0]` loads looking along +x;
 the LCT Start Menu at x=52 uses the same rotY 270). The face is the Scripted Table's plain
 charcoal board image (3603166284, Custom_Boards `199749` / `f1195f`, 2272x1704); measured
@@ -397,7 +397,9 @@ local +z (`screenToLocal`). The widget y is the measured top + 0.1 (0.40 here). 
 for the spawned models come from the mat at import time: `findMat` reads `4ee1f2`'s
 `getBounds` (live: centre (0, -0.5, 0), size (60, 2.9, 44)), or the first flat 50-70 x
 34-54 object, else `DEFAULT_MAT`; Red's rows start 3" inside the +z edge and grow toward
-the centre, Blue mirrored, both centred on the mat's x, one unit above the mat top.
+the centre, Blue mirrored, both centred on the mat's x, one unit above the mat top. Since
+TC-023v the mat sits under the felt, so that is about 0.67 + 1 and models drop onto the felt
+(or the board) from there; x / z are unchanged.
 
 `mod/scripts/b91983.lua` is split in two. Above the `TTS glue` line nothing touches a TTS
 global, so `mod/test/importer_test.lua` runs it under plain Lua (`pnpm mod:test`):
@@ -468,7 +470,7 @@ were left behind, as was its `6927df` shelf card (a map-controls illustration).
 
 ### Dice rollers
 
-`25b3ac` (Red, 12/1/39) and `ea3160` (Blue, -12/1/-39) are ST `e3a6d5` / `63dad0`: the
+`25b3ac` (Red, -6.4/1/31.6) and `ea3160` (Blue, 6.4/1/-31.6) are ST `e3a6d5` / `63dad0`: the
 **Trench Crusade** roller. Place a die on the centre pad, set +N / -N with the side
 buttons, click the number: it rolls 2+N dice and prints the two highest (+DICE) or two
 lowest (-DICE), which is the rulebook p15 Success Roll. The 26 alternate-art `States`
@@ -480,9 +482,9 @@ Success and Injury Rolls, the LCT mats for everything else; neither touches the 
 ### Counters
 
 Six `Custom_Token` counters (ST script, left click +1 / right click -1, editable name) in a
-row behind each dice mat: Red `c0530b` Points (-6/38), `0e8265` Turn (-2/38), `e58368`
-Glory (2/38); Blue `520a95` Points (6/-38), `f14264` Turn (2/-38), `7a87e9` Glory
-(-2/-38). Sources ST `bf846e`/`5114af`/`cdcfd8` and `58b28d`/`025fa8`/`9458e0`; the
+row in each player's strip: Red `c0530b` Points (-23.4/31), `0e8265` Turn (-19.2/31),
+`e58368` Glory (-15/31); Blue `520a95` Points (23.4/-31), `f14264` Turn (19.2/-31),
+`7a87e9` Glory (15/-31). Sources ST `bf846e`/`5114af`/`cdcfd8` and `58b28d`/`025fa8`/`9458e0`; the
 Turn counters keep ST's `MIN_VALUE = 1`. The only script change is an appended `getValue`
 / `setValue` so the Turn Tracker can write them. They are **added alongside** LCT's Game
 Rounds / Red Turns / Blue Turns (`ee92cf`, `055302`, `7e4111`): those drive the HUD ROUND
@@ -494,10 +496,10 @@ stay engine plumbing.
 ### Token bags (TC-017)
 
 Twelve `Custom_Model_Infinite_Bag`s on LCT's bag shell (`3f45f1`'s mesh, invisible, scale
-1.49, locked) with one tagged content object and one locked, untagged child icon. They sit
-where the replaced 40k bags were, plus a fourth column at x=+/-37: Red column x=33.5 holds
-Blood (`3b0f1d`, slot of `e51f0c`) and Blessing (`6cecd8`, slot of `e87880`); x=37 holds
-Activated `fef40e`, Down `e75c71`, Tough `d51618`, Objective `70d18f`. Blue mirrors it
+1.49, locked) with one tagged content object and one locked, untagged child icon. Since
+TC-023v each side's six stand in one row at z=+/-27, 2.4" apart: Red x -13 .. -25 Blood
+(`3b0f1d`, slot of `e51f0c`), Blessing (`6cecd8`, slot of `e87880`), Activated `fef40e`,
+Down `e75c71`, Tough `d51618`, Objective `70d18f`. Blue mirrors it
 (`061bfb`, `c30c00`, `0659ae`, `9eb271`, `359c8c`, `2d4b7e`). Contents and tags:
 
 | Role | Tag on the content | Source | Why |
@@ -521,7 +523,7 @@ bags (not asked for; candidates for TC-018 friction tickets).
 
 ### Turn Tracker `4ac9e3` (TC-017)
 
-A locked `Custom_Tile` at (-22, 1, 15), above the Warband Importer (measured live: a
+A locked `Custom_Tile` at (-31.5, 1, 16.6) (TC-023v; was (-22, 1, 15)), above the Warband Importer (measured live: a
 10.67x8 face at scale 4, the same 4:3 board image, mesh from local y 0 to 0.2), with eight
 `createButton`s: a label (`Turn N - <Phase> Phase`), **Initiative roll-off**, **Start turn
 (clear Activated)**, **Morale reminder**, **Next turn**, **Red Shaken** / **Blue Shaken**
@@ -606,11 +608,41 @@ The bags' attached icons are the same chip. No external asset.
 `ringIn` and `band` (empty for an open objective); the Battlefield panel takes a marker from
 the Red bag at the point and calls `setRingRadius({ringIn, band})`.
 
+## Table layout (TC-023v)
+
+The middle of the table is kept clear for the battlefield: nothing stands within x, z
++/-25.5 (a 48" board plus 1.5"). `mod/test/layout_test.lua` checks every footprint.
+
+- **Side column** (x <= -27.5, |z| <= 24.7): Warband Importer `b91983` (-33.5, 0), Turn
+  Tracker `4ac9e3` (-31.5, 16.6), Battlefield panel `47de64` (-31.5, -16.6), Table Theme
+  anchor `369707` (-40, 16.6) beside the tracker (its XML panel is 15.7 x 7 inches).
+- **Player strips**, Red at z 26.0 .. 37.8 and Blue its mirror through the centre (every
+  Blue twin is the Red position negated). Seen from the Red seat (+z, facing the board):
+  the dice tray `acae21` at the left end (x -0.8 .. 27.8, centre (13.5, 31.6)), the
+  opponent's dice-camera screen `c09349` beyond it at x 33.7, and in the freed half to the
+  right: the TC roller `25b3ac` beside the tray (x -6.4, with the 4.4" ring it rolls on
+  kept clear), then three rows - the six token bags at z 27, Glory / Turn / Points and the
+  banner at z 31, the trash bin and its counter, d3 / d6 bags and the two LOS markers at
+  z 35.6.
+- **Dice tray** (both identical): scale (1.875, 1, 3.75), so half the LCT length and the
+  full depth. `place()` authors every widget in world inches and counter-scales its x by
+  3.75 / 1.875, so text stays square and at the size it had on the 3.75 tray. In the seated
+  player's frame (u right, v toward them): bubble / highlight tools and Clear mat / Roll
+  all / colours / pip on the far row, measure buttons / size / Go / +1d6 .. +4d6 / +1d3 /
+  Custom Dice on the next, the five-button tool column at the left, the readout beside it,
+  then the result rows (`RESULT_LAYOUT`: 10 per row, value rows 1.05 apart, from u 0.05,
+  v -2), the ten spawn slots (2 x 5, 0.94 apart) and the roller bowl on the tray's snap
+  point at the right. The roller asks the tray for `getResultLayout` and lays rows and
+  ejected dice out in the tray's frame instead of fixed world offsets.
+- The LCT mat `4ee1f2` is parked under the felt; boards are generated for the felt's top
+  (`DEFAULT_TTS_OPTIONS.matTopY` 0.9, tied to the save by `packages/battlefield/test/table.test.ts`)
+  and objective markers off terrain seat on the felt.
+
 ## Added: Battlefield panel `47de64` (TC-022a)
 
 A copy of the Turn Tracker's tile (same image, scale 4, rotY 270, so its live-measured face
-and widget scale apply) at (-22, 1, -15): below the Warband Importer, mirroring the tracker
-above it. Nine classic 3D widgets from `BUTTONS` in `mod/scripts/47de64.lua`: the scenario
+and widget scale apply) at (-31.5, 1, -16.6) (TC-023v; was (-22, 1, -15)): below the
+Warband Importer, mirroring the tracker above it. Nine classic 3D widgets from `BUTTONS` in `mod/scripts/47de64.lua`: the scenario
 label (`n/12  Name  (36")`), **< Scenario** / **Scenario >**, the board label (`Board i/5:
 seed N` or `Random board: seed N`), **Next board** / **Random board**, **Spawn battlefield**,
 **Clear battlefield** and a status line.

@@ -403,10 +403,9 @@ local function announceEjectedDice()
 end
 
 local function ejectBusyDie(guid)
-    local pos = self.getPosition()
     self.takeObject({
         guid = guid,
-        position = {pos.x + 12, pos.y + 5, pos.z + 12},
+        position = ejectPoint(5),
         smooth = false,
     })
     ejectedDiceCount = ejectedDiceCount + 1
@@ -420,6 +419,43 @@ end
 -- the `self` fallback keeps dice placement functional in the meantime.
 objectToPlaceDiceOnGUID = nil
 objectToPlaceDiceOn = self
+
+-- Where results go, in world inches in the mat's frame (u to the seated player's right, v
+-- toward them): the mat's getResultLayout, else rows around the bowl itself.
+function resultLayout(step)
+    if objectToPlaceDiceOn ~= self then
+        local ok, layout = pcall(function() return objectToPlaceDiceOn.call("getResultLayout") end)
+        if ok and type(layout) == "table" and tonumber(layout.u) and tonumber(layout.v) then return layout end
+    end
+    return { u = -20.4 + step, v = -3.17 + step, cols = 25, eject = { u = -12, v = 12 } }
+end
+
+function matPoint(u, v, dy)
+    local position = objectToPlaceDiceOn.getPosition()
+    local a = math.rad(objectToPlaceDiceOn.getRotation().y)
+    return {
+        position.x - u * math.cos(a) + v * math.sin(a),
+        position.y + dy,
+        position.z + u * math.sin(a) + v * math.cos(a),
+    }
+end
+
+function ejectPoint(dy)
+    local e = resultLayout(1).eject or { u = -12, v = 12 }
+    return matPoint(e.u, e.v, dy)
+end
+
+-- Offset of one result die: value rows of `step`, `cols` dice per row, then a new band.
+-- Values above 6 (a d12 dropped in by hand) use the column block after the d6 block.
+function resultOffset(layout, step, value, nthOfValue)
+    local cols = layout.cols or 25
+    local rowIdx = nthOfValue - 1
+    local rowBand = math.floor(rowIdx / cols)
+    local rowCol = rowIdx % cols
+    local block = value > 6 and cols * step or 0
+    return layout.u + block + rowCol * step,
+        layout.v + ((value - 1) % 6) * step + rowBand * 7 * step
+end
 
 -- Defer a callback until Global's onLoad has run (it sets FTC_Global_Ready
 -- last). After 10s run it anyway rather than hang a broken load forever.
@@ -559,9 +595,8 @@ function onObjectEnterContainer(container, obj)
                 end
             end, complete and takeDiceOutDelay or collectDiceDelay)
         else
-            local pos = self.getPosition()
             self.takeObject({
-                position          = {pos.x+20,pos.y+50,pos.z+20},
+                position          = ejectPoint(50),
                 smooth            = false,
             })
         end
@@ -662,8 +697,8 @@ function takeDiceOut(batch)
 	local ordered = batch.ordered
 	local groupSize = batch.groupSize
 
-	local position = objectToPlaceDiceOn.getPosition()
 	local rotation = objectToPlaceDiceOn.getRotation()
+	local layout = resultLayout(data.Step)
 	local displayInRows = true
 	if data.Rows == 'no' then displayInRows = false end
 	if ordered then displayInRows = false end
@@ -687,28 +722,14 @@ function takeDiceOut(batch)
             Rows[diceGuids[key]] = Rows[diceGuids[key]] + 1
             local params = {}
             params.guid = key
-            local d12Xoffset=0
-            if diceGuids[key]>6 then
-                d12Xoffset=-24
-            end
 
             local newXPos
             local newZPos
             if displayInRows then
-				-- Wrap a long same-value run into stacked Z-bands instead of letting
-				-- X grow without bound and push dice off the mat (where getDice()
-				-- can no longer see them to roll/clear). First 25 per value are
-				-- placed exactly as before; each band drops 7 rows in Z (6 value
-				-- rows + 1 gap) so bands never interleave.
-				local rowColLimit = 25
-				local rowIdx  = Rows[diceGuids[key]] - 1
-				local rowBand = math.floor(rowIdx / rowColLimit)
-				local rowCol  = rowIdx % rowColLimit
-				newXPos = 0 - d12Xoffset - 20.4 + ((rowCol + 1) * data.Step)
-				newZPos = -3.17 + ((((diceGuids[key] - 1) % 6) + 1) * data.Step) + (rowBand * 7 * data.Step)
+				newXPos, newZPos = resultOffset(layout, data.Step, diceGuids[key], Rows[diceGuids[key]])
             else
 				local pos = n - 1
-				local limit = 25
+				local limit = layout.cols or 25
 				if groupSize > 1 then
 					pos = pos + math.floor(pos / groupSize)
 					local step = groupSize + 1
@@ -718,17 +739,11 @@ function takeDiceOut(batch)
 				end
 				local row = math.floor(pos / limit) + 1
 				local col = pos % limit
-				newXPos = 0 - 15.0 + (col * data.Step)
-				newZPos = -3.17 + (row * data.Step)
+				newXPos = layout.u + (col * data.Step)
+				newZPos = layout.v + ((row - 1) * data.Step)
             end
 
-			params.position = {
-				position.x + (newXPos * math.cos((180 + rotation.y) * 0.0174532))
-                                   - (newZPos * math.sin((180 + rotation.y) * 0.0174532)),
-				position.y + 2,
-				position.z + (newXPos * math.sin((rotation.y) * 0.0174532))
-                                   + (newZPos* math.cos((0 + rotation.y) * 0.0174532))
-			}
+			params.position = matPoint(newXPos, newZPos, 2)
             params.rotation = rotation
             params.callback = 'setValueCallback'
             params.params = {diceGuids[key], batch.id}
