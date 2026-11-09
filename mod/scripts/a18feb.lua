@@ -1,6 +1,6 @@
 -- FTC-GUID: a18feb,8f0c3a
--- Trench Crusade objective marker: a flat 40mm chip that models pass through, with its
--- control range drawn as vector lines. Rulebook: Markers are up to 40mm across and do not
+-- Trench Crusade objective marker: a thin 40mm disc bearing the objective symbol that models
+-- pass through, with its control range drawn as vector lines. Rulebook: Markers are up to 40mm across and do not
 -- hinder movement (p146); a player controls an Objective with models on, in or within 1"
 -- of it (p152), and where a terrain piece covers the marker the whole piece is the
 -- Objective (p152).
@@ -11,8 +11,8 @@ OBJECTIVE_TAG = "tc-token:objective"
 SURFACE_TAG = "tc-terrain"
 SPOT_COLOR = {0.35, 1, 0.45}
 RING_COLOR = {1, 1, 1}
--- Every marker draws its lines this far above its own pivot, so rings sit at one height.
-RING_LIFT_IN = 0.06
+-- Lines sit this far above the disc's top face, so the disc never hides them.
+RING_LIFT_IN = 0.02
 -- Rays a little off the marker's centre, for a point that lands exactly on the seam
 -- between two ground tiles (a centre ray there passes through to the table).
 SEAM_OFFSETS_IN = {{0.3, 0}, {-0.3, 0}, {0, 0.3}, {0, -0.3}}
@@ -21,6 +21,9 @@ SEAM_OFFSETS_IN = {{0.3, 0}, {-0.3, 0}, {0, 0.3}, {0, -0.3}}
 -- objective, the piece's footprint grown by 1" as x/z offsets from the marker centre,
 -- drawn instead of the ring.
 state = { ringIn = nil, band = nil }
+-- Set once the marker has settled; a spawner waits for it before calling setRingRadius,
+-- because a call made before onLoad is lost when the script loads.
+ready = false
 
 local COLLIDERS = {"BoxCollider", "MeshCollider", "SphereCollider", "CapsuleCollider"}
 
@@ -47,6 +50,7 @@ function settle()
     sizeToRules()
     seat()
     drawRings()
+    ready = true
 end
 
 function controlRadius()
@@ -80,8 +84,8 @@ function makeIntangible()
     end
 end
 
--- Scales the chip so its footprint is exactly the rulebook's 40mm, whatever size the
--- built-in model comes in at.
+-- Scales the disc so its footprint is exactly the rulebook's 40mm, whatever size the
+-- tile comes in at.
 function sizeToRules()
     self.setRotation({0, 0, 0})
     local b = self.getBoundsNormalized()
@@ -95,11 +99,11 @@ end
 -- Points relative to the marker in world inches, in the dice tray's measuring-bubble
 -- recipe (local x/y plane over scale, turned flat by rotation {270, 0, 0}, which sends
 -- local +y to world -z).
-local function line(points, color, thickness)
+local function line(points, color, thickness, liftIn)
     local s = self.getScale()
     local pts = {}
     for i, p in ipairs(points) do
-        pts[i] = {x = p[1] / s.x, y = -p[2] / s.z, z = RING_LIFT_IN / s.y}
+        pts[i] = {x = p[1] / s.x, y = -p[2] / s.z, z = liftIn / s.y}
     end
     return {points = pts, color = color, thickness = thickness, rotation = {270, 0, 0}}
 end
@@ -113,12 +117,20 @@ local function circle(radiusIn)
     return pts
 end
 
+-- World inches from the pivot up to the disc's top face (a Custom_Tile's pivot is its
+-- bottom face), plus the clearance.
+function lineLift()
+    local b = self.getBounds()
+    return b.center.y + b.size.y / 2 - self.getPosition().y + RING_LIFT_IN
+end
+
 function drawRings()
-    local lines = { line(circle(MARKER_DIAMETER_IN / 2), SPOT_COLOR, 0.12) }
+    local lift = lineLift()
+    local lines = { line(circle(MARKER_DIAMETER_IN / 2), SPOT_COLOR, 0.12, lift) }
     if state.band then
-        lines[2] = line(state.band, RING_COLOR, 0.06)
+        lines[2] = line(state.band, RING_COLOR, 0.06, lift)
     else
-        lines[2] = line(circle(controlRadius()), RING_COLOR, 0.06)
+        lines[2] = line(circle(controlRadius()), RING_COLOR, 0.06, lift)
     end
     self.setVectorLines(lines)
 end

@@ -4,9 +4,12 @@
 --
 -- Rebuilds a board from the API payload fixture and compares every object with
 -- the generator's --tts output for the same seed, then drives the panel's glue
--- with a stubbed WebRequest / spawn / tag API: the chooser wraps, Spawn and Clear
--- only remove tc-terrain and objective markers, markers go to the objective
--- points with their ring radius, network and HTTP failures read clearly.
+-- with a stubbed WebRequest / spawn / tag API: the chooser wraps, the archetype
+-- toggle shows only where the scenario lets the player choose, Spawn and Clear
+-- only remove tc-terrain and objective markers, a covered objective marks its
+-- terrain piece (symbol decal, 1" band above its top) instead of getting a
+-- marker, an open one gets a marker whose ring is set once its script is ready,
+-- network and HTTP failures read clearly.
 
 local here = (arg and arg[0] or ""):match("^(.*)[/\\]") or "."
 local root = here .. "/../.."
@@ -101,7 +104,7 @@ end
 
 ---------------------------------------------------------------- load --
 
-JSON = { decode = decode, encode = function(t) return t end }
+JSON = { decode = function(s) if type(s) == "table" then return s end return decode(s) end, encode = function(t) return t end }
 dofile(SCRIPT)
 
 local payloadText = read(FIXTURES .. "battlefield-claim-no-mans-land-25.json")
@@ -151,6 +154,79 @@ local restored = normaliseState({ scenarioIndex = 40, boardIndex = 9 })
 clampState(restored, scs)
 check(restored.scenarioIndex >= 1 and restored.scenarioIndex <= 12 and restored.boardIndex <= #scs[restored.scenarioIndex].recommendedSeeds, "a stale save is clamped")
 eq(boardUrl("https://tc.rynfin.org/", "relic-hunt", 10), "https://tc.rynfin.org/api/battlefields/relic-hunt/10", "board url")
+eq(boardUrl("https://tc.rynfin.org", "great-war", 10, "no-mans-land"), "https://tc.rynfin.org/api/battlefields/great-war/10?archetype=no-mans-land", "board url with an archetype")
+
+---------------------------------------------------------------- archetype toggle --
+
+local function layoutById(st)
+  local out = {}
+  for _, spec in ipairs(panelLayout({ archetype = archetypeLabel(st, scs) }, geomFromBounds())) do out[spec.id] = spec end
+  return out
+end
+local a = newState()
+eq(archetypeLabel(a, scs), nil, "no archetype toggle for Claim No Man's Land (fixed archetype)")
+local hidden = layoutById(a).archetype
+check(hidden.width == 0 and hidden.height == 0 and hidden.label == "", "the archetype button is hidden for a fixed-archetype scenario")
+stepArchetype(a, scs)
+eq(a.archetype, nil, "the toggle does nothing on a fixed-archetype scenario")
+local fixed = 0
+for i, sc in ipairs(scs) do
+  if #selectableArchetypes(sc) == 0 then
+    fixed = fixed + 1
+    a.scenarioIndex = i
+    eq(layoutById(a).archetype.width, 0, sc.id .. " hides the archetype button")
+  end
+end
+check(fixed >= 8, "most scenarios have a fixed archetype (" .. fixed .. ")")
+local gw = 0
+for i, sc in ipairs(scs) do if sc.id == "great-war" then gw = i end end
+check(gw > 0, "the list has Great War")
+a = newState()
+stepScenario(a, scs, gw - 1)
+eq(scs[a.scenarioIndex].id, "great-war", "stepped to Great War")
+eq(archetypeLabel(a, scs), "Archetype: Trench Lines", "Great War shows its own archetype first")
+check(layoutById(a).archetype.width > 0 and layoutById(a).archetype.label == "Archetype: Trench Lines", "the archetype button is shown for Great War (p195: any archetype)")
+eq(currentArchetype(a, scs), nil, "the scenario's own archetype sends no parameter")
+stepArchetype(a, scs)
+eq(currentArchetype(a, scs), "no-mans-land", "the toggle steps to No Man's Land")
+eq(archetypeLabel(a, scs), "Archetype: No Man's Land", "label follows the toggle")
+stepArchetype(a, scs)
+eq(currentArchetype(a, scs), "trench-lines", "the toggle wraps back to Trench Lines")
+stepArchetype(a, scs)
+local saved = normaliseState({ scenarioIndex = a.scenarioIndex, archetype = a.archetype })
+clampState(saved, scs)
+eq(currentArchetype(saved, scs), "no-mans-land", "the chosen archetype survives save/load")
+randomBoard(a, 999999, function(lo, hi) if hi == 2 then return 1 end return 77 end, scs)
+eq(a.randomSeed, 77, "random board on Great War still picks a seed")
+eq(currentArchetype(a, scs), "trench-lines", "random board on Great War picks an archetype too")
+randomBoard(a, 999999, function(lo, hi) if hi == 2 then return 2 end return 78 end, scs)
+eq(currentArchetype(a, scs), "no-mans-land", "random board can pick the other archetype")
+stepScenario(a, scs, 1)
+eq(a.archetype, nil, "changing scenario drops the chosen archetype")
+local stale = normaliseState({ scenarioIndex = 1, archetype = "no-mans-land" })
+clampState(stale, scs)
+eq(currentArchetype(stale, scs), nil, "a saved archetype on a fixed scenario is ignored")
+local fixedRandom = newState()
+randomBoard(fixedRandom, 999999, function(lo, hi) eq(hi, 999999, "fixed scenario: random only picks the seed"); return 5 end, scs)
+eq(fixedRandom.archetype, nil, "random board leaves a fixed scenario's archetype alone")
+check(validatePayload(payload, "claim-no-mans-land", 25, "no-mans-land"), "payload names the archetype it was laid as")
+check(not validatePayload(payload, "claim-no-mans-land", 25, "trench-lines"), "a payload in another archetype is refused")
+
+---------------------------------------------------------------- panel layout --
+
+local geom = geomFromBounds({ size = { x = 10.667, y = 0.2, z = 8 }, center = { y = 1.1 } }, { size = { x = 14.127, y = 0.2, z = 8 }, center = { y = 1.1 } }, { x = 4, y = 1, z = 4 }, { x = -22, y = 1, z = -15 })
+local drawn = {}
+for _, spec in ipairs(panelLayout({ archetype = "Archetype: No Man's Land" }, geom)) do
+  local e = widgetExtent(spec)
+  check(e.left >= -geom.hx and e.right <= geom.hx and e.top >= -geom.hz and e.bottom <= geom.hz, spec.id .. " stays on the tile")
+  if spec.width > 0 then drawn[#drawn + 1] = { id = spec.id, e = e } end
+end
+for i = 1, #drawn do
+  for j = i + 1, #drawn do
+    local p, q = drawn[i].e, drawn[j].e
+    check(p.right <= q.left or q.right <= p.left or p.bottom <= q.top or q.bottom <= p.top, drawn[i].id .. " does not overlap " .. drawn[j].id)
+  end
+end
 
 ---------------------------------------------------------------- glue --
 
@@ -174,21 +250,56 @@ function getObjectsWithTag(tag)
   end
   return out
 end
+-- Spawned pieces stand 3 high above their pivot; positionToLocal is Unity's inverse
+-- transform (rotation about y, then scale), toWorld its inverse for the checks.
+local PIECE_H = 3
+local function rotY(x, z, deg)
+  local a = math.rad(deg)
+  return x * math.cos(a) + z * math.sin(a), -x * math.sin(a) + z * math.cos(a)
+end
 local spawnedData = {}
 function spawnObjectData(p)
   spawnedData[#spawnedData + 1] = p.data
-  local o = thing(p.data.Tags, "s" .. #spawnedData)
+  local t = p.data.Transform
+  local o = thing({ table.unpack(p.data.Tags) }, "s" .. #spawnedData)
   o.spawning, o.loading_custom = false, false
+  o.getBounds = function() return { center = { x = t.posX, y = t.posY + PIECE_H / 2, z = t.posZ }, size = { x = 4, y = PIECE_H, z = 4 } } end
+  o.getScale = function() return { x = t.scaleX, y = t.scaleY, z = t.scaleZ } end
+  o.positionToLocal = function(v)
+    local x, z = rotY(v.x - t.posX, v.z - t.posZ, -t.rotY)
+    return { x = x / t.scaleX, y = (v.y - t.posY) / t.scaleY, z = z / t.scaleZ }
+  end
+  o.toWorld = function(l)
+    local x, z = rotY(l.x * t.scaleX, l.z * t.scaleZ, t.rotY)
+    return { x = x + t.posX, y = l.y * t.scaleY + t.posY, z = z + t.posZ }
+  end
+  o.setVectorLines = function(l) o.lines = l end
+  o.setDecals = function(d) o.decals = d end
+  o.addTag = function(tag) o.tags[#o.tags + 1] = tag end
+  o.hasTag = function(tag) for _, x in ipairs(o.tags) do if x == tag then return true end end return false end
   world[#world + 1] = o
   return o
 end
+-- A marker taken from the bag has not run its script yet: a call made now is lost, and
+-- onLoad later draws the default ring. load() runs its onLoad and settle.
+local DEFAULT_RING = "default"
 local takes = {}
+local function newMarker()
+  local m = { ring = nil, loaded = false, destroyed = false }
+  m.isDestroyed = function() return m.destroyed end
+  m.getVar = function(k) if k == "ready" and m.loaded then return true end return nil end
+  m.call = function(fn, arg)
+    eq(fn, "setRingRadius", "marker call")
+    if m.loaded then m.ring = arg.ringIn; m.band = arg.band end
+  end
+  m.load = function() m.loaded = true; m.ring = DEFAULT_RING end
+  return m
+end
 local bag = { takeObject = function(p)
   takes[#takes + 1] = p
-  local m = { ring = nil }
-  m.call = function(fn, arg) eq(fn, "setRingRadius", "marker call"); m.ring = arg.ringIn; m.band = arg.band end
-  p.callback_function(m)
+  local m = newMarker()
   takes[#takes].marker = m
+  p.callback_function(m)
 end }
 local importerState = { baseUrl = "http://127.0.0.1:3001/" }
 function getObjectFromGUID(g)
@@ -196,7 +307,22 @@ function getObjectFromGUID(g)
   if g == "b91983" then return { getTable = function(k) eq(k, "state", "importer state read"); return importerState end } end
   return nil
 end
-Wait = { condition = function(f, cond) check(cond(), "spawn waits until the pieces loaded"); f() end }
+-- Conditions are polled until they hold, as Wait.condition does frame by frame.
+local waiting = {}
+local function pollWaits()
+  local i = 1
+  while i <= #waiting do
+    local w = waiting[i]
+    if w.cond() then
+      table.remove(waiting, i)
+      w.f()
+      i = 1
+    else
+      i = i + 1
+    end
+  end
+end
+Wait = { condition = function(f, cond) waiting[#waiting + 1] = { f = f, cond = cond }; pollWaits() end }
 local requests = {}
 local nextResponse
 WebRequest = { get = function(url, cb) requests[#requests + 1] = url; cb(nextResponse(url)) end }
@@ -225,23 +351,69 @@ onSpawn()
 eq(#spawnedData, #expected, "spawn creates every piece")
 check(terrain1.destroyed and terrain2.destroyed and marker.destroyed, "spawn removes the old terrain and markers")
 check(not model.destroyed and not tokenDown.destroyed and not tracker.destroyed, "spawn leaves models, tokens and tools alone")
-eq(#takes, #payload.objectives, "one marker per objective")
-for i, t in ipairs(takes) do
-  eq(t.position.x, payload.objectives[i].posX, "marker x")
-  eq(t.position.z, payload.objectives[i].posZ, "marker z")
-  eq(t.marker.ring, payload.objectives[i].ringIn, "marker ring radius")
-  eq(#(t.marker.band or {}), #payload.objectives[i].band, "marker gets the covered objective's band")
+check(#payload.objectives > 0, "the fixture board has objectives")
+eq(#takes, 0, "every objective on this board is covered by terrain: no marker disc at all")
+local coverOf = {}
+for i, row in ipairs(payload.pieces) do if row[6] ~= "" then coverOf[row[6]] = world[#world - #payload.pieces + i] end end
+for _, spec in ipairs(payload.objectives) do
+  local piece = coverOf[spec.id]
+  check(piece ~= nil and #spec.band > 1, spec.id .. " has a covering piece and a band")
+  check(piece.hasTag("tc-objective") and piece.hasTag("tc-objective:" .. spec.id), spec.id .. ": covering piece tagged tc-objective:" .. spec.id)
+  check(piece.hasTag("tc-terrain"), spec.id .. ": covering piece is still terrain, so Clear removes it")
+  local line = piece.lines and piece.lines[1] or { points = {} }
+  check(piece.lines ~= nil and #piece.lines == 1 and #line.points == #spec.band, spec.id .. ": the 1in band is drawn on the piece")
+  local top = piece.getBounds().center.y + PIECE_H / 2
+  local worst = 0
+  for k, pt in ipairs(line.points) do
+    local w = piece.toWorld(pt)
+    worst = math.max(worst, math.abs(w.x - spec.band[k][1]), math.abs(w.z - spec.band[k][2]))
+    check(w.y > top and w.y < top + 0.2, string.format("%s band point %d drawn just above the piece's top (%.3f over %.3f)", spec.id, k, w.y, top))
+  end
+  check(worst < 1e-9, spec.id .. ": band points land on the generator's band in world space (off by " .. worst .. ")")
+  local decal = piece.decals and piece.decals[1] or { position = { x = 0, y = 0, z = 0 }, rotation = {}, scale = { x = 0 } }
+  check(piece.decals ~= nil and #piece.decals == 1, spec.id .. ": the piece carries one decal")
+  eq(decal.url, "https://tc.rynfin.org/tts/objective-symbol.png", spec.id .. ": decal is our objective symbol, from our host")
+  local at = piece.toWorld(decal.position)
+  check(math.abs(at.x - spec.posX) < 1e-9 and math.abs(at.z - spec.posZ) < 1e-9 and at.y > top, spec.id .. ": symbol over the objective point, above the piece")
+  eq(decal.rotation.x, 90, spec.id .. ": decal laid flat, facing up")
+  check(math.abs(decal.scale.x * piece.getScale().x - 40 / 25.4) < 1e-9, spec.id .. ": symbol 40mm across in world inches")
 end
-local banded = 0
-for _, t in ipairs(takes) do if t.marker.band and #t.marker.band > 0 then banded = banded + 1 end end
-check(banded > 0, "the fixture board has covered objectives with bands")
 check(not busy, "panel is free again after the spawn")
+check(statusText():find("5 on terrain, 0 marker", 1, true) ~= nil, "status counts objectives on terrain and markers: " .. statusText())
+
+-- Reload: the covered pieces re-draw from their memo.
+local again = coverOf["obj-3"]
+again.lines, again.decals = nil, nil
+restoreCovers()
+check(again.lines and #again.lines[1].points == #payload.objectives[3].band and again.decals and #again.decals == 1, "a covered piece re-draws its band and symbol after a load")
 eq(requests[#requests], "http://127.0.0.1:3001/api/battlefields/claim-no-mans-land/25", "board url from the chooser")
 
 local spawnedTerrain = #getObjectsWithTag("tc-terrain")
 onClear()
 eq(#getObjectsWithTag("tc-terrain"), 0, "clear removes the spawned terrain (" .. spawnedTerrain .. ")")
 check(not model.destroyed and not tokenDown.destroyed and not tracker.destroyed, "clear leaves models, tokens and tools alone")
+check(again.destroyed, "clear removes the pieces that carried objectives")
+
+---------------------------------------------------------------- open objectives and marker readiness --
+
+local open = { id = "obj-9", label = "Objective", posX = 3, posZ = -4, ringIn = 1.787, band = {} }
+local covering = spawnObjectData({ data = buildState(payload, payload.pieces[1]) })
+local onTerrain, markers = placeObjectives({ open }, { ["obj-9"] = covering })
+eq(onTerrain, 0, "an open objective (empty band) never marks terrain, even if a piece is passed")
+eq(markers, 1, "an open objective gets a marker")
+local t = takes[#takes]
+eq(t.position.x, 3, "marker x"); eq(t.position.z, -4, "marker z")
+eq(t.marker.ring, nil, "nothing is sent to a marker whose script has not loaded")
+t.marker.load()
+eq(t.marker.ring, DEFAULT_RING, "on load the marker draws its default ring")
+pollWaits()
+eq(t.marker.ring, 1.787, "once ready the marker gets the spec's 1.787in ring (old ordering lost it)")
+eq(t.marker.band, nil, "an open marker is sent no band")
+eq(covering.lines, nil, "the passed piece is left unmarked")
+local gone = (function() placeObjectives({ open }, {}); return takes[#takes].marker end)()
+gone.destroyed = true
+pollWaits()
+eq(#waiting, 0, "a marker deleted before it was ready drops its wait")
 
 nextResponse = function() return { is_error = false, response_code = 422, text = '{"error":{"code":"no-board","message":"The generator could not lay relic-hunt seed 7; try another seed"}}' } end
 onSpawn()

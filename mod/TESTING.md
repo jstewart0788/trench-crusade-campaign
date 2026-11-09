@@ -311,16 +311,17 @@ Offline first: `pnpm mod:test`.
 
 ## 12. Objective markers (TC-023u)
 
-- Draw an Objective from either bag onto open ground: it sits on the mat with a green 40mm
-  circle and a white ring of about 1.8" radius. Push a model through it and across
+- Draw an Objective from either bag onto open ground: a thin disc showing the objective
+  symbol (no poker-chip print), 1.575" across, sits on the felt with a green 40mm circle and
+  a white ring of about 1.79" radius drawn just above it. Push a model through it and across
   the ring: nothing moves, the model does not ride up. Drop a model on it: the model lands on
   the mat. Hover shows its tooltip; right-click shows **Move objective** / **Delete
   objective**.
 - Drop one onto a generated ruin: Move objective, drag over the ruin, let go - it seats on
   the ruin's top (or the highest `tc-terrain` surface under it) and relocks. Delete removes it.
 - Save and reload: the markers stay put, still pass-through, rings drawn.
-- If the Scripted Table asset reads as a tall object rather than a spot, its look can change
-  without touching the script: rescale or swap the content object of `70d18f` / `2d4b7e`.
+- The bags' icons show the same disc at a sensible size; if not, rescale the child objects
+  `fc05bb` / `b7e51d` (scale 0.4 is a guess).
 
 ## 13. Battlefield panel (TC-022a, object `47de64`)
 
@@ -333,9 +334,17 @@ deployed `https://tc.rynfin.org`); the panel uses the Warband Importer's API bas
   retries.
 - **Scenario >** steps through the twelve and wraps; **Next board** cycles the five
   recommended seeds; **Random board** shows `Random board: seed N`.
+- **Archetype** button: absent on Claim No Man's Land; on Great War, From Below and Dragon
+  Hunt it reads `Archetype: ...` and toggles; Spawn lays the chosen one (Great War in No Man's
+  Land has no trench network). All buttons fit on the tile without overlapping.
 - **Spawn battlefield**: any old generated terrain and objective markers vanish, the board
-  spawns (about 140-270 pieces), and once it has loaded the scenario's objective markers drop
-  onto their points with their control rings. Models, tokens, the importer, tracker and
+  spawns (about 140-270 pieces), and once it has loaded each objective is marked. On Claim No
+  Man's Land seed 25 all five are covered: no discs at all; each covering ruin / tower shows
+  the symbol over its objective point and a white rounded band 1" outside its footprint,
+  drawn above its top. If the band reads mirrored or rotated against the piece, or the symbol
+  is the wrong size, record it (the conversion is `positionToLocal`; decal scale is divided by
+  the piece's scale). From Below (open objectives): discs with ~1.79" rings, ring correct on
+  every disc (the ring used to be lost on spawn). Save and reload: bands and symbols stay. Models, tokens, the importer, tracker and
   trays are untouched. Hover a piece: its name has the `·` separators intact.
 - **Clear battlefield** removes the terrain and markers only.
 - Save and reload: the panel keeps the scenario and board.

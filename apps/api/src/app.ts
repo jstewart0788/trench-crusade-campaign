@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { generateCode, parseCode } from "./codes.js";
 import type { StoredWarband, WarbandStore } from "./db/warbands.js";
 import { ApiError, errorHandler } from "./errors.js";
-import { MAX_SEED, NoBoardError, UnknownScenarioError, type BattlefieldService } from "./battlefields.js";
+import { ArchetypeNotSelectableError, MAX_SEED, NoBoardError, UnknownScenarioError, type BattlefieldService } from "./battlefields.js";
 import type { LoadedRules } from "./rules.js";
 
 export interface AppDeps {
@@ -159,12 +159,18 @@ export function createApp({ rules, store, now = () => new Date(), staticDir, rat
       if (!/^[0-9]{1,6}$/.test(seedRaw) || Number(seedRaw) < 1 || Number(seedRaw) > MAX_SEED) {
         throw new ApiError(400, "invalid-seed", `Seed must be a whole number from 1 to ${MAX_SEED}`);
       }
+      const archetypeRaw = req.query.archetype;
+      if (archetypeRaw !== undefined && typeof archetypeRaw !== "string") throw new ApiError(400, "invalid-archetype", "Give one archetype");
       try {
-        const payload = battlefields.board(scenario, Number(seedRaw));
+        const payload = battlefields.board(scenario, Number(seedRaw), archetypeRaw);
         res.set("Cache-Control", "public, max-age=86400");
         res.json(payload);
       } catch (err) {
         if (err instanceof UnknownScenarioError) throw new ApiError(404, "not-found", `No scenario ${scenario}`);
+        if (err instanceof ArchetypeNotSelectableError) {
+          const allowed = battlefields.list().find((s) => s.id === scenario)?.archetypes ?? [];
+          throw new ApiError(400, "invalid-archetype", allowed.length > 1 ? `${scenario} can be laid as ${allowed.join(" or ")}` : `${scenario} is always laid as ${allowed[0]}; leave out archetype`);
+        }
         if (err instanceof NoBoardError) throw new ApiError(422, "no-board", `The generator could not lay ${scenario} seed ${seedRaw}; try another seed`);
         throw err;
       }

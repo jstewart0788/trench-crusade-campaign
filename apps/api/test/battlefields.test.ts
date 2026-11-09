@@ -1,10 +1,10 @@
 import { expandBattlefield, generateBattlefield, layoutToObjectStates, loadCatalog, loadGeneratorEnv, objectiveMarkers, recommendSeeds, type BattlefieldPayload } from "@tc/battlefield";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import request from "supertest";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createApp } from "../src/app.js";
-import { BattlefieldService, MAT_TOP_Y, MAX_SEED, NoBoardError, SEEDS_FILE } from "../src/battlefields.js";
+import { ARCHETYPES, BattlefieldService, MAT_TOP_Y, MAX_SEED, NoBoardError, SEEDS_FILE } from "../src/battlefields.js";
 import { configFromEnv, repoRoot } from "../src/config.js";
 import { openDatabase } from "../src/db/client.js";
 import { WarbandStore } from "../src/db/warbands.js";
@@ -29,8 +29,10 @@ describe("GET /api/battlefields", () => {
     expect(res.status).toBe(200);
     expect(res.body.maxSeed).toBe(MAX_SEED);
     expect(res.body.scenarios.map((s: { id: string }) => s.id)).toEqual(env.scenarios.map((s) => s.id));
-    for (const [i, s] of (res.body.scenarios as { id: string; number: number; name: string; boardIn: number; archetype: string; recommendedSeeds: number[] }[]).entries()) {
+    for (const [i, s] of (res.body.scenarios as { id: string; number: number; name: string; boardIn: number; archetype: string; archetypes: string[]; recommendedSeeds: number[] }[]).entries()) {
       expect(s.number).toBe(i + 1);
+      expect(s.archetypes[0]).toBe(s.archetype);
+      for (const a of s.archetypes) expect(ARCHETYPES).toContain(a);
       expect(s.name).toBe(env.scenarios[i]!.name);
       expect([36, 48]).toContain(s.boardIn);
       expect(["trench-lines", "no-mans-land"]).toContain(s.archetype);
@@ -43,6 +45,19 @@ describe("GET /api/battlefields", () => {
       }
     }
   }, 60_000);
+
+  it("offers a choice of archetype only where the scenario lets the player pick", async () => {
+    const res = await request(appWith(battlefields)).get("/api/battlefields");
+    const by = new Map((res.body.scenarios as { id: string; archetypes: string[] }[]).map((s) => [s.id, s.archetypes]));
+    // "can use any battlefield archetype (the player setting up the terrain decides which one to use)": Great War p195, From Below.
+    expect(by.get("great-war")).toEqual(["trench-lines", "no-mans-land"]);
+    expect(by.get("from-below")).toEqual(["trench-lines", "no-mans-land"]);
+    expect(by.get("dragon-hunt")).toEqual(["no-mans-land", "trench-lines"]);
+    expect(by.get("claim-no-mans-land")).toEqual(["no-mans-land"]);
+    expect(by.get("fields-of-glory")).toEqual(["trench-lines"]);
+    // Lists Decimated Ruins too, which the generator does not lay.
+    expect(by.get("supply-raid")).toEqual(["no-mans-land"]);
+  });
 
   it("keeps the shipped seed list in step with the generator", () => {
     const listed = seedsFile.scenarios.find((s) => s.id === "dragon-hunt")!.seeds;
@@ -97,6 +112,55 @@ describe("GET /api/battlefields/:scenario/:seed", () => {
     expect((await request(app).get("/api/battlefields/..%2F..%2Fetc/1")).status).toBe(400);
   });
 
+  it("lays a board in the archetype asked for, where the scenario allows the choice", async () => {
+    const app = appWith(battlefields);
+    for (const archetype of ["no-mans-land", "trench-lines"] as const) {
+      const res = await request(app).get(`/api/battlefields/great-war/3?archetype=${archetype}`);
+      expect(res.status, archetype).toBe(200);
+      const body = res.body as BattlefieldPayload;
+      expect(body.archetype).toBe(archetype);
+      const layout = generateBattlefield({ scenarioId: "great-war", seed: 3, archetype }, env);
+      expect(expandBattlefield(body)).toEqual(layoutToObjectStates(layout, env.palette, catalog, { matTopY: MAT_TOP_Y }));
+    }
+    const own = await request(app).get("/api/battlefields/great-war/3");
+    expect(own.body.archetype).toBe("trench-lines");
+    expect(own.text).toBe((await request(app).get("/api/battlefields/great-war/3?archetype=trench-lines")).text);
+    const other = await request(app).get("/api/battlefields/great-war/3?archetype=no-mans-land");
+    expect(other.text).not.toBe(own.text);
+    expect((await request(app).get("/api/battlefields/dragon-hunt/1?archetype=trench-lines")).body.archetype).toBe("trench-lines");
+    expect((await request(app).get("/api/battlefields/claim-no-mans-land/25")).body.archetype).toBe("no-mans-land");
+  }, 60_000);
+
+  it("refuses an archetype the scenario does not let the player choose", async () => {
+    const app = appWith(battlefields);
+    for (const path of [
+      "claim-no-mans-land/25?archetype=trench-lines",
+      "claim-no-mans-land/25?archetype=no-mans-land",
+      "supply-raid/3?archetype=no-mans-land",
+      "great-war/3?archetype=decimated-ruins",
+      "great-war/3?archetype=",
+      "great-war/3?archetype=Trench-Lines",
+      "great-war/3?archetype=trench-lines&archetype=no-mans-land",
+    ]) {
+      const res = await request(app).get(`/api/battlefields/${path}`);
+      expect(res.status, path).toBe(400);
+      expect(res.body.error.code, path).toBe("invalid-archetype");
+    }
+    expect((await request(app).get("/api/battlefields/claim-no-mans-land/25?archetype=trench-lines")).body.error.message).toMatch(/always laid as no-mans-land/);
+    expect((await request(app).get("/api/battlefields/great-war/3?archetype=x")).body.error.message).toMatch(/trench-lines or no-mans-land/);
+    expect((await request(app).get("/api/battlefields/no-such-scenario/1?archetype=trench-lines")).status).toBe(404);
+  });
+
+  it("sends open objectives the 1in control ring and no band, covered ones the band", async () => {
+    const res = await request(appWith(battlefields)).get("/api/battlefields/from-below/3");
+    const open = (res.body as BattlefieldPayload).objectives.filter((o) => o.band.length === 0);
+    expect(open.length).toBeGreaterThan(0);
+    for (const o of open) expect(o.ringIn).toBe(1.787);
+    const covered = (await request(appWith(battlefields)).get("/api/battlefields/claim-no-mans-land/25")).body as BattlefieldPayload;
+    expect(covered.objectives.every((o) => o.band.length > 1)).toBe(true);
+    for (const o of covered.objectives) expect(covered.pieces.filter((row) => row[5] === o.id)).toHaveLength(1);
+  }, 60_000);
+
   it("answers 422 when the generator cannot lay a seed", async () => {
     const failing = Object.create(battlefields) as BattlefieldService;
     failing.board = () => {
@@ -105,5 +169,28 @@ describe("GET /api/battlefields/:scenario/:seed", () => {
     const res = await request(appWith(failing)).get("/api/battlefields/relic-hunt/7");
     expect(res.status).toBe(422);
     expect(res.body.error.code).toBe("no-board");
+  });
+});
+
+describe("objective symbol images", () => {
+  const publicDir = resolve(repoRoot, "apps/web/public");
+  const modRefs = (): string[] => {
+    const texts = [readFileSync(resolve(repoRoot, "mod/save.json"), "utf8"), ...readdirSync(resolve(repoRoot, "mod/scripts")).map((f) => readFileSync(resolve(repoRoot, "mod/scripts", f), "utf8"))];
+    return [...new Set(texts.flatMap((t) => [...t.matchAll(/https:\/\/tc\.rynfin\.org(\/tts\/[^"'\s]+\.png)/g)].map((m) => m[1]!)))];
+  };
+
+  it("every image the mod loads from our host is in the web app's public folder and served as a PNG", async () => {
+    const refs = modRefs();
+    expect(refs.sort()).toEqual(["/tts/objective-marker.png", "/tts/objective-symbol.png"]);
+    const app = createApp({ rules, store: new WarbandStore(openDatabase(":memory:")), staticDir: publicDir });
+    for (const ref of refs) {
+      const res = await request(app).get(ref).buffer(true);
+      expect(res.status, ref).toBe(200);
+      expect(res.headers["content-type"], ref).toBe("image/png");
+      const png = res.body as Buffer;
+      expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+      // IHDR: 512 x 512, 8-bit RGBA, so the symbol keeps its transparency.
+      expect([png.readUInt32BE(16), png.readUInt32BE(20), png[24], png[25]]).toEqual([512, 512, 8, 6]);
+    }
   });
 });

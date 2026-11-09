@@ -1,8 +1,10 @@
 -- FTC-GUID: 47de64
 -- Battlefield panel (TC-022a): pick a scenario and a board, fetch it from the
 -- campaign API (/api/battlefields, packages/battlefield on the server) and
--- spawn it, objective markers included. Only objects tagged tc-terrain and
--- objective markers (tc-token:objective) are ever removed.
+-- spawn it with its objectives: a marker disc on open ground, or the objective
+-- symbol and the 1" aura on the terrain piece that covers the objective. Only
+-- objects tagged tc-terrain and objective markers (tc-token:objective) are ever
+-- removed.
 --
 -- Everything above the "TTS glue" line touches no TTS global, so
 -- mod/test/battlefield_test.lua runs it under plain Lua.
@@ -16,14 +18,26 @@ OBJECTIVE_TAG = "tc-token:objective"
 OBJECTIVE_BAG = "70d18f"
 MARKER_DROP_Y = 8
 SPAWN_SETTLE_SECONDS = 45
+MARKER_READY_SECONDS = 10
 STATUS_WRAP = 44
+-- A covered objective: the whole piece is the Objective (rulebook p152), so the piece
+-- carries the symbol and its 1" band instead of a marker.
+COVER_TAG = "tc-objective"
+SYMBOL_URL = "https://tc.rynfin.org/tts/objective-symbol.png"
+SYMBOL_IN = 40 / 25.4
+AURA_COLOR = { 1, 1, 1 }
+AURA_THICKNESS = 0.06
+AURA_LIFT_IN = 0.05
+ARCHETYPE_NAMES = { ["trench-lines"] = "Trench Lines", ["no-mans-land"] = "No Man's Land" }
 
 function listUrl(base)
   return trimSlash(base) .. "/api/battlefields"
 end
 
-function boardUrl(base, scenarioId, seed)
-  return trimSlash(base) .. "/api/battlefields/" .. scenarioId .. "/" .. tostring(math.floor(seed))
+function boardUrl(base, scenarioId, seed, archetype)
+  local url = trimSlash(base) .. "/api/battlefields/" .. scenarioId .. "/" .. tostring(math.floor(seed))
+  if archetype then url = url .. "?archetype=" .. archetype end
+  return url
 end
 
 function trimSlash(s)
@@ -31,7 +45,7 @@ function trimSlash(s)
 end
 
 function newState()
-  return { scenarioIndex = 1, boardIndex = 1, randomSeed = nil }
+  return { scenarioIndex = 1, boardIndex = 1, randomSeed = nil, archetype = nil }
 end
 
 function normaliseState(loaded)
@@ -43,6 +57,7 @@ function normaliseState(loaded)
   if b and b >= 1 then s.boardIndex = math.floor(b) end
   local r = tonumber(loaded.randomSeed)
   if r and r >= 1 then s.randomSeed = math.floor(r) end
+  if type(loaded.archetype) == "string" and loaded.archetype:match("^[a-z-]+$") then s.archetype = loaded.archetype end
   return s
 end
 
@@ -56,6 +71,7 @@ function clampState(state, scenarios)
   state.scenarioIndex = wrap(state.scenarioIndex, #scenarios)
   local sc = scenarios[state.scenarioIndex]
   state.boardIndex = wrap(state.boardIndex, sc and #sc.recommendedSeeds or 0)
+  state.archetype = currentArchetype(state, scenarios)
 end
 
 function currentScenario(state, scenarios)
@@ -73,6 +89,39 @@ function stepScenario(state, scenarios, delta)
   state.scenarioIndex = wrap(state.scenarioIndex + delta, #scenarios)
   state.boardIndex = 1
   state.randomSeed = nil
+  state.archetype = nil
+end
+
+-- The archetypes the player may choose between ("any battlefield archetype", Great War
+-- p195, From Below); empty when the scenario's archetype is fixed. The first is the
+-- scenario's own.
+function selectableArchetypes(sc)
+  if sc and type(sc.archetypes) == "table" and #sc.archetypes > 1 then return sc.archetypes end
+  return {}
+end
+
+-- The archetype the board is asked for, nil for the scenario's own.
+function currentArchetype(state, scenarios)
+  if not state.archetype then return nil end
+  for _, a in ipairs(selectableArchetypes(currentScenario(state, scenarios))) do
+    if a == state.archetype then return a end
+  end
+  return nil
+end
+
+function stepArchetype(state, scenarios)
+  local list = selectableArchetypes(currentScenario(state, scenarios))
+  if #list == 0 then return end
+  local at = 1
+  for i, a in ipairs(list) do if a == currentArchetype(state, scenarios) then at = i end end
+  state.archetype = list[wrap(at + 1, #list)]
+end
+
+function archetypeLabel(state, scenarios)
+  local list = selectableArchetypes(currentScenario(state, scenarios))
+  if #list == 0 then return nil end
+  local a = currentArchetype(state, scenarios) or list[1]
+  return "Archetype: " .. (ARCHETYPE_NAMES[a] or a)
 end
 
 function nextBoard(state, scenarios)
@@ -86,8 +135,10 @@ function nextBoard(state, scenarios)
 end
 
 -- rnd(lo, hi) is math.random in the mod; a stub in the test.
-function randomBoard(state, maxSeed, rnd)
+function randomBoard(state, maxSeed, rnd, scenarios)
   state.randomSeed = rnd(1, maxSeed)
+  local list = selectableArchetypes(scenarios and currentScenario(state, scenarios))
+  if #list > 0 then state.archetype = list[rnd(1, #list)] end
 end
 
 function scenarioLabel(state, scenarios)
@@ -115,9 +166,10 @@ function validateList(list)
   return true
 end
 
-function validatePayload(p, scenarioId, seed)
+function validatePayload(p, scenarioId, seed, archetype)
   if type(p) ~= "table" or p.version ~= PAYLOAD_VERSION then return false, "not a " .. PAYLOAD_VERSION .. " board" end
   if p.scenarioId ~= scenarioId or tonumber(p.seed) ~= seed then return false, "the server sent a different board" end
+  if archetype and p.archetype ~= archetype then return false, "the server sent a different archetype" end
   if type(p.assets) ~= "table" or type(p.texts) ~= "table" or type(p.pieces) ~= "table" then return false, "board data is incomplete" end
   for i, row in ipairs(p.pieces) do
     if type(row) ~= "table" or not p.assets[row[1]] then return false, "piece " .. i .. " uses an unknown asset" end
@@ -158,6 +210,34 @@ function buildState(p, row)
   return state
 end
 
+-- What a covering piece is drawn with: the band (its footprint grown by 1", world x/z
+-- points from the generator) as a vector line just above the piece's top, and the
+-- symbol as a decal over the objective point. toLocal is the piece's positionToLocal;
+-- bounds its world getBounds(); scale its getScale().
+function coverMarks(spec, bounds, scale, toLocal)
+  local y = bounds.center.y + bounds.size.y / 2 + AURA_LIFT_IN
+  local points = {}
+  for i, pt in ipairs(spec.band) do
+    local l = toLocal({ x = pt[1], y = y, z = pt[2] })
+    points[i] = { x = l.x, y = l.y, z = l.z }
+  end
+  local at = toLocal({ x = spec.posX, y = y, z = spec.posZ })
+  return {
+    lines = { { points = points, color = AURA_COLOR, thickness = AURA_THICKNESS } },
+    decals = { {
+      name = COVER_TAG .. ":" .. spec.id,
+      url = SYMBOL_URL,
+      position = { x = at.x, y = at.y, z = at.z },
+      rotation = { x = 90, y = 0, z = 0 },
+      scale = { x = SYMBOL_IN / scale.x, y = SYMBOL_IN / scale.z, z = 1 },
+    } },
+  }
+end
+
+function isCovered(spec)
+  return type(spec.band) == "table" and #spec.band > 1
+end
+
 function wrapText(text, maxChars)
   local lines, line = {}, ""
   for token in tostring(text or ""):gmatch("%S+") do
@@ -191,14 +271,16 @@ SPAWN = { 0.18, 0.36, 0.2 }
 DANGER = { 0.5, 0.14, 0.12 }
 
 BUTTONS = {
-  { id = "scenario", row = -0.81, width = 0, height = 0, font = 70, click = "noop", colour = CLEAR },
-  { id = "prevScenario", label = "< Scenario", row = -0.54, col = -0.72, width = 560, height = 170, font = 60, click = "onPrevScenario" },
-  { id = "nextScenario", label = "Scenario >", row = -0.54, col = 0.72, width = 560, height = 170, font = 60, click = "onNextScenario" },
-  { id = "board", row = -0.27, width = 0, height = 0, font = 65, click = "noop", colour = CLEAR },
-  { id = "nextBoard", label = "Next board", row = 0.0, col = -0.72, width = 560, height = 170, font = 60, click = "onNextBoard" },
-  { id = "randomBoard", label = "Random board", row = 0.0, col = 0.72, width = 560, height = 170, font = 60, click = "onRandomBoard" },
-  { id = "spawn", label = "Spawn battlefield", row = 0.27, width = 1150, height = 170, font = 70, click = "onSpawn", colour = SPAWN },
-  { id = "clear", label = "Clear battlefield", row = 0.54, width = 1150, height = 170, font = 70, click = "onClear", colour = DANGER },
+  { id = "scenario", row = -0.86, width = 0, height = 0, font = 70, click = "noop", colour = CLEAR },
+  { id = "prevScenario", label = "< Scenario", row = -0.62, col = -0.72, width = 560, height = 150, font = 60, click = "onPrevScenario" },
+  { id = "nextScenario", label = "Scenario >", row = -0.62, col = 0.72, width = 560, height = 150, font = 60, click = "onNextScenario" },
+  -- Shown only for scenarios that let the player pick the archetype.
+  { id = "archetype", row = -0.38, width = 1150, height = 150, font = 60, click = "onArchetype", optional = true },
+  { id = "board", row = -0.15, width = 0, height = 0, font = 65, click = "noop", colour = CLEAR },
+  { id = "nextBoard", label = "Next board", row = 0.07, col = -0.72, width = 560, height = 150, font = 60, click = "onNextBoard" },
+  { id = "randomBoard", label = "Random board", row = 0.07, col = 0.72, width = 560, height = 150, font = 60, click = "onRandomBoard" },
+  { id = "spawn", label = "Spawn battlefield", row = 0.31, width = 1150, height = 150, font = 70, click = "onSpawn", colour = SPAWN },
+  { id = "clear", label = "Clear battlefield", row = 0.55, width = 1150, height = 150, font = 70, click = "onClear", colour = DANGER },
   { id = "status", row = 0.84, width = 0, height = 0, font = 40, click = "noop", colour = CLEAR },
 }
 
@@ -237,14 +319,15 @@ function panelLayout(labels, geom)
   local fontScale = math.min(geom.sx, geom.sz)
   local specs = {}
   for _, b in ipairs(BUTTONS) do
+    local hidden = b.optional and labels[b.id] == nil
     specs[#specs + 1] = {
       id = b.id,
       label = labels[b.id] or b.label or "",
       click_function = b.click,
       position = { -(b.col or 0) * geom.sx, geom.y, b.row * geom.sz },
       rotation = { 0, 0, 0 },
-      width = math.floor(b.width * geom.sx + 0.5),
-      height = math.floor(b.height * geom.sz + 0.5),
+      width = hidden and 0 or math.floor(b.width * geom.sx + 0.5),
+      height = hidden and 0 or math.floor(b.height * geom.sz + 0.5),
       font_size = math.floor(b.font * fontScale + 0.5),
       font_color = LIGHT,
       color = b.colour or PANEL,
@@ -276,6 +359,7 @@ function onLoad(saved)
   state = normaliseState(loaded)
   math.randomseed(os.time())
   relayout()
+  restoreCovers()
   fetchScenarios()
 end
 
@@ -297,6 +381,7 @@ end
 function labels()
   return {
     scenario = scenarioLabel(state, scenarios),
+    archetype = archetypeLabel(state, scenarios),
     board = boardLabel(state, scenarios),
     status = wrapText(status, STATUS_WRAP),
   }
@@ -318,8 +403,10 @@ end
 
 function refresh()
   local l = labels()
-  for _, id in ipairs({ "scenario", "board", "status" }) do
-    self.editButton({ index = buttonIndex[id], label = l[id] })
+  for _, spec in ipairs(panelLayout(l, geometry)) do
+    if spec.id == "scenario" or spec.id == "board" or spec.id == "status" or spec.id == "archetype" then
+      self.editButton({ index = buttonIndex[spec.id], label = spec.label, width = spec.width, height = spec.height })
+    end
   end
 end
 
@@ -386,7 +473,11 @@ function onNextBoard()
 end
 
 function onRandomBoard()
-  withScenarios(function() randomBoard(state, maxSeed, math.random); refresh() end)
+  withScenarios(function() randomBoard(state, maxSeed, math.random, scenarios); refresh() end)
+end
+
+function onArchetype()
+  withScenarios(function() stepArchetype(state, scenarios); refresh() end)
 end
 
 function clearBattlefield()
@@ -409,15 +500,16 @@ function onSpawn()
   withScenarios(function()
     local sc = currentScenario(state, scenarios)
     local seed = currentSeed(state, scenarios)
+    local archetype = currentArchetype(state, scenarios)
     busy = true
     setStatus(string.format("Fetching %s seed %d...", sc.name, seed))
-    WebRequest.get(boardUrl(baseUrl(), sc.id, seed), function(request)
-      onBoardResponse(request, sc, seed)
+    WebRequest.get(boardUrl(baseUrl(), sc.id, seed, archetype), function(request)
+      onBoardResponse(request, sc, seed, archetype)
     end)
   end)
 end
 
-function onBoardResponse(request, sc, seed)
+function onBoardResponse(request, sc, seed, archetype)
   local failed = requestFailed(request, sc.name .. " seed " .. seed)
   if failed then
     busy = false
@@ -426,7 +518,7 @@ function onBoardResponse(request, sc, seed)
   end
   local ok, payload = pcall(JSON.decode, request.text)
   local valid, why = false, "not JSON"
-  if ok then valid, why = validatePayload(payload, sc.id, seed) end
+  if ok then valid, why = validatePayload(payload, sc.id, seed, archetype) end
   if not valid then
     busy = false
     setStatus("Board rejected: " .. why)
@@ -437,17 +529,20 @@ end
 
 function spawnBoard(payload, sc)
   local removed = clearBattlefield()
-  local spawned = {}
+  local spawned, covers = {}, {}
   for _, row in ipairs(payload.pieces) do
-    spawned[#spawned + 1] = spawnObjectData({ data = buildState(payload, row) })
+    local obj = spawnObjectData({ data = buildState(payload, row) })
+    spawned[#spawned + 1] = obj
+    if row[6] ~= nil and row[6] ~= "" then covers[row[6]] = obj end
   end
   setStatus(string.format("%s seed %d: %d pieces spawned (%d removed); placing %d objective(s) once they load...",
     sc.name, payload.seed, #spawned, removed, #payload.objectives))
   -- Markers seat themselves on the terrain under them, so they go down after it has loaded.
   local function place()
-    local placed = placeObjectives(payload.objectives)
+    local onTerrain, markers = placeObjectives(payload.objectives, covers)
     busy = false
-    setStatus(string.format("%s seed %d: %d pieces, %d objective(s).", sc.name, payload.seed, #spawned, placed))
+    setStatus(string.format("%s seed %d: %d pieces, %d objective(s): %d on terrain, %d marker(s).",
+      sc.name, payload.seed, #spawned, onTerrain + markers, onTerrain, markers))
   end
   Wait.condition(place, function()
     for _, o in ipairs(spawned) do
@@ -457,20 +552,55 @@ function spawnBoard(payload, sc)
   end, SPAWN_SETTLE_SECONDS, place)
 end
 
-function placeObjectives(objectives)
-  local bag = getObjectFromGUID(OBJECTIVE_BAG)
-  if not bag then return 0 end
-  local n = 0
-  for _, spec in ipairs(objectives or {}) do
-    local ring = { ringIn = spec.ringIn, band = spec.band }
-    bag.takeObject({
-      position = { x = spec.posX, y = MARKER_DROP_Y, z = spec.posZ },
-      smooth = false,
-      callback_function = function(marker)
-        marker.call("setRingRadius", ring)
-      end,
-    })
-    n = n + 1
+function markCover(obj, spec)
+  local marks = coverMarks(spec, obj.getBounds(), obj.getScale(), function(v) return obj.positionToLocal(v) end)
+  obj.setVectorLines(marks.lines)
+  obj.setDecals(marks.decals)
+  obj.addTag(COVER_TAG)
+  obj.addTag(COVER_TAG .. ":" .. spec.id)
+  obj.memo = JSON.encode({ id = spec.id, label = spec.label, posX = spec.posX, posZ = spec.posZ, band = spec.band })
+end
+
+-- Re-draws covered pieces after a load from what markCover kept in their memo.
+function restoreCovers()
+  for _, obj in ipairs(getObjectsWithTag(COVER_TAG)) do
+    local ok, spec = pcall(JSON.decode, obj.memo or "")
+    if ok and type(spec) == "table" and isCovered(spec) then
+      Wait.condition(function()
+        if not obj.isDestroyed() then markCover(obj, spec) end
+      end, function() return obj.isDestroyed() or not (obj.spawning or obj.loading_custom) end, SPAWN_SETTLE_SECONDS)
+    end
   end
-  return n
+end
+
+-- A marker's script only takes setRingRadius once it has loaded and settled (it sets
+-- `ready`); a call made from takeObject's callback is lost when onLoad runs.
+function whenReady(marker, fn)
+  local function go()
+    if not marker.isDestroyed() then fn() end
+  end
+  Wait.condition(go, function() return marker.isDestroyed() or marker.getVar("ready") == true end, MARKER_READY_SECONDS, go)
+end
+
+function placeObjectives(objectives, covers)
+  local bag = getObjectFromGUID(OBJECTIVE_BAG)
+  local onTerrain, markers = 0, 0
+  for _, spec in ipairs(objectives or {}) do
+    local cover = covers and covers[spec.id]
+    if cover and not cover.isDestroyed() and isCovered(spec) then
+      markCover(cover, spec)
+      onTerrain = onTerrain + 1
+    elseif bag then
+      local ring = { ringIn = spec.ringIn }
+      bag.takeObject({
+        position = { x = spec.posX, y = MARKER_DROP_Y, z = spec.posZ },
+        smooth = false,
+        callback_function = function(marker)
+          whenReady(marker, function() marker.call("setRingRadius", ring) end)
+        end,
+      })
+      markers = markers + 1
+    end
+  end
+  return onTerrain, markers
 end

@@ -569,14 +569,22 @@ die / crossed swords / skull with tooltips, and the panel widths drop by the two
 buttons (1280 -> 1200, 1224 -> 1144 in the XML for Red, Blue and Grey, and in
 `HUD_FULL`).
 
-### Objective markers (TC-023u, reworked in TC-022a)
+### Objective markers (TC-023u, reworked in TC-022a and TC-022b)
 
 The content of both Objective bags (`a18feb` in Red `70d18f`, `8f0c3a` in Blue `2d4b7e`, tag
-`tc-token:objective`) is TTS's built-in poker chip `Chip_10`, tinted green, running
-`mod/scripts/a18feb.lua` (identical copy in `8f0c3a.lua`). TC-022a replaced the Scripted
-Table asset bundle that used to be there: its only mesh, `9thObjGreen(Clone)`, is LCT's 40k
-9th-edition objective with a ~6" ring baked into the model, so the "radius" was physical.
-The bags' attached icons are the same chip. No external asset.
+`tc-token:objective`) is a thin circular `Custom_Tile` (type 2, thickness 0.1, white tint)
+whose face is our objective symbol, `https://tc.rynfin.org/tts/objective-marker.png`, running
+`mod/scripts/a18feb.lua` (identical copy in `8f0c3a.lua`). TC-022b replaced the built-in
+`Chip_10` poker chip (thick, printed "AWESOME POKER" / "10"); TC-022a had replaced the
+Scripted Table asset bundle before it (LCT's 40k objective with a ~6" ring baked into the
+model). The bags' attached icons (`fc05bb` / `b7e51d`) are the same tile.
+
+The symbol (four wedges pointing in from a ring at a central lozenge; original, geometric)
+is drawn by `scripts/objective_symbol.py` (standard library only) into
+`apps/web/public/tts/`: `objective-symbol.png` on transparency for terrain decals and
+`objective-marker.png` on a dark disc with a green rim for the marker face. The web build
+copies `public/` into the static folder the API serves, so both ship with the image;
+`pnpm mod:test` fails if the committed PNGs differ from the script's output.
 
 - **No physics.** Once spawned the marker locks itself, turns gravity off and makes every
   Box / Mesh / Sphere / Capsule collider in it a trigger (mesh colliders convex first): it
@@ -585,9 +593,10 @@ The bags' attached icons are the same chip. No external asset.
   `Component.set(name, value)` only); whether a built-in chip accepts `isTrigger` is the
   first live check.
 - **Rule size.** It levels itself and rescales x / z so `getBoundsNormalized()` is exactly
-  40mm (1.575") across, the rulebook's largest Marker (p146), whatever size the built-in chip
-  comes in at.
-- **Virtual spot and range**, as object vector lines 0.06" above the pivot on every marker:
+  40mm (1.575") across, the rulebook's largest Marker (p146), whatever size the tile comes in
+  at.
+- **Virtual spot and range**, as object vector lines 0.02" above the disc's top face (the
+  tile's pivot is its bottom face, so the lift is measured from `getBounds()`):
   a 40mm spot outline, and either a control ring 1" beyond it (1.787" radius; "on, in or
   within 1"", p152 / p154 / p156 / p193) or, for an objective a terrain piece covers, the
   band the spawner passes: the piece's turned footprint grown by 1" with rounded corners
@@ -603,10 +612,14 @@ The bags' attached icons are the same chip. No external asset.
 - **Move / delete**: right-click **Move objective** unlocks it for one drag and it reseats and
   relocks on drop; **Delete objective** (or Delete) removes it. Ring radius and band are
   saved; everything else is re-applied on load.
+- **Ready flag.** The script sets the global `ready` once it has settled (sized, seated,
+  rings drawn). A `setRingRadius` call made from `takeObject`'s callback runs before the
+  script's `onLoad` and is lost (seen live on Claim No Man's Land seed 25), so spawners wait
+  for `getVar("ready")` first.
 
 `objectiveMarkers(layout, palette, catalog, opts)` returns per objective its world x / z,
-`ringIn` and `band` (empty for an open objective); the Battlefield panel takes a marker from
-the Red bag at the point and calls `setRingRadius({ringIn, band})`.
+`ringIn` and `band` (empty for an open objective). The Battlefield panel only takes a marker
+for an open objective; a covered one is marked on its terrain piece (see the panel below).
 
 ## Table layout (TC-023v)
 
@@ -657,11 +670,24 @@ seed N` or `Random board: seed N`), **Next board** / **Random board**, **Spawn b
   state the generator's `--tts` output carries; `mod/test/battlefield_test.lua` compares the
   two field for field on a fixture board. Names reach the mod as raw UTF-8 (the API's
   `JSON.stringify` never writes `\u` escapes), so the `·` in the terrain names survives.
+- **Archetype** button (TC-022b), shown only for scenarios whose `archetypes` in the list
+  has more than one entry (Great War p195 and From Below: "can use any battlefield
+  archetype"; Dragon Hunt lists both): it steps through them and the board is fetched with
+  `?archetype=<id>`. Hidden (width and height 0) everywhere else. **Random board** also
+  picks an archetype at random there; changing scenario returns to the scenario's own.
 - **Spawn battlefield** removes every object tagged `tc-terrain` or `tc-token:objective`
   (generated terrain and objective markers, nothing else), spawns each row with
-  `spawnObjectData`, waits until the pieces have loaded (45 s cap), then takes one marker per
-  objective from the Red Objective bag `70d18f` at the objective point and calls
-  `setRingRadius` with the spec's `ringIn`; the marker seats itself on the terrain.
+  `spawnObjectData` and waits until the pieces have loaded (45 s cap). Then per objective:
+  - **covered** (a row carries its id, and the spec has a band): no marker. The covering
+    piece is the Objective (p152), so it gets the symbol as a decal (`setDecals`,
+    `objective-symbol.png`, 40mm, over the objective point) and the band (its footprint
+    grown by 1", rounded corners) as an object vector line, both converted with the piece's
+    `positionToLocal` and lifted 0.05" above its `getBounds()` top so its walls never hide
+    them. The piece is tagged `tc-objective` and `tc-objective:<id>` and keeps the spec in its
+    `memo`; on load the panel re-draws every `tc-objective` piece from its memo. Clear removes
+    it with the rest of the `tc-terrain`.
+  - **open**: one marker from the Red Objective bag `70d18f` at the point; once its `ready`
+    flag is set (10 s cap) the panel calls `setRingRadius` with the spec's `ringIn` (1.787").
   **Clear battlefield** removes the same two tags. Network and HTTP failures are written to
   the status line with the host and the server's message.
-- State saved: scenario index, board index, random seed.
+- State saved: scenario index, board index, random seed, chosen archetype.

@@ -5939,7 +5939,7 @@
         "scaleZ": 1.49072266
       },
       "Nickname": "Objective",
-      "Description": "Infinite bag: Objective marker, a flat 40mm spot that models pass through with a ring 1\" beyond it (rulebook p146, p152). Place per the scenario Game Map, or let the Battlefield panel place them.",
+      "Description": "Infinite bag: Objective marker, a thin 40mm disc that models pass through with a ring 1\" beyond it (rulebook p146, p152). Place per the scenario Game Map, or let the Battlefield panel place them.",
       "GMNotes": "",
       "AltLookAngle": {
         "x": 0.0,
@@ -5984,7 +5984,7 @@
       "ContainedObjects": [
         {
           "GUID": "a18feb",
-          "Name": "Chip_10",
+          "Name": "Custom_Tile",
           "Transform": {
             "posX": 37.0,
             "posY": 2.0,
@@ -5997,7 +5997,7 @@
             "scaleZ": 1.0
           },
           "Nickname": "Objective",
-          "Description": "Objective marker: a 40mm spot models pass through, ring 1\" beyond it (rulebook p146, p152). Right-click: Move objective / Delete objective.",
+          "Description": "Objective marker: a thin 40mm disc models pass through, ring 1\" beyond it (rulebook p146, p152). Right-click: Move objective / Delete objective.",
           "GMNotes": "",
           "AltLookAngle": {
             "x": 0.0,
@@ -6005,9 +6005,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.25,
-            "g": 0.85,
-            "b": 0.35
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -6023,6 +6023,18 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
+          "CustomImage": {
+            "ImageURL": "https://tc.rynfin.org/tts/objective-marker.png",
+            "ImageSecondaryURL": "",
+            "ImageScalar": 1.0,
+            "WidthScale": 0.0,
+            "CustomTile": {
+              "Type": 2,
+              "Thickness": 0.1,
+              "Stackable": false,
+              "Stretch": true
+            }
+          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": "",
@@ -6034,7 +6046,7 @@
       "ChildObjects": [
         {
           "GUID": "fc05bb",
-          "Name": "Chip_10",
+          "Name": "Custom_Tile",
           "Transform": {
             "posX": 0.0,
             "posY": 0.0,
@@ -6055,9 +6067,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.25,
-            "g": 0.85,
-            "b": 0.35
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -6073,6 +6085,18 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
+          "CustomImage": {
+            "ImageURL": "https://tc.rynfin.org/tts/objective-marker.png",
+            "ImageSecondaryURL": "",
+            "ImageScalar": 1.0,
+            "WidthScale": 0.0,
+            "CustomTile": {
+              "Type": 2,
+              "Thickness": 0.1,
+              "Stackable": false,
+              "Stretch": true
+            }
+          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": ""
@@ -7177,7 +7201,7 @@
         "scaleZ": 1.49072266
       },
       "Nickname": "Objective",
-      "Description": "Infinite bag: Objective marker, a flat 40mm spot that models pass through with a ring 1\" beyond it (rulebook p146, p152). Place per the scenario Game Map, or let the Battlefield panel place them.",
+      "Description": "Infinite bag: Objective marker, a thin 40mm disc that models pass through with a ring 1\" beyond it (rulebook p146, p152). Place per the scenario Game Map, or let the Battlefield panel place them.",
       "GMNotes": "",
       "AltLookAngle": {
         "x": 0.0,
@@ -7222,7 +7246,7 @@
       "ContainedObjects": [
         {
           "GUID": "8f0c3a",
-          "Name": "Chip_10",
+          "Name": "Custom_Tile",
           "Transform": {
             "posX": -37.0,
             "posY": 2.0,
@@ -7235,7 +7259,7 @@
             "scaleZ": 1.0
           },
           "Nickname": "Objective",
-          "Description": "Objective marker: a 40mm spot models pass through, ring 1\" beyond it (rulebook p146, p152). Right-click: Move objective / Delete objective.",
+          "Description": "Objective marker: a thin 40mm disc models pass through, ring 1\" beyond it (rulebook p146, p152). Right-click: Move objective / Delete objective.",
           "GMNotes": "",
           "AltLookAngle": {
             "x": 0.0,
@@ -7243,9 +7267,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.25,
-            "g": 0.85,
-            "b": 0.35
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -7261,6 +7285,18 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
+          "CustomImage": {
+            "ImageURL": "https://tc.rynfin.org/tts/objective-marker.png",
+            "ImageSecondaryURL": "",
+            "ImageScalar": 1.0,
+            "WidthScale": 0.0,
+            "CustomTile": {
+              "Type": 2,
+              "Thickness": 0.1,
+              "Stackable": false,
+              "Stretch": true
+            }
+          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": "",
@@ -7272,7 +7308,7 @@
       "ChildObjects": [
         {
           "GUID": "b7e51d",
-          "Name": "Chip_10",
+          "Name": "Custom_Tile",
           "Transform": {
             "posX": 0.0,
             "posY": 0.0,
@@ -7293,9 +7329,9 @@
             "z": 0.0
           },
           "ColorDiffuse": {
-            "r": 0.25,
-            "g": 0.85,
-            "b": 0.35
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0
           },
           "LayoutGroupSortIndex": 0,
           "Value": 0,
@@ -7311,6 +7347,18 @@
           "GridProjection": false,
           "HideWhenFaceDown": false,
           "Hands": false,
+          "CustomImage": {
+            "ImageURL": "https://tc.rynfin.org/tts/objective-marker.png",
+            "ImageSecondaryURL": "",
+            "ImageScalar": 1.0,
+            "WidthScale": 0.0,
+            "CustomTile": {
+              "Type": 2,
+              "Thickness": 0.1,
+              "Stackable": false,
+              "Stretch": true
+            }
+          },
           "LuaScript": "",
           "LuaScriptState": "",
           "XmlUI": ""

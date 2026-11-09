@@ -1,3 +1,4 @@
+import type { Archetype } from "./generate.js";
 import type { Layout } from "./layout.js";
 import type { Catalog, Palette } from "./palette.js";
 import { battlefieldTag, layoutToObjectStates, objectiveMarkers, TERRAIN_TAG, type ObjectiveMarkerSpec, type TtsEmitOptions, type TtsObjectState } from "./tts.js";
@@ -21,6 +22,7 @@ export interface BattlefieldPayload {
   scenarioId: string;
   seed: number;
   boardIn: number;
+  archetype: Archetype;
   assets: Record<string, AssetTemplate>;
   /** Nicknames and rules reminders, each once; rows point into it (0-based). */
   texts: string[];
@@ -72,6 +74,7 @@ export function compactBattlefield(layout: Layout, palette: Palette, catalog: Ca
     scenarioId: layout.scenarioId,
     seed: layout.seed,
     boardIn: layout.boardIn,
+    archetype: layout.archetype,
     assets,
     texts,
     pieces,
