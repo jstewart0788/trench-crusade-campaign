@@ -7,7 +7,7 @@
 -- with a stubbed WebRequest / spawn / tag API: the chooser wraps, the archetype
 -- toggle shows only where the scenario lets the player choose, Spawn and Clear
 -- only remove tc-terrain and objective markers, a covered objective marks its
--- terrain piece (symbol decal, 1" band above its top) instead of getting a
+-- terrain piece (symbol decal on its floor, 1" band at the ground it stands on) instead of getting a
 -- marker, an open one gets a marker whose ring is set once its script is ready,
 -- network and HTTP failures read clearly.
 
@@ -250,9 +250,12 @@ function getObjectsWithTag(tag)
   end
   return out
 end
--- Spawned pieces stand 3 high above their pivot; positionToLocal is Unity's inverse
--- transform (rotation about y, then scale), toWorld its inverse for the checks.
+-- Spawned pieces stand 3 high above a bottom pivot; ground tiles are 2.5 high blocks
+-- centred 0.25 above theirs (pivot 1.9 -> top 3.40, a hill tile at 4.4 -> 5.90), footprint
+-- from their cells. positionToLocal is Unity's inverse transform (rotation about y, then
+-- scale), toWorld its inverse for the checks.
 local PIECE_H = 3
+local GROUND_CELLS = { ["landscape-1x1"] = { 4, 4 }, ["landscape-1x2"] = { 4, 8 }, ["landscape-2x2"] = { 8, 8 } }
 local function rotY(x, z, deg)
   local a = math.rad(deg)
   return x * math.cos(a) + z * math.sin(a), -x * math.sin(a) + z * math.cos(a)
@@ -263,7 +266,15 @@ function spawnObjectData(p)
   local t = p.data.Transform
   local o = thing({ table.unpack(p.data.Tags) }, "s" .. #spawnedData)
   o.spawning, o.loading_custom = false, false
-  o.getBounds = function() return { center = { x = t.posX, y = t.posY + PIECE_H / 2, z = t.posZ }, size = { x = 4, y = PIECE_H, z = 4 } } end
+  local cells = GROUND_CELLS[p.data.Description:match("%((%S+)%)%s*[^\n]*$") or ""]
+  o.getBounds = function()
+    if o.hasTag("tc-role:ground") and cells then
+      local w, d = cells[1], cells[2]
+      if t.rotY % 180 ~= 0 then w, d = d, w end
+      return { center = { x = t.posX, y = t.posY + 0.25, z = t.posZ }, size = { x = w, y = 2.5, z = d } }
+    end
+    return { center = { x = t.posX, y = t.posY + PIECE_H / 2, z = t.posZ }, size = { x = 4, y = PIECE_H, z = 4 } }
+  end
   o.getScale = function() return { x = t.scaleX, y = t.scaleY, z = t.scaleZ } end
   o.positionToLocal = function(v)
     local x, z = rotY(v.x - t.posX, v.z - t.posZ, -t.rotY)
@@ -363,21 +374,30 @@ for _, spec in ipairs(payload.objectives) do
   local line = piece.lines and piece.lines[1] or { points = {} }
   check(piece.lines ~= nil and #piece.lines == 1 and #line.points == #spec.band, spec.id .. ": the 1in band is drawn on the piece")
   local top = piece.getBounds().center.y + PIECE_H / 2
+  check(type(spec.surfaceY) == "number", spec.id .. ": the generator sends the surface the piece stands on")
+  local surface = spec.surfaceY or 0
   local worst = 0
   for k, pt in ipairs(line.points) do
     local w = piece.toWorld(pt)
     worst = math.max(worst, math.abs(w.x - spec.band[k][1]), math.abs(w.z - spec.band[k][2]))
-    check(w.y > top and w.y < top + 0.2, string.format("%s band point %d drawn just above the piece's top (%.3f over %.3f)", spec.id, k, w.y, top))
+    check(math.abs(w.y - (surface + 0.06)) < 1e-9 and w.y < top - 1, string.format("%s band point %d at the ground it stands on + 0.06, not over the building (%.3f, ground %.3f, top %.3f)", spec.id, k, w.y, surface, top))
   end
   check(worst < 1e-9, spec.id .. ": band points land on the generator's band in world space (off by " .. worst .. ")")
   local decal = piece.decals and piece.decals[1] or { position = { x = 0, y = 0, z = 0 }, rotation = {}, scale = { x = 0 } }
   check(piece.decals ~= nil and #piece.decals == 1, spec.id .. ": the piece carries one decal")
   eq(decal.url, "https://tc.rynfin.org/tts/objective-symbol.png", spec.id .. ": decal is our objective symbol, from our host")
   local at = piece.toWorld(decal.position)
-  check(math.abs(at.x - spec.posX) < 1e-9 and math.abs(at.z - spec.posZ) < 1e-9 and at.y > top, spec.id .. ": symbol over the objective point, above the piece")
+  check(math.abs(at.x - spec.posX) < 1e-9 and math.abs(at.z - spec.posZ) < 1e-9, spec.id .. ": symbol over the objective point")
+  check(math.abs(at.y - (surface + 0.1)) < 1e-9, string.format("%s: symbol on the piece's floor, 0.1 above the surface it stands on (%.3f vs %.3f)", spec.id, at.y, surface))
   eq(decal.rotation.x, 90, spec.id .. ": decal laid flat, facing up")
   check(math.abs(decal.scale.x * piece.getScale().x - 40 / 25.4) < 1e-9, spec.id .. ": symbol 40mm across in world inches")
 end
+local flat, hill = 0, 0
+for _, spec in ipairs(payload.objectives) do
+  if math.abs((spec.surfaceY or 0) - 3.4) < 0.1 then flat = flat + 1 end
+  if math.abs((spec.surfaceY or 0) - 5.9) < 1e-9 then hill = hill + 1 end
+end
+check(flat == 4 and hill == 1, "seed 25 has four pieces on the ground tiles (3.40 / 3.48) and the tower on a hill (5.90): " .. flat .. " / " .. hill)
 check(not busy, "panel is free again after the spawn")
 check(statusText():find("5 on terrain, 0 marker", 1, true) ~= nil, "status counts objectives on terrain and markers: " .. statusText())
 
@@ -386,6 +406,33 @@ local again = coverOf["obj-3"]
 again.lines, again.decals = nil, nil
 restoreCovers()
 check(again.lines and #again.lines[1].points == #payload.objectives[3].band and again.decals and #again.decals == 1, "a covered piece re-draws its band and symbol after a load")
+check(again.lines and math.abs(again.toWorld(again.lines[1].points[1]).y - 5.96) < 1e-9, "the reloaded band keeps the hill-top height")
+local raisedRuin = coverOf["obj-1"]
+raisedRuin.lines = nil
+restoreCovers()
+check(raisedRuin.lines and math.abs(raisedRuin.toWorld(raisedRuin.lines[1].points[1]).y - 3.54) < 1e-9, "the reloaded band keeps the generator's surface from the memo (3.48 + 0.06), not the ground tiles' 3.40")
+
+-- A piece marked before the generator sent the surface: its memo has none, so the highest
+-- ground tile under the objective point decides (the hill tile under the tower, the ground
+-- tiles under a ruin), else the piece's own bottom.
+local function remarkWithoutSurface(id)
+  local piece = coverOf[id]
+  local memo = {}
+  for k, v in pairs(piece.memo) do memo[k] = v end
+  memo.surfaceY = nil
+  piece.memo, piece.lines, piece.decals = memo, nil, nil
+  restoreCovers()
+  return piece.toWorld(piece.lines[1].points[1]).y, piece.toWorld(piece.decals[1].position).y
+end
+local bandY, symbolY = remarkWithoutSurface("obj-3")
+check(math.abs(bandY - 5.96) < 1e-9 and math.abs(symbolY - 6.0) < 1e-9, string.format("old memo, tower on a hill: band and symbol from the hill tile's top (%.3f, %.3f)", bandY, symbolY))
+bandY = remarkWithoutSurface("obj-2")
+check(math.abs(bandY - 3.46) < 1e-9, string.format("old memo, ruin on flat ground: band from the ground tiles' top (%.3f)", bandY))
+local floating = spawnObjectData({ data = buildState(payload, payload.pieces[1]) })
+floating.memo = { id = "obj-x", posX = 99, posZ = 99, band = { { 98, 98 }, { 100, 100 } } }
+floating.tags[#floating.tags + 1] = "tc-objective"
+restoreCovers()
+check(floating.lines and math.abs(floating.toWorld(floating.lines[1].points[1]).y - (floating.getBounds().center.y - PIECE_H / 2 + 0.06)) < 1e-9, "no ground tile under it: the piece's own bottom")
 eq(requests[#requests], "http://127.0.0.1:3001/api/battlefields/claim-no-mans-land/25", "board url from the chooser")
 
 local spawnedTerrain = #getObjectsWithTag("tc-terrain")

@@ -973,20 +973,22 @@ function onload()
         changeMeasurementCircle(9, target, nil, playerColor)
     end)
     lastClickTimestamp=nowSeconds()
-    defaultFontSize=400
+    -- Sized so the tallest readout (six face rows, total, High 2 / Low 2) stays on the
+    -- half-length mat with room for wider line spacing than the layout test assumes.
+    defaultFontSize=340
     fontSize=defaultFontSize
     lineCount=0
     defaultDivisionLabel="|\n|"
     self.createButton(place({
         label="---", click_function="none", function_owner=Global,
-        position={-4.7,0.11,1.1}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
+        position={-4.7,0.11,1.0}, rotation={0,0,0}, height=0, width=0, font_size=fontSize,
         font_color={1, 1, 1},
         scale={0.25, 0.25, 0.25},
 		alignment=2
     }))
     self.createButton(place({
         label="", click_function="none", function_owner=Global,
-        position={-0.55,0.11,1.1}, rotation={0,0,0}, height=0, width=0, font_size=500,
+        position={-0.55,0.11,1.0}, rotation={0,0,0}, height=0, width=0, font_size=500,
         font_color={1, 1, 1},
         scale={0.25,2,1},
 		alignment=2

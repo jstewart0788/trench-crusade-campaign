@@ -227,6 +227,41 @@ describe("objectiveMarkers", () => {
     }
     expect(covered).toBeGreaterThan(0);
   });
+
+  it("gives a covered objective the surface its piece stands on, a hill top where the piece is on a hill", () => {
+    const resolved = resolvePalette(palette, catalog);
+    // The top of every piece others stand on under the objective point: the ground tile, or the tile stacked on it as a hill.
+    const groundTop = (l: Layout, x: number, y: number): number =>
+      Math.max(...l.pieces.filter((p) => resolved.byId.get(p.paletteId)!.topIn !== undefined && p.role === "ground").filter((p) => {
+        const r = turnedRect(p.position[0], p.position[1], resolved.byId.get(p.paletteId)!, p.rotY, sense);
+        return x >= r.x0 - 1e-9 && x <= r.x1 + 1e-9 && y >= r.y0 - 1e-9 && y <= r.y1 + 1e-9;
+      }).map((p) => p.baseIn + resolved.byId.get(p.paletteId)!.topIn!));
+    let flat = 0;
+    let raised = 0;
+    let open = 0;
+    const own = [1, 2, 3, 4, 5, 25].map((seed) => generateBattlefield({ scenarioId: "claim-no-mans-land", seed }, env));
+    const openBoards = [1, 2].map((seed) => generateBattlefield({ scenarioId: "from-below", seed }, env));
+    for (const l of [...withObjectives, ...own, ...openBoards]) {
+      for (const [i, m] of objectiveMarkers(l, palette, catalog, { matTopY: MAT_TOP, matCenter: [0, 0] }).entries()) {
+        const o = l.objectives[i]!;
+        if (!o.coverPieceId) {
+          expect(m).not.toHaveProperty("surfaceY");
+          open++;
+          continue;
+        }
+        const piece = l.pieces.find((p) => p.id === o.coverPieceId)!;
+        expect(m.surfaceY).toBeCloseTo(MAT_TOP + piece.baseIn, 3);
+        const under = groundTop(l, o.position[0], o.position[1]);
+        expect(piece.baseIn).toBeGreaterThanOrEqual(under - 0.001);
+        expect(piece.baseIn).toBeLessThanOrEqual(under + 0.1);
+        if (under > 3) raised++;
+        else flat++;
+      }
+    }
+    expect(flat).toBeGreaterThan(0);
+    expect(raised).toBeGreaterThan(0);
+    expect(open).toBeGreaterThan(0);
+  });
 });
 
 function segmentDistance(p: [number, number], a: [number, number], b: [number, number]): number {

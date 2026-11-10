@@ -642,7 +642,9 @@ The middle of the table is kept clear for the battlefield: nothing stands within
   3.75 / 1.875, so text stays square and at the size it had on the 3.75 tray. In the seated
   player's frame (u right, v toward them): bubble / highlight tools and Clear mat / Roll
   all / colours / pip on the far row, measure buttons / size / Go / +1d6 .. +4d6 / +1d3 /
-  Custom Dice on the next, the five-button tool column at the left, the readout beside it,
+  Custom Dice on the next, the five-button tool column at the left, the readout beside it
+  (font 340 at v 1.0, TC-022c: at 400 / v 1.1 its High 2 / Low 2 line overhung the near
+  edge live; `layout_test` now spaces multi-line labels 1.6 line heights apart to match),
   then the result rows (`RESULT_LAYOUT`: 10 per row, value rows 1.05 apart, from u 0.05,
   v -2), the ten spawn slots (2 x 5, 0.94 apart) and the roller bowl on the tray's snap
   point at the right. The roller asks the tray for `getResultLayout` and lays rows and
@@ -682,9 +684,15 @@ seed N` or `Random board: seed N`), **Next board** / **Random board**, **Spawn b
     piece is the Objective (p152), so it gets the symbol as a decal (`setDecals`,
     `objective-symbol.png`, 40mm, over the objective point) and the band (its footprint
     grown by 1", rounded corners) as an object vector line, both converted with the piece's
-    `positionToLocal` and lifted 0.05" above its `getBounds()` top so its walls never hide
-    them. The piece is tagged `tc-objective` and `tc-objective:<id>` and keeps the spec in its
-    `memo`; on load the panel re-draws every `tc-objective` piece from its memo. Clear removes
+    `positionToLocal`. Heights come from the spec's `surfaceY`, the surface the piece stands
+    on (mat top + the piece's `baseIn`: the ground tiles' top, 3.40 on the felt, or the hill
+    top under a tower): the band 0.06" above it, 1" outside the footprint where walls rarely
+    hide it, and the symbol 0.1" above it on the piece's floor (TC-022c; TC-022b drew both
+    at the bounding-box top, 6.5-10.3" up, a halo over the building). A memo without
+    `surfaceY` (pieces marked by TC-022b) falls back to the highest `tc-role:ground` top
+    under the objective point, else the piece's own bottom. The piece is tagged
+    `tc-objective` and `tc-objective:<id>` and keeps the spec in its `memo`; on load the
+    panel re-draws every `tc-objective` piece from its memo. Clear removes
     it with the rest of the `tc-terrain`.
   - **open**: one marker from the Red Objective bag `70d18f` at the point; once its `ready`
     flag is set (10 s cap) the panel calls `setRingRadius` with the spec's `ringIn` (1.787").

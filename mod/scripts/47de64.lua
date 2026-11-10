@@ -27,7 +27,11 @@ SYMBOL_URL = "https://tc.rynfin.org/tts/objective-symbol.png"
 SYMBOL_IN = 40 / 25.4
 AURA_COLOR = { 1, 1, 1 }
 AURA_THICKNESS = 0.06
-AURA_LIFT_IN = 0.05
+-- Above the surface the piece stands on: the band 1" outside its footprint, where walls
+-- rarely hide it, and the symbol on the piece's own floor.
+AURA_LIFT_IN = 0.06
+SYMBOL_LIFT_IN = 0.1
+GROUND_TAG = "tc-role:ground"
 ARCHETYPE_NAMES = { ["trench-lines"] = "Trench Lines", ["no-mans-land"] = "No Man's Land" }
 
 function listUrl(base)
@@ -211,17 +215,16 @@ function buildState(p, row)
 end
 
 -- What a covering piece is drawn with: the band (its footprint grown by 1", world x/z
--- points from the generator) as a vector line just above the piece's top, and the
--- symbol as a decal over the objective point. toLocal is the piece's positionToLocal;
--- bounds its world getBounds(); scale its getScale().
-function coverMarks(spec, bounds, scale, toLocal)
-  local y = bounds.center.y + bounds.size.y / 2 + AURA_LIFT_IN
+-- points from the generator) as a vector line just above the surface the piece stands
+-- on, and the symbol as a decal on the piece's floor over the objective point. surfaceY
+-- is that surface's world y; toLocal is the piece's positionToLocal; scale its getScale().
+function coverMarks(spec, surfaceY, scale, toLocal)
   local points = {}
   for i, pt in ipairs(spec.band) do
-    local l = toLocal({ x = pt[1], y = y, z = pt[2] })
+    local l = toLocal({ x = pt[1], y = surfaceY + AURA_LIFT_IN, z = pt[2] })
     points[i] = { x = l.x, y = l.y, z = l.z }
   end
-  local at = toLocal({ x = spec.posX, y = y, z = spec.posZ })
+  local at = toLocal({ x = spec.posX, y = surfaceY + SYMBOL_LIFT_IN, z = spec.posZ })
   return {
     lines = { { points = points, color = AURA_COLOR, thickness = AURA_THICKNESS } },
     decals = { {
@@ -552,13 +555,30 @@ function spawnBoard(payload, sc)
   end, SPAWN_SETTLE_SECONDS, place)
 end
 
+-- The generator sends the surface; a piece marked before it did (its memo has none) uses
+-- the highest ground tile under the objective point, else its own bottom.
+function coverSurface(obj, spec)
+  if tonumber(spec.surfaceY) then return tonumber(spec.surfaceY) end
+  local best = nil
+  for _, g in ipairs(getObjectsWithTag(GROUND_TAG)) do
+    local b = g.getBounds()
+    if math.abs(spec.posX - b.center.x) <= b.size.x / 2 and math.abs(spec.posZ - b.center.z) <= b.size.z / 2 then
+      local top = b.center.y + b.size.y / 2
+      if best == nil or top > best then best = top end
+    end
+  end
+  if best then return best end
+  local b = obj.getBounds()
+  return b.center.y - b.size.y / 2
+end
+
 function markCover(obj, spec)
-  local marks = coverMarks(spec, obj.getBounds(), obj.getScale(), function(v) return obj.positionToLocal(v) end)
+  local marks = coverMarks(spec, coverSurface(obj, spec), obj.getScale(), function(v) return obj.positionToLocal(v) end)
   obj.setVectorLines(marks.lines)
   obj.setDecals(marks.decals)
   obj.addTag(COVER_TAG)
   obj.addTag(COVER_TAG .. ":" .. spec.id)
-  obj.memo = JSON.encode({ id = spec.id, label = spec.label, posX = spec.posX, posZ = spec.posZ, band = spec.band })
+  obj.memo = JSON.encode({ id = spec.id, label = spec.label, posX = spec.posX, posZ = spec.posZ, band = spec.band, surfaceY = spec.surfaceY })
 end
 
 -- Re-draws covered pieces after a load from what markCover kept in their memo.

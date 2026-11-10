@@ -340,8 +340,9 @@ deployed `https://tc.rynfin.org`); the panel uses the Warband Importer's API bas
 - **Spawn battlefield**: any old generated terrain and objective markers vanish, the board
   spawns (about 140-270 pieces), and once it has loaded each objective is marked. On Claim No
   Man's Land seed 25 all five are covered: no discs at all; each covering ruin / tower shows
-  the symbol over its objective point and a white rounded band 1" outside its footprint,
-  drawn above its top. If the band reads mirrored or rotated against the piece, or the symbol
+  the symbol on its floor over the objective point (the tower's on its hill) and a white
+  rounded band 1" outside its footprint at ground level (3.46 on the tiles, 5.96 round the
+  tower on its hill), not floating over the building. If the band reads mirrored or rotated against the piece, or the symbol
   is the wrong size, record it (the conversion is `positionToLocal`; decal scale is divided by
   the piece's scale). From Below (open objectives): discs with ~1.79" rings, ring correct on
   every disc (the ring used to be lost on spawn). Save and reload: bands and symbols stay. Models, tokens, the importer, tracker and
@@ -370,6 +371,10 @@ screenshots of the 3.75 tray, not measurements.
 - Spawn 10 dice and Roll all: the dice go through the bowl (on the tray, right of the
   result area) and land in value rows right of the readout, none on the readout, the
   buttons or the bowl, all counted (`10 ∑ ...`). Repeat with 1 and 4 dice and a d3.
+- Readout worst case: ten dice showing all six faces (six face rows, the total, High 2 /
+  Low 2): every line sits on the mat, the last one clear of the near edge, the first clear of
+  the measure buttons above it. If it still overhangs, the line pitch is above about 1.85 and
+  `MULTILINE_PITCH` in `mod/test/layout_test.lua` should be raised to what is seen.
 - Drop a die into a bowl while a roll is running: it is ejected behind that tray (toward
   its player), not onto the battlefield.
 - The opponent's dice screen (`c09349` / `48dcae`, beyond each tray's outer end) shows the

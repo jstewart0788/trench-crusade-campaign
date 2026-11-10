@@ -101,6 +101,11 @@ local TRAY_LOCAL_HALF = { u = 57.11 / 3.75 / 2, v = 11.15 / 3.75 / 2 }
 -- Text, read off a screenshot of the 3.75 tray: at font 100 (font x button scale) a line is
 -- 0.76" tall and a character 0.355" wide. Estimates, so rows keep CLEAR from it.
 local CHAR_W, LINE_H, CLEAR = 0.355 / 375, 0.76 / 375, 0.1
+-- Lines of a multi-line label sit further apart than one line is tall: each line after the
+-- first adds this many line heights. 1.6 is just past the smallest factor (1.54) at which
+-- the TC-023v readout (font 400 at v 1.1) overhangs the mat's near edge, as it did live on
+-- 2026-11-09: calibrated from that observation, not measured.
+local MULTILINE_PITCH = 1.6
 local DIE = 0.7
 
 local function rect(cu, cv, w, h) return { u0 = cu - w / 2, u1 = cu + w / 2, v0 = cv - h / 2, v1 = cv + h / 2 } end
@@ -225,7 +230,7 @@ local function widgetRect(tray, b)
   local label = b.label or ""
   if label ~= "" and (b.font_size or 0) > 1 then
     local n, widest = lines(label)
-    r = union(r, rect(cu, cv, widest * b.font_size * wx * CHAR_W, n * b.font_size * wz * LINE_H))
+    r = union(r, rect(cu, cv, widest * b.font_size * wx * CHAR_W, (1 + (n - 1) * MULTILINE_PITCH) * b.font_size * wz * LINE_H))
   end
   return r, wx, wz
 end
@@ -329,6 +334,8 @@ for colour, tray in pairs(trays) do
   tray.readout = worst
   check(lines(worstLabel) == 8, colour .. " readout's tallest label has 8 lines")
   check(inside(worst, tray.half), colour .. " readout on the mat: " .. fmt(worst))
+  -- The seated player's near edge (v toward them), where the High 2 / Low 2 line went over.
+  check(worst.v1 <= tray.half.v1 - CLEAR, string.format("%s readout's last line clears the mat's near edge: %.2f vs %.2f", colour, worst.v1, tray.half.v1))
   for _, w in ipairs(tray.widgets) do
     if w.index ~= 0 and w.index ~= 1 then
       check(not overlap(worst, w.r, CLEAR), colour .. " readout clear of '" .. w.name .. "': " .. fmt(worst) .. " / " .. fmt(w.r))

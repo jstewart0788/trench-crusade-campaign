@@ -133,6 +133,12 @@ export interface ObjectiveMarkerSpec {
    * Empty for an open objective, whose control range is the ringIn circle.
    */
   band: [number, number][];
+  /**
+   * For a covered objective, the world y of the surface its piece stands on (the ground tiles'
+   * top, or the hill top under it): the piece's floor, where the mod draws the symbol, and the
+   * height of the band. Absent for an open objective, whose marker seats itself.
+   */
+  surfaceY?: number;
 }
 
 const BAND_ARC_STEPS = 8;
@@ -171,6 +177,7 @@ export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Cata
   return layout.objectives.map((o) => {
     let reach = OBJECTIVE_MARKER_IN / 2;
     let band: [number, number][] = [];
+    let surfaceY: number | undefined;
     const cover = o.coverPieceId ? layout.pieces.find((p) => p.id === o.coverPieceId) : undefined;
     if (cover) {
       const entry = resolved.byId.get(cover.paletteId);
@@ -182,6 +189,7 @@ export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Cata
         round(opts.matCenter[0] + (x - half)),
         round(opts.matCenter[1] + (y - half)),
       ]);
+      surfaceY = round(opts.matTopY + cover.baseIn);
     }
     return {
       id: o.id,
@@ -190,6 +198,7 @@ export function objectiveMarkers(layout: Layout, palette: Palette, catalog: Cata
       posZ: round(opts.matCenter[1] + (o.position[1] - half)),
       ringIn: round(reach + OBJECTIVE_CONTROL_IN),
       band,
+      ...(surfaceY === undefined ? {} : { surfaceY }),
     };
   });
 }
