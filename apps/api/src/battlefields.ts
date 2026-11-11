@@ -1,4 +1,4 @@
-import { compactBattlefield, DEFAULT_TTS_OPTIONS, generateBattlefield, loadCatalog, loadGeneratorEnv, scenarioArchetype, scenarioBoardIn, type Archetype, type BattlefieldPayload, type Catalog, type GeneratorEnv, type ScenarioGeometry } from "@tc/battlefield";
+import { compactBattlefield, DEFAULT_TTS_OPTIONS, generateBattlefield, loadCatalog, loadGeneratorEnv, scenarioArchetype, scenarioBoardIn, selectableArchetypes, type Archetype, type BattlefieldPayload, type Catalog, type GeneratorEnv } from "@tc/battlefield";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "zod";
@@ -9,8 +9,7 @@ export const MAX_SEED = 999_999;
 /** World height of the table surface the mod spawns boards onto. */
 export const MAT_TOP_Y = DEFAULT_TTS_OPTIONS.matTopY;
 const CACHE_LIMIT = 64;
-/** The archetypes the generator lays. */
-export const ARCHETYPES: readonly Archetype[] = ["trench-lines", "no-mans-land"];
+export { ARCHETYPES, selectableArchetypes } from "@tc/battlefield";
 
 const SeedsFile = z.object({ scenarios: z.array(z.object({ id: z.string(), seeds: z.array(z.number().int().positive()) })) }).passthrough();
 
@@ -27,13 +26,6 @@ export interface BattlefieldScenario {
    */
   archetypes: Archetype[];
   recommendedSeeds: number[];
-}
-
-/** The scenario's own archetype first, then any other it allows that the generator lays. */
-export function selectableArchetypes(scenario: ScenarioGeometry): Archetype[] {
-  const own = scenarioArchetype(scenario).archetype;
-  const allowed = scenario.archetypes.includes("any") ? ARCHETYPES : ARCHETYPES.filter((a) => scenario.archetypes.includes(a));
-  return [own, ...allowed.filter((a) => a !== own)];
 }
 
 export class UnknownScenarioError extends Error {}
@@ -66,13 +58,13 @@ export class BattlefieldService {
     return this.scenarios;
   }
 
-  /** archetype left out lays the scenario's own; given, it must be one the scenario lets the player choose. */
-  board(scenarioId: string, seed: number, archetype?: string): BattlefieldPayload {
+  /** archetype left out lays the scenario's own; given, it must be one the scenario lets the player choose. decor lays decorative scatter too. */
+  board(scenarioId: string, seed: number, archetype?: string, decor = false): BattlefieldPayload {
     const scenario = this.scenarios.find((s) => s.id === scenarioId);
     if (!scenario) throw new UnknownScenarioError(scenarioId);
     const chosen = archetype === undefined ? undefined : scenario.archetypes.find((a) => a === archetype);
     if (archetype !== undefined && (scenario.archetypes.length < 2 || !chosen)) throw new ArchetypeNotSelectableError(archetype);
-    const key = `${scenarioId}:${seed}:${chosen ?? ""}`;
+    const key = `${scenarioId}:${seed}:${chosen ?? ""}:${decor ? "decor" : ""}`;
     const hit = this.cache.get(key);
     if (hit) {
       this.cache.delete(key);
@@ -81,7 +73,7 @@ export class BattlefieldService {
     }
     let payload: BattlefieldPayload;
     try {
-      payload = compactBattlefield(generateBattlefield({ scenarioId, seed, archetype: chosen }, this.env), this.env.palette, this.catalog, { matTopY: MAT_TOP_Y });
+      payload = compactBattlefield(generateBattlefield({ scenarioId, seed, archetype: chosen, options: { decor } }, this.env), this.env.palette, this.catalog, { matTopY: MAT_TOP_Y });
     } catch (err) {
       throw new NoBoardError(err instanceof Error ? err.message : String(err));
     }

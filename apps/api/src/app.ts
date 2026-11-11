@@ -161,8 +161,11 @@ export function createApp({ rules, store, now = () => new Date(), staticDir, rat
       }
       const archetypeRaw = req.query.archetype;
       if (archetypeRaw !== undefined && typeof archetypeRaw !== "string") throw new ApiError(400, "invalid-archetype", "Give one archetype");
+      // Decorative scatter is left off unless asked for (?decor=true).
+      const decorRaw = req.query.decor;
+      if (decorRaw !== undefined && decorRaw !== "true" && decorRaw !== "false") throw new ApiError(400, "invalid-decor", "decor is true or false");
       try {
-        const payload = battlefields.board(scenario, Number(seedRaw), archetypeRaw);
+        const payload = battlefields.board(scenario, Number(seedRaw), archetypeRaw, decorRaw === "true");
         res.set("Cache-Control", "public, max-age=86400");
         res.json(payload);
       } catch (err) {

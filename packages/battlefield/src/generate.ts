@@ -79,6 +79,8 @@ export interface GenerateOptions {
   /** Scatter pieces a 36in board lays before the house fill (a larger board takes its share by area). */
   scatterPieces: number;
   aesthetic: Aesthetic | null;
+  /** Lay decorative scattered terrain (palette isDecor) as well as the scatter that bears rules; off until a pass on the look. */
+  decor: boolean;
 }
 
 export const DEFAULT_GENERATE_OPTIONS: GenerateOptions = {
@@ -106,6 +108,7 @@ export const DEFAULT_GENERATE_OPTIONS: GenerateOptions = {
   repeatCap: 3,
   scatterPieces: 50,
   aesthetic: null,
+  decor: false,
 };
 
 export interface GenerateInput {
@@ -132,7 +135,8 @@ export class GenerateError extends Error {
 }
 
 const BRANCHES_BY_DENSITY = { sparse: [0, 1], medium: [1, 3], dense: [2, 4] } as const;
-const ARCHETYPES: readonly Archetype[] = ["trench-lines", "no-mans-land"];
+/** The archetypes the generator lays. */
+export const ARCHETYPES: readonly Archetype[] = ["trench-lines", "no-mans-land"];
 
 /** The square board a scenario is laid on: its own size when its map is square, else 36in. */
 export function scenarioBoardIn(scenario: ScenarioGeometry): number {
@@ -152,6 +156,17 @@ export function scenarioArchetype(scenario: ScenarioGeometry): { archetype: Arch
     if (known) return { archetype: known, fallback: null };
   }
   return { archetype: "trench-lines", fallback: `scenario ${scenario.id} lists ${scenario.archetypes.join("/")}, which the generator does not lay; laid as trench-lines` };
+}
+
+/**
+ * The archetypes a board may be asked for, the scenario's own first. More than one only
+ * where the scenario lets the player setting up the terrain choose ("any battlefield
+ * archetype", Great War p195 and From Below) or lists several the generator lays.
+ */
+export function selectableArchetypes(scenario: ScenarioGeometry): Archetype[] {
+  const own = scenarioArchetype(scenario).archetype;
+  const allowed = scenario.archetypes.includes("any") ? ARCHETYPES : ARCHETYPES.filter((a) => scenario.archetypes.includes(a));
+  return [own, ...allowed.filter((a) => a !== own)];
 }
 
 /**
@@ -508,6 +523,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
     edgeMarginIn: opts.edgeMarginIn,
     sightAxis,
     threatAxis,
+    decor: opts.decor,
     nextId: 0,
   };
   const plateaus: Plateau[] = [...(raised?.plateaus ?? [])];

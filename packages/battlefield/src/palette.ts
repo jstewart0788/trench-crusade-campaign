@@ -293,6 +293,13 @@ export function resolvePalette(palette: Palette, catalog: Catalog): ResolvedPale
   return { ...palette, pieces, byId: new Map(pieces.map((p) => [p.id, p])) };
 }
 
+/**
+ * Decorative scattered terrain (p64: "purely decorative"): graves, candles, bones,
+ * books, a lone barrel or box and the like, which give no cover, are not climbed
+ * and are open ground. Low cover, rubble, wire and the rest bear rules.
+ */
+export const isDecor = (piece: PalettePiece): boolean => piece.terrain.kind === "scattered" && !piece.terrain.cover && !piece.terrain.climb && piece.terrain.types.every((t) => t === "open");
+
 export function pieceById(palette: Palette, id: string): PalettePiece {
   const piece = palette.pieces.find((p) => p.id === id);
   if (!piece) throw new PaletteError(`palette has no piece ${id}`);

@@ -10,6 +10,7 @@ import {
   HILL_RATE_OBJECTIVES,
   HILL_RATE_OPEN,
   hillRateFor,
+  isDecor,
   layoutUnits,
   mapCell,
   mapPoint,
@@ -116,6 +117,8 @@ const POINT_BOARDS = seedsFrom(1, 40).map((seed) => generateBattlefield({ scenar
 const NML_BOARDS = ["claim-no-mans-land", "relic-hunt", "supply-raid", "the-high-ground"].flatMap((id) => seedsFrom(1, 40).map((seed) => gen(id, seed, "no-mans-land")));
 // Every scenario as it is laid by default: its own archetype at its own size.
 const OWN_BOARDS = env.scenarios.flatMap((s) => seedsFrom(1, 10).map((seed) => generateBattlefield({ scenarioId: s.id, seed }, env)));
+// Decorative scatter is off by default; these lay it, as a later pass on the look will.
+const DECOR_BOARDS = SCENARIOS.flatMap((id) => seedsFrom(1, 40).map((seed) => generateBattlefield({ scenarioId: id, archetype: "trench-lines", seed, options: { decor: true } }, env)));
 
 describe("generateBattlefield", () => {
   it("is deterministic: the same seed gives byte-identical layouts, different seeds differ", () => {
@@ -622,15 +625,42 @@ describe("generateBattlefield", () => {
       }
     });
 
-    it("lays the scatter before the house fill: Fields keeps a12a0d8's 36 a board and Claim its measured ceiling, most of it in heaps of two to five, under 200 objects a board", () => {
-      // Claim's minimums, five objective covers, its trench lines, the raised centre and the edge gap for tall pieces leave room for about 27 (a12a0d8 laid 30.9 round a straighter, smaller network).
-      for (const [id, least] of [["claim-no-mans-land", 27], ["fields-of-glory", 36.3]] as const) {
-        const set = LAYOUTS.get(id)!;
+    it("lays the scatter before the house fill, most of it in heaps of two to five, under 200 objects a board: only the pieces that bear rules unless decor is asked for", () => {
+      // Decor off (the default), measured over these 100 seeds: Claim 13.8, Fields 17.5 a board. With decor, 40 seeds: Claim 31.7, Fields 35.6.
+      const sets: [string, Layout[], number][] = [
+        ["claim-no-mans-land", LAYOUTS.get("claim-no-mans-land")!, 12.5],
+        ["fields-of-glory", LAYOUTS.get("fields-of-glory")!, 16],
+        ["claim-no-mans-land with decor", DECOR_BOARDS.filter((l) => l.scenarioId === "claim-no-mans-land"), 28.5],
+        ["fields-of-glory with decor", DECOR_BOARDS.filter((l) => l.scenarioId === "fields-of-glory"), 32],
+      ];
+      for (const [id, set, least] of sets) {
         const pieces = set.flatMap((l) => l.pieces.filter(isScatter)).length;
         const inHeaps = set.flatMap(heapsOf).filter((h) => h.length >= 2 && h.length <= 5).reduce((n, h) => n + h.length, 0);
         expect(pieces / set.length, id).toBeGreaterThanOrEqual(least);
         expect(inHeaps / pieces, id).toBeGreaterThanOrEqual(0.5);
         for (const layout of set) expect(layout.stats.totalPieces, `${id} seed ${layout.seed}`).toBeLessThanOrEqual(200);
+      }
+    });
+
+    it("leaves decorative scatter off unless asked for, and with it on keeps the parity, the edge margin and no lines", () => {
+      // Scattered terrain only: a barrel in a crate stack is part of a cover piece.
+      const decor = (l: Layout) => l.pieces.filter((p) => isScatter(p) && isDecor(entry(p)));
+      for (const layout of [...[...LAYOUTS.values()].flat(), ...OWN_BOARDS, ...NML_BOARDS]) expect(decor(layout), `${layout.scenarioId} seed ${layout.seed}`).toEqual([]);
+      expect(DECOR_BOARDS.length).toBe(80);
+      // Measured on these boards: 1,823 decorative pieces; a look with little decor (Claim seed 18's) lays a handful.
+      expect(DECOR_BOARDS.reduce((n, l) => n + decor(l).length, 0)).toBeGreaterThan(1500);
+      expect(DECOR_BOARDS.filter((l) => decor(l).length > 0).length).toBeGreaterThanOrEqual(76);
+      for (const layout of DECOR_BOARDS) {
+        const tag = `${layout.scenarioId} seed ${layout.seed}`;
+        const report = alignmentReport(layoutUnits(layout, palette), parityOf(layout), layout.cellIn);
+        expect(report.lines, tag).toEqual([]);
+        const scatter = (side: SlotRef["side"]) => slotsOf(layout).filter((x) => palette.categories[x.category]!.scatter && x.side === side).map((x) => x.category).sort();
+        expect(scatter("A"), tag).toEqual(scatter("B"));
+        for (const p of layout.pieces.filter(isScatter)) {
+          const r = rectOf(p);
+          expect(Math.min(r.x0, r.y0, layout.boardIn - r.x1, layout.boardIn - r.y1), `${tag} ${p.id}`).toBeGreaterThanOrEqual(0.5 - ROUNDING);
+        }
+        expect(layout.stats.shortfalls.every((f) => f.placed >= f.min), tag).toBe(true);
       }
     });
 

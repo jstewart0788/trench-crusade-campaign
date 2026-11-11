@@ -1,7 +1,7 @@
 import { COINCIDE_IN, makesLine, type LinePt } from "./alignment.js";
 import { cellKey, cellRect, cellsInRect, DELTA, DIRS, inGrid, Mask, OPPOSITE, outline, rectContains, rectDistance, rectFromCentre, rectInside, rectPointDistance, rectsOverlap, rectsWithin, type Cell, type Dir, type Grid, type Rect } from "./grid.js";
 import { mapCell, mapDir, mapPoint, mapRotY, sideOf, type Parity } from "./parity.js";
-import { pieceById, rotatedFootprint, rotateVector, STRUCTURAL_ROLES, turnedRect, type Corner, type Facing, type Palette, type PalettePiece, type Role } from "./palette.js";
+import { isDecor, pieceById, rotatedFootprint, rotateVector, STRUCTURAL_ROLES, turnedRect, type Corner, type Facing, type Palette, type PalettePiece, type Role } from "./palette.js";
 import type { Rng } from "./rng.js";
 import type { ObjectiveSpec, ZoneSpec } from "./scenario.js";
 import type { Axis } from "./trench.js";
@@ -222,6 +222,8 @@ export interface PlacementContext {
   sightAxis: Axis | null;
   /** The axis enemy fire crosses the board on, from the deployment zones themselves, with or without trench lines in them. */
   threatAxis: Axis | null;
+  /** Decorative scattered terrain is laid too (GenerateOptions.decor). */
+  decor: boolean;
   nextId: number;
 }
 
@@ -1691,7 +1693,7 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
   const done = new Set<string>();
   const key = (f: { cell: Cell; dir: Dir }) => `${f.cell.c},${f.cell.r},${f.dir}`;
   // No barricade against a raised face (palette.adjacency): sandbags, crates and rubble only.
-  const fits = (p: Placeable) => Math.max(...p.footprintIn) <= g.cellIn && Math.min(...p.footprintIn) <= 1.7 && p.members.length === 1 && !pieceById(ctx.palette, p.members[0]!.pieceId).wall;
+  const fits = (p: Placeable) => Math.max(...p.footprintIn) <= g.cellIn && Math.min(...p.footprintIn) <= 1.7 && p.members.length === 1 && !pieceById(ctx.palette, p.members[0]!.pieceId).wall && (ctx.decor || !isDecor(pieceById(ctx.palette, p.members[0]!.pieceId)));
   const NORMAL: Record<Dir, number> = { E: 0, N: 90, W: 180, S: 270 };
   for (const face of faces) {
     if (done.has(key(face))) continue;

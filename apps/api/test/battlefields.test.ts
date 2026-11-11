@@ -1,4 +1,4 @@
-import { expandBattlefield, generateBattlefield, layoutToObjectStates, loadCatalog, loadGeneratorEnv, objectiveMarkers, recommendSeeds, type BattlefieldPayload } from "@tc/battlefield";
+import { expandBattlefield, generateBattlefield, isDecor, layoutToObjectStates, loadCatalog, loadGeneratorEnv, objectiveMarkers, recommendSeeds, type BattlefieldPayload } from "@tc/battlefield";
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import request from "supertest";
@@ -14,7 +14,7 @@ let rules: LoadedRules;
 let battlefields: BattlefieldService;
 const env = loadGeneratorEnv(repoRoot);
 const catalog = loadCatalog(repoRoot);
-const seedsFile = JSON.parse(readFileSync(resolve(repoRoot, SEEDS_FILE), "utf8")) as { scenarios: { id: string; seeds: number[] }[] };
+const seedsFile = JSON.parse(readFileSync(resolve(repoRoot, SEEDS_FILE), "utf8")) as { candidates: string; scenarios: { id: string; archetypes: string[]; seeds: number[] }[] };
 
 beforeAll(() => {
   rules = loadRules(configFromEnv({}).rulesDir);
@@ -59,10 +59,13 @@ describe("GET /api/battlefields", () => {
     expect(by.get("supply-raid")).toEqual(["no-mans-land"]);
   });
 
-  it("keeps the shipped seed list in step with the generator", () => {
-    const listed = seedsFile.scenarios.find((s) => s.id === "dragon-hunt")!.seeds;
-    expect(recommendSeeds(env, "dragon-hunt", Array.from({ length: 30 }, (_, i) => i + 1), listed.length).map((q) => q.seed)).toEqual(listed);
-  }, 60_000);
+  it("keeps the shipped seed list in step with the generator, judged as every archetype the panel offers", async () => {
+    const res = await request(appWith(battlefields)).get("/api/battlefields");
+    for (const s of res.body.scenarios as { id: string; archetypes: string[] }[]) expect(seedsFile.scenarios.find((f) => f.id === s.id)!.archetypes, s.id).toEqual(s.archetypes);
+    const [first, last] = seedsFile.candidates.split("-").map(Number) as [number, number];
+    const listed = seedsFile.scenarios.find((s) => s.id === "supply-raid")!.seeds;
+    expect(recommendSeeds(env, "supply-raid", Array.from({ length: last - first + 1 }, (_, i) => first + i), listed.length).map((q) => q.seed)).toEqual(listed);
+  }, 180_000);
 });
 
 describe("GET /api/battlefields/:scenario/:seed", () => {
@@ -149,6 +152,19 @@ describe("GET /api/battlefields/:scenario/:seed", () => {
     expect((await request(app).get("/api/battlefields/claim-no-mans-land/25?archetype=trench-lines")).body.error.message).toMatch(/always laid as no-mans-land/);
     expect((await request(app).get("/api/battlefields/great-war/3?archetype=x")).body.error.message).toMatch(/trench-lines or no-mans-land/);
     expect((await request(app).get("/api/battlefields/no-such-scenario/1?archetype=trench-lines")).status).toBe(404);
+  });
+
+  it("leaves decorative scatter off unless asked for, and refuses a decor flag that is not true or false", async () => {
+    const app = appWith(battlefields);
+    const decorative = new Set(env.palette.pieces.filter((p) => isDecor(p)).map((p) => p.id));
+    const plain = (await request(app).get("/api/battlefields/claim-no-mans-land/1")).body as BattlefieldPayload;
+    const dressed = (await request(app).get("/api/battlefields/claim-no-mans-land/1?decor=true")).body as BattlefieldPayload;
+    // Scattered terrain only: a barrel in a crate stack (a terrain piece, slot d-) is part of a cover piece.
+    expect(plain.pieces.filter(([id, , , , pieceId]) => decorative.has(id) && pieceId.startsWith("x-"))).toEqual([]);
+    expect(dressed.pieces.filter(([id]) => decorative.has(id)).length).toBeGreaterThan(10);
+    expect((await request(app).get("/api/battlefields/claim-no-mans-land/1?decor=false")).body).toEqual(plain);
+    const bad = await request(app).get("/api/battlefields/claim-no-mans-land/1?decor=yes");
+    expect([bad.status, bad.body.error.code]).toEqual([400, "invalid-decor"]);
   });
 
   it("sends open objectives the 1in control ring and no band, covered ones the band", async () => {

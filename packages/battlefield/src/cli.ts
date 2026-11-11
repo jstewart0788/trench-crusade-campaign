@@ -6,7 +6,7 @@ import { loadCatalog, loadGeneratorEnv } from "./load.js";
 import { renderPlanSvg } from "./preview.js";
 import { DEFAULT_TTS_OPTIONS, layoutToObjectStates } from "./tts.js";
 
-// pnpm --filter @tc/battlefield generate --scenario claim-no-mans-land --seed 7 --out layout.json [--tts out.json] [--svg out.svg] [--archetype trench-lines|no-mans-land, default the scenario's own]
+// pnpm --filter @tc/battlefield generate --scenario claim-no-mans-land --seed 7 --out layout.json [--tts out.json] [--svg out.svg] [--archetype trench-lines|no-mans-land, default the scenario's own] [--decor]
 // pnpm --filter @tc/battlefield preview [--scenario claim-no-mans-land] [--seeds 1-10] [--out-dir preview]
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -50,6 +50,7 @@ function optionsFromFlags(flags: Map<string, string>): Partial<GenerateOptions> 
   if (axis === "x" || axis === "y" || axis === "auto") options.axis = axis;
   const branches = flags.get("branches");
   if (branches !== undefined) options.branches = branches === "auto" ? "auto" : Number(branches);
+  if (flags.has("decor")) options.decor = flags.get("decor") !== "false";
   return options;
 }
 
@@ -59,8 +60,8 @@ function writeOut(path: string, content: string): void {
 }
 
 function usage(): never {
-  console.error("usage: generate --scenario <id> --seed <n> [--archetype trench-lines|no-mans-land, default the scenario's own] [--board <in>, default the scenario's own] [--axis x|y|auto] [--branches n|auto] [--out layout.json] [--tts objects.json] [--svg plan.svg] [--mat-top 0.9] [--root <repo>]");
-  console.error("       preview [--scenario <id>] [--archetype trench-lines|no-mans-land, default the scenario's own] [--seeds 1-10] [--out-dir packages/battlefield/preview] [--root <repo>]");
+  console.error("usage: generate --scenario <id> --seed <n> [--archetype trench-lines|no-mans-land, default the scenario's own] [--board <in>, default the scenario's own] [--axis x|y|auto] [--branches n|auto] [--decor, lay decorative scatter too] [--out layout.json] [--tts objects.json] [--svg plan.svg] [--mat-top 0.9] [--root <repo>]");
+  console.error("       preview [--scenario <id>] [--archetype trench-lines|no-mans-land, default the scenario's own] [--seeds 1-10] [--decor] [--out-dir packages/battlefield/preview] [--root <repo>]");
   process.exit(2);
 }
 

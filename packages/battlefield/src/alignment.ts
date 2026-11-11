@@ -18,14 +18,14 @@ export interface LineMeasure {
  * pieces. Measured over 1,200 boards of about 38 units, three units within 1in
  * of a line and 10in apart stand on every board, a uniform random scatter's as
  * much as the generator's, so that measure is kept for terrain pieces alone (13
- * a board, which carry the eye). A line with a terrain piece in it is held to
- * half an inch and 6in, which still catches the seed 25 line; heaps of scatter
- * alone to half an inch and single-file spacing, which leaves Fields of Glory
- * 39 scatter pieces a board where 6in left it 36.
+ * a board, which carry the eye). Any other line, scatter alone included, is
+ * held to half an inch and 6in, which still catches the seed 25 line and the
+ * rubble dressed along a hill's face (at single-file spacing it let 97 of 240
+ * boards keep one; with decorative scatter off, holding it costs 0.6 pieces a board).
  */
 export const TERRAIN_LINE: LineMeasure = { band: 1, step: 10 };
 export const MIXED_LINE: LineMeasure = { band: 0.5, step: 6 };
-export const SCATTER_LINE: LineMeasure = { band: 0.5, step: 3.5 };
+export const SCATTER_LINE: LineMeasure = { band: 0.5, step: 6 };
 /** Two centres closer than this on x or on y read as lined up on that axis. */
 export const COINCIDE_IN = 0.25;
 
@@ -90,6 +90,29 @@ export function makesLine(existing: readonly LinePt[], added: readonly LinePt[],
     }
   }
   return false;
+}
+
+/**
+ * The longest single file among points (single scatter pieces): through any two
+ * within `step` of each other, those within `band` of the line, each within
+ * `step` of the next along it. The generator keeps it under three (extendsRow).
+ */
+export function longestSingleFile(points: readonly Pt[], band = 1, step = 3.5): number {
+  let best = Math.min(points.length, 2);
+  for (const a of points) {
+    for (const b of points) {
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len === 0 || len > step) continue;
+      const [ux, uy] = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+      const along = points.filter((p) => Math.abs((p[1] - a[1]) * ux - (p[0] - a[0]) * uy) <= band).map((p) => (p[0] - a[0]) * ux + (p[1] - a[1]) * uy).sort((x, y) => x - y);
+      const from = along.indexOf(0);
+      let [lo, hi] = [from, from];
+      while (lo > 0 && along[lo]! - along[lo - 1]! <= step) lo--;
+      while (hi < along.length - 1 && along[hi + 1]! - along[hi]! <= step) hi++;
+      best = Math.max(best, hi - lo + 1);
+    }
+  }
+  return best;
 }
 
 export interface AlignUnit {

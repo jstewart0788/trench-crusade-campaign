@@ -1,6 +1,6 @@
 import { cellCentre, DELTA, DIRS, inGrid, rectArea, rectDistance, rectFromCentre, rectInside, rectOverlapArea, rectPointDistance, type Cell, type Rect } from "./grid.js";
 import { drawFacing, extendsRow, facingOf, facingYaw, HEAP_PREFIX, linesUp, looksOf, makePlaced, pickPlaceable, pickTwin, placeablesIn, rectAllowed, SCATTER_WEIGHTS, twinDraw, wallAxis, wallClear, type FacingDraw, type Hill, type Placeable, type PlaceableMember, type Placed, type PlacementContext, type Plateau } from "./dressing.js";
-import { pieceById, turnedRect, type RotYSense } from "./palette.js";
+import { isDecor, pieceById, turnedRect, type RotYSense } from "./palette.js";
 import { mapPoint, mapRotY, sideOf } from "./parity.js";
 
 // Scattered terrain (p64), placed the way a table is dressed by hand (Jonathan,
@@ -495,8 +495,11 @@ function breakLanes(pc: PlaceContext, budget: number): Placed[] {
  */
 export function placeScatter(ctx: PlacementContext, pieces: number, raised: readonly (Plateau | Hill)[]): Placed[] {
   const looks = looksOf(ctx.aesthetic);
-  // Scatter keeps to the board's look: only pieces that suit it, or suit any.
-  const fits = (p: Placeable) => p.aesthetics.some((a) => looks.has(a)) && pieceById(ctx.palette, p.members[0]!.pieceId).enabled !== false;
+  // Scatter keeps to the board's look: only pieces that suit it, or suit any; decorative pieces only when asked for.
+  const fits = (p: Placeable) => {
+    const piece = pieceById(ctx.palette, p.members[0]!.pieceId);
+    return p.aesthetics.some((a) => looks.has(a)) && piece.enabled !== false && (ctx.decor || !isDecor(piece));
+  };
   const pc: PlaceContext = { ctx, fits, twinned: ctx.parity.kind !== "none", out: [] };
   const objects = () => pc.out.reduce((n, p) => n + p.placeable!.members.length, 0);
   const fill = (role: Exclude<ScatterRole, "open" | "lane">, spots: Spot[], share: number) => {
