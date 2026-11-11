@@ -30,7 +30,7 @@ import { Layout, LAYOUT_VERSION, type LayoutCell, type LayoutPiece, type SlotRef
 import { chooseParity, mapCell, type Parity, type ParityKind } from "./parity.js";
 import { pieceById, rotatedFootprint, rotateVector, rotYTurning, STRUCTURAL_ROLES, turnedRect, type Palette, type Role } from "./palette.js";
 import { createRng, type Rng } from "./rng.js";
-import { deploymentTracks, enemyFacing, scenarioOverlay, type ObjectiveSpec, type ScenarioGeometry } from "./scenario.js";
+import { deploymentTracks, enemyFacing, scenarioOverlay, type ObjectiveSpec, type ScenarioGeometry, type ZoneSpec } from "./scenario.js";
 import { placeScatter, scatterByRole } from "./scatter.js";
 import { tileCells, tileGround, type GroundTile } from "./tiles.js";
 import { DEFAULT_TRENCH_OPTIONS, layTrenchNetwork, resolveTrenchPiece, resolveTrenchPieces, type Axis, type DeploymentTrack, type TrenchNetwork, type TrenchOptions, type TrenchPiece } from "./trench.js";
@@ -179,6 +179,15 @@ function baseBlocked(grid: Grid, objectives: readonly ObjectiveSpec[], zoneMasks
   return mask;
 }
 
+/** The axis two deployment zones face each other across, from their centres; null without two. */
+function zoneAxis(zones: readonly ZoneSpec[]): Axis | null {
+  const dz = zones.filter((z) => z.isDeployment);
+  if (dz.length !== 2) return null;
+  const centre = (z: ZoneSpec) => [z.polygon.reduce((a, p) => a + p[0], 0) / z.polygon.length, z.polygon.reduce((a, p) => a + p[1], 0) / z.polygon.length];
+  const [a, b] = dz.map(centre) as [number[], number[]];
+  return Math.abs(a[0]! - b[0]!) >= Math.abs(a[1]! - b[1]!) ? "x" : "y";
+}
+
 /** Without deployment lines, a mirrored board's spine runs down its mirror line, so the trench is its own twin. */
 const mirrorSpineAxis = (parity: Parity): Axis | null => (parity.kind === "mirror-x" ? "y" : parity.kind === "mirror-y" ? "x" : null);
 
@@ -201,6 +210,7 @@ interface LayInputs {
   mode: TrenchOptions["mode"];
   opts: GenerateOptions;
   archetype: ArchetypeSpec;
+  threatAxis: Axis | null;
 }
 
 // Big objective covers can wall the trench off, so each cover configuration
@@ -223,24 +233,30 @@ function layTrenchWithCovers(p: LayInputs, raised: RaisedPlan | null, maxShrinks
   const sightAxis: Axis | null = tracks[0]?.along === "y" ? "x" : tracks[0]?.along === "x" ? "y" : null;
   // The ramps' feet stay open ground, so no objective cover may stand on one.
   const feet = raised ? [...raised.plateaus, ...raised.hills].flatMap((x) => x.ramps.map((r) => cellRect(grid, r.cell.c - DELTA[r.up][0], r.cell.r - DELTA[r.up][1]))) : [];
-  const rules = { grid, parity: p.parity, maxCoverSideIn: opts.maxCoverSideIn, edgeMarginIn: opts.edgeMarginIn, spacingIn: opts.spacingIn, trenchClearanceIn: opts.trenchClearanceIn, avoid, pieces, clear: feet, sightAxis, repeatCap: opts.repeatCap };
+  const rules = { grid, parity: p.parity, maxCoverSideIn: opts.maxCoverSideIn, edgeMarginIn: opts.edgeMarginIn, spacingIn: opts.spacingIn, trenchClearanceIn: opts.trenchClearanceIn, avoid, pieces, clear: feet, sightAxis, threatAxis: p.threatAxis, repeatCap: opts.repeatCap };
   const base = raised ? p.blocked.or(raised.keepOut) : p.blocked;
   let attempts = 0;
   let shrinks = 0;
   for (;;) {
     let covers: CoverChoice[] = [];
-    for (let draw = 0; draw < 3; draw++) {
-      covers = [...fixed, ...chooseObjectiveCovers(p.palette, rng, p.objectives, fixed, levels, rules)];
-      const trenchBlocked = base.or(coverKeepOut(grid, covers.filter((c) => c.base === "ground"), opts.trenchClearanceIn));
-      for (const maxLateralRun of [opts.maxLateralRun, 99]) {
+    // Every draw of covers tries the lateral-run cap before any is let off it, and a cross trench
+    // that cannot bend between one draw's covers waits on the others before it is taken.
+    const drawn: CoverChoice[][] = [];
+    let straight: TrenchAttempt | null = null;
+    for (const maxLateralRun of [opts.maxLateralRun, 99]) {
+      for (let draw = 0; draw < 3; draw++) {
+        covers = drawn[draw] ??= [...fixed, ...chooseObjectiveCovers(p.palette, rng, p.objectives, fixed, levels, rules)];
+        const trenchBlocked = base.or(coverKeepOut(grid, covers.filter((c) => c.base === "ground"), opts.trenchClearanceIn));
         for (const axis of axes) {
           attempts++;
           const trenchOpts: TrenchOptions = { ...DEFAULT_TRENCH_OPTIONS, mode: p.mode, axis, fromLowEdge, branches, maxLateralRun, allowBranchExits: opts.allowBranchExits, allowLoops: opts.allowLoops, tracks, parity: p.parity };
           const network = layTrenchNetwork(grid, trenchBlocked, rng, trenchOpts);
-          if (network) return { network, covers, attempts, shrinks };
+          if (network && !network.straightCross) return { network, covers, attempts, shrinks };
+          if (network) straight ??= { network, covers, attempts, shrinks };
         }
       }
     }
+    if (straight) return { ...straight, attempts };
     const fixedIds = new Set(fixed.map((c) => c.objectiveId));
     const candidates = shrinks < maxShrinks ? covers.filter((c) => !fixedIds.has(c.objectiveId) && (levels.get(c.objectiveId) ?? 0) < 2) : [];
     if (!candidates.length) throw new GenerateError(`no trench network for seed ${p.seed} after ${attempts} attempts${covers.length ? " with every objective cover at its smallest" : ""}`);
@@ -295,9 +311,12 @@ const topOf = (palette: Palette, piece: LayoutPiece): number => piece.baseIn + (
 
 // Cover size caps to step down through when the archetype's minimums do not
 // fit, and the fresh layouts each cap gets first. 6.2in still takes the
-// smaller ruined buildings; 4in drops to whatever fits.
+// smaller ruined buildings; 4in drops to whatever fits. Covers turned off
+// square crowd a full board more often, so the full size gets six draws: Claim
+// laid as Trench Lines then keeps buildings on 62% of its objectives (three
+// draws, 55%; square covers on a half-inch lattice, 76%).
 const COVER_CAPS_IN = [7.5, 6.2, 5.2, 4] as const;
-const DRAWS_PER_CAP = [3, 3, 2, 2] as const;
+const DRAWS_PER_CAP = [6, 3, 2, 2] as const;
 
 /** Draws laid without their scatter, to be laid again with it if one is kept. */
 const unscattered = new WeakSet<Layout>();
@@ -426,6 +445,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
   const jogRoom = Mask.fromCells(grid, tracks.flatMap((t) => t.cells.map((cell) => ({ c: cell.c + DELTA[OPPOSITE[t.side]][0], r: cell.r + DELTA[OPPOSITE[t.side]][1] }))));
   const planInputs = { grid, rng, palette, parity, objectives: overlay.objectives, blocked, reserved, jogRoom, noTerrain, edgeMarginIn: opts.edgeMarginIn, trenchClearanceIn: opts.trenchClearanceIn };
   const sightAxis: Axis | null = tracks[0]?.along === "y" ? "x" : tracks[0]?.along === "x" ? "y" : null;
+  const threatAxis = sightAxis ?? zoneAxis(overlay.zones);
   const centres = opts.plateau ? planCentrePlateaus(planInputs, sightAxis) : [];
   // A board that draws hills raises its centre as a hill; twin objective hills beside a centre plateau come next.
   const combos: (RaisedPlan | null)[] = hillsWanted ? planCentreHills(planInputs, sightAxis) : [];
@@ -436,7 +456,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
     for (const hill of hills) combos.push(mergePlans(grid, [...(centre ? [centre] : []), hill]));
     if (centre) combos.push(centre);
   }
-  const lay: LayInputs = { grid, rng, seed: input.seed, palette, parity, objectives: overlay.objectives, blocked, tracks, mode, opts, archetype };
+  const lay: LayInputs = { grid, rng, seed: input.seed, palette, parity, objectives: overlay.objectives, blocked, tracks, mode, opts, archetype, threatAxis };
   let raised: RaisedPlan | null = null;
   let laid: TrenchAttempt | null = null;
   // The first plan the trench gets round with a bent cross trench; failing that, the first it gets round at all.
@@ -487,6 +507,7 @@ function generateOnce(input: GenerateInput, env: GeneratorEnv, draw = 0, scatter
     trenchClearanceIn: opts.trenchClearanceIn,
     edgeMarginIn: opts.edgeMarginIn,
     sightAxis,
+    threatAxis,
     nextId: 0,
   };
   const plateaus: Plateau[] = [...(raised?.plateaus ?? [])];

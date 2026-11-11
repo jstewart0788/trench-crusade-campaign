@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  alignmentReport,
   cellKey,
   cellRect,
   createGrid,
@@ -9,6 +10,7 @@ import {
   HILL_RATE_OBJECTIVES,
   HILL_RATE_OPEN,
   hillRateFor,
+  layoutUnits,
   mapCell,
   mapPoint,
   OPPOSITE,
@@ -462,7 +464,8 @@ describe("generateBattlefield", () => {
         const slots = slotsOf(layout);
         const isScatterSlot = (x: SlotRef) => palette.categories[x.category]!.scatter;
         const terrain = slots.filter((x) => !isScatterSlot(x) && x.side !== "centre");
-        expect(terrain.length, `seed ${layout.seed}`).toBeGreaterThanOrEqual(8);
+        // Six at the least: terrain kept out of any line with the scatter laid before it leaves 8 of the 200 Claim and Fields boards three pairs (origin/main: four pairs or more on every board).
+        expect(terrain.length, `seed ${layout.seed}`).toBeGreaterThanOrEqual(6);
         // Found by position, not through the twin link, so a slot whose twin went astray cannot hide.
         const at = (x: number, y: number) => terrain.filter((s) => Math.abs(s.at[0] - x) < 1e-6 && Math.abs(s.at[1] - y) < 1e-6);
         for (const slot of terrain) {
@@ -674,7 +677,8 @@ describe("generateBattlefield", () => {
     });
 
     it("turns free terrain pieces a few degrees off the quarter turn, keeping square the cell-aligned and those on the mirror line", () => {
-      const terrain = boards.flatMap((l) => l.pieces.filter((p) => p.slot && !isScatter(p) && !p.cells && !p.objectiveId));
+      // Defensive cover turns to face the enemy instead (the facing test below).
+      const terrain = boards.flatMap((l) => l.pieces.filter((p) => p.slot && !isScatter(p) && !p.cells && !p.objectiveId && !entry(p).facing));
       for (const p of terrain) {
         const off = p.rotY % 90;
         expect(Math.min(off, 90 - off), p.id).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 1e-6);
@@ -863,6 +867,143 @@ describe("generateBattlefield", () => {
     expect(claim.stats.houseRules).toContain("ruined-building");
     expect(gen("fields-of-glory", 1).stats.archetypeMatchesScenario).toBe(true);
     expect(gen("great-war", 1).stats.archetypeMatchesScenario).toBe(true);
+  });
+
+  describe("standing pieces set by hand, not on a grid (Jonathan, Claim seed 25 live)", () => {
+    const boards = [...[...LAYOUTS.values()].flat(), ...OWN_BOARDS, ...NML_BOARDS, ...POINT_BOARDS];
+    const reports = boards.map((layout) => ({ layout, report: alignmentReport(layoutUnits(layout, palette), parityOf(layout), layout.cellIn) }));
+
+    it("stands no three units of any kind in a line (0.5in off it, 6in apart) and no three terrain pieces in one (1in, 10in)", () => {
+      expect(boards.length).toBeGreaterThan(500);
+      for (const { layout, report } of reports) {
+        expect(report.lines, `${layout.scenarioId} seed ${layout.seed}`).toEqual([]);
+        expect(report.terrainLines, `${layout.scenarioId} seed ${layout.seed}`).toEqual([]);
+      }
+      expect(reports.reduce((n, r) => n + r.report.terrainUnits, 0) / reports.length).toBeGreaterThan(10);
+    });
+
+    it("keeps terrain pieces off each other's x and y and off the cell lines", () => {
+      const share = reports.reduce((n, r) => n + r.report.terrainShare, 0) / reports.length;
+      // Over 1,200 boards at their own archetype: origin/main 38%, a uniform random scatter under the same parity 38%, now 9%.
+      expect(share).toBeLessThan(0.15);
+    });
+
+    it("turns objective covers a few degrees off square, each its own way, and sets them off the marker anywhere it stays inside", () => {
+      const covers = boards.flatMap((l) => l.objectives.filter((o) => o.coverPieceId).map((o) => ({ l, o, p: l.pieces.find((x) => x.id === o.coverPieceId)! })));
+      expect(covers.length).toBeGreaterThan(1000);
+      const off = (p: LayoutPiece) => Math.min(p.rotY % 90, 90 - (p.rotY % 90));
+      // A cover the parity gives no twin is its own, and stays square to stay mirror-true; every other one turns.
+      for (const { p } of covers.filter(({ p }) => p.slot!.side === "centre")) expect(off(p), p.id).toBe(0);
+      const paired = covers.filter(({ p }) => p.slot!.side !== "centre");
+      expect(paired.length).toBeGreaterThan(800);
+      expect(paired.filter(({ p }) => off(p) < 0.01).length / paired.length).toBeLessThan(0.02);
+      // Defensive cover covering a marker faces the enemy instead (the facing test below).
+      for (const { p } of covers.filter(({ p }) => !entry(p).facing)) expect(Math.min(p.rotY % 90, 90 - (p.rotY % 90)), p.id).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 1e-6);
+      const lattice = paired.filter(({ o, p }) => [0, 1].every((i) => Math.abs((p.position[i]! - o.position[i]!) * 2 - Math.round((p.position[i]! - o.position[i]!) * 2)) < 0.01)).length / paired.length;
+      expect(lattice).toBeLessThan(0.05);
+    });
+  });
+
+  describe("what stands beside what, and which way it faces (Jonathan, Claim seed 25 live)", () => {
+    const boards = [...[...LAYOUTS.values()].flat(), ...OWN_BOARDS, ...NML_BOARDS];
+    const adjacency = palette.adjacency;
+
+    it("keeps walls, fences and barricades 5in off ruins, buildings, towers and raised ground, and from alongside another wall", () => {
+      expect(adjacency.clearIn).toBe(5);
+      // A wall's line at its rotY: its facing's axis, as bearings anticlockwise from east, clockwise turns.
+      const axis = (p: LayoutPiece) => ((((entry(p).facing?.along === "x" ? 0 : 90) - p.rotY) % 180) + 180) % 180;
+      const across = (a: Rect, b: Rect, bearing: number) => {
+        const [ux, uy] = [Math.cos((bearing * Math.PI) / 180), Math.sin((bearing * Math.PI) / 180)];
+        const span = (r: Rect) => { const t = (r.poly ?? [[r.x0, r.y0], [r.x1, r.y0], [r.x1, r.y1], [r.x0, r.y1]]).map(([x, y]) => x * ux + y * uy); return [Math.min(...t), Math.max(...t)]; };
+        const [a0, a1] = span(a);
+        const [b0, b1] = span(b);
+        return Math.min(a1!, b1!) - Math.max(a0!, b0!) > 0;
+      };
+      let walls = 0;
+      for (const layout of boards) {
+        const raised = raisedCells(layout).map((c) => cellRect(grid, c.c, c.r));
+        const pieces = layout.pieces.filter(isFree);
+        for (const w of pieces.filter((p) => entry(p).wall)) {
+          walls++;
+          const r = rectOf(w);
+          const tag = `${layout.scenarioId} seed ${layout.seed} ${w.id} ${w.paletteId}`;
+          for (const c of raised) expect(rectDistance(r, c), `${tag} beside raised ground`).toBeGreaterThanOrEqual(adjacency.clearIn - ROUNDING);
+          for (const f of pieces.filter((p) => !isScatter(p) && ["building", "ruin", "tower"].includes(p.role) && (p.groupId ?? p.id) !== (w.groupId ?? w.id))) expect(rectDistance(r, rectOf(f)), `${tag} beside ${f.id} ${f.paletteId}`).toBeGreaterThanOrEqual(adjacency.clearIn - ROUNDING);
+          for (const o of pieces.filter((p) => entry(p).wall && p !== w && (p.groupId === null || p.groupId !== w.groupId))) {
+            if (rectDistance(r, rectOf(o)) >= adjacency.clearIn - ROUNDING) continue;
+            const off = Math.abs(axis(w) - axis(o)) % 180;
+            const parallel = Math.min(off, 180 - off) <= adjacency.parallelDeg;
+            expect(parallel && (across(r, rectOf(o), axis(w)) || across(r, rectOf(o), axis(o))), `${tag} alongside ${o.id} ${o.paletteId}`).toBe(false);
+          }
+        }
+      }
+      // Measured on these boards: 1,240.
+      expect(walls).toBeGreaterThan(900);
+    });
+
+    it("faces defensive cover at the enemy: along a trench lip that looks at them, else a wall 15-45 degrees off the zone's edge and an L's corner at them", () => {
+      const corner: Record<string, number> = { NE: 45, NW: 135, SW: 225, SE: 315 };
+      const norm = (v: number) => ((v % 360) + 360) % 360;
+      const apart = (a: number, b: number, period: number) => { const d = norm(a - b) % period; return Math.min(d, period - d); };
+      const counts = { lip: 0, open: 0, cornerLip: 0, cornerOpen: 0 };
+      for (const layout of boards) {
+        const trenches = trenchRects(layout);
+        for (const p of layout.pieces.filter((x) => isFree(x) && entry(x).facing)) {
+          const facing = entry(p).facing!;
+          const tag = `${layout.scenarioId} seed ${layout.seed} ${p.id} ${p.paletteId} rotY ${p.rotY}`;
+          // Every board here faces its zones across x: the enemy shoots from the far half.
+          const threat = p.position[0] <= layout.boardIn / 2 ? 0 : 180;
+          // Within 3in of a trench, beyond half the piece's longest side.
+          const reach = 3 + Math.max(...p.sizeIn) / 2;
+          let lip: { d: number; n: number } | null = null;
+          for (const t of trenches) {
+            const dx = p.position[0] < t.x0 ? p.position[0] - t.x0 : p.position[0] > t.x1 ? p.position[0] - t.x1 : 0;
+            const dy = p.position[1] < t.y0 ? p.position[1] - t.y0 : p.position[1] > t.y1 ? p.position[1] - t.y1 : 0;
+            const d = Math.hypot(dx, dy);
+            if (d <= reach && (!lip || d < lip.d)) lip = { d, n: Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 0 : 180) : dy >= 0 ? 90 : 270 };
+          }
+          const facesEnemy = lip !== null && Math.abs(Math.cos(((lip.n - threat) * Math.PI) / 180)) >= Math.SQRT1_2 - 1e-9;
+          // A cover is set before the trench is dug: it faces a deployment line's lip if one runs beside it, else the open way.
+          if (p.objectiveId) {
+            const line = norm((facing.along === "x" ? 0 : 90) - p.rotY) % 180;
+            const at = norm(corner[facing.corner ?? "NE"]! - p.rotY);
+            const open = facing.along ? apart(line, 90, 180) >= 15 - 0.01 && apart(line, 90, 180) <= 45 + 0.01 : apart(at, threat, 360) <= 30 + 0.01;
+            const byLip = lip !== null && (facing.along ? apart(line, lip.n + 90, 180) <= TERRAIN_YAW_JITTER_DEG + 0.01 : Math.abs(apart(at, Math.cos(((lip.n - threat) * Math.PI) / 180) >= 0 ? lip.n : lip.n + 180, 360) - 45 - TERRAIN_YAW_JITTER_DEG / 2) <= TERRAIN_YAW_JITTER_DEG / 2 + 0.01);
+            expect(open || byLip, `${tag} cover faces the enemy`).toBe(true);
+            continue;
+          }
+          if (facing.along) {
+            const line = norm((facing.along === "x" ? 0 : 90) - p.rotY) % 180;
+            if (facesEnemy) {
+              counts.lip++;
+              expect(apart(line, lip!.n + 90, 180), `${tag} along the lip`).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 0.01);
+            } else {
+              counts.open++;
+              const off = apart(line, 90, 180);
+              expect(off, `${tag} off the zone's edge`).toBeGreaterThanOrEqual(15 - 0.01);
+              expect(off, `${tag} off the zone's edge`).toBeLessThanOrEqual(45 + 0.01);
+            }
+          } else {
+            const at = norm(corner[facing.corner!]! - p.rotY);
+            if (facesEnemy) {
+              counts.cornerLip++;
+              const side = Math.cos(((lip!.n - threat) * Math.PI) / 180) >= 0 ? lip!.n : lip!.n + 180;
+              const off = apart(at, side, 360);
+              expect(off, `${tag} corner on the enemy's side of the lip`).toBeGreaterThanOrEqual(45 - 0.01);
+              expect(off, `${tag} corner on the enemy's side of the lip`).toBeLessThanOrEqual(45 + TERRAIN_YAW_JITTER_DEG + 0.01);
+            } else {
+              counts.cornerOpen++;
+              expect(apart(at, threat, 360), `${tag} corner at the enemy`).toBeLessThanOrEqual(30 + 0.01);
+            }
+          }
+        }
+      }
+      // Measured on these boards: 584, 824, 617 and 139.
+      expect(counts.lip).toBeGreaterThan(400);
+      expect(counts.open).toBeGreaterThan(600);
+      expect(counts.cornerLip).toBeGreaterThan(400);
+      expect(counts.cornerOpen).toBeGreaterThan(80);
+    });
   });
 
   it("honours a forced axis and branch count when no deployment lines are laid", () => {

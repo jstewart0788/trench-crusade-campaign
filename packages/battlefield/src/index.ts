@@ -14,3 +14,4 @@ export * from "./tts.js";
 export * from "./load.js";
 export * from "./compact.js";
 export * from "./seeds.js";
+export * from "./alignment.js";

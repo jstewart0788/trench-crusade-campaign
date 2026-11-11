@@ -76,6 +76,22 @@ export const TerrainRules = z
   .strict();
 export type TerrainRules = z.infer<typeof TerrainRules>;
 
+export const Corner = z.enum(["NE", "NW", "SE", "SW"]);
+export type Corner = z.infer<typeof Corner>;
+
+/** Which way a piece of defensive cover faces at rotY 0: a wall running along x or y, or an L whose outer corner points NE, NW, SE or SW. */
+export const Facing = z
+  .object({ along: z.enum(["x", "y"]).optional(), corner: Corner.optional(), source: z.string().min(1) })
+  .strict()
+  .refine((f) => (f.along === undefined) !== (f.corner === undefined), "a facing is a wall's axis or an L's corner, not both");
+export type Facing = z.infer<typeof Facing>;
+
+/** What a wall keeps clear of: ruin, building and tower faces and raised ground by `clearIn`, and other walls lying within `parallelDeg` of its own line. */
+export const Adjacency = z
+  .object({ clearIn: z.number().positive(), keepFrom: z.array(z.string()).min(1), parallelDeg: z.number().positive(), pages: z.array(z.number().int().positive()), call: z.string().min(1) })
+  .strict();
+export type Adjacency = z.infer<typeof Adjacency>;
+
 export const PalettePiece = z
   .object({
     id: z.string().min(1),
@@ -111,6 +127,10 @@ export const PalettePiece = z
     terrain: TerrainRules,
     /** Ground tiles: how one plays stacked on another, as a hill or plateau top. */
     stackedTerrain: TerrainRules.optional(),
+    /** Defensive cover: how it shows its face to the enemy at rotY 0, a wall along an axis or an L's outer corner. */
+    facing: Facing.optional(),
+    /** A linear wall, fence or barricade: kept off ruin and raised faces and other walls (palette.adjacency). */
+    wall: z.boolean().optional(),
   })
   .strict()
   .superRefine((p, ctx) => {
@@ -187,6 +207,7 @@ export const Palette = z
     terrainRules: z.record(z.enum(["open", "difficult", "dangerous", "impassable", "keywords", "cover", "climb", "trench", "trenchDeep", "fireStep", "hill", "ramp", "landmark", "ruined-building", "corner-ruin", "scattered"]), z.object({ text: z.string(), pages: z.array(z.number().int().positive()) }).strict()),
     pieces: z.array(PalettePiece).min(1),
     groups: z.array(PaletteGroup).default([]),
+    adjacency: Adjacency,
   })
   .strict()
   .superRefine((p, ctx) => {

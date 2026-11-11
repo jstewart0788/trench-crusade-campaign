@@ -130,7 +130,8 @@
     "verticality": "data/tts/VERTICALITY.md: how the reference maps stack pieces",
     "catalog": "data/tts/catalog.json supplies kind, urls, scale and colour at build time",
     "categories": "TC-021c: categories by footprint and silhouette, aesthetic tags by asset name and source bag; the scatter set measured live 2026-11-04 (palette-measured-v2.json scatterRun)",
-    "terrainRules": "Trench Crusade Comprehensive Rules, printed page numbers (the PDF's page index matches): terrain types and cover p.38, climbing p.39, jumping p.40, Elevated position and Cover modifiers p.43, Defended Obstacle p.45, DIFFICULT/DANGEROUS TERRAIN and COVER keywords p.54, IMPASSABLE TERRAIN p.55, standard terrain and landmarks p.60, area terrain and hills p.61, linear terrain and trench sections p.62, ruined buildings and corner ruins p.63, unique and scattered terrain p.64. Heights are heightIn (live visual bounds, 2026-11-04) rounded to the nearest 1/2in; trench depth from the Physics.cast profiles in palette-measured-v2.json (TC-021h)."
+    "terrainRules": "Trench Crusade Comprehensive Rules, printed page numbers (the PDF's page index matches): terrain types and cover p.38, climbing p.39, jumping p.40, Elevated position and Cover modifiers p.43, Defended Obstacle p.45, DIFFICULT/DANGEROUS TERRAIN and COVER keywords p.54, IMPASSABLE TERRAIN p.55, standard terrain and landmarks p.60, area terrain and hills p.61, linear terrain and trench sections p.62, ruined buildings and corner ruins p.63, unique and scattered terrain p.64. Heights are heightIn (live visual bounds, 2026-11-04) rounded to the nearest 1/2in; trench depth from the Physics.cast profiles in palette-measured-v2.json (TC-021h).",
+    "facing": "TC-021l: walls, fences, barricades and sandbag runs face along their long side; the wrecked walls and the two L pieces from the top-down occupancy of their cached TTS meshes (board x = TTS world x, checked against each piece's pivotOffsetIn)"
   },
   "pieces": [
     {
@@ -846,6 +847,10 @@
           45,
           63
         ]
+      },
+      "facing": {
+        "corner": "NE",
+        "source": "mesh: top-down occupancy of the cached TTS model or assetbundle, 2026-11-09: walls along the north and east sides"
       }
     },
     {
@@ -971,6 +976,10 @@
           45,
           63
         ]
+      },
+      "facing": {
+        "along": "x",
+        "source": "mesh: top-down occupancy of the cached TTS model or assetbundle, 2026-11-09: one wall along x, broken in the middle"
       }
     },
     {
@@ -1667,7 +1676,12 @@
           45,
           62
         ]
-      }
+      },
+      "facing": {
+        "along": "y",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "brick-wall-gate",
@@ -1708,7 +1722,12 @@
           45,
           62
         ]
-      }
+      },
+      "facing": {
+        "along": "x",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "wrecked-brick-wall-a",
@@ -1749,6 +1768,10 @@
           45,
           63
         ]
+      },
+      "facing": {
+        "along": "x",
+        "source": "mesh: top-down occupancy of the cached TTS model or assetbundle, 2026-11-09: the wall runs along x, its rubble spreads along y"
       }
     },
     {
@@ -1832,7 +1855,12 @@
           45,
           62
         ]
-      }
+      },
+      "facing": {
+        "along": "y",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "wood-fence",
@@ -1873,7 +1901,12 @@
           45,
           62
         ]
-      }
+      },
+      "facing": {
+        "along": "x",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "tall-crates",
@@ -2168,7 +2201,12 @@
           62
         ],
         "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
-      }
+      },
+      "facing": {
+        "along": "x",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "concrete-cover",
@@ -2210,7 +2248,12 @@
           62
         ],
         "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
-      }
+      },
+      "facing": {
+        "along": "y",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "sandbags-corner",
@@ -2250,6 +2293,10 @@
           45,
           62
         ]
+      },
+      "facing": {
+        "corner": "NE",
+        "source": "mesh: top-down occupancy of the cached TTS model or assetbundle, 2026-11-09: arms along the north and east sides"
       }
     },
     {
@@ -2543,7 +2590,12 @@
           62
         ],
         "call": "A low wall with wire strung on posts along its top: linear terrain that gives Cover and is Climbed over (p.62), not barbed-wire area terrain (Jonathan, 2026-11-05)."
-      }
+      },
+      "facing": {
+        "along": "y",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "difficult-dangerous",
@@ -3712,6 +3764,10 @@
           62
         ],
         "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      },
+      "facing": {
+        "along": "y",
+        "source": "footprint: the long side"
       }
     },
     {
@@ -3753,6 +3809,10 @@
           62
         ],
         "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
+      },
+      "facing": {
+        "along": "y",
+        "source": "footprint: the long side"
       }
     },
     {
@@ -3795,7 +3855,12 @@
           62
         ],
         "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
-      }
+      },
+      "facing": {
+        "along": "x",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "wood-barrier",
@@ -3836,7 +3901,12 @@
           62
         ],
         "call": "Scatter placed as low cover, not the book's decorative scattered terrain (p.64): at least 1/2in high and about a base wide, so it gives cover (p.38)."
-      }
+      },
+      "facing": {
+        "along": "x",
+        "source": "footprint: the long side"
+      },
+      "wall": true
     },
     {
       "id": "ruins-brick",
@@ -5778,5 +5848,21 @@
         64
       ]
     }
+  },
+  "adjacency": {
+    "clearIn": 5,
+    "keepFrom": [
+      "building",
+      "ruin",
+      "tower",
+      "raised"
+    ],
+    "parallelDeg": 30,
+    "pages": [
+      62,
+      65,
+      67
+    ],
+    "call": "Jonathan, Claim seed 25 live: a wall up against a wall is not good design. The book joins linear terrain end to end into long walls (p62) and keeps terrain pieces 3in apart (p65, p67), but says nothing of what stands beside a ruin or a hill, so this is a design call: a wall, fence or barricade keeps 2in beyond that spacing (5in) from a ruin's, building's or tower's footprint and from raised ground, and from another wall lying within 30 degrees of its own line; those spots take crates, debris, sandbags or nothing."
   }
 }

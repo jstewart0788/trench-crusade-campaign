@@ -1,5 +1,5 @@
 import { cellCentre, DELTA, DIRS, inGrid, rectArea, rectDistance, rectFromCentre, rectInside, rectOverlapArea, rectPointDistance, type Cell, type Rect } from "./grid.js";
-import { extendsRow, HEAP_PREFIX, looksOf, makePlaced, pickPlaceable, pickTwin, placeablesIn, rectAllowed, SCATTER_WEIGHTS, type Hill, type Placeable, type PlaceableMember, type Placed, type PlacementContext, type Plateau } from "./dressing.js";
+import { drawFacing, extendsRow, facingOf, facingYaw, HEAP_PREFIX, linesUp, looksOf, makePlaced, pickPlaceable, pickTwin, placeablesIn, rectAllowed, SCATTER_WEIGHTS, twinDraw, wallAxis, wallClear, type FacingDraw, type Hill, type Placeable, type PlaceableMember, type Placed, type PlacementContext, type Plateau } from "./dressing.js";
 import { pieceById, turnedRect, type RotYSense } from "./palette.js";
 import { mapPoint, mapRotY, sideOf } from "./parity.js";
 
@@ -42,6 +42,8 @@ interface Member {
   yaw: number;
   at: [number, number];
   sense: RotYSense;
+  /** Defensive cover: its seeded facing, turned to the threat where the heap finally stands. */
+  draw?: FacingDraw;
 }
 
 const box = (m: Member): Rect => turnedRect(m.at[0], m.at[1], m.piece, m.yaw, m.sense);
@@ -91,19 +93,28 @@ function asPlaceable(members: readonly Member[], category: string): Placeable {
  */
 const heapKinds = new WeakMap<(p: Placeable) => boolean, Map<ScatterRole, [string, number][]>>();
 
-function organicHeap(ctx: PlacementContext, role: ScatterRole, fits: (p: Placeable) => boolean, count: number): { members: Member[]; category: string } | null {
+function organicHeap(ctx: PlacementContext, role: ScatterRole, fits: (p: Placeable) => boolean, count: number, at: readonly [number, number]): { members: Member[]; category: string } | null {
   const kinds = heapKinds.get(fits) ?? new Map<ScatterRole, [string, number][]>();
   heapKinds.set(fits, kinds);
   if (!kinds.has(role)) kinds.set(role, Object.entries(ROLE_CATEGORIES[role]).filter(([c]) => placeablesIn(ctx.palette, c).some((p) => fits(p) && Math.max(...p.footprintIn) <= HEAP_MEMBER_MAX_IN)));
   const weights = kinds.get(role)!;
   if (!weights.length) return null;
   const pick = () => ctx.rng.weightedOrder(weights.map(([item, weight]) => ({ item, weight })))[0]!;
-  const small = (p: Placeable) => fits(p) && p.members.length === 1 && Math.max(...p.footprintIn) <= HEAP_MEMBER_MAX_IN;
+  // A heap within reach of a ruin, building, tower or raised ground leaves its barricades out (palette.adjacency).
+  const nearFace = besideFace(ctx, at);
+  const small = (p: Placeable) => fits(p) && p.members.length === 1 && Math.max(...p.footprintIn) <= HEAP_MEMBER_MAX_IN && !(nearFace && pieceById(ctx.palette, p.members[0]!.pieceId).wall);
   const category = pick();
   const first = pickPlaceable(ctx, category, [], small);
   if (!first) return null;
   const sense = ctx.palette.rotation.rotYSense;
-  const members: Member[] = [{ piece: first, yaw: ctx.rng.next() * 360, at: [0, 0], sense }];
+  // Sandbags and barricades face the threat from where the heap stands (turned again where it settles); the rest lie at any angle.
+  const facingMember = (piece: Placeable, offset: [number, number]): Member => {
+    const facing = facingOf(ctx.palette, piece);
+    if (!facing) return { piece, yaw: ctx.rng.next() * 360, at: offset, sense };
+    const draw = drawFacing(ctx.rng);
+    return { piece, yaw: facingYaw(ctx, facing, Math.max(...piece.footprintIn), [at[0] + offset[0], at[1] + offset[1]], draw), at: offset, sense, draw };
+  };
+  const members: Member[] = [facingMember(first, [0, 0])];
   const rects = [box(members[0]!)];
   const tightness = 0.55 + ctx.rng.next() * 0.45;
   const radius = (p: Placeable) => (p.footprintIn[0] + p.footprintIn[1]) / 4;
@@ -113,7 +124,7 @@ function organicHeap(ctx: PlacementContext, role: ScatterRole, fits: (p: Placeab
     const anchor = ctx.rng.pick(members);
     const angle = ctx.rng.next() * Math.PI * 2;
     const dist = (radius(anchor.piece) + radius(piece)) * tightness * (0.75 + ctx.rng.next() * 0.35);
-    const next: Member = { piece, yaw: ctx.rng.next() * 360, at: [anchor.at[0] + Math.cos(angle) * dist, anchor.at[1] + Math.sin(angle) * dist], sense };
+    const next = facingMember(piece, [anchor.at[0] + Math.cos(angle) * dist, anchor.at[1] + Math.sin(angle) * dist]);
     const rect = box(next);
     if (!joins(rects, rect)) continue;
     members.push(next);
@@ -133,10 +144,13 @@ function twinHeap(ctx: PlacementContext, members: readonly Member[], fits: (p: P
     return { ...m, yaw: mapRotY(ctx.parity, m.yaw), at: [x - origin[0], y - origin[1]] };
   });
   const out = [...mirrored];
+  // A swapped piece whose line runs the other way at rotY 0 turns a quarter, so it faces as the mirrored one does.
+  const lineAxis = (p: Placeable) => wallAxis(ctx.palette, pieceById(ctx.palette, p.members[0]!.pieceId), 0);
   for (let i = 0; i < out.length; i++) {
     const swap = pickTwin(ctx, out[i]!.piece.category, out[i]!.piece, (p) => fits(p) && p.members.length === 1 && Math.max(...p.footprintIn) <= HEAP_MEMBER_MAX_IN);
     if (!swap || swap === out[i]!.piece) continue;
-    const trial = out.map((m, k) => (k === i ? { ...m, piece: swap } : m));
+    const turn = facingOf(ctx.palette, swap) && lineAxis(swap) !== lineAxis(out[i]!.piece) ? 90 : 0;
+    const trial = out.map((m, k) => (k === i ? { ...m, piece: swap, yaw: (m.yaw + turn) % 360 } : m));
     if (membersFit(trial)) out[i] = trial[i]!;
   }
   return out;
@@ -167,7 +181,7 @@ function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1
   // A heap that does not fit is drawn again, then shrinks a piece at a time.
   for (let count = spot.count; count >= fewest; count--) {
     for (let draw = 0; draw < (count > 1 ? 3 : 4); draw++) {
-      const drawn = organicHeap(ctx, role, pc.fits, count);
+      const drawn = organicHeap(ctx, role, pc.fits, count, spot.at);
       if (!drawn) return [];
       // A heap that could not gather its pieces comes back smaller.
       if (drawn.members.length < fewest) continue;
@@ -178,21 +192,55 @@ function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1
         const shift: [number, number] = spot.away ? [spot.away[0] * 0.35 * k, spot.away[1] * 0.35 * k] : k === 0 ? [0, 0] : [(ctx.rng.next() - 0.5) * 0.6 * k, (ctx.rng.next() - 0.5) * 0.6 * k];
         const centre: [number, number] = [spot.at[0] + shift[0], spot.at[1] + shift[1]];
         if (pc.twinned && !onSideA(ctx, ...centre)) continue;
-        const rects = shifted(heap.members, centre);
+        const members = faced(ctx, heap.members, centre, false);
+        if (members !== heap.members && !membersFit(members)) continue;
+        const rects = shifted(members, centre);
         if (!heapAllowed(ctx, rects)) continue;
         let twin: Rect[] | null = null;
+        const tcentre = mapPoint(ctx.parity, centre[0], centre[1]);
+        const twinFaced = pc.twinned ? faced(ctx, twinMembers, tcentre, true) : [];
+        if (pc.twinned && twinFaced !== twinMembers && !membersFit(twinFaced)) continue;
         if (pc.twinned) {
-          const trects = shifted(twinMembers, mapPoint(ctx.parity, centre[0], centre[1]));
+          const trects = shifted(twinFaced, tcentre);
           if (rects.some((a) => trects.some((b) => rectDistance(a, b) < ctx.scatterGapIn))) continue;
           if (!heapAllowed(ctx, trects)) continue;
           twin = trects;
         }
         if (heap.members.length === 1 && (extendsRow(ctx, centreOf(rects)) || (twin && extendsRow(ctx, centreOf(twin), centreOf(rects))))) continue;
-        return commitHeaps(ctx, role, { members: heap.members, rects, category: heap.category }, twin ? { members: twinMembers, rects: twin, category: heap.category } : null);
+        if (linesUp(ctx, [{ at: centreOf(rects), scatter: true }, ...(twin ? [{ at: centreOf(twin), scatter: true }] : [])])) continue;
+        if (!wallsClear(ctx, members, rects, twin ? twinFaced : [], twin ?? [])) continue;
+        return commitHeaps(ctx, role, { members, rects, category: heap.category }, twin ? { members: twinFaced, rects: twin, category: heap.category } : null);
       }
     }
   }
   return [];
+}
+
+/** A heap's defensive cover turned to face the threat from where each piece stands, the twin's with the mirrored lean; the same members when none faces. */
+function faced(ctx: PlacementContext, members: readonly Member[], centre: readonly [number, number], twin: boolean): readonly Member[] {
+  if (!members.some((m) => m.draw)) return members;
+  return members.map((m) => {
+    const facing = m.draw ? facingOf(ctx.palette, m.piece) : null;
+    if (!facing) return m;
+    const draw = twin ? twinDraw(ctx.parity, m.draw!) : m.draw!;
+    return { ...m, yaw: facingYaw(ctx, facing, Math.max(...m.piece.footprintIn), [centre[0] + m.at[0], centre[1] + m.at[1]], draw) };
+  });
+}
+
+/** Whether a point lies within reach of a face a barricade keeps clear of: a heap there could not hold one. */
+function besideFace(ctx: PlacementContext, at: readonly [number, number]): boolean {
+  const adj = ctx.palette.adjacency;
+  const reach = adj.clearIn + HEAP_MAX_EXTENT_IN / 2;
+  return ctx.placed.some((p) => (p.kind === "feature" ? adj.keepFrom.includes("raised") : p.placeable !== null && !p.scatter && adj.keepFrom.includes(p.role)) && p.rects.some((r) => rectPointDistance(r, at[0], at[1]) < reach));
+}
+
+/** Barricades in a heap keep the walls' adjacency rule; the twin heap's against the first's as well. */
+function wallsClear(ctx: PlacementContext, members: readonly Member[], rects: readonly Rect[], twinMembers: readonly Member[], twinRects: readonly Rect[]): boolean {
+  const walls = (ms: readonly Member[], rs: readonly Rect[]) => ms.map((m, i) => ({ piece: pieceById(ctx.palette, m.piece.members[0]!.pieceId), rect: rs[i]!, yaw: m.yaw })).filter((w) => w.piece.wall);
+  const first = walls(members, rects);
+  if (!first.every((w) => wallClear(ctx, w.piece, w.rect, w.yaw))) return false;
+  const also = first.map((w) => ({ rect: w.rect, axis: wallAxis(ctx.palette, w.piece, w.yaw) }));
+  return walls(twinMembers, twinRects).every((w) => wallClear(ctx, w.piece, w.rect, w.yaw, also));
 }
 
 /** Members moved so the centre of their bounds sits at the origin. */
@@ -202,8 +250,8 @@ function centred(members: readonly Member[]): Member[] {
   return members.map((m) => ({ ...m, at: [m.at[0] - cx, m.at[1] - cy] }));
 }
 
-function commitHeaps(ctx: PlacementContext, role: ScatterRole, a: { members: Member[]; rects: Rect[]; category: string }, b: { members: Member[]; rects: Rect[]; category: string } | null): Placed[] {
-  const make = (h: { members: Member[]; rects: Rect[]; category: string }, id: string, twin: string | null, side: "A" | "B" | "centre"): Placed => {
+function commitHeaps(ctx: PlacementContext, role: ScatterRole, a: { members: readonly Member[]; rects: Rect[]; category: string }, b: { members: readonly Member[]; rects: Rect[]; category: string } | null): Placed[] {
+  const make = (h: { members: readonly Member[]; rects: Rect[]; category: string }, id: string, twin: string | null, side: "A" | "B" | "centre"): Placed => {
     const placeable = asPlaceable(h.members, h.category);
     const bb = bounds(h.rects);
     const at: [number, number] = [(bb.x0 + bb.x1) / 2, (bb.y0 + bb.y1) / 2];

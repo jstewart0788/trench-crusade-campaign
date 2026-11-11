@@ -1,6 +1,7 @@
-import { cellKey, cellRect, cellsInRect, DELTA, DIRS, inGrid, Mask, OPPOSITE, rectContains, rectDistance, rectFromCentre, rectInside, rectPointDistance, rectsOverlap, rectsWithin, type Cell, type Dir, type Grid, type Rect } from "./grid.js";
+import { COINCIDE_IN, makesLine, type LinePt } from "./alignment.js";
+import { cellKey, cellRect, cellsInRect, DELTA, DIRS, inGrid, Mask, OPPOSITE, outline, rectContains, rectDistance, rectFromCentre, rectInside, rectPointDistance, rectsOverlap, rectsWithin, type Cell, type Dir, type Grid, type Rect } from "./grid.js";
 import { mapCell, mapDir, mapPoint, mapRotY, sideOf, type Parity } from "./parity.js";
-import { pieceById, rotatedFootprint, STRUCTURAL_ROLES, turnedRect, type Palette, type PalettePiece, type Role } from "./palette.js";
+import { pieceById, rotatedFootprint, rotateVector, STRUCTURAL_ROLES, turnedRect, type Corner, type Facing, type Palette, type PalettePiece, type Role } from "./palette.js";
 import type { Rng } from "./rng.js";
 import type { ObjectiveSpec, ZoneSpec } from "./scenario.js";
 import type { Axis } from "./trench.js";
@@ -219,6 +220,8 @@ export interface PlacementContext {
   edgeMarginIn: number;
   /** The axis the deployment zones face each other along; upright pieces turn across it. */
   sightAxis: Axis | null;
+  /** The axis enemy fire crosses the board on, from the deployment zones themselves, with or without trench lines in them. */
+  threatAxis: Axis | null;
   nextId: number;
 }
 
@@ -271,6 +274,8 @@ export function rectAllowed(ctx: PlacementContext, rect: Rect, role: Role, opts:
     if (zone.spec.noTerrain) return false;
     if (zone.spec.isDeployment && role === "landmark") return false;
   }
+  // A ruin, building or tower keeps the walls' adjacency gap from walls already down, as they keep it from it.
+  if (!opts.scatter && ctx.palette.adjacency.keepFrom.includes(role) && wallWithin(ctx, rect)) return false;
   return true;
 }
 
@@ -424,6 +429,188 @@ export const TERRAIN_YAW_JITTER_DEG = 7;
 const jitteredYaw = (ctx: PlacementContext, placeable: Placeable, quarter: number): number =>
   placeable.cells || placeable.scatter ? quarter : (quarter + (ctx.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
 
+// ---- facing, walls and lines ---------------------------------------------------
+
+/** A single palette piece's facing, if it is defensive cover. */
+export const facingOf = (palette: Palette, p: Placeable): Facing | null => (p.members.length === 1 ? (pieceById(palette, p.members[0]!.pieceId).facing ?? null) : null);
+
+/** Defensive cover whose centre is this close to a trench, beyond half its longest side, takes its line from the trench lip. */
+export const NEAR_TRENCH_IN = 3;
+/** In the open a wall stands this far off the line of the deployment zone's edge: never along it, never square across it. */
+export const OPEN_WALL_DEG: readonly [number, number] = [15, 45];
+/** An L points its outer corner at the threat, give or take this, so neither arm lies along or square across the zone's edge. */
+export const OPEN_CORNER_DEG = 30;
+
+/** One seeded facing: which way it leans (mirrored for the twin), how far, and whether a wall is turned end for end. */
+export interface FacingDraw {
+  sign: 1 | -1;
+  t: number;
+  flip: boolean;
+}
+export const drawFacing = (rng: Rng): FacingDraw => ({ sign: rng.chance(0.5) ? 1 : -1, t: rng.next(), flip: rng.chance(0.5) });
+/** A mirror reverses the lean; a point turn keeps it. */
+export const twinDraw = (parity: Parity, d: FacingDraw): FacingDraw => (parity.kind === "mirror-x" || parity.kind === "mirror-y" ? { ...d, sign: d.sign === 1 ? -1 : 1 } : d);
+
+const deg = (v: number): number => ((v % 360) + 360) % 360;
+const CORNER_BEARING: Record<Corner, number> = { NE: 45, NW: 135, SW: 225, SE: 315 };
+
+/** What a facing is worked out from: the board, the axis fire crosses it on, and the trenches whose lips cover can run along. */
+export type FacingContext = Pick<PlacementContext, "grid" | "threatAxis" | "trenchRects" | "palette">;
+
+/**
+ * Where a piece's enemy shoots from, as a bearing (degrees anticlockwise from
+ * east): straight across the board from the far deployment zone, along the axis
+ * the zones face each other on; with no such axis, from the board's centre.
+ */
+export function threatBearing(ctx: FacingContext, at: readonly [number, number]): number {
+  const mid = ctx.grid.boardIn / 2;
+  if (ctx.threatAxis === "x") return at[0] <= mid ? 0 : 180;
+  if (ctx.threatAxis === "y") return at[1] <= mid ? 90 : 270;
+  return deg((Math.atan2(mid - at[1], mid - at[0]) * 180) / Math.PI);
+}
+
+/** The outward normal (a bearing) of the nearest trench lip within reach of a point, or null. */
+function nearLip(ctx: FacingContext, at: readonly [number, number], reach: number): number | null {
+  let best: { d: number; n: number } | null = null;
+  for (const t of ctx.trenchRects) {
+    const dx = at[0] < t.x0 ? at[0] - t.x0 : at[0] > t.x1 ? at[0] - t.x1 : 0;
+    const dy = at[1] < t.y0 ? at[1] - t.y0 : at[1] > t.y1 ? at[1] - t.y1 : 0;
+    const d = Math.hypot(dx, dy);
+    if (d > reach || (best && d >= best.d)) continue;
+    best = { d, n: Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 0 : 180) : dy >= 0 ? 90 : 270 };
+  }
+  return best?.n ?? null;
+}
+
+/** The rotY that lays a piece's wall along a bearing (either way) or points its L's outer corner at one. */
+function yawFor(palette: Palette, facing: Facing, target: number, flip: boolean): number {
+  const local = facing.along ? (facing.along === "x" ? 0 : 90) : CORNER_BEARING[facing.corner!];
+  const raw = palette.rotation.rotYSense === "cw" ? local - target : target - local;
+  return Math.round(deg(raw + (facing.along && flip ? 180 : 0)) * 1000) / 1000 % 360;
+}
+
+/**
+ * The rotY of defensive cover standing at `at`, facing the threat. Beside a
+ * trench whose lip looks toward the enemy (or away), a wall runs along the lip
+ * and an L sits with an arm along it and its corner on the enemy's side, a few
+ * degrees off true as a hand would set it. Elsewhere, beside a trench running
+ * toward the enemy included (it faces across the approach), a wall stands
+ * OPEN_WALL_DEG off the line of the deployment zone's edge and an L points its
+ * corner at the threat give or take OPEN_CORNER_DEG.
+ */
+export function facingYaw(ctx: FacingContext, facing: Facing, longestIn: number, at: readonly [number, number], d: FacingDraw): number {
+  const threat = threatBearing(ctx, at);
+  const lip = nearLip(ctx, at, NEAR_TRENCH_IN + longestIn / 2);
+  const toward = lip === null ? 0 : Math.cos(((lip - threat) * Math.PI) / 180);
+  if (lip !== null && Math.abs(toward) >= Math.SQRT1_2) {
+    const hand = d.sign * d.t * TERRAIN_YAW_JITTER_DEG;
+    if (facing.along) return yawFor(ctx.palette, facing, lip + 90 + hand, d.flip);
+    return yawFor(ctx.palette, facing, (toward >= 0 ? lip : lip + 180) + d.sign * 45 + hand, d.flip);
+  }
+  if (facing.along) return yawFor(ctx.palette, facing, threat + 90 + d.sign * (OPEN_WALL_DEG[0] + d.t * (OPEN_WALL_DEG[1] - OPEN_WALL_DEG[0])), d.flip);
+  return yawFor(ctx.palette, facing, threat + d.sign * d.t * OPEN_CORNER_DEG, d.flip);
+}
+
+/** The bearing (mod 180) a wall piece's line runs on at rotY: its facing's axis, else its footprint's long side. */
+export function wallAxis(palette: Palette, piece: PalettePiece, rotY: number): number {
+  const local = piece.facing?.along ? (piece.facing.along === "x" ? 0 : 90) : piece.footprintIn[0] >= piece.footprintIn[1] ? 0 : 90;
+  return deg(palette.rotation.rotYSense === "cw" ? local - rotY : local + rotY) % 180;
+}
+
+interface WallAt {
+  rect: Rect;
+  axis: number;
+}
+
+const wallCache = new WeakMap<Placed, WallAt[]>();
+
+/** The wall pieces a placed thing carries, each as its outline and the bearing of its line. */
+function wallsOf(ctx: PlacementContext, p: Placed): WallAt[] {
+  if (!p.placeable) return [];
+  const hit = wallCache.get(p);
+  if (hit) return hit;
+  const sense = ctx.palette.rotation.rotYSense;
+  const walls = p.placeable.members.flatMap((m) => {
+    const piece = pieceById(ctx.palette, m.pieceId);
+    if (!piece.wall) return [];
+    const rotY = (p.rotY + m.rotY) % 360;
+    const [ox, oy] = rotateVector(m.at, p.rotY, sense);
+    return [{ rect: turnedRect(p.centre[0] + ox, p.centre[1] + oy, piece, rotY, sense), axis: wallAxis(ctx.palette, piece, rotY) }];
+  });
+  wallCache.set(p, walls);
+  return walls;
+}
+
+/** Whether a wall already down stands within the adjacency gap of a rect: no ruin, building, tower or raised ground goes there. */
+export function wallWithin(ctx: PlacementContext, rect: Rect): boolean {
+  return ctx.placed.some((p) => wallsOf(ctx, p).some((w) => rectDistance(rect, w.rect) < ctx.palette.adjacency.clearIn));
+}
+
+/** Whether two outlines overlap when seen along a bearing: side by side rather than end to end. */
+function sideBySide(a: Rect, b: Rect, axis: number): boolean {
+  const [ux, uy] = [Math.cos((axis * Math.PI) / 180), Math.sin((axis * Math.PI) / 180)];
+  const span = (r: Rect) => {
+    const t = outline(r).map(([x, y]) => x * ux + y * uy);
+    return [Math.min(...t), Math.max(...t)] as const;
+  };
+  const [a0, a1] = span(a);
+  const [b0, b1] = span(b);
+  return Math.min(a1, b1) - Math.max(a0, b0) > 0;
+}
+
+/**
+ * Where a wall, fence or barricade may stand (palette.adjacency, Jonathan: a
+ * wall up against a wall is not good design): clear of ruin, building and
+ * tower footprints and of raised ground by the adjacency gap, and never
+ * alongside another wall lying near its own line. `also` holds walls placed
+ * with it (a twin).
+ */
+export function wallClear(ctx: PlacementContext, piece: PalettePiece, rect: Rect, rotY: number, also: readonly WallAt[] = []): boolean {
+  if (!piece.wall) return true;
+  const adj = ctx.palette.adjacency;
+  const axis = wallAxis(ctx.palette, piece, rotY);
+  const alongside = (w: WallAt) => {
+    if (rectDistance(rect, w.rect) >= adj.clearIn) return false;
+    const off = Math.abs(axis - w.axis) % 180;
+    return Math.min(off, 180 - off) <= adj.parallelDeg && (sideBySide(rect, w.rect, axis) || sideBySide(rect, w.rect, w.axis));
+  };
+  for (const p of ctx.placed) {
+    const face = p.kind === "feature" ? adj.keepFrom.includes("raised") : p.placeable !== null && !p.scatter && adj.keepFrom.includes(p.role);
+    if (face && p.rects.some((r) => rectDistance(rect, r) < adj.clearIn)) return false;
+    if (wallsOf(ctx, p).some(alongside)) return false;
+  }
+  return !also.some(alongside);
+}
+
+const wallAt = (ctx: PlacementContext, piece: PalettePiece, rect: Rect, rotY: number): WallAt[] => (piece.wall ? [{ rect, axis: wallAxis(ctx.palette, piece, rotY) }] : []);
+
+/** Every unit down: a piece, group or heap that is not part of the grid, with whether it is a terrain piece. */
+const unitsDown = (ctx: PlacementContext): LinePt[] => ctx.placed.filter((p) => p.placeable && !p.cells && !p.placeable.cells).map((p) => ({ at: p.centre, terrain: !p.scatter }));
+const unitCentres = (ctx: PlacementContext, terrainOnly: boolean): [number, number][] => unitsDown(ctx).filter((u) => !terrainOnly || u.terrain).map((u) => u.at as [number, number]);
+
+/** Whether units placed together (a slot and its twin) would stand in a line of three with what is down, at the measure alignment.ts holds that line to. */
+export function linesUp(ctx: PlacementContext, added: readonly { at: readonly [number, number]; scatter: boolean }[]): boolean {
+  return makesLine(unitsDown(ctx), added.map((a) => ({ at: a.at, terrain: !a.scatter })), LINE_SLACK_IN);
+}
+/** Judged a little wide of the measure, so a near miss does not count as a line once positions are rounded. */
+const LINE_SLACK_IN = 0.05;
+
+/**
+ * Whether a terrain piece's centre lines up on x or y, within COINCIDE_IN, with
+ * a terrain piece already down or with a cell line. A twin pair shares the axis
+ * its mirror keeps, and a piece on the mirror line stands on it; neither counts.
+ */
+export function coincides(ctx: PlacementContext, at: readonly [number, number], centre = false): boolean {
+  const kept = ctx.parity.kind === "mirror-x" ? 1 : ctx.parity.kind === "mirror-y" ? 0 : -1;
+  const others = unitCentres(ctx, true);
+  return [0, 1].some((axis) => {
+    if (centre && (ctx.parity.kind === "point" || axis === 1 - kept)) return false;
+    const v = at[axis]!;
+    if (Math.abs(v / ctx.grid.cellIn - Math.round(v / ctx.grid.cellIn)) * ctx.grid.cellIn <= COINCIDE_IN) return true;
+    return others.some((o) => Math.abs(o[axis]! - v) <= COINCIDE_IN);
+  });
+}
+
 /**
  * Centres where a w x d footprint can stand clear of the trench, of what is
  * already placed and of raised cells: along each row of snug y coordinates,
@@ -558,34 +745,48 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
   const tries: [Placeable, Placeable | null][] = b && b !== a ? [[a, b], ...(again ? ([[a, a]] as [Placeable, Placeable][]) : [])] : [[a, b]];
   const scatter = a.scatter;
   const allow = { scatter };
+  const sense = ctx.palette.rotation.rotYSense;
+  const single = (p: Placeable) => (p.members.length === 1 ? pieceById(ctx.palette, p.members[0]!.pieceId) : null);
+  const mid = (r: Rect): [number, number] => [(r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2];
   for (const [pa, pb] of tries) {
     const candidates: { a: { placeable: Placeable; rect: Rect; rotY: number }; b: { placeable: Placeable; rect: Rect; rotY: number } | null; score: number }[] = [];
     const keep = opts.keep ?? (scatter ? 1 : 8);
     const margin = edgeGapFor(ctx, pa.role, scatter);
     const span = ctx.grid.boardIn - 2 * margin;
-    const consider = (rotY: number, cx: number, cy: number) => {
+    const [faceA, faceB] = [facingOf(ctx.palette, pa), pb ? facingOf(ctx.palette, pb) : null];
+    const [pieceA, pieceB] = [single(pa), pb ? single(pb) : null];
+    // Defensive cover takes its facing from where it stands; anything else keeps the turn it was sampled at.
+    const consider = (sampled: number, cx: number, cy: number) => {
       if (twinned && sideOf(ctx.parity, cx, cy) !== "A") return;
-      const rect = turnedRect(cx, cy, pa, rotY, ctx.palette.rotation.rotYSense);
+      const draw = faceA || faceB ? drawFacing(ctx.rng) : null;
+      const rotY = faceA ? facingYaw(ctx, faceA, Math.max(...pa.footprintIn), [cx, cy], draw!) : sampled;
+      const rect = turnedRect(cx, cy, pa, rotY, sense);
       if (opts.where && !opts.where(rect)) return;
       if (!rectAllowed(ctx, rect, pa.role, allow)) return;
+      if (pieceA && !wallClear(ctx, pieceA, rect, rotY)) return;
       let twin: { placeable: Placeable; rect: Rect; rotY: number } | null = null;
       if (pb) {
         const [tx, ty] = mapPoint(ctx.parity, cx, cy);
-        const trot = twinFacing(ctx.parity, pa, rotY, pb);
-        const trect = turnedRect(tx, ty, pb, trot, ctx.palette.rotation.rotYSense);
+        const trot = faceB ? facingYaw(ctx, faceB, Math.max(...pb.footprintIn), [tx, ty], twinDraw(ctx.parity, draw!)) : twinFacing(ctx.parity, pa, rotY, pb);
+        const trect = turnedRect(tx, ty, pb, trot, sense);
         const gap = scatter ? ctx.scatterGapIn : ctx.spacingIn;
         if (rectDistance(rect, trect) < gap) return;
         if (!rectAllowed(ctx, trect, pb.role, allow)) return;
+        if (pieceB && !wallClear(ctx, pieceB, trect, trot, pieceA ? wallAt(ctx, pieceA, rect, rotY) : [])) return;
         twin = { placeable: pb, rect: trect, rotY: trot };
       }
-      candidates.push({ a: { placeable: pa, rect, rotY }, b: twin, score: scatter ? 0 : score(ctx, rect, category) });
+      const units = [{ at: mid(rect), scatter }, ...(twin ? [{ at: mid(twin.rect), scatter }] : [])];
+      if (linesUp(ctx, units)) return;
+      // A terrain piece on the same x or y as another, or on a cell line, reads as laid on a grid: taken only when nothing else fits.
+      const lined = !scatter && units.some((u) => coincides(ctx, u.at));
+      candidates.push({ a: { placeable: pa, rect, rotY }, b: twin, score: (scatter ? 0 : score(ctx, rect, category)) - (lined ? 10 : 0) });
     };
     if (Math.max(...pa.footprintIn) > span) continue;
     const rotations = rotationOrder(ctx, pa);
     const samples = opts.samples ?? (scatter ? 40 : 120);
     for (let i = 0; i < samples && candidates.length < keep; i++) {
       const rotY = jitteredYaw(ctx, pa, rotations[i % rotations.length]!);
-      const [w, d] = rotatedFootprint(pa, rotY);
+      const [w, d] = faceA ? [Math.max(...pa.footprintIn), Math.max(...pa.footprintIn)] : rotatedFootprint(pa, rotY);
       if (w > span || d > span) continue;
       consider(rotY, margin + w / 2 + ctx.rng.next() * (span - w), margin + d / 2 + ctx.rng.next() * (span - d));
     }
@@ -613,20 +814,27 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
  * one player as from the other. Used when no twin pair fits.
  */
 export function placeOnMirrorLine(ctx: PlacementContext, placeable: Placeable, category: string, opts: PairOptions): Placed[] {
-  if (ctx.parity.kind === "none") return [];
+  // Defensive cover faces one enemy, and a piece square on the mirror line faces both: it has no place there.
+  if (ctx.parity.kind === "none" || facingOf(ctx.palette, placeable)) return [];
   const mid = ctx.grid.boardIn / 2;
   const margin = edgeGapFor(ctx, placeable.role);
   const best: { rect: Rect; rotY: number; score: number }[] = [];
   for (const rotY of rotationOrder(ctx, placeable)) {
     const [w, d] = rotatedFootprint(placeable, rotY);
     const centres: [number, number][] = [];
+    // Anywhere along the line, not on a half-inch step.
+    const [lo, hi] = [margin + (ctx.parity.kind === "mirror-x" ? d : w) / 2, ctx.grid.boardIn - margin - (ctx.parity.kind === "mirror-x" ? d : w) / 2];
     if (ctx.parity.kind === "point") centres.push([mid, mid]);
-    else for (let t = margin + (ctx.parity.kind === "mirror-x" ? d : w) / 2; t <= ctx.grid.boardIn - margin - (ctx.parity.kind === "mirror-x" ? d : w) / 2 + 1e-9; t += 0.5) centres.push(ctx.parity.kind === "mirror-x" ? [mid, t] : [t, mid]);
+    else for (let k = 0; k < 72 && hi >= lo; k++) {
+      const t = lo + ctx.rng.next() * (hi - lo);
+      centres.push(ctx.parity.kind === "mirror-x" ? [mid, t] : [t, mid]);
+    }
     for (const [cx, cy] of centres) {
       const rect = rectFromCentre(cx, cy, w, d);
       if (opts.where && !opts.where(rect)) continue;
       if (!rectAllowed(ctx, rect, placeable.role)) continue;
-      best.push({ rect, rotY, score: score(ctx, rect, category) });
+      if (linesUp(ctx, [{ at: [cx, cy], scatter: placeable.scatter }])) continue;
+      best.push({ rect, rotY, score: score(ctx, rect, category) - (coincides(ctx, [cx, cy], true) ? 10 : 0) });
     }
   }
   if (!best.length) return [];
@@ -704,6 +912,8 @@ export interface CoverRules {
   pieces: Rect[];
   /** The axis the deployment zones face each other along, or null. */
   sightAxis: Axis | null;
+  /** The axis enemy fire crosses the board on (PlacementContext.threatAxis). */
+  threatAxis: Axis | null;
   repeatCap: number;
 }
 
@@ -751,7 +961,7 @@ export function chooseObjectiveCovers(palette: Palette, rng: Rng, objectives: re
           : level === 1
             ? [...pools[0]!].sort((a, b) => area(a) - area(b))
             : pools.flat().sort((a, b) => area(a) - area(b));
-      chosen = placeCover(o, pairWith, candidates.slice(0, 6), capped(pools.flat()), (p) => rules.repeatCap - uses(p), level, objectives, taken(), rng, rules, board);
+      chosen = placeCover(o, pairWith, candidates.slice(0, 6), capped(pools.flat()), (p) => rules.repeatCap - uses(p), level, objectives, taken(), rng, rules, board, palette);
     }
     for (const c of chosen) {
       out.push(c);
@@ -776,11 +986,45 @@ function coverPool(palette: Palette, role: Role, rules: CoverRules): Placeable[]
   return out;
 }
 
-function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Placeable[], twinPool: Placeable[], room: (p: Placeable) => number, level: number, objectives: readonly ObjectiveSpec[], chosenSoFar: readonly CoverChoice[], rng: Rng, rules: CoverRules, board: Rect): CoverChoice[] {
+/** Whether a cover's outline holds the marker at least half an inch inside its edge. */
+function holdsMarker(rect: Rect, point: readonly [number, number]): boolean {
+  if (!rect.poly) return coverFits(rect, point);
+  if (!rectContains(rect, point[0], point[1])) return false;
+  const poly = rect.poly;
+  return poly.every((a, i) => {
+    const b = poly[(i + 1) % poly.length]!;
+    const [dx, dy] = [b[0] - a[0], b[1] - a[1]];
+    return Math.abs((point[0] - a[0]) * dy - (point[1] - a[1]) * dx) / Math.hypot(dx, dy) >= 0.5 - 1e-9;
+  });
+}
+
+/**
+ * How a cover (and its twin) would sit among the covers chosen so far: 2 when
+ * three would stand in a line at the terrain measure, 1 when its centre shares
+ * an x or y with another's or a cell line, 0 when neither.
+ */
+function coverFlaw(rules: CoverRules, chosen: readonly CoverChoice[], added: readonly Rect[]): number {
+  const at = (r: Rect): [number, number] => [(r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2];
+  const down = chosen.map((c) => at(c.rect));
+  const mine = added.map(at);
+  if (makesLine(down.map((at) => ({ at, terrain: true })), mine.map((at) => ({ at, terrain: true })), LINE_SLACK_IN)) return 2;
+  const cell = rules.grid.cellIn;
+  const kept = rules.parity.kind === "mirror-x" ? 1 : rules.parity.kind === "mirror-y" ? 0 : -1;
+  const onGrid = (v: number) => Math.abs(v / cell - Math.round(v / cell)) * cell <= COINCIDE_IN;
+  return mine.some(([x, y], i) => [x, y].some((v, axis) => onGrid(v) || down.some((o) => Math.abs(o[axis]! - v) <= COINCIDE_IN) || (axis !== kept && mine.some((m, j) => j !== i && Math.abs(m[axis]! - v) <= COINCIDE_IN)))) ? 1 : 0;
+}
+
+const COVER_OFFSET_SAMPLES = 40;
+const COVER_LEAN_TRIES = 8;
+
+function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Placeable[], twinPool: Placeable[], room: (p: Placeable) => number, level: number, objectives: readonly ObjectiveSpec[], chosenSoFar: readonly CoverChoice[], rng: Rng, rules: CoverRules, board: Rect, palette: Palette): CoverChoice[] {
   const [px, py] = o.position;
+  const sense = palette.rotation.rotYSense;
+  // Covers go down before the trench; the deployment lines' tracks are the only lips they can face.
+  const fctx: FacingContext = { grid: rules.grid, threatAxis: rules.threatAxis, trenchRects: rules.avoid, palette };
   const ok = (rect: Rect, point: readonly [number, number], self: string[], others: readonly CoverChoice[]) =>
     rectInside(rect, board) &&
-    coverFits(rect, point) &&
+    holdsMarker(rect, point) &&
     !rules.avoid.some((a) => rectDistance(rect, a) < rules.trenchClearanceIn) &&
     !rules.clear.some((a) => rectsOverlap(rect, a)) &&
     !rules.pieces.some((a) => rectDistance(rect, a) < rules.spacingIn) &&
@@ -788,12 +1032,31 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
     !objectives.some((other) => !self.includes(other.id) && rectContains(rect, other.position[0], other.position[1]));
   // Thin across the line between the deployment zones, so the band each row of objectives leaves open stays deep.
   const across = (p: Placeable, rotY: number) => rotatedFootprint(p, rotY)[rules.sightAxis === "y" ? 0 : 1];
+  // An objective that is its own twin keeps its cover square, as a piece on the mirror line stays.
+  const ownTwin = !twin && rules.parity.kind !== "none";
+  // Lines among the covers are refused where any other spot will do; a shared x or y only within the
+  // first few spots in lean order, so the lean (which keeps the trench a way through) still leads.
+  let fallback: { choice: CoverChoice[]; flaw: number } | null = null;
+  let soft: CoverChoice[] | null = null;
+  let tried = 0;
+  const consider = (choice: CoverChoice[]): CoverChoice[] | null => {
+    const flaw = coverFlaw(rules, chosenSoFar, choice.map((c) => c.rect));
+    if (flaw === 0) return choice;
+    if (flaw === 1) soft ??= choice;
+    if (!fallback || flaw < fallback.flaw) fallback = { choice, flaw };
+    return ++tried >= COVER_LEAN_TRIES && soft ? soft : null;
+  };
   for (const placeable of candidates) {
-    for (const rotY of rng.shuffle(ROTATIONS).sort((a, b) => (rules.sightAxis ? across(placeable, a) - across(placeable, b) : 0))) {
-      const [w, d] = rotatedFootprint(placeable, rotY);
+    const facing = ownTwin ? null : facingOf(palette, placeable);
+    // Defensive cover turns to face the threat from wherever it stands; anything else from a quarter turn, a few degrees off.
+    const turns: (number | null)[] = facing ? [null] : rng.shuffle(ROTATIONS).sort((a, b) => (rules.sightAxis ? across(placeable, a) - across(placeable, b) : 0));
+    for (const quarter of turns) {
+      [soft, tried] = [null, 0];
+      const yaw0 = quarter === null ? 0 : ownTwin ? quarter : (quarter + (rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
+      const [w, d] = quarter === null ? [Math.min(...placeable.footprintIn), Math.min(...placeable.footprintIn)] : rotatedFootprint(placeable, quarter);
       // The twin is another piece of the category with the nearest footprint, so both halves keep the same room around it.
       const misfit = (p: Placeable) => {
-        const [tw, td] = rotatedFootprint(p, rotY);
+        const [tw, td] = rotatedFootprint(p, quarter ?? 0);
         return Math.abs(tw - w) + Math.abs(td - d);
       };
       const others = rng.shuffle(twinPool.filter((p) => p.key !== placeable.key && p.category === placeable.category && p.role === placeable.role && room(p) > 0)).sort((a, b) => misfit(a) - misfit(b));
@@ -801,34 +1064,42 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
       const twinOrder = twin ? [...others, ...(room(placeable) >= 2 ? [placeable] : [])] : [];
       const slackX = Math.max(0, w / 2 - 0.5);
       const slackY = Math.max(0, d / 2 - 0.5);
-      // Half-inch steps plus the extremes, where the marker sits just inside the cover's edge.
-      const steps = (slack: number) => [...new Set([-slack, ...Array.from({ length: Math.floor(slack * 2) * 2 + 1 }, (_, i) => -Math.floor(slack * 2) / 2 + i / 2), slack].map((v) => Math.round(v * 1000) / 1000))].filter((v) => Math.abs(v) <= slack + 1e-9);
-      const offsets: [number, number][] = [];
-      for (const ox of steps(slackX)) for (const oy of steps(slackY)) offsets.push([ox, oy]);
+      // Anywhere the marker stays inside, not on a half-inch step: the extremes, where it sits just inside the edge, and a seeded spread between.
+      const offsets: [number, number][] = [[-slackX, -slackY], [slackX, -slackY], [-slackX, slackY], [slackX, slackY]];
+      for (let k = 0; k < COVER_OFFSET_SAMPLES; k++) offsets.push([(rng.next() * 2 - 1) * slackX, (rng.next() * 2 - 1) * slackY]);
       // Covers lean toward the board edge beside them and in from the
       // deployment zones, opening a lane along each zone and a band between
-      // the objectives for the archetype's pieces.
+      // the objectives for the archetype's pieces; a little seeded give, so no
+      // two covers sit at the same spot of their objective.
       const mid = rules.grid.boardIn / 2;
       const away: [number, number] = [Math.sign(px - mid), Math.sign(py - mid)];
-      const sense: [number, number] = rules.sightAxis === "x" ? [-1, 1] : rules.sightAxis === "y" ? [1, -1] : [1, 1];
-      const lean = (o: [number, number]) => o[0] * away[0] * sense[0] + o[1] * away[1] * sense[1];
-      const ordered = rng.shuffle(offsets).sort((a, b) => lean(b) - lean(a));
-      for (const [ox, oy] of ordered) {
-        const rect = rectFromCentre(px + ox, py + oy, w, d);
+      const lean: [number, number] = rules.sightAxis === "x" ? [-1, 1] : rules.sightAxis === "y" ? [1, -1] : [1, 1];
+      const keyed = offsets.map((off) => ({ off, key: off[0] * away[0] * lean[0] + off[1] * away[1] * lean[1] + (rng.next() - 0.5) * 0.3 * (slackX + slackY) }));
+      for (const { off: [ox, oy] } of keyed.sort((a, b) => b.key - a.key)) {
+        const draw = drawFacing(rng);
+        const rotY = facing ? facingYaw(fctx, facing, Math.max(...placeable.footprintIn), [px + ox, py + oy], draw) : yaw0;
+        const rect = turnedRect(px + ox, py + oy, placeable, rotY, sense);
         if (!ok(rect, o.position, [o.id], chosenSoFar)) continue;
         const first: CoverChoice = { objectiveId: o.id, placeable, rotY, rect, base: "ground" };
-        if (!twin) return [first];
+        if (!twin) {
+          const got = consider([first]);
+          if (got) return got;
+          continue;
+        }
         const [tx, ty] = mapPoint(rules.parity, px + ox, py + oy);
-        const trot = mapRotY(rules.parity, rotY);
         for (const other of twinOrder) {
-          const [tw, td] = rotatedFootprint(other, trot);
-          const trect = rectFromCentre(tx, ty, tw, td);
-          if (ok(trect, twin.position, [twin.id], [...chosenSoFar, first])) return [first, { objectiveId: twin.id, placeable: other, rotY: trot, rect: trect, base: "ground" }];
+          const otherFacing = facingOf(palette, other);
+          const trot = otherFacing ? facingYaw(fctx, otherFacing, Math.max(...other.footprintIn), [tx, ty], twinDraw(rules.parity, draw)) : mapRotY(rules.parity, rotY);
+          const trect = turnedRect(tx, ty, other, trot, sense);
+          if (!ok(trect, twin.position, [twin.id], [...chosenSoFar, first])) continue;
+          const got = consider([first, { objectiveId: twin.id, placeable: other, rotY: trot, rect: trect, base: "ground" }]);
+          if (got) return got;
+          break;
         }
       }
     }
   }
-  return [];
+  return (fallback as { choice: CoverChoice[] } | null)?.choice ?? [];
 }
 
 /** Cells the trench may not use because a cover piece needs its clearance. */
@@ -927,22 +1198,27 @@ function tallCoverPool(palette: Palette): Placeable[] {
   return [...placeablesIn(palette, "large-block-ruin"), ...placeablesIn(palette, "tall-tower")].filter((p) => p.members.length === 1 && Math.min(...p.footprintIn) >= MARKER_IN);
 }
 
-const COVER_TOP_OFFSETS: [number, number][] = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2].flatMap((ox) => [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2].map((oy): [number, number] => [ox, oy]));
-
 /**
  * A cover standing on raised cells: fits inside them, holds the marker, and
  * passes `clear` (on a one-cell-wide line, a side left a trench's clearance
- * from the edge, so the trench can still run beside it).
+ * from the edge, so the trench can still run beside it). Off the marker by a
+ * seeded amount (near it more often) and a few degrees off square; a cover that
+ * is its own twin moves only along the mirror line and stays square.
  */
-function coverOnTop(p: PlanInputs, o: ObjectiveSpec, union: (rect: Rect) => boolean, pool: Placeable[], avoid: string[] = [], clear: (rect: Rect) => boolean = () => true): CoverChoice | null {
+function coverOnTop(p: PlanInputs, o: ObjectiveSpec, union: (rect: Rect) => boolean, pool: Placeable[], avoid: string[] = [], clear: (rect: Rect) => boolean = () => true, ownTwin = false): CoverChoice | null {
   const rank = (x: Placeable) => Number(avoid.includes(x.key)) * 2 + Number(!o.preferredRoles.includes(x.role));
-  const offsets = p.rng.shuffle(COVER_TOP_OFFSETS).sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
+  const along = p.parity.kind === "mirror-x" ? [0, 1] : p.parity.kind === "mirror-y" ? [1, 0] : p.parity.kind === "point" ? [0, 0] : [1, 1];
+  const free = ownTwin ? along : [1, 1];
+  const offsets: [number, number][] = [[0, 0]];
+  for (let k = 0; k < 80; k++) offsets.push([(p.rng.next() * 4 - 2) * free[0]!, (p.rng.next() * 4 - 2) * free[1]!]);
+  const near = offsets.map((off) => ({ off, key: Math.hypot(...off) + p.rng.next() * 1.5 })).sort((a, b) => a.key - b.key).map((x) => x.off);
+  const sense = p.palette.rotation.rotYSense;
   for (const placeable of p.rng.shuffle(pool).sort((a, b) => rank(a) - rank(b))) {
-    for (const rotY of p.rng.shuffle(ROTATIONS)) {
-      const [w, d] = rotatedFootprint(placeable, rotY);
-      for (const [ox, oy] of offsets) {
-        const rect = rectFromCentre(o.position[0] + ox, o.position[1] + oy, w, d);
-        if (!union(rect) || !coverFits(rect, o.position) || !rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN))) || !clear(rect)) continue;
+    for (const quarter of p.rng.shuffle(ROTATIONS)) {
+      for (const [ox, oy] of near) {
+        const rotY = ownTwin ? quarter : (quarter + (p.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
+        const rect = turnedRect(o.position[0] + ox, o.position[1] + oy, placeable, rotY, sense);
+        if (!union(rect) || !holdsMarker(rect, o.position) || !rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN))) || !clear(rect)) continue;
         return { objectiveId: o.id, placeable, rotY, rect, base: "plateau" };
       }
     }
@@ -1041,7 +1317,7 @@ export function planCentrePlateaus(p: PlanInputs, sightAxis: Axis | null = null)
       if (!twinOk || !fitsShape(ramps)) continue;
       let covers: CoverChoice[] = [];
       if (objective) {
-        const cover = coverOnTop(p, objective, insideCells(g, shape.cells), pool, [], lineSideClear(g, shape.cells, p.trenchClearanceIn));
+        const cover = coverOnTop(p, objective, insideCells(g, shape.cells), pool, [], lineSideClear(g, shape.cells, p.trenchClearanceIn), true);
         if (!cover) continue;
         covers = [cover];
       }
@@ -1180,9 +1456,8 @@ function twinCoverOnTop(p: PlanInputs, t: ObjectiveSpec, a: CoverChoice, cells: 
   const [cx, cy] = mapPoint(p.parity, (a.rect.x0 + a.rect.x1) / 2, (a.rect.y0 + a.rect.y1) / 2);
   const rotY = mapRotY(p.parity, a.rotY);
   for (const placeable of [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category && x.role === a.placeable.role)), a.placeable]) {
-    const [w, d] = rotatedFootprint(placeable, rotY);
-    const rect = rectFromCentre(cx, cy, w, d);
-    if (fits(rect) && coverFits(rect, t.position) && rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN)))) return { objectiveId: t.id, placeable, rotY, rect, base: "hill" };
+    const rect = turnedRect(cx, cy, placeable, rotY, p.palette.rotation.rotYSense);
+    if (fits(rect) && holdsMarker(rect, t.position) && rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN)))) return { objectiveId: t.id, placeable, rotY, rect, base: "hill" };
   }
   return null;
 }
@@ -1206,6 +1481,7 @@ function raisableCell(ctx: PlacementContext, c: number, r: number): boolean {
   if (ctx.trackMask.get(c, r)) return false;
   const rect = cellRect(ctx.grid, c, r);
   for (const p of ctx.placed) for (const pr of p.rects) if (rectDistance(rect, pr) < ctx.spacingIn) return false;
+  if (ctx.palette.adjacency.keepFrom.includes("raised") && wallWithin(ctx, rect)) return false;
   for (const o of ctx.objectives) if (rectContains(rect, o.position[0], o.position[1]) || (o.keepOutIn > 0 && rectPointDistance(rect, o.position[0], o.position[1]) < o.keepOutIn)) return false;
   return true;
 }
@@ -1414,14 +1690,19 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
   const twinned = ctx.parity.kind !== "none";
   const done = new Set<string>();
   const key = (f: { cell: Cell; dir: Dir }) => `${f.cell.c},${f.cell.r},${f.dir}`;
-  const fits = (p: Placeable) => Math.max(...p.footprintIn) <= g.cellIn && Math.min(...p.footprintIn) <= 1.7 && p.members.length === 1;
+  // No barricade against a raised face (palette.adjacency): sandbags, crates and rubble only.
+  const fits = (p: Placeable) => Math.max(...p.footprintIn) <= g.cellIn && Math.min(...p.footprintIn) <= 1.7 && p.members.length === 1 && !pieceById(ctx.palette, p.members[0]!.pieceId).wall;
+  const NORMAL: Record<Dir, number> = { E: 0, N: 90, W: 180, S: 270 };
   for (const face of faces) {
     if (done.has(key(face))) continue;
     const twin = twinned ? faces.find((f) => f.cell.c === mapCell(ctx.parity, g, face.cell).c && f.cell.r === mapCell(ctx.parity, g, face.cell).r && f.dir === mapDir(ctx.parity, face.dir)) : undefined;
     done.add(key(face));
     if (twin) done.add(key(twin));
     if (!ctx.rng.chance(chance)) continue;
-    const category = ctx.rng.pick(FACE_CATEGORIES);
+    // Sandbags lie along the face, so they go only on a face that looks toward the enemy; the others take crates or rubble.
+    const [fx, fy] = cellCentre(g, face.cell);
+    const looksOut = Math.cos(((NORMAL[face.dir] - threatBearing(ctx, [fx + DELTA[face.dir][0] * g.cellIn, fy + DELTA[face.dir][1] * g.cellIn])) * Math.PI) / 180) >= Math.SQRT1_2;
+    const category = ctx.rng.pick(looksOut ? FACE_CATEGORIES : FACE_CATEGORIES.filter((c) => c !== "scatter-sandbag"));
     const a = pickPlaceable(ctx, category, [], fits);
     if (!a) continue;
     const b = twin && twin !== face ? (pickPlaceable(ctx, category, [a.key], fits) ?? a) : null;
@@ -1452,6 +1733,7 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
     // Dressing down the length of a face would stand in single file.
     const mid = (r: Rect): [number, number] => [(r.x0 + r.x1) / 2, (r.y0 + r.y1) / 2];
     if (extendsRow(ctx, mid(pa.rect)) || (pb && extendsRow(ctx, mid(pb.rect), mid(pa.rect)))) continue;
+    if (linesUp(ctx, [{ at: mid(pa.rect), scatter: true }, ...(pb ? [{ at: mid(pb.rect), scatter: true }] : [])])) continue;
     const pair = commitPair(ctx, "face", pa, pb, { faceOf: face.plateau.id, placement: "raised" });
     // A face slot stands at the middle of the face it dresses, so twins mirror exactly whatever their depth.
     const anchor = (f: { cell: Cell; dir: Dir }): [number, number] => {
@@ -1605,14 +1887,20 @@ export function placeTallOnPlateau(ctx: PlacementContext, plateau: Plateau): Pla
     const t = mapCell(ctx.parity, ctx.grid, cell);
     return t.c === cell.c && t.r === cell.r;
   });
+  // Off the cell's centre by a seeded amount, along the mirror line where the parity asks it to stay its own twin.
+  const along = ctx.parity.kind === "mirror-x" ? [0, 1] : ctx.parity.kind === "mirror-y" ? [1, 0] : ctx.parity.kind === "point" ? [0, 0] : [1, 1];
   for (const placeable of pool) {
     for (const cell of ctx.parity.kind === "none" ? ctx.rng.shuffle(tops) : own) {
       for (const rotY of ctx.rng.shuffle(ROTATIONS)) {
         const [w, d] = rotatedFootprint(placeable, rotY);
         const [cx, cy] = cellCentre(ctx.grid, cell);
-        const rect = rectFromCentre(cx, cy, w, d);
-        if (!rectAllowed(ctx, rect, placeable.role, { onPlateau: true })) continue;
-        return commitPair(ctx, "tall", { placeable, rect, rotY }, null, { base: "plateau" })[0]!;
+        const slides: [number, number][] = [...Array.from({ length: 6 }, (): [number, number] => [(ctx.rng.next() * 3 - 1.5) * along[0]!, (ctx.rng.next() * 3 - 1.5) * along[1]!]), [0, 0]];
+        for (const [ox, oy] of slides) {
+          const rect = rectFromCentre(cx + ox, cy + oy, w, d);
+          if (!rectAllowed(ctx, rect, placeable.role, { onPlateau: true })) continue;
+          if (linesUp(ctx, [{ at: [cx + ox, cy + oy], scatter: false }])) continue;
+          return commitPair(ctx, "tall", { placeable, rect, rotY }, null, { base: "plateau" })[0]!;
+        }
       }
     }
   }
