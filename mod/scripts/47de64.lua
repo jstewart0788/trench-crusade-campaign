@@ -269,22 +269,24 @@ WIDGET_LIFT = 0.1
 
 LIGHT = { 0.95, 0.92, 0.85 }
 PANEL = { 0.12, 0.12, 0.12 }
-CLEAR = { 0, 0, 0, 0 }
+-- Text-only rows need a real size and an opaque backing: a zero-size, fully transparent
+-- button draws no label in TTS.
+LABEL_BG = { 0.08, 0.08, 0.08 }
 SPAWN = { 0.18, 0.36, 0.2 }
 DANGER = { 0.5, 0.14, 0.12 }
 
 BUTTONS = {
-  { id = "scenario", row = -0.86, width = 0, height = 0, font = 70, click = "noop", colour = CLEAR },
-  { id = "prevScenario", label = "< Scenario", row = -0.62, col = -0.72, width = 560, height = 150, font = 60, click = "onPrevScenario" },
-  { id = "nextScenario", label = "Scenario >", row = -0.62, col = 0.72, width = 560, height = 150, font = 60, click = "onNextScenario" },
+  { id = "scenario", row = -0.86, width = 1150, height = 130, font = 70, click = "noop", colour = LABEL_BG },
+  { id = "prevScenario", label = "< Scenario", row = -0.62, col = 0.72, width = 560, height = 150, font = 60, click = "onPrevScenario" },
+  { id = "nextScenario", label = "Scenario >", row = -0.62, col = -0.72, width = 560, height = 150, font = 60, click = "onNextScenario" },
   -- Shown only for scenarios that let the player pick the archetype.
   { id = "archetype", row = -0.38, width = 1150, height = 150, font = 60, click = "onArchetype", optional = true },
-  { id = "board", row = -0.15, width = 0, height = 0, font = 65, click = "noop", colour = CLEAR },
+  { id = "board", row = -0.15, width = 1150, height = 130, font = 65, click = "noop", colour = LABEL_BG },
   { id = "nextBoard", label = "Next board", row = 0.07, col = -0.72, width = 560, height = 150, font = 60, click = "onNextBoard" },
   { id = "randomBoard", label = "Random board", row = 0.07, col = 0.72, width = 560, height = 150, font = 60, click = "onRandomBoard" },
   { id = "spawn", label = "Spawn battlefield", row = 0.31, width = 1150, height = 150, font = 70, click = "onSpawn", colour = SPAWN },
   { id = "clear", label = "Clear battlefield", row = 0.55, width = 1150, height = 150, font = 70, click = "onClear", colour = DANGER },
-  { id = "status", row = 0.84, width = 0, height = 0, font = 40, click = "noop", colour = CLEAR },
+  { id = "status", row = 0.84, width = 1150, height = 150, font = 40, click = "noop", colour = LABEL_BG },
 }
 
 function geomFromBounds(visual, collider, scale, position)
@@ -316,7 +318,8 @@ function widgetExtent(spec)
   }
 end
 
--- Screen right is local -x, as on the tracker.
+-- On this panel a widget at local +x shows on the reader's right (seen live 2026-11-12), so col
+-- is negated: a positive col lands screen-left.
 function panelLayout(labels, geom)
   geom = geom or geomFromBounds()
   local fontScale = math.min(geom.sx, geom.sz)

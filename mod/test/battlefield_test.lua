@@ -228,6 +228,15 @@ for i = 1, #drawn do
   end
 end
 
+local byId = {}
+for _, spec in ipairs(panelLayout({ archetype = "Archetype: No Man's Land" }, geom)) do byId[spec.id] = spec end
+for _, id in ipairs({ "scenario", "board", "status" }) do
+  local spec = byId[id]
+  check(spec.width > 0 and spec.height > 0 and (spec.color[4] == nil or spec.color[4] > 0), id .. " row has a real size and an opaque backing, or TTS draws no text")
+end
+-- Local +x reads as screen-right on this panel (seen live), so the previous-scenario button takes the smaller x.
+check(byId.prevScenario.position[1] < byId.nextScenario.position[1], "< Scenario sits screen-left of Scenario >")
+
 ---------------------------------------------------------------- glue --
 
 local world = {}
