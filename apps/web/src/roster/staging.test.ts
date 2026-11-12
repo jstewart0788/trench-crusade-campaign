@@ -188,3 +188,15 @@ describe("pendingDelta / pendingCount", () => {
     expect(pendingCount(EMPTY_PENDING)).toBe(0);
   });
 });
+
+// TC-003k: a staged dismissal ends the dismissed model's Fireteam when it is confirmed.
+describe("applyPending and Fireteams", () => {
+  it("drops the team of a dismissed model, keeping the others", () => {
+    let w = createWarband({ name: "t", factionId: "new-antioch" }, "w");
+    for (const unitId of ["new-antioch/lieutenant", "new-antioch/yeoman", "new-antioch/yeoman", "new-antioch/yeoman"]) w = rosterReducer(w, { type: "add-member", unitId });
+    w = rosterReducer(w, { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m1", "m2"] });
+    w = rosterReducer(w, { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m3", "m4"] });
+    const staged = applyPending(w, stagingReducer(EMPTY_PENDING, { type: "stage-dismiss", memberId: "m4" }));
+    expect(staged.fireteams).toEqual([{ rule: "new-antioch-fireteams", memberIds: ["m1", "m2"] }]);
+  });
+});

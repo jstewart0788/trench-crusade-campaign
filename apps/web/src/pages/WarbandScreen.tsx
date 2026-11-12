@@ -5,6 +5,7 @@ import { MemberDetails } from "../components/MemberDetails.js";
 import { MemberList } from "../components/MemberList.js";
 import { Price } from "../components/Price.js";
 import { PriceButton } from "../components/PriceButton.js";
+import { FireteamPanel } from "../components/FireteamPanel.js";
 import { PreGamePanel } from "../components/PreGamePanel.js";
 import { PurseLimits } from "../components/PurseLimits.js";
 import { TtsCode } from "../components/TtsCode.js";
@@ -169,6 +170,8 @@ export function WarbandScreen() {
           </ul>
         </section>
       )}
+
+      <FireteamPanel warband={confirmed} rules={rules} dispatch={dispatch} />
 
       <PreGamePanel warband={confirmed} rules={rules} dispatch={dispatch} />
 

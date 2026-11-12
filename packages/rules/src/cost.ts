@@ -26,6 +26,8 @@ export interface WarbandCost {
   perMember: MemberCost[];
   /** Battlekit the warband holds itself (Warband.armoury), in its order. */
   armoury: LineCost[];
+  /** What the roster's Fireteams cost, one line per team (Loyal Hound: +1 glory, Digital Rulebook p142). */
+  fireteams: LineCost[];
 }
 
 /**
@@ -176,11 +178,13 @@ export function heldItemCost(data: RulesData, itemId: string): LineCost {
 export function warbandCost(warband: Warband, data: RulesData): WarbandCost {
   const perMember = warband.members.map((m) => memberCost(data, warband, m));
   const armoury = (warband.armoury ?? []).map((id) => heldItemCost(data, id));
-  const all = [...perMember, ...armoury];
+  const fireteams = (warband.fireteams ?? []).map((t) => line(t.rule, data.unitRules.file.fireteamRules.find((r) => r.id === t.rule)?.cost));
+  const all = [...perMember, ...armoury, ...fireteams];
   return {
     ducats: all.reduce((n, m) => n + m.ducats, 0),
     glory: all.reduce((n, m) => n + m.glory, 0),
     perMember,
     armoury,
+    fireteams,
   };
 }

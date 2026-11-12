@@ -16,6 +16,9 @@ export type RosterAction =
   | { type: "set-patron"; patronId: string | undefined }
   /** A choice made when the warband is created (unit-rules.json rosterChoices: the Court's Sin). */
   | { type: "set-choice"; choiceId: string; option: string | undefined }
+  /** Fireteams (Warbands p17): formed and dissolved on the roster sheet, never staged. */
+  | { type: "form-fireteam"; rule: string; memberIds: [string, string] }
+  | { type: "dissolve-fireteam"; memberId: string }
   | { type: "add-member"; unitId: string; equipmentItemIds?: string[]; upgradeIds?: string[] }
   | { type: "duplicate-member"; memberId: string }
   | { type: "remove-member"; memberId: string }
@@ -102,6 +105,15 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
       return withOptional(state, "ducatLimit", action.ducats === undefined ? undefined : limit(action.ducats));
     case "set-variant":
       return withOptional(state, "variantId", action.variantId);
+    case "form-fireteam": {
+      const taken = new Set((state.fireteams ?? []).flatMap((t) => t.memberIds));
+      if (action.memberIds.some((id) => taken.has(id) || !state.members.some((m) => m.id === id)) || action.memberIds[0] === action.memberIds[1]) return state;
+      return { ...state, fireteams: [...(state.fireteams ?? []), { rule: action.rule, memberIds: [...action.memberIds] }] };
+    }
+    case "dissolve-fireteam": {
+      const fireteams = (state.fireteams ?? []).filter((t) => !t.memberIds.includes(action.memberId));
+      return withOptional(state, "fireteams", fireteams.length ? fireteams : undefined);
+    }
     case "set-choice": {
       const choices = { ...state.choices };
       if (action.option === undefined || action.option === "") delete choices[action.choiceId];

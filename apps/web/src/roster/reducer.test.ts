@@ -154,3 +154,26 @@ describe("purse limits", () => {
     expect("ducatLimit" in createWarband({ name: "t", factionId: "new-antioch" }, "w")).toBe(false);
   });
 });
+
+// TC-003k: Fireteams on the roster sheet.
+describe("fireteams", () => {
+  const roster = () => {
+    let w = createWarband({ name: "t", factionId: "new-antioch" }, "w");
+    for (const unitId of ["new-antioch/lieutenant", "new-antioch/yeoman", "new-antioch/yeoman", "new-antioch/yeoman"]) w = rosterReducer(w, { type: "add-member", unitId });
+    return w;
+  };
+  it("forms a team of two free models, refuses a model already teamed, and dissolves", () => {
+    let w = rosterReducer(roster(), { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m1", "m2"] });
+    expect(w.fireteams).toEqual([{ rule: "new-antioch-fireteams", memberIds: ["m1", "m2"] }]);
+    expect(rosterReducer(w, { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m2", "m3"] })).toBe(w);
+    expect(rosterReducer(w, { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m3", "m3"] })).toBe(w);
+    w = rosterReducer(w, { type: "dissolve-fireteam", memberId: "m2" });
+    expect("fireteams" in w).toBe(false);
+  });
+  it("a removed model takes its team with it", () => {
+    let w = rosterReducer(roster(), { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m1", "m2"] });
+    w = rosterReducer(w, { type: "form-fireteam", rule: "new-antioch-fireteams", memberIds: ["m3", "m4"] });
+    w = rosterReducer(w, { type: "remove-member", memberId: "m2" });
+    expect(w.fireteams).toEqual([{ rule: "new-antioch-fireteams", memberIds: ["m3", "m4"] }]);
+  });
+});

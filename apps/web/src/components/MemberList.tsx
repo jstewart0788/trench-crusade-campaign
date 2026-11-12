@@ -57,6 +57,11 @@ export function MemberList({ rows, roster, rules, cost, validation, base, onRena
           row={row}
           unit={findUnit(rules, roster, row.member.unitId)}
           roster={roster}
+          partner={(() => {
+            const t = (roster.fireteams ?? []).find((f) => f.memberIds.includes(row.member.id));
+            const other = t && rows.find((r) => r.member.id === t.memberIds.find((id) => id !== row.member.id));
+            return other ? memberTitle(other.member, findUnit(rules, roster, other.member.unitId), rules, roster) : undefined;
+          })()}
           cost={cost.perMember.find((c) => c.memberId === row.member.id)}
           issues={validation.errors.filter((e) => e.memberId === row.member.id).length}
           rules={rules}
@@ -75,6 +80,8 @@ interface RowProps {
   row: StagedMemberRow;
   unit: RosterUnit | undefined;
   roster: ListScope;
+  /** The model's Fireteam partner, by title, when it is in a team. */
+  partner?: string | undefined;
   cost: MemberCost | undefined;
   issues: number;
   rules: RulesData;
@@ -92,7 +99,7 @@ const clickTogglesRow = (e: MouseEvent) => {
   return !target.closest("a, button, input, select, textarea, label, [role='region']") && !window.getSelection()?.toString();
 };
 
-function MemberRow({ row, unit, roster, cost, issues, rules, base, onRename, manage, traitsFor, expand }: RowProps) {
+function MemberRow({ row, unit, roster, partner, cost, issues, rules, base, onRename, manage, traitsFor, expand }: RowProps) {
   const { member } = row;
   const leaving = row.pending === "remove";
   const title = memberTitle(member, unit, rules, roster);
@@ -124,6 +131,7 @@ function MemberRow({ row, unit, roster, cost, issues, rules, base, onRename, man
         <span className={`${styles.unit} ${leaving ? styles.struck : ""}`}>{unitName}</span>
         {unit && isEliteMember(member, unit, rules, roster) && <span className={styles.tag}>Elite</span>}
         {unit?.mercenary && <span className={styles.tag}>Mercenary</span>}
+        {partner && <span className={styles.tag}>Fireteam · with {partner}</span>}
         {row.pending === "add" && <span className={styles.pending}>pending</span>}
         {leaving && <span className={styles.leaving}>leaving</span>}
         {!leaving && issues > 0 && (

@@ -7,6 +7,7 @@ import { unitDisplayName } from "./presentation.js";
 import { applyChanges, memberEffects } from "./effects.js";
 import { appliesUnder } from "./unit-rules.js";
 import { requirementProblems } from "./requirements.js";
+import { fireteamProblems } from "./fireteams.js";
 import { normaliseName, resolveLimit, type LimitContext, type LimitField } from "./limits.js";
 import {
   accessFor,
@@ -52,6 +53,9 @@ export const ROSTER_ERROR_CODES = [
   "model-under-minimum",
   "choice-missing",
   "choice-invalid",
+  "fireteam-invalid",
+  "fireteam-limit",
+  "fireteam-partner",
   "upgrade-requires",
   "upgrade-excludes",
   "upgrade-keyword",
@@ -225,6 +229,7 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   checkGrants(warband, data, fail);
   checkForeign(warband, data, fail);
   checkChoices(warband, data, fail);
+  for (const p of fireteamProblems(data, warband)) fail(p);
   checkMinimumCosts(warband, data, members, fail);
   checkFreeAtCreation(warband, data, fail);
 

@@ -219,13 +219,7 @@ describe("freeKeywordGrants: up to N models take a keyword for free", () => {
     expect(toWarbandExport(shoal(1), data(), { code: "T" }).members[0]!.unit.elite).toBe(true);
   });
 
-  it("Killing Squad (p90): any 2 models of a Fida'i warband take FIRETEAM", () => {
-    const squad = (unitId: string) => member(unitId, [], ["grant/fidai-killing-squad"]);
-    const w = warband("iron-sultanate", [squad("iron-sultanate/sultanate-assassin"), squad("iron-sultanate/azeb")], { variantId: FIDAI });
-    expect(errorsOf(w)).not.toContain("grant-cap");
-    expect(toWarbandExport(w, data(), { code: "T" }).members.map((m) => m.unit.keywords.includes("Fireteam"))).toEqual([true, true]);
-    expect(errorsOf({ ...w, members: [...w.members, squad("iron-sultanate/azeb")] })).toContain("grant-cap");
-  });
+  // Killing Squad (p90) is a Fireteam rule since TC-003k: test/fireteams.test.ts.
 });
 
 describe("freeAtCreation: Supreme Blessing (p35)", () => {

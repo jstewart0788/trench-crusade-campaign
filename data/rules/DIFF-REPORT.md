@@ -556,6 +556,16 @@ Seven Deadly Sins are a choice made at creation (`rosterChoices`, p147). Left as
 the campaign layer keeps it: "Knowledge of the ..." (Knowledge of Sciences, Digital Rulebook p89),
 "Organized ..." (Logistical Skills, p89) and the Book of Golems (Exploration, p118).
 
+### TC-003k: Fireteams as a roster mechanic
+
+Upstream's deprecated Fireteam wrapper entries stay dropped (CONVERSION-NOTES); the rules they stood
+for are now `unit-rules.json` `fireteamRules` and `Warband.fireteams`: New Antioch Fireteams (up to 2,
+p23; 3 for the Stosstruppen, p41, Prussian Stosstruppen book p12), Killing Squad (1, p90, formerly a
+free-keyword grant), Sworn Brethren (a Mamluk Faris and an ELITE model, beyond the list's allowance,
+p179), Enslaved Mind (a Takwin Homunculus with the formula and one other model, p96) and Loyal Hound
+(a model and its Trench Dog for 1 glory, Digital Rulebook p142). The importer turns an upstream Fireteam
+wrapper holding two models into a team.
+
 ### Missing from upstream
 
 | faction | name | kind | p. | detail |

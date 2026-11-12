@@ -1,5 +1,5 @@
 import { upgradeFor, type RosterScope, type RosterUnit, type RulesData } from "./data.js";
-import type { WarbandMember } from "./roster.js";
+import type { Fireteam, WarbandMember } from "./roster.js";
 import { appliesUnder, dataKeyword } from "./unit-rules.js";
 
 // unit-rules.json variantRenames and variantKeywords: how a unit is named and
@@ -9,6 +9,8 @@ import { appliesUnder, dataKeyword } from "./unit-rules.js";
 /** A roster's list, as far as presentation needs it. */
 export interface ListScope extends RosterScope {
   variantId?: string | undefined;
+  /** The roster's Fireteams, when the scope is a whole warband: a teamed model has FIRETEAM. */
+  fireteams?: readonly Fireteam[] | undefined;
 }
 
 const hasUpgrade = (unit: RosterUnit, member: WarbandMember | undefined, name: string) =>

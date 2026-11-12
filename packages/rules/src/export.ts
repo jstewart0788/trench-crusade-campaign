@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { memberCost, warbandCost } from "./cost.js";
+import { fireteamRules, isAnchor, teamOf } from "./fireteams.js";
 import { isEliteMember, memberKeywords } from "./grants.js";
 import { unitDisplayName } from "./presentation.js";
 import { normaliseName } from "./limits.js";
@@ -95,6 +96,8 @@ const ExportMemberCore = z.object({
   preGame: z.array(z.object({ name: z.string(), victim: z.string(), summary: z.string(), effect: z.string() })).optional(),
   /** Chosen away before the game (the Shrine's victim): the mod does not spawn it. */
   removedForGame: z.literal(true).optional(),
+  /** The model's Fireteam: its partner and the rule that allows the team (and the rule the team plays by, if any). */
+  fireteam: z.object({ partnerId: z.string(), partner: z.string(), rule: z.string(), teamRule: z.object({ name: z.string(), text: z.string() }).optional() }).optional(),
 });
 /** Everything the TTS text renderers need; an ExportMember is a superset. */
 export type ExportMemberCore = z.infer<typeof ExportMemberCore>;
@@ -319,6 +322,16 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
       return preGame.length ? { preGame } : {};
     })(),
     ...(extras.removed.has(member.id) ? { removedForGame: true as const } : {}),
+    ...(() => {
+      const t = teamOf(warband, member.id);
+      const rule = t && data.unitRules.file.fireteamRules.find((r) => r.id === t.team.rule);
+      const partner = t && warband.members.find((m) => m.id === t.partnerId);
+      const partnerUnit = partner && findUnit(data, warband, partner.unitId);
+      if (!t || !rule || !partner || !partnerUnit) return {};
+      const borrowed = rule.partnerTeamRuleFrom && !isAnchor(rule, member, unit) ? fireteamRules(data, warband).find((r) => r.rule.id === rule.partnerTeamRuleFrom)?.rule.teamRule : undefined;
+      const teamRule = rule.teamRule ?? borrowed;
+      return { fireteam: { partnerId: partner.id, partner: partner.name ?? unitDisplayName(data, warband, partnerUnit, partner), rule: rule.name, ...(teamRule ? { teamRule } : {}) } };
+    })(),
   };
 }
 
@@ -362,6 +375,7 @@ export function renderTtsDescription(member: ExportMemberCore): string {
   if (member.skills.length) lines.push(`[b]Skills:[/b] ${member.skills.map((s) => s.name).join(", ")}`);
   if (member.injuries.length) lines.push(`[b]Injuries:[/b] ${member.injuries.map((i) => i.name).join(", ")}`);
   for (const p of member.preGame ?? []) lines.push(`[b]${p.name}:[/b] ${p.victim}. ${p.summary}`);
+  if (member.fireteam) lines.push(`[b]Fireteam:[/b] with ${member.fireteam.partner}`);
   return lines.join("\n");
 }
 
@@ -384,6 +398,10 @@ export function renderTtsGmNotes(member: ExportMemberCore): string {
   section("Skills", member.skills);
   section("Injuries", member.injuries);
   section("Before this game", (member.preGame ?? []).map((p) => ({ name: `${p.name} (${p.victim})`, text: p.effect })));
+  if (member.fireteam) {
+    lines.push("", `Fireteam (${member.fireteam.rule}): with ${member.fireteam.partner}. The two can be Activated together; if one's Activation ends, so does the other's.`);
+    if (member.fireteam.teamRule) lines.push(`${member.fireteam.teamRule.name}: ${member.fireteam.teamRule.text}`);
+  }
   if (member.notes) lines.push("", `Notes: ${member.notes}`);
   return lines.join("\n");
 }

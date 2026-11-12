@@ -42,6 +42,10 @@ describe("resolveLimit", () => {
     expect(resolveLimit(text, "max", "warband", 3, ctx({ eirerangers: 0, kingdomofalbaassaultdetachment: 1 })).value).toBe(1);
   });
 
+  it("never decrements a limit below none (TC-003k: a Trench Dog beside the Red Brigade's dog allowance)", () => {
+    expect(resolveLimit("max 0 per warband; max decrement 1 per warband when repeat per Trench Dog (roster)", "max", "warband", 0, ctx({ trenchdog: 1 })).value).toBe(0);
+  });
+
   it("reports conditions it cannot count instead of applying them", () => {
     const text = "max 5 per warband; max increment 1 per warband when repeat per Organized Shocktroopers (roster); lessThan 1200 any (roster)";
     const r = resolveLimit(text, "max", "warband", 5, ctx({}));

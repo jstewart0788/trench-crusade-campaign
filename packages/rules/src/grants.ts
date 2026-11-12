@@ -16,7 +16,9 @@ export function memberGrants(member: WarbandMember, unit: RosterUnit, data: Rule
 /** The member's keywords: the unit's under the list (variantKeywords, when a scope is given), then any granted, in the data's spelling. */
 export function memberKeywords(member: WarbandMember, unit: RosterUnit, data: RulesData, scope?: ListScope): string[] {
   const keywords = scope ? listKeywords(data, scope, unit, member) : [...unit.keywords];
-  for (const kw of [...effectKeywords(data, unit, member), ...memberGrants(member, unit, data).map((g) => g.keyword)]) {
+  // A model in one of the roster's Fireteams has FIRETEAM (Warbands p17).
+  const teamed = scope?.fireteams?.some((t) => t.memberIds.includes(member.id)) ? ["FIRETEAM"] : [];
+  for (const kw of [...effectKeywords(data, unit, member), ...memberGrants(member, unit, data).map((g) => g.keyword), ...teamed]) {
     const k = dataKeyword(kw);
     if (!keywords.some((have) => have.toLowerCase() === k.toLowerCase())) keywords.push(k);
   }

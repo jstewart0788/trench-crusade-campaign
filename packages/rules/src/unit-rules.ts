@@ -334,6 +334,32 @@ export const NotInTheBooks = z.object({
 });
 export type NotInTheBooks = z.infer<typeof NotInTheBooks>;
 
+/**
+ * Who may form a Fireteam of two (Warbands p17) and how many. Without an
+ * anchor, any two models of the list, up to `max` teams (`maxUnder` raises it
+ * under a variant: Stosstruppen 3, p41). With one, every team holds a model
+ * matching the anchor (a unit, or a unit with an upgrade) and each anchor is in
+ * at most one team; the other model must meet `partner`. `cost` is paid per team.
+ */
+export const FireteamRule = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  name: z.string(),
+  under: Under,
+  max: z.number().int().positive().optional(),
+  maxUnder: z.array(z.object({ under: Under, max: z.number().int().positive(), page: Page, source: Book })).optional(),
+  anchor: z.object({ unitIds: Ids.optional(), upgrade: z.string().optional() }).optional(),
+  partner: z.object({ elite: z.boolean().optional(), carriesItem: z.string().optional() }).optional(),
+  cost: Price.optional(),
+  /** A rule of the faction whose teams get it (Concentrated Attack), shown on the teamed models. */
+  teamRule: z.object({ name: z.string(), text: z.string() }).optional(),
+  /** The partner (not the anchor) plays by another rule's team rule when the list has that rule (Sworn Brethren: the New Antioch model keeps Concentrated Attack, p179). */
+  partnerTeamRuleFrom: z.string().optional(),
+  page: Page,
+  source: z.enum(["Warbands-of-Trench-Crusade.pdf", "Heretic-Naval-Raiders-Warband.pdf", "Trench-Crusade-Digital-Rulebook.pdf"]),
+  text: z.string(),
+});
+export type FireteamRule = z.infer<typeof FireteamRule>;
+
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
   source: Source,
@@ -358,6 +384,7 @@ export const UnitRulesFile = z.object({
   upgradeEffects: z.array(UpgradeEffect),
   rosterChoices: z.array(RosterChoice),
   notInTheBooks: z.array(NotInTheBooks),
+  fireteamRules: z.array(FireteamRule),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -695,6 +722,16 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
   }
   for (const rule of file.variantKeywords) if (rule.withUpgrade && !rule.unitIds) problems.push(`variantKeywords.${rule.id}: withUpgrade needs unitIds`);
   for (const rule of file.rosterChoices) listUnits(`rosterChoices.${rule.id}`, rule.under);
+  for (const rule of file.fireteamRules) {
+    const where = `fireteamRules.${rule.id}`;
+    const units = listUnits(where, rule.under);
+    for (const m of rule.maxUnder ?? []) listUnits(where, m.under);
+    if (!rule.anchor && rule.max === undefined) problems.push(`${where}: a rule without an anchor needs a max`);
+    for (const unitId of rule.anchor?.unitIds ?? []) unitOf(where, unitId);
+    if (rule.anchor?.upgrade && !units.some((u) => (u.upgrades ?? []).some((g) => g.name === rule.anchor!.upgrade))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} has the upgrade "${rule.anchor.upgrade}"`);
+    if (rule.partnerTeamRuleFrom && !file.fireteamRules.some((r) => r.id === rule.partnerTeamRuleFrom)) problems.push(`${where}: no fireteam rule "${rule.partnerTeamRuleFrom}"`);
+    if (rule.partner?.carriesItem && !units.some((u) => u.equipmentAccess.some((a) => a.itemId === rule.partner!.carriesItem))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers "${rule.partner.carriesItem}"`);
+  }
   for (const [i, n] of file.notInTheBooks.entries()) {
     if (!n.name === !n.pattern) problems.push(`notInTheBooks[${i}]: give exactly one of name or pattern`);
     if (n.pattern) {

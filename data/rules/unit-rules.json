@@ -225,17 +225,6 @@
       "text": "Janissary Officers: A Defenders of the Iron Wall Warband can have 0-2 Janissaries, which have the ELITE Keyword at no additional cost in ducats."
     },
     {
-      "id": "fidai-killing-squad",
-      "name": "Killing Squad",
-      "keyword": "FIRETEAM",
-      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
-      "upgrade": "Killing Squad",
-      "pools": [{ "max": 2 }],
-      "page": 90,
-      "source": "Warbands-of-Trench-Crusade.pdf",
-      "text": "Killing Squad: A Fida'i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
-    },
-    {
       "id": "leviathan-only-the-strong-survive",
       "name": "Only the Strong Survive",
       "keyword": "ELITE",
@@ -947,6 +936,59 @@
     {
       "pattern": "^Leveraged on ",
       "why": "Upstream-only allowances raising a Battlekit Limit; no rule in the books grants them"
+    }
+  ],
+  "fireteamRules": [
+    {
+      "id": "new-antioch-fireteams",
+      "name": "New Antioch Fireteams",
+      "under": ["new-antioch"],
+      "max": 2,
+      "maxUnder": [{"under": ["new-antioch/stosstruppen-of-the-free-state-of-prussia"], "max": 3, "page": 41, "source": "Warbands-of-Trench-Crusade.pdf"}],
+      "teamRule": {"name": "Concentrated Attack", "text": "If a model from a Fireteam hits a target that had been hit by an attack made by the other member of their Fireteam earlier in the same joint Activation, then you can spend 3 BLOOD MARKERS to convert the Injury Roll for the second attack to a Bloodbath Roll, even if the target is not Down."},
+      "page": 23,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "New Antioch Fireteams: A New Antioch Warband can include up to 2 Fireteams. Each Fireteam consists of any two models from the Warband. All of the models in the Fireteams are given the FIRETEAM Keyword at no additional cost in ducats. Fireteams in a New Antioch Warband have the Concentrated Attack ability. Expert Fireteams (p41): a Stosstruppen of the Free State of Prussia Warband can include up to 3 Fireteams instead of only 2."
+    },
+    {
+      "id": "fidai-killing-squad",
+      "name": "Killing Squad",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "max": 1,
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Killing Squad: A Fida'i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
+    },
+    {
+      "id": "mamluk-faris-sworn-brethren",
+      "name": "Sworn Brethren",
+      "under": ["new-antioch", "iron-sultanate"],
+      "anchor": {"unitIds": ["new-antioch/mamluk-faris", "iron-sultanate/mamluk-faris", "iron-sultanate/sipahi-automaton-cavalry"]},
+      "partner": {"elite": true},
+      "partnerTeamRuleFrom": "new-antioch-fireteams",
+      "page": 179,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Sworn Brethren: When you recruit a Mamluk Faris to your Warband, before adding it to your roster, you can say it will form a FIRETEAM with 1 other model from your Warband that has the ELITE Keyword. Both of the models gain the FIRETEAM Keyword. Note that the Mamluk Faris's FIRETEAM is in addition to any other FIRETEAMS your Warband can have, and that if a Mamluk Faris is in a FIRETEAM with a model from a New Antioch Warband, then only the model from the New Antioch Warband can use the Concentrated Attack special rule."
+    },
+    {
+      "id": "takwin-enslaved-mind",
+      "name": "Enslaved Mind",
+      "under": ["new-antioch", "trench-pilgrims", "iron-sultanate", "heretic-legion", "black-grail", "court-of-the-seven-headed-serpent", "heretic-naval-raiders", "procession-of-the-sacred-affliction"],
+      "anchor": {"upgrade": "Enslaved Mind"},
+      "page": 96,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Enslaved Mind (10 ducats): Give this Takwin Homunculus and one other model in your Warband the FIRETEAM Keyword. The other model can only form a Fireteam with this Homunculus."
+    },
+    {
+      "id": "trench-dog-loyal-hound",
+      "name": "Loyal Hound",
+      "under": ["new-antioch", "trench-pilgrims", "iron-sultanate", "heretic-legion", "black-grail", "court-of-the-seven-headed-serpent", "heretic-naval-raiders", "procession-of-the-sacred-affliction"],
+      "anchor": {"unitIds": ["black-grail/trench-dog", "court-of-the-seven-headed-serpent/trench-dog", "heretic-legion/trench-dog", "heretic-naval-raiders/trench-dog", "iron-sultanate/trench-dog", "new-antioch/trench-dog", "procession-of-the-sacred-affliction/trench-dog", "trench-pilgrims/trench-dog"]},
+      "partner": {"carriesItem": "dog-food"},
+      "cost": {"ducats": 0, "glory": 1},
+      "page": 142,
+      "source": "Trench-Crusade-Digital-Rulebook.pdf",
+      "text": "Loyal Hound: When you give a Trench Dog to a model, you can give the model and the Trench Dog the FIRETEAM Keyword at a Cost of +1 glory."
     }
   ]
 }

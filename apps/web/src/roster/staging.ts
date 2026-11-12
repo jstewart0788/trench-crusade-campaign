@@ -1,4 +1,4 @@
-import { purchasesFor, warbandCost, type RulesData, type Warband, type WarbandCost, type WarbandMember } from "@tc/rules/browser";
+import { pruneFireteams, purchasesFor, warbandCost, type RulesData, type Warband, type WarbandCost, type WarbandMember } from "@tc/rules/browser";
 
 // Purchases are staged and only written to the roster by "Confirm purchases":
 // kit and upgrade changes per member, recruits, and dismissals. The confirmed
@@ -190,13 +190,18 @@ export function hasPending(pending: Pending): boolean {
   return pendingCount(pending) > 0;
 }
 
-/** Clears pre-game choices that name a model no longer on the roster (a dismissed victim). */
+/**
+ * Clears what names a model no longer on the roster: a pre-game choice (a
+ * dismissed victim), and a Fireteam, whose other model is then free to form a
+ * new one (Digital Rulebook p124).
+ */
 export function prunePreGame(warband: Warband): Warband {
-  const pre = warband.preGame;
-  if (!pre) return warband;
-  const ids = new Set(warband.members.map((m) => m.id));
-  if (Object.values(pre).every((v) => v === null || ids.has(v))) return warband;
-  return { ...warband, preGame: Object.fromEntries(Object.entries(pre).map(([k, v]) => [k, v !== null && ids.has(v) ? v : null])) };
+  const teamed = pruneFireteams(warband);
+  const pre = teamed.preGame;
+  if (!pre) return teamed;
+  const ids = new Set(teamed.members.map((m) => m.id));
+  if (Object.values(pre).every((v) => v === null || ids.has(v))) return teamed;
+  return { ...teamed, preGame: Object.fromEntries(Object.entries(pre).map(([k, v]) => [k, v !== null && ids.has(v) ? v : null])) };
 }
 
 /** The roster as it will be once every pending change is confirmed. Pure; the input is untouched. */

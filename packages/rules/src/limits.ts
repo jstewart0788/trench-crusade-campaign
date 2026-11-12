@@ -115,7 +115,8 @@ export function resolveLimit(
     if (unknown && times === 0) unresolved.push(`${field} ${mod.op} ${mod.n} when ${mod.conditions.join(" / ")}`);
     if (times === 0) continue;
     if (mod.op === "set") value = mod.n < 0 ? null : mod.n;
-    else if (value !== null) value = mod.op === "increment" ? value + mod.n * times : value - mod.n * times;
+    // A count cannot go below none (the Red Brigade's dog allowance less each Trench Dog would read -1).
+    else if (value !== null) value = Math.max(0, mod.op === "increment" ? value + mod.n * times : value - mod.n * times);
   }
 
   return { value, unresolved };

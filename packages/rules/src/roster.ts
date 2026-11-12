@@ -21,6 +21,14 @@ export const Purchase = z.object({
 });
 export type Purchase = z.infer<typeof Purchase>;
 
+/** Two models that activate together (FIRETEAM, Warbands p17), under the rule that allows the team. */
+export const Fireteam = z.object({
+  /** unit-rules.json fireteamRules id. */
+  rule: z.string().min(1),
+  memberIds: z.array(z.string().min(1)).length(2),
+});
+export type Fireteam = z.infer<typeof Fireteam>;
+
 export const Warband = z.object({
   id: z.string().min(1),
   name: z.string(),
@@ -53,6 +61,8 @@ export const Warband = z.object({
   choices: z.record(z.string(), z.string()).optional(),
   /** Battlekit the warband holds rather than a model (a Grand Cannon gun battery, Warbands p99), by item id. */
   armoury: z.array(z.string().min(1)).optional(),
+  /** Fireteams on the roster sheet ("Make a note of which models are in Fireteams", p17). */
+  fireteams: z.array(Fireteam).optional(),
 });
 export type Warband = z.infer<typeof Warband>;
 

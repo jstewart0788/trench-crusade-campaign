@@ -1,6 +1,7 @@
 import { findSubfaction, rosterUnits, rosterVariants, upgradeFor, type RosterScope, type RosterUnit, type RulesData } from "../data.js";
 import { normaliseName } from "../limits.js";
 import { unitNamesInList } from "../presentation.js";
+import { fireteamRules, pairProblem } from "../fireteams.js";
 import { appliesUnder } from "../unit-rules.js";
 import type { Warband, WarbandMember } from "../roster.js";
 import type { EquipmentItem } from "../schema.js";
@@ -335,14 +336,18 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
   if (glory && glory.value > 0) warband.glory = Math.round(glory.value);
 
   let seq = 0;
-  const addMember = (sel: RosterSelection, unit: RosterUnit, path: string) => {
+  const wrapped: { ids: string[]; entry: UnresolvedSelection }[] = [];
+  const addMember = (sel: RosterSelection, unit: RosterUnit, path: string): string[] => {
+    const ids: string[] = [];
     for (let i = 0; i < sel.number; i++) {
       const member: WarbandMember = { id: `m${++seq}`, unitId: unit.id, equipmentItemIds: [] };
       const custom = sel.customName?.trim();
       if (custom) member.name = custom;
       walkKit(sel.selections, path, { member, unit, stack: sel.number, data, unresolved });
       warband.members.push(member);
+      ids.push(member.id);
     }
+    return ids;
   };
 
   const patrons = patronsForFaction(data, factionId);
@@ -377,15 +382,24 @@ export function importRoster(tree: RosterTree, data: RulesData, opts: ImportOpti
     if (sel.type === "unit") {
       // A wrapper (the deprecated Fireteams): its models are members, the wrapper itself is reported.
       const models = sel.selections.filter((c) => c.type === "model" && unitFor(c, scope, data));
-      for (const m of models) addMember(m, unitFor(m, scope, data)!, `${path} > ${m.name}`);
+      const ids = models.flatMap((m) => addMember(m, unitFor(m, scope, data)!, `${path} > ${m.name}`));
       const entry: UnresolvedSelection = { path, name: sel.name, reason: models.length ? "a wrapper; its models were imported on their own" : "not a unit of this faction" };
       if (sel.entryId) entry.entryId = sel.entryId;
       unresolved.push(entry);
+      // Upstream's deprecated Fireteam wrapper holds the team's two models: they become a Fireteam once the variant is known.
+      if (ids.length === 2 && /fire\s*team/i.test(sel.name)) wrapped.push({ ids, entry });
       continue;
     }
     const entry: UnresolvedSelection = { path, name: sel.name, reason: "not a unit, Warband Variant or Patron of this faction" };
     if (sel.entryId) entry.entryId = sel.entryId;
     unresolved.push(entry);
+  }
+
+  for (const w of wrapped) {
+    const fit = fireteamRules(data, warband).find(({ rule, max }) => (max === undefined || (warband.fireteams ?? []).filter((t) => t.rule === rule.id).length < max) && !pairProblem(data, warband, rule, w.ids));
+    if (!fit) continue;
+    warband.fireteams = [...(warband.fireteams ?? []), { rule: fit.rule.id, memberIds: [w.ids[0]!, w.ids[1]!] }];
+    w.entry.reason = `a Fireteam wrapper; its two models were imported as a ${fit.rule.name} Fireteam`;
   }
 
   const source: ImportSource = { format: "ros", rosterName: tree.name };
