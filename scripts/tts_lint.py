@@ -23,10 +23,7 @@ import shutil
 import subprocess
 import sys
 
-MOONSHARP_ONLY = {
-    "839fcc.lua": "Red/Blue Custom Dice Table, blue copy (LCT)",
-    "acae21.lua": "Red/Blue Custom Dice Table, red copy (LCT)",
-}
+MOONSHARP_ONLY = {}
 
 ERROR_LINE = re.compile(r":(\d+):")
 

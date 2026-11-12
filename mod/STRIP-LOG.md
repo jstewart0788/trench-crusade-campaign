@@ -523,3 +523,30 @@ Scripted Table's `Custom_Assetbundle` `0D54D98...`, whose only mesh is LCT's 40k
 coordinator). Replaced with the built-in `Chip_10` tinted green; the marker script now sizes
 it to 40mm and draws the rule-sized spot and range as vector lines (ANATOMY, *Objective
 markers*). No asset URL is left in the bags.
+
+## Dice tray rethink (TC-024)
+
+The two dice rollers, the camera mirror and the shrinking-dice path are replaced by one tray
+per player, a read-only board of the opponent's last roll, and a Measure & Mark panel
+(ANATOMY, *Dice tray (TC-024)*; design in the session's `tray-024/DESIGN.md`).
+
+| Removed | GUIDs | Why |
+|---|---|---|
+| LCT dice roller bowls + scripts (xoshiro RNG, `beginRollBatch`, `getResultLayout`) | `17ca2b` / `927ca1` | dice no longer go through a container (that is where they changed size) |
+| Dice cameras (asset bundles, scale 0) | `19b9bf` / `96a319` | no camera mirror |
+| Camera screens | `c09349` / `48dcae` | replaced by the opponent boards `e24b01` / `e24b02` in the same slots |
+| Trench Crusade Dice Roller pads + state | `25b3ac` / `ea3160` | folded into the tray: its net -/+ DICE, die-on-the-pad template, 2 + \|N\| dice and highest / lowest keep |
+| Loose d6 on the trays | `ae1f5b` / `c1aaa4` | only served the bowl / TC pad |
+| Tray script (63 KB each) | `acae21` / `839fcc` | rewritten; the objects keep their GUIDs (Global, the hotkeys and `layout_test` key on them) |
+| Global `redCustomDiceRoller_GUID` / `blueCustomDiceRoller_GUID`, `red/blueDiceSpawnTime`, `debugPerfScanRed/Blue`, `debugRngTest` and their two debug-panel buttons | - | their objects are gone |
+| Tray features not carried | - | four colour swatches, pip colour, Custom Dice (drop a die on the tray instead), right-click quick-roll and its palette, the 5 Hz readout scan, Revert Roll (Last roll replaces it) |
+
+Moved unchanged to Measure & Mark (`e24c01` / `e24c02`): measuring bubbles and the custom
+size, clear bubbles / lines, highlight paint and swatch, save / restore positions, the HUD
+toggle and their hotkeys (`!=` rewritten as `~=`, so `tts_lint` no longer needs the
+MoonSharp allowance for the trays). Global's bubble overlay now applies on the panel
+(`measurePanelForColor`).
+
+Validation: `pnpm mod:test` (new `dice_tray_test.lua`; `layout_test.lua` rewritten for the new
+tiles, widgets and the tray-to-board hand-off), `mod:verify`, typecheck and `pnpm test`.
+Nothing has run in TTS (`mod/TESTING.md` step 15).

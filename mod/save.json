@@ -31,7 +31,7 @@
   "TabStates": {
     "0": {
       "title": "Gaming instructions",
-      "body": "Trench Crusade Table (dev) - a fork of LCT v1.12.1 with the Warhammer 40k systems removed.\r\n- **Red, Blue, or Spectator seats** - Choose a player side or watch the game.\r\n- **No setup flow** - the table loads ready to play, with a clear 51\" square in the middle for the 36\" or 48\" battlefield: no game modes, deployment zones, objectives or START GAME. Trench Crusade scenario and deployment setup will come with the Battle code (TC-022 / TC-023).\r\n- **Kept from LCT** - measuring bubbles, a small dice tray and roller per side, save/restore positions, LOS markers, highlight paint, chess clock (the HUD now only carries help and the clock), auto-seat, table themes, terrain tools.\r\n- **Trench Crusade content** - rules shelf, Trench Crusade dice rollers, Points/Turn/Glory counters, Blood/Blessing/Activated/Down/Tough/Objective bags, Turn Tracker. See the \"Trench Crusade content\" tab.\r\n- **Removed** - missions, secondaries, CP, 40k scoring, map/Battlemaster caches, game modes, deployment zones, objective markers, table quarter / reserve / territory toggles, 40k token bags, the LCT turn / round / phase engine, Lethal / Sustained Hits, coherency, engagement range, mass-dice buttons, squad activation and wound trackers, hide-army zones. See mod/STRIP-LOG.md and mod/TESTING.md in the repo.",
+      "body": "Trench Crusade Table (dev) - a fork of LCT v1.12.1 with the Warhammer 40k systems removed.\r\n- **Red, Blue, or Spectator seats** - Choose a player side or watch the game.\r\n- **No setup flow** - the table loads ready to play, with a clear 51\" square in the middle for the 36\" or 48\" battlefield: no game modes, deployment zones, objectives or START GAME. Trench Crusade scenario and deployment setup will come with the Battle code (TC-022 / TC-023).\r\n- **Kept from LCT** - measuring bubbles, save/restore positions, LOS markers, highlight paint, chess clock (the HUD now only carries help and the clock), auto-seat, table themes, terrain tools.\r\n- **Trench Crusade content** - rules shelf, a Trench Crusade dice tray per side with the opponent's last roll on a board, Points/Turn/Glory counters, Blood/Blessing/Activated/Down/Tough/Objective bags, Turn Tracker. See the \"Trench Crusade content\" tab.\r\n- **Removed** - missions, secondaries, CP, 40k scoring, map/Battlemaster caches, game modes, deployment zones, objective markers, table quarter / reserve / territory toggles, 40k token bags, the LCT turn / round / phase engine, Lethal / Sustained Hits, coherency, engagement range, mass-dice buttons, squad activation and wound trackers, hide-army zones. See mod/STRIP-LOG.md and mod/TESTING.md in the repo.",
       "color": "Grey",
       "visibleColor": {
         "r": 0.5,
@@ -53,7 +53,7 @@
     },
     "2": {
       "title": "Trench Crusade content",
-      "body": "Trench Crusade content ported from \"Trench Crusade 1.0.2 - Scripted Table\" (3603166284) and Gannel's Model Corner (3700111403).\r\n\r\n**Rules shelf** (x=102, raised ledge beyond the Start Menu; press Rules shelf on the Turn Tracker to look at it):\r\n- Trench Crusade Digital Rulebook 1.0.2 (buttons jump to Core Rules, Comprehensive Rules, Injury Table, Keywords, Battlekit, Campaign, Scenarios)\r\n- Warbands of Trench Crusade 1.0.2 (buttons jump to each faction)\r\n- Trench Crusade FAQ 1.0.1\r\n- TC Tactics Guide (community, 291 pp)\r\n- Red Brigade warband supplement\r\n- The Great Hunger playtest summary\r\n\r\n**Turn Tracker** (dark tile in the side column left of the battlefield, above the Warband Importer; the Battlefield panel is below it): Initiative roll-off, Start turn (clears every Activated token), Morale reminder, Next turn (sets both Turn counters), Red/Blue Shaken flags.\r\n**Dice**: the Trench Crusade Dice Roller pads (beside each dice tray) roll 2+N dice and report the two highest (+DICE) or lowest (-DICE) - use them for Success and Injury Rolls. The LCT dice tray at the end of each player's row is the alternative: spawn up to 10 dice, roll, and it shows the face counts, the total and the two highest / two lowest.\r\n**Counters** in each player's row: Points, Turn, Glory (left click +1, right click -1).\r\n**Token bags** (one row per player): Blood Marker, Blessing Marker, Activated, Down, Tough, Objective. Tokens carry a tc-token:<role> tag; Start turn deletes every tc-token:activated object on the table.\r\n**Turn structure** (rulebook p32): Initiative -> Activation -> Morale, driven by the Turn Tracker (the only turn engine on the table).",
+      "body": "Trench Crusade content ported from \"Trench Crusade 1.0.2 - Scripted Table\" (3603166284) and Gannel's Model Corner (3700111403).\r\n\r\n**Rules shelf** (x=102, raised ledge beyond the Start Menu; press Rules shelf on the Turn Tracker to look at it):\r\n- Trench Crusade Digital Rulebook 1.0.2 (buttons jump to Core Rules, Comprehensive Rules, Injury Table, Keywords, Battlekit, Campaign, Scenarios)\r\n- Warbands of Trench Crusade 1.0.2 (buttons jump to each faction)\r\n- Trench Crusade FAQ 1.0.1\r\n- TC Tactics Guide (community, 291 pp)\r\n- Red Brigade warband supplement\r\n- The Great Hunger playtest summary\r\n\r\n**Turn Tracker** (dark tile in the side column left of the battlefield, above the Warband Importer; the Battlefield panel is below it): Initiative roll-off, Start turn (clears every Activated token), Morale reminder, Next turn (sets both Turn counters), Red/Blue Shaken flags.\r\n**Dice**: the dice tray at the end of each player's row. Pick the mode (Success, Injury, Bloodbath; right click in Bloodbath for Deadly; Sum), set -/+ DICE and press ROLL: it rolls 2 + N dice (Bloodbath 3, Deadly 4), lines them up with the kept dice first (highest at +DICE, lowest at -DICE) and prints the result to chat. Drop any die on the tray to roll that kind. +1d6..+d3 add dice for a Sum roll; Last roll restores the previous result; Clear empties the tray. The opponent's last roll shows on the board beyond your tray. Measuring bubbles, highlight paint and save/restore positions are on the Measure & Mark panel beside the tray.\r\n**Counters** in each player's row: Points, Turn, Glory (left click +1, right click -1).\r\n**Token bags** (one row per player): Blood Marker, Blessing Marker, Activated, Down, Tough, Objective. Tokens carry a tc-token:<role> tag; Start turn deletes every tc-token:activated object on the table.\r\n**Turn structure** (rulebook p32): Initiative -> Activation -> Morale, driven by the Turn Tracker (the only turn engine on the table).",
       "color": "Grey",
       "visibleColor": {
         "r": 0.5,
@@ -251,58 +251,6 @@
       "GridProjection": false,
       "HideWhenFaceDown": false,
       "Hands": false,
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": ""
-    },
-    {
-      "GUID": "c09349",
-      "Name": "Custom_Assetbundle",
-      "Transform": {
-        "posX": 33.7,
-        "posY": 1.14999807,
-        "posZ": 31.6,
-        "rotX": -1.59877766e-06,
-        "rotY": 180.015915,
-        "rotZ": 5.434207e-07,
-        "scaleX": 1.5,
-        "scaleY": 1.0,
-        "scaleZ": 1.5
-      },
-      "Nickname": "Blue dice camera",
-      "Description": "",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "CustomAssetbundle": {
-        "AssetbundleURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_p2_screenh.unity3d",
-        "AssetbundleSecondaryURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_mat.unity3d",
-        "MaterialIndex": 2,
-        "TypeIndex": 1,
-        "LoopingEffectIndex": 0
-      },
       "LuaScript": "",
       "LuaScriptState": "",
       "XmlUI": ""
@@ -599,12 +547,12 @@
         "rotX": 0.0,
         "rotY": 180.0,
         "rotZ": 0.0,
-        "scaleX": 1.875,
+        "scaleX": 5.575,
         "scaleY": 1.0,
-        "scaleZ": 3.75
+        "scaleZ": 5.575
       },
-      "Nickname": "Blue Custom Dice Table",
-      "Description": "{\n  \"Cumulative\": \"no\",\n  \"Update_Frequency\": \"0.2\"\n}",
+      "Nickname": "Blue Dice Tray",
+      "Description": "Trench Crusade dice tray. Mode: Success, Injury, Bloodbath (right click: Deadly), Sum. -/+ sets net DICE; ROLL rolls 2 + |N| (Bloodbath 3, Deadly 4) and keeps the highest (+) or lowest (-). Drop a die on the tray to roll that kind instead.",
       "GMNotes": "",
       "AltLookAngle": {
         "x": 0.0,
@@ -612,9 +560,9 @@
         "z": 0.0
       },
       "ColorDiffuse": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
       },
       "LayoutGroupSortIndex": 0,
       "Value": 0,
@@ -631,7 +579,7 @@
       "HideWhenFaceDown": false,
       "Hands": false,
       "CustomImage": {
-        "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/15639768040285504200/A9DBDD932E0FC47D3E40041093AE95710F43BF3D/",
+        "ImageURL": "https://tc.rynfin.org/tts/dice-tray-blue.png",
         "ImageSecondaryURL": "",
         "ImageScalar": 1.0,
         "WidthScale": 0.0,
@@ -644,16 +592,235 @@
       },
       "LuaScript": "",
       "LuaScriptState": "",
-      "XmlUI": "",
-      "AttachedSnapPoints": [
-        {
-          "Position": {
-            "x": -6.72,
-            "y": 0.1,
-            "z": -0.506667
-          }
+      "XmlUI": ""
+    },
+    {
+      "GUID": "e24b01",
+      "Name": "Custom_Tile",
+      "Transform": {
+        "posX": 33.7,
+        "posY": 0.9,
+        "posZ": 31.6,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "scaleX": 5.575,
+        "scaleY": 1.0,
+        "scaleZ": 5.575
+      },
+      "Nickname": "Blue Last Roll",
+      "Description": "Read-only: Blue's last dice roll, redrawn when Blue's tray settles.",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": false,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomImage": {
+        "ImageURL": "https://tc.rynfin.org/tts/roll-board-blue.png",
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomTile": {
+          "Type": 0,
+          "Thickness": 0.1,
+          "Stackable": false,
+          "Stretch": true
         }
-      ]
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
+    },
+    {
+      "GUID": "e24b02",
+      "Name": "Custom_Tile",
+      "Transform": {
+        "posX": -33.7,
+        "posY": 0.9,
+        "posZ": -31.6,
+        "rotX": 0.0,
+        "rotY": 180.0,
+        "rotZ": 0.0,
+        "scaleX": 5.575,
+        "scaleY": 1.0,
+        "scaleZ": 5.575
+      },
+      "Nickname": "Red Last Roll",
+      "Description": "Read-only: Red's last dice roll, redrawn when Red's tray settles.",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": false,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomImage": {
+        "ImageURL": "https://tc.rynfin.org/tts/roll-board-red.png",
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomTile": {
+          "Type": 0,
+          "Thickness": 0.1,
+          "Stackable": false,
+          "Stretch": true
+        }
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
+    },
+    {
+      "GUID": "e24c01",
+      "Name": "Custom_Tile",
+      "Transform": {
+        "posX": -6.4,
+        "posY": 0.9,
+        "posZ": 31.6,
+        "rotX": 0.0,
+        "rotY": 0.0,
+        "rotZ": 0.0,
+        "scaleX": 3.8,
+        "scaleY": 1.0,
+        "scaleZ": 3.8
+      },
+      "Nickname": "Red Measure & Mark",
+      "Description": "Measuring bubbles, highlight paint, save / restore positions and the HUD toggle.",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": false,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomImage": {
+        "ImageURL": "https://tc.rynfin.org/tts/measure-panel.png",
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomTile": {
+          "Type": 0,
+          "Thickness": 0.1,
+          "Stackable": false,
+          "Stretch": true
+        }
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
+    },
+    {
+      "GUID": "e24c02",
+      "Name": "Custom_Tile",
+      "Transform": {
+        "posX": 6.4,
+        "posY": 0.9,
+        "posZ": -31.6,
+        "rotX": 0.0,
+        "rotY": 180.0,
+        "rotZ": 0.0,
+        "scaleX": 3.8,
+        "scaleY": 1.0,
+        "scaleZ": 3.8
+      },
+      "Nickname": "Blue Measure & Mark",
+      "Description": "Measuring bubbles, highlight paint, save / restore positions and the HUD toggle.",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": true,
+      "Grid": true,
+      "Snap": false,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomImage": {
+        "ImageURL": "https://tc.rynfin.org/tts/measure-panel.png",
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomTile": {
+          "Type": 0,
+          "Thickness": 0.1,
+          "Stackable": false,
+          "Stretch": true
+        }
+      },
+      "LuaScript": "",
+      "LuaScriptState": "",
+      "XmlUI": ""
     },
     {
       "GUID": "afc863",
@@ -1268,12 +1435,12 @@
         "rotX": 0.0,
         "rotY": 0.0,
         "rotZ": 0.0,
-        "scaleX": 1.875,
+        "scaleX": 5.575,
         "scaleY": 1.0,
-        "scaleZ": 3.75
+        "scaleZ": 5.575
       },
-      "Nickname": "Red Custom Dice Table",
-      "Description": "{\n  \"Cumulative\": \"no\",\n  \"Update_Frequency\": \"0.2\"\n}",
+      "Nickname": "Red Dice Tray",
+      "Description": "Trench Crusade dice tray. Mode: Success, Injury, Bloodbath (right click: Deadly), Sum. -/+ sets net DICE; ROLL rolls 2 + |N| (Bloodbath 3, Deadly 4) and keeps the highest (+) or lowest (-). Drop a die on the tray to roll that kind instead.",
       "GMNotes": "",
       "AltLookAngle": {
         "x": 0.0,
@@ -1281,9 +1448,9 @@
         "z": 0.0
       },
       "ColorDiffuse": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
       },
       "LayoutGroupSortIndex": 0,
       "Value": 0,
@@ -1300,7 +1467,7 @@
       "HideWhenFaceDown": false,
       "Hands": false,
       "CustomImage": {
-        "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/16390643166952417281/FF7592F2338D23B469342C87FECAF6FC824D05BE/",
+        "ImageURL": "https://tc.rynfin.org/tts/dice-tray-red.png",
         "ImageSecondaryURL": "",
         "ImageScalar": 1.0,
         "WidthScale": 0.0,
@@ -1313,16 +1480,7 @@
       },
       "LuaScript": "",
       "LuaScriptState": "",
-      "XmlUI": "",
-      "AttachedSnapPoints": [
-        {
-          "Position": {
-            "x": -6.72,
-            "y": 0.1,
-            "z": -0.506667
-          }
-        }
-      ]
+      "XmlUI": ""
     },
     {
       "GUID": "738804",
@@ -2118,320 +2276,6 @@
       "XmlUI": ""
     },
     {
-      "GUID": "17ca2b",
-      "Name": "Custom_Model_Bag",
-      "Transform": {
-        "posX": 0.9,
-        "posY": 1.21,
-        "posZ": 29.7,
-        "rotX": -1.02551053e-06,
-        "rotY": 359.969971,
-        "rotZ": -1.71391818e-07,
-        "scaleX": 1.0,
-        "scaleY": 1.0,
-        "scaleZ": 1.0
-      },
-      "Nickname": "Red Dice Roller",
-      "Description": "{\n  \"Results\": \"no\",\n  \"Rows\": \"yes\",\n  \"SmoothDice\": \"no\",\n  \"RotateDice\": \"no\",\n  \"SortNoRows\": \"asc\",\n  \"Split_on_D12\": \"yes\",\n  \"Step\": 1.05,\n  \"Version\": \"BCB-2020-04-20 Hotfix Z\"\n}",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 0.9999998,
-        "g": 0.992160261,
-        "b": 0.9999998
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": false,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": false,
-      "Tooltip": false,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "MaterialIndex": -1,
-      "MeshIndex": -1,
-      "Number": 0,
-      "CustomMesh": {
-        "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/12948088169957996281/04B16F11CA234AA2A3A1626A0F6E201727791788/",
-        "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/12094347937466273231/31EEBEB76F3333C316B8B3C357BCC3F654EDDB7D/",
-        "NormalURL": "",
-        "ColliderURL": "",
-        "Convex": true,
-        "MaterialIndex": 3,
-        "TypeIndex": 6,
-        "CastShadows": true
-      },
-      "Bag": {
-        "Order": 0
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": ""
-    },
-    {
-      "GUID": "927ca1",
-      "Name": "Custom_Model_Bag",
-      "Transform": {
-        "posX": -0.9,
-        "posY": 1.21,
-        "posZ": -29.7,
-        "rotX": 2.8297805e-07,
-        "rotY": 180.002823,
-        "rotZ": -7.116862e-08,
-        "scaleX": 1.0,
-        "scaleY": 1.0,
-        "scaleZ": 1.0
-      },
-      "Nickname": "Blue Dice Roller",
-      "Description": "{\n  \"Results\": \"no\",\n  \"Rows\": \"yes\",\n  \"SmoothDice\": \"no\",\n  \"RotateDice\": \"no\",\n  \"SortNoRows\": \"asc\",\n  \"Split_on_D12\": \"yes\",\n  \"Step\": 1.05,\n  \"Version\": \"BCB-2020-04-20 Hotfix Z\"\n}",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 0.9999998,
-        "g": 0.992160261,
-        "b": 0.9999998
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": false,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": false,
-      "Tooltip": false,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "MaterialIndex": -1,
-      "MeshIndex": -1,
-      "Number": 0,
-      "CustomMesh": {
-        "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/12948088169957996281/04B16F11CA234AA2A3A1626A0F6E201727791788/",
-        "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/17912476968870718430/16B8A89F1AE2B5B56CCF00032C5D5730C6FBFFCC/",
-        "NormalURL": "",
-        "ColliderURL": "",
-        "Convex": true,
-        "MaterialIndex": 3,
-        "TypeIndex": 6,
-        "CastShadows": true
-      },
-      "Bag": {
-        "Order": 0
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": ""
-    },
-    {
-      "GUID": "c1aaa4",
-      "Name": "Die_6_Rounded",
-      "Transform": {
-        "posX": -1.6,
-        "posY": 1.32000017,
-        "posZ": -31.4,
-        "rotX": 4.512742e-07,
-        "rotY": 0.00279719243,
-        "rotZ": 180.0,
-        "scaleX": 1.0,
-        "scaleY": 1.0,
-        "scaleZ": 1.0
-      },
-      "Nickname": "",
-      "Description": "",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 0.117996432,
-        "g": 0.53,
-        "b": 1.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": false,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "MaterialIndex": 0,
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": "",
-      "RotationValues": [
-        {
-          "Value": "1",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          }
-        },
-        {
-          "Value": "2",
-          "Rotation": {
-            "x": 90.0,
-            "y": 0.0,
-            "z": 0.0
-          }
-        },
-        {
-          "Value": "3",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 90.0
-          }
-        },
-        {
-          "Value": "4",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": -90.0
-          }
-        },
-        {
-          "Value": "5",
-          "Rotation": {
-            "x": -90.0,
-            "y": 0.0,
-            "z": 0.0
-          }
-        },
-        {
-          "Value": "6",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": -180.0
-          }
-        }
-      ]
-    },
-    {
-      "GUID": "ae1f5b",
-      "Name": "Die_6_Rounded",
-      "Transform": {
-        "posX": 1.6,
-        "posY": 1.32000029,
-        "posZ": 31.4,
-        "rotX": -1.56843771e-06,
-        "rotY": 179.969955,
-        "rotZ": 180.0,
-        "scaleX": 1.0,
-        "scaleY": 1.0,
-        "scaleZ": 1.0
-      },
-      "Nickname": "",
-      "Description": "",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 0.856,
-        "g": 0.09999753,
-        "b": 0.0939975
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": false,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "MaterialIndex": 0,
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": "",
-      "RotationValues": [
-        {
-          "Value": "1",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          }
-        },
-        {
-          "Value": "2",
-          "Rotation": {
-            "x": 90.0,
-            "y": 0.0,
-            "z": 0.0
-          }
-        },
-        {
-          "Value": "3",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 90.0
-          }
-        },
-        {
-          "Value": "4",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": -90.0
-          }
-        },
-        {
-          "Value": "5",
-          "Rotation": {
-            "x": -90.0,
-            "y": 0.0,
-            "z": 0.0
-          }
-        },
-        {
-          "Value": "6",
-          "Rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": -180.0
-          }
-        }
-      ]
-    },
-    {
       "GUID": "4ee1f2",
       "Name": "Custom_Model",
       "Transform": {
@@ -2538,162 +2382,6 @@
           "Stackable": false,
           "Stretch": false
         }
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": ""
-    },
-    {
-      "GUID": "96a319",
-      "Name": "Custom_Assetbundle",
-      "Transform": {
-        "posX": -12.9,
-        "posY": 7.52,
-        "posZ": -32.5,
-        "rotX": 90.0,
-        "rotY": 180.0,
-        "rotZ": 0.0,
-        "scaleX": 0.0,
-        "scaleY": 0.0,
-        "scaleZ": 0.0
-      },
-      "Nickname": "Blue dice cam",
-      "Description": "",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 1.0,
-        "g": 1.0,
-        "b": 1.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "CustomAssetbundle": {
-        "AssetbundleURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_p2_source.unity3d",
-        "AssetbundleSecondaryURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_mat.unity3d",
-        "MaterialIndex": 2,
-        "TypeIndex": 4,
-        "LoopingEffectIndex": 0
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": ""
-    },
-    {
-      "GUID": "19b9bf",
-      "Name": "Custom_Assetbundle",
-      "Transform": {
-        "posX": 12.9,
-        "posY": 7.52,
-        "posZ": 32.5,
-        "rotX": 90.0,
-        "rotY": 0.0,
-        "rotZ": 0.0,
-        "scaleX": 0.0,
-        "scaleY": 0.0,
-        "scaleZ": 0.0
-      },
-      "Nickname": "Red dice camera",
-      "Description": "",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 1.0,
-        "g": 1.0,
-        "b": 1.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "CustomAssetbundle": {
-        "AssetbundleURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_p3_source.unity3d",
-        "AssetbundleSecondaryURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_mat.unity3d",
-        "MaterialIndex": 2,
-        "TypeIndex": 4,
-        "LoopingEffectIndex": 0
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": ""
-    },
-    {
-      "GUID": "48dcae",
-      "Name": "Custom_Assetbundle",
-      "Transform": {
-        "posX": -33.7,
-        "posY": 1.14999032,
-        "posZ": -31.6,
-        "rotX": 0.000105782245,
-        "rotY": 0.0488397926,
-        "rotZ": -1.49340549e-05,
-        "scaleX": 1.5,
-        "scaleY": 1.0,
-        "scaleZ": 1.5
-      },
-      "Nickname": "Red dice cam",
-      "Description": "",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 0.0,
-        "g": 0.0,
-        "b": 0.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "CustomAssetbundle": {
-        "AssetbundleURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_p3_screenh.unity3d",
-        "AssetbundleSecondaryURL": "https://raw.githubusercontent.com/RobMayer/TTSLibrary/master/cameras/cam_mat.unity3d",
-        "MaterialIndex": 2,
-        "TypeIndex": 1,
-        "LoopingEffectIndex": 0
       },
       "LuaScript": "",
       "LuaScriptState": "",
@@ -4366,138 +4054,6 @@
       "LuaScript": "",
       "LuaScriptState": "",
       "XmlUI": ""
-    },
-    {
-      "GUID": "25b3ac",
-      "Name": "Custom_Token",
-      "Transform": {
-        "posX": -6.4,
-        "posY": 1.0,
-        "posZ": 31.6,
-        "rotX": 0.0,
-        "rotY": 0.0,
-        "rotZ": 0.0,
-        "scaleX": 1.47,
-        "scaleY": 1.47,
-        "scaleZ": 1.47
-      },
-      "Nickname": "Trench Crusade Dice Roller",
-      "Description": "Trench Crusade Success Roll helper. Place the die you want to roll on the centre pad; +/- sets +DICE / -DICE; click the number to roll 2+N dice. Prints the two highest (+) or two lowest (-), per the rulebook p15.",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 1.0,
-        "g": 1.0,
-        "b": 1.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "CustomImage": {
-        "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/2404445481979865728/0C7152AE757578C1D3338E7B38290E5359AA950C/",
-        "ImageSecondaryURL": "",
-        "ImageScalar": 1.0,
-        "WidthScale": 0.0,
-        "CustomToken": {
-          "Thickness": 0.2,
-          "MergeDistancePixels": 15.0,
-          "StandUp": false,
-          "Stackable": false
-        }
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": "",
-      "AttachedSnapPoints": [
-        {
-          "Position": {
-            "x": -8.384346e-07,
-            "y": 0.100000024,
-            "z": 0.000162183074
-          }
-        }
-      ]
-    },
-    {
-      "GUID": "ea3160",
-      "Name": "Custom_Token",
-      "Transform": {
-        "posX": 6.4,
-        "posY": 1.0,
-        "posZ": -31.6,
-        "rotX": 0.0,
-        "rotY": 180.0,
-        "rotZ": 0.0,
-        "scaleX": 1.47,
-        "scaleY": 1.47,
-        "scaleZ": 1.47
-      },
-      "Nickname": "Trench Crusade Dice Roller",
-      "Description": "Trench Crusade Success Roll helper. Place the die you want to roll on the centre pad; +/- sets +DICE / -DICE; click the number to roll 2+N dice. Prints the two highest (+) or two lowest (-), per the rulebook p15.",
-      "GMNotes": "",
-      "AltLookAngle": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "ColorDiffuse": {
-        "r": 1.0,
-        "g": 1.0,
-        "b": 1.0
-      },
-      "LayoutGroupSortIndex": 0,
-      "Value": 0,
-      "Locked": true,
-      "Grid": true,
-      "Snap": true,
-      "IgnoreFoW": false,
-      "MeasureMovement": false,
-      "DragSelectable": true,
-      "Autoraise": true,
-      "Sticky": true,
-      "Tooltip": true,
-      "GridProjection": false,
-      "HideWhenFaceDown": false,
-      "Hands": false,
-      "CustomImage": {
-        "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/2404445481979865728/0C7152AE757578C1D3338E7B38290E5359AA950C/",
-        "ImageSecondaryURL": "",
-        "ImageScalar": 1.0,
-        "WidthScale": 0.0,
-        "CustomToken": {
-          "Thickness": 0.2,
-          "MergeDistancePixels": 15.0,
-          "StandUp": false,
-          "Stackable": false
-        }
-      },
-      "LuaScript": "",
-      "LuaScriptState": "",
-      "XmlUI": "",
-      "AttachedSnapPoints": [
-        {
-          "Position": {
-            "x": -8.384346e-07,
-            "y": 0.100000024,
-            "z": 0.000162183074
-          }
-        }
-      ]
     },
     {
       "GUID": "c0530b",

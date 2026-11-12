@@ -1,7 +1,7 @@
 {
   "global": {
-    "LuaScript": 29438,
-    "XmlUI": 25315
+    "LuaScript": 28486,
+    "XmlUI": 24668
   },
   "objects": [
     {
@@ -9,18 +9,6 @@
       "guid": "138b05",
       "nickname": "",
       "name": "go_game_piece_black",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c09349",
-      "guid": "c09349",
-      "nickname": "Blue dice camera",
-      "name": "Custom_Assetbundle",
       "path": [],
       "via": "top",
       "lua_bytes": 0,
@@ -103,11 +91,59 @@
     {
       "key": "839fcc",
       "guid": "839fcc",
-      "nickname": "Blue Custom Dice Table",
+      "nickname": "Blue Dice Tray",
       "name": "Custom_Tile",
       "path": [],
       "via": "top",
-      "lua_bytes": 63001,
+      "lua_bytes": 31847,
+      "xml_bytes": 0,
+      "state_bytes": 0,
+      "nested": 0
+    },
+    {
+      "key": "e24b01",
+      "guid": "e24b01",
+      "nickname": "Blue Last Roll",
+      "name": "Custom_Tile",
+      "path": [],
+      "via": "top",
+      "lua_bytes": 8077,
+      "xml_bytes": 0,
+      "state_bytes": 0,
+      "nested": 0
+    },
+    {
+      "key": "e24b02",
+      "guid": "e24b02",
+      "nickname": "Red Last Roll",
+      "name": "Custom_Tile",
+      "path": [],
+      "via": "top",
+      "lua_bytes": 8077,
+      "xml_bytes": 0,
+      "state_bytes": 0,
+      "nested": 0
+    },
+    {
+      "key": "e24c01",
+      "guid": "e24c01",
+      "nickname": "Red Measure & Mark",
+      "name": "Custom_Tile",
+      "path": [],
+      "via": "top",
+      "lua_bytes": 26510,
+      "xml_bytes": 0,
+      "state_bytes": 0,
+      "nested": 0
+    },
+    {
+      "key": "e24c02",
+      "guid": "e24c02",
+      "nickname": "Blue Measure & Mark",
+      "name": "Custom_Tile",
+      "path": [],
+      "via": "top",
+      "lua_bytes": 26510,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0
@@ -247,11 +283,11 @@
     {
       "key": "acae21",
       "guid": "acae21",
-      "nickname": "Red Custom Dice Table",
+      "nickname": "Red Dice Tray",
       "name": "Custom_Tile",
       "path": [],
       "via": "top",
-      "lua_bytes": 63001,
+      "lua_bytes": 31847,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0
@@ -410,54 +446,6 @@
       "nested": 0
     },
     {
-      "key": "17ca2b",
-      "guid": "17ca2b",
-      "nickname": "Red Dice Roller",
-      "name": "Custom_Model_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 34204,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "927ca1",
-      "guid": "927ca1",
-      "nickname": "Blue Dice Roller",
-      "name": "Custom_Model_Bag",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 34204,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "c1aaa4",
-      "guid": "c1aaa4",
-      "nickname": "",
-      "name": "Die_6_Rounded",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "ae1f5b",
-      "guid": "ae1f5b",
-      "nickname": "",
-      "name": "Die_6_Rounded",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
       "key": "4ee1f2",
       "guid": "4ee1f2",
       "nickname": "matObjSurface",
@@ -474,42 +462,6 @@
       "guid": "28865a",
       "nickname": "",
       "name": "Custom_Tile",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "96a319",
-      "guid": "96a319",
-      "nickname": "Blue dice cam",
-      "name": "Custom_Assetbundle",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "19b9bf",
-      "guid": "19b9bf",
-      "nickname": "Red dice camera",
-      "name": "Custom_Assetbundle",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 0,
-      "xml_bytes": 0,
-      "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "48dcae",
-      "guid": "48dcae",
-      "nickname": "Red dice cam",
-      "name": "Custom_Assetbundle",
       "path": [],
       "via": "top",
       "lua_bytes": 0,
@@ -875,30 +827,6 @@
       "lua_bytes": 0,
       "xml_bytes": 0,
       "state_bytes": 0,
-      "nested": 0
-    },
-    {
-      "key": "25b3ac",
-      "guid": "25b3ac",
-      "nickname": "Trench Crusade Dice Roller",
-      "name": "Custom_Token",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 10760,
-      "xml_bytes": 0,
-      "state_bytes": 19,
-      "nested": 0
-    },
-    {
-      "key": "ea3160",
-      "guid": "ea3160",
-      "nickname": "Trench Crusade Dice Roller",
-      "name": "Custom_Token",
-      "path": [],
-      "via": "top",
-      "lua_bytes": 10760,
-      "xml_bytes": 0,
-      "state_bytes": 19,
       "nested": 0
     },
     {
@@ -1472,7 +1400,7 @@
       "name": "Custom_Tile",
       "path": [],
       "via": "top",
-      "lua_bytes": 21907,
+      "lua_bytes": 23117,
       "xml_bytes": 0,
       "state_bytes": 0,
       "nested": 0

@@ -39,8 +39,8 @@ Pass Turn button. Since TC-023v there is no visible 60" x 44" mat (step 14). If 
   red below) each with play / pause, the readout and +/-, and the red `X` hide button.
   There is **no** ROUND badge, no `Turn N` readout, no phase glyphs and no `-` minimalist
   button. The turn and phase live on the Turn Tracker (step 9).
-- The clock toggle hides / shows both clock rows; `X` hides the panel; Show/Hide UI on the
-  dice tray or its hotkey brings it back.
+- The clock toggle hides / shows both clock rows; `X` hides the panel; HUD on the Measure &
+  Mark panel or the Show/Hide UI hotkey brings it back.
 - Spectator (Grey) HUD: switch to Grey; the same panel.
 
 ## 4. Table theme
@@ -53,12 +53,11 @@ Pass Turn button. Since TC-023v there is no visible 60" x 44" mat (step 14). If 
 
 ## 5. Engine features that must still work
 
-- **Dice trays** (TC-023v: half length, full depth, at the end of each player's row): see step 14.
+- **Dice trays**, opponent boards and Measure & Mark panels (TC-024): see step 15.
 - **Hotkeys** (Options > Game Keys): 1. Save Position, 2. Restore Position, 3. Custom
   Bubble, 4. Roll All Dice, Clear Bubbles / Bubbles (Selected) / Lines / Mat, Show/Hide UI,
   the 1/2/3/6/8/9/12 inch measurement circles. Coherency Check, Engagement Range, the gap
   arrangements and "Show Scoreboard" must be **gone**.
-- **Dice rollers** (the bowls next to the mats) print results in chat.
 - **Trash bins** (vortices) destroy dropped objects; the counters beside them count.
 - **Token bags**: the LCT infinite bags left (banners, d6/d3) dispense. Every LCT 40k bag is
   **gone** (TC-017, TC-023s, and +1/-1 / Reroll in TC-023t); the Trench Crusade bags are
@@ -234,12 +233,8 @@ TTS; all geometry (shelf height, button sizes, bag icons) is a first guess to tu
   pages read upside-down from the table side, set `rotY` 270 -> 90 on the six PDFs and the
   label in `mod/save.json`; if the shelf floats or sinks, adjust `posY` 9.5 (and
   `RULES_SHELF` in `mod/scripts/4ac9e3.lua` to match).
-- **Trench Crusade Dice Roller** (round pad behind each dice mat at x≈±12, z≈±39): drop a
-  d6 from the d6 bag on its centre, press **+** twice (label `+2`), click the number: four
-  dice spawn around the pad and chat prints `<name> rolled: ... HIGH : <two highest>`.
-  Press **-** until `-1` and roll again: three dice, chat prints `LOW : <two lowest>`. At
-  `0` it rolls two and prints the total. Clear removes the dice. Right-click shows **no**
-  alternate-art states (dropped on purpose). Save/reload keeps the +/- setting.
+- **Dice**: the Trench Crusade Dice Roller pads are folded into the dice trays (TC-024,
+  step 15).
 - **Counters** (three per side at z≈±31: Glory, Turn, Points): left click +1, right click
   -1; Turn will not go below 1, the others not below 0. The label is editable in place.
 - **Token bags** (one row per side at z≈±27: Blood, Blessing, Activated, Down, Tough,
@@ -293,20 +288,9 @@ Offline first: `pnpm mod:test`.
   `SyncClockToTurn`, `changeSustainedHitsThreshold`, `getLethalZoneBounds` or
   `SELECTION_HIGHLIGHTER_GUID`. No Game Rounds / Red Turns / Blue Turns tokens at x≈51, no
   Lethal Hit Zone strips at z≈±23.6, no +1/-1 / Reroll bags beside the trays.
-- **Dice tray** (position and size superseded by TC-023v, step 14). Buttons kept: Clear mat (right click), Roll all,
-  +1d3, +1d6 ... +4d6, the four colour swatches, pip colour, Custom Dice, Show/Hide UI,
-  Revert Roll, Last 5 Rolls, Save / Restore Position, the bubble row, custom bubble, Clear
-  Bubbles / Lines, Highlight + swatch. **No** Lethal / Sustained, Del / Roll rows, - / +
-  toggle, Ordered / In 2s / In 3s, Copy opponent's dice, +5d6 / +10d6 / +25d6, Dice+,
-  Coherency, Engagement, Gap. Check that the labels are readable from the seat at half size;
-  if not, the fix is a relayout with larger button `scale`, not a bigger tray.
-- Press +2d6 three times, +4d6 once: the tray stops at 10 dice with `The tray holds 10
-  dice.` Roll all: the dice go through the bowl and land back on the tray; the readout shows
-  the face counts, `10 ∑ <total>` and `High 2: x  Low 2: y` (x = two highest, y = two lowest).
-  With 3 dice the High / Low pair is a +1 DICE / -1 DICE Success Roll. Clear mat (right click)
-  removes them.
-- Click the Green swatch: only the five spawn buttons turn green.
-- The two loose d6 sit on the trays' first spawn slot (step 14).
+- **Dice tray**: rebuilt by TC-024 (step 15). None of the 40k roll features (Lethal /
+  Sustained, Del / Roll rows, Ordered / In 2s / In 3s, Copy opponent's dice, +5d6 / +10d6 /
+  +25d6, Dice+, Coherency, Engagement, Gap) may appear on it.
 - Stopwatch: the HUD clocks start, pause and switch per side on their own.
 
 ## 12. Objective markers (TC-023u)
@@ -352,38 +336,62 @@ deployed `https://tc.rynfin.org`); the panel uses the Warband Importer's API bas
 
 ## 14. Player-side layout (TC-023v)
 
-Offline first: `pnpm mod:test` (`mod/test/layout_test.lua` drives the real tray, roller and
-importer scripts against `mod/save.json`). Nothing below has been seen in TTS yet; the
-tray's widget and text sizes, the bowl size and the camera framing are numbers read off
-screenshots of the 3.75 tray, not measurements.
+Offline first: `pnpm mod:test` (`mod/test/layout_test.lua` drives the real tray, board,
+panel and importer scripts against `mod/save.json`). The dice tray, the opponent board and
+Measure & Mark are TC-024's (step 15).
 
 - **No visible 40k mat**: the table theme shows edge to edge; nothing stands inside the
   51" square in the middle. Spawn a 48" board (Armoured Train): it clears the trays, the
-  TC rollers, the bags and the side column. Raycast the felt at the origin with
+  boards, the Measure & Mark panels, the bags and the side column. Raycast the felt at the origin with
   `scripts/tts_exec.py` (`Physics.cast` down at (0, 60, 0), first hit `28865a`) and compare
   with 0.9; if it differs, set `DEFAULT_TTS_OPTIONS.matTopY` and the felt check in
   `packages/battlefield/test/table.test.ts` follows. Board tiles should neither float nor
   sink at the board edge.
-- **Tray** (Red at x -0.8 .. 27.8, z 26.0 .. 37.2): every label reads undistorted (not
-  squashed sideways) and at the size it had on the old tray; nothing hangs off the mat. If
-  text is squashed, `place()` counter-scaling did not take and buttons need the tray at a
-  uniform scale with a new image instead.
-- Spawn 10 dice and Roll all: the dice go through the bowl (on the tray, right of the
-  result area) and land in value rows right of the readout, none on the readout, the
-  buttons or the bowl, all counted (`10 ∑ ...`). Repeat with 1 and 4 dice and a d3.
-- Readout worst case: ten dice showing all six faces (six face rows, the total, High 2 /
-  Low 2): every line sits on the mat, the last one clear of the near edge, the first clear of
-  the measure buttons above it. If it still overhangs, the line pitch is above about 1.85 and
-  `MULTILINE_PITCH` in `mod/test/layout_test.lua` should be raised to what is seen.
-- Drop a die into a bowl while a roll is running: it is ejected behind that tray (toward
-  its player), not onto the battlefield.
-- The opponent's dice screen (`c09349` / `48dcae`, beyond each tray's outer end) shows the
-  other tray's readout and result rows; if the framing is off, move the source camera
-  (`19b9bf` / `96a319`) over the rows.
-- **TC roller** beside each tray: its ring of rolled dice lands clear of the tray and the
-  bags. Trash bins swallow objects; each counter sits 4.52" inboard of its bin.
+- Trash bins swallow objects; each counter sits 4.52" inboard of its bin.
 - **Side column**: importer, tracker, Battlefield panel and theme panel readable from the
   host camera; Import still lands Red's rows at z≈19, Blue's at z≈-19.
+
+## 15. Dice tray, opponent board, Measure & Mark (TC-024)
+
+Offline first: `pnpm mod:test` (`mod/test/dice_tray_test.lua` covers the keep rule, the
+12-dice cap, slots, labels and the board; `layout_test` the tiles, widgets and the
+tray-to-board hand-off). The tile faces are served from `https://tc.rynfin.org/tts/`
+(`scripts/dice_tray_art.py`), so the web app must be deployed first. None of this has run
+in TTS: the numbers marked *unmeasured* in `mod/scripts/acae21.lua` (Die_6_Rounded size,
+rest timeout, the d3 face map, widget text size) are the DESIGN live checks 1-9.
+
+- **Faces**: Red's tray (x -0.8 .. 27.8) shows a dark mat with a red rim, the readout panel
+  on the seat's left and the darker controls strip nearest the seat. If the panel is on the
+  right or the strip at the far edge, the image is turned 180° against the widgets: flip
+  the image rows in `dice_tray_art.py`. Blue's board stands beyond Red's tray (x 33.7),
+  Measure & Mark on the other side of it (x -6.4).
+- **Widgets**: labels upright from the seat, square, inside the mat; the strip reads
+  `− | 0 DICE | + | Success | +1d6 +2 +3 +4 +d3 | ROLL | Last roll | Clear`. Every text row
+  is a dark box with legible text (a missing label means a zero-size or transparent backing).
+- **ROLL** at +1 DICE, Success: three dice appear at their final size (about 1.2"), roll,
+  settle, then line up from the readout outward with the two highest first in gold-outlined,
+  highlighted slots, a gap, the dropped die; each value label sits under its die; `KEPT n`
+  over the bracket. Readout: `SUCCESS ROLL · +1 DICE`, the total, the verdict chip. One chat
+  line: `Red · Success +1 DICE: [6][5] 3 → 11 Success`.
+- −2 DICE: four dice, the two lowest kept. Injury: no verdict, `before INJURY MODIFIERS`.
+  Bloodbath: three kept; right-click the mode button: `Deadly Bloodbath`, four rolled at 0.
+  Sum: − / + grey out, ROLL rolls whatever is on the tray.
+- **Cap**: +8 DICE in Deadly Bloodbath rolls 12 and they fit the row; +1d6 past 12 says
+  `The tray holds 12 dice.`
+- **d3**: +d3 then ROLL in Sum. Read the printed face against the readout for all six
+  rotation values and fill `D3_FACE` (live check 3).
+- **Template**: drop a custom-image die on the tray, Success, ROLL: the new dice are that
+  die at 1.2"; Clear, ROLL: plain dice in the side colour again.
+- **Re-roll by hand**: pick up a lined-up die, shake, drop it on the tray: the row re-sorts
+  once (one chat line, the board updates once).
+- **Last roll** after Clear restores the dice and readout; right-click prints the last five.
+- **Opponent board**: Blue sees Red's roll on the board in Blue's strip (x -33.7): header
+  `RED · LAST ROLL #n`, chips in the tray's order, kept chips in red with a gold outline,
+  total, verdict, face counts. Clear on Red's tray clears it. Readable from Blue's seat.
+- **Measure & Mark**: the 1-15" bubbles, size box + Go (right click: the overlay), Clear
+  bubbles, Highlight + swatch, Clear lines, Save pos. / Restore, HUD, and the hotkeys
+  behave as they did on the old tray. The custom-bubble overlay applies on the panel.
+- Save and reload: mode, DICE, Deadly, the current roll and the board come back.
 
 ## Reporting
 

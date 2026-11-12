@@ -188,7 +188,7 @@ describe("GET /api/battlefields/:scenario/:seed", () => {
   });
 });
 
-describe("objective symbol images", () => {
+describe("mod images", () => {
   const publicDir = resolve(repoRoot, "apps/web/public");
   const modRefs = (): string[] => {
     const texts = [readFileSync(resolve(repoRoot, "mod/save.json"), "utf8"), ...readdirSync(resolve(repoRoot, "mod/scripts")).map((f) => readFileSync(resolve(repoRoot, "mod/scripts", f), "utf8"))];
@@ -197,7 +197,15 @@ describe("objective symbol images", () => {
 
   it("every image the mod loads from our host is in the web app's public folder and served as a PNG", async () => {
     const refs = modRefs();
-    expect(refs.sort()).toEqual(["/tts/objective-marker.png", "/tts/objective-symbol.png"]);
+    expect(refs.sort()).toEqual([
+      "/tts/dice-tray-blue.png",
+      "/tts/dice-tray-red.png",
+      "/tts/measure-panel.png",
+      "/tts/objective-marker.png",
+      "/tts/objective-symbol.png",
+      "/tts/roll-board-blue.png",
+      "/tts/roll-board-red.png",
+    ]);
     const app = createApp({ rules, store: new WarbandStore(openDatabase(":memory:")), staticDir: publicDir });
     for (const ref of refs) {
       const res = await request(app).get(ref).buffer(true);
@@ -205,8 +213,13 @@ describe("objective symbol images", () => {
       expect(res.headers["content-type"], ref).toBe("image/png");
       const png = res.body as Buffer;
       expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
-      // IHDR: 512 x 512, 8-bit RGBA, so the symbol keeps its transparency.
-      expect([png.readUInt32BE(16), png.readUInt32BE(20), png[24], png[25]]).toEqual([512, 512, 8, 6]);
+      if (ref.startsWith("/tts/objective-")) {
+        // IHDR: 512 x 512, 8-bit RGBA, so the symbol keeps its transparency.
+        expect([png.readUInt32BE(16), png.readUInt32BE(20), png[24], png[25]]).toEqual([512, 512, 8, 6]);
+      } else {
+        // The tile faces are opaque 8-bit RGB.
+        expect([png[24], png[25]], ref).toEqual([8, 2]);
+      }
     }
   });
 });

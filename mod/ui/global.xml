@@ -31,7 +31,7 @@
   <Button id="blueBtn" color="#1A5FC8" textColor="#FFFFFF" width="460" height="150" fontSize="52" fontStyle="Bold" roundEdges="true" onClick="placeToBlue" outline="#6DA8FF" outlineSize="4" offsetXY="540 -350">Blue</Button>
 </Panel>
 
-<!-- Custom bubble size input overlay - one per player (opened by the dice-mat "123" button or the "Custom Bubble Size" game key). Visibility is fixed so a player only ever sees their own. -->
+<!-- Custom bubble size input overlay - one per player (opened by right-clicking Go on the Measure &amp; Mark panel or the "3. Custom Bubble" game key). Visibility is fixed so a player only ever sees their own. -->
 <Panel id="bubbleOverlay_Red" visibility="Red" active="false" rectAlignment="MiddleCenter" scale="0.75 0.75 0.75" width="560" height="340" color="#10141EF2" outline="#31415F" outlineSize="4" allowDragging="true" restrictDraggingToParentBounds="false" returnToOriginalPositionWhenReleased="false">
   <VerticalLayout padding="40 40 30 30" spacing="20" childForceExpandHeight="false">
     <Text fontSize="38" fontStyle="Bold" color="#F3F6FA" alignment="MiddleCenter" preferredHeight="56">Custom Bubble Size</Text>
@@ -63,11 +63,6 @@
 
     <Text fontSize="20" fontStyle="Bold" color="#AFC1D8" alignment="MiddleLeft" preferredHeight="26">Diagnostics</Text>
     <HorizontalLayout spacing="10" preferredHeight="78" flexibleHeight="0" childForceExpandWidth="true">
-      <Button onClick="debugPerfScanRed" color="#262626" textColor="#66E5FF" fontSize="22" tooltip="getAllObjects() vs Physics.cast box on the Red dice mat">PERF scan&#10;Red mat</Button>
-      <Button onClick="debugPerfScanBlue" color="#262626" textColor="#66E5FF" fontSize="22" tooltip="getAllObjects() vs Physics.cast box on the Blue dice mat">PERF scan&#10;Blue mat</Button>
-    </HorizontalLayout>
-    <HorizontalLayout spacing="10" preferredHeight="78" flexibleHeight="0" childForceExpandWidth="true">
-      <Button onClick="debugRngTest" color="#333300" textColor="#FFFF55" fontSize="24" tooltip="Run the RNG diagnostic on the Red dice roller">RNG Test</Button>
       <Button onClick="debugDumpSelectedGuids" color="#26331F" textColor="#66FF66" fontSize="22" tooltip="Select objects first, then click: writes their GUIDs into a tile's description to copy/paste">Dump selected&#10;GUIDs</Button>
     </HorizontalLayout>
 

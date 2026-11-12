@@ -207,22 +207,23 @@ end
 -- ===== Custom bubble input overlay (screen space, 1-60) =====
 -- Each player has their OWN panel (bubbleOverlay_Red / bubbleOverlay_Blue) with
 -- fixed visibility in ftc_base_ui.xml, so one player's overlay is never shown to
--- the other and both can be open at once. Opened by the dice-mat "123" button or
--- the "Custom Bubble Size" game key; the result is applied on that player's mat.
+-- the other and both can be open at once. Opened by the Measure & Mark panel's Go
+-- button (right click) or the "3. Custom Bubble" game key; the result is applied on
+-- that player's panel.
 bubbleOverlayPending = {}   -- player color -> typed string (live, from onValueChanged)
-bubbleOverlayMat = {}       -- player color -> dice mat GUID to apply on
+bubbleOverlayPanel = {}     -- player color -> Measure & Mark panel GUID to apply on
 bubbleOverlayLock = {}      -- player color -> debounce flag
 
-function diceMatForColor(color)
-    if color == "Red" then return redCustomDiceMat_GUID end
-    if color == "Blue" then return blueCustomDiceMat_GUID end
+function measurePanelForColor(color)
+    if color == "Red" then return redMeasurePanel_GUID end
+    if color == "Blue" then return blueMeasurePanel_GUID end
     return nil
 end
 
 function openBubbleInput(params)
     local color = params.color
     if color ~= "Red" and color ~= "Blue" then return end
-    bubbleOverlayMat[color] = params.mat or diceMatForColor(color)
+    bubbleOverlayPanel[color] = params.panel or measurePanelForColor(color)
     bubbleOverlayPending[color] = nil
     Global.UI.setAttribute("bubbleInputField_" .. color, "text", "")
     Global.UI.setAttribute("bubbleOverlay_" .. color, "active", "true")
@@ -255,29 +256,29 @@ function submitBubbleInput(player, value, id)
     bubbleOverlayLock[color] = true
     Wait.time(function() bubbleOverlayLock[color] = false end, 0.4)
 
-    local matGuid = bubbleOverlayMat[color] or diceMatForColor(color)
-    local mat = matGuid and getObjectFromGUID(matGuid)
+    local panelGuid = bubbleOverlayPanel[color] or measurePanelForColor(color)
+    local panel = panelGuid and getObjectFromGUID(panelGuid)
     local n = tonumber(bubbleOverlayPending[color])
 
     -- 0 or a blank value clears the bubbles on the player's selected models.
     if not n or n <= 0 then
-        if mat then mat.call("clearBubblesFromOverlay", {color = color}) end
+        if panel then panel.call("clearBubblesFromOverlay", {color = color}) end
         closeBubbleInput(color)
         return
     end
 
     if n > 60 then n = 60 end
-    if mat then
-        mat.call("applyBubbleFromOverlay", {radius = n, color = color})
+    if panel then
+        panel.call("applyBubbleFromOverlay", {radius = n, color = color})
     end
     closeBubbleInput(color)
 end
 
-redCustomDiceMat_GUID = "acae21" -- diceTable
-blueCustomDiceMat_GUID = "839fcc" -- diceTable
+redCustomDiceMat_GUID = "acae21" -- dice tray
+blueCustomDiceMat_GUID = "839fcc" -- dice tray
 
-redCustomDiceRoller_GUID = "17ca2b" -- kustom40kDiceRoller
-blueCustomDiceRoller_GUID = "927ca1" -- kustom40kDiceRoller
+redMeasurePanel_GUID = "e24c01"
+blueMeasurePanel_GUID = "e24c02"
 
 RedVortexGUID = "be2cdb"
 BlueVortexGUID = "4b1a7b"
@@ -328,8 +329,6 @@ allowMenu = true
 allowAutoSeat = true
 redPlayerID = ""
 bluePlayerID = ""
-redDiceSpawnTime = "fast"
-blueDiceSpawnTime = "fast"
 
 -- storage for the latest edits
 feedbackName    = ""
@@ -630,27 +629,6 @@ function minimizeDebugTools(player, value, id)
         Global.UI.setAttribute("DebugToolsMinBtn", "text", "—")
         Global.UI.setAttribute("DebugToolsMinBtn", "tooltip", "Minimize")
     end
-end
-
-function debugPerfScanRed(player)
-    local playerColor = player and player.color
-    local mat = getObjectFromGUID(redCustomDiceMat_GUID)
-    if not mat then printToColor("[DEBUG] Red dice mat not found.", playerColor, {1, 0.3, 0.3}); return end
-    mat.call("runDiceScanBenchmark", {color = playerColor})
-end
-
-function debugPerfScanBlue(player)
-    local playerColor = player and player.color
-    local mat = getObjectFromGUID(blueCustomDiceMat_GUID)
-    if not mat then printToColor("[DEBUG] Blue dice mat not found.", playerColor, {1, 0.3, 0.3}); return end
-    mat.call("runDiceScanBenchmark", {color = playerColor})
-end
-
-function debugRngTest(player)
-    local playerColor = player and player.color
-    local roller = getObjectFromGUID(redCustomDiceRoller_GUID)
-    if not roller then printToColor("[DEBUG] Red dice roller not found.", playerColor, {1, 0.3, 0.3}); return end
-    roller.call("debugRngCheck")
 end
 
 -- Collect the GUIDs of whatever the clicking player has selected and bake them,

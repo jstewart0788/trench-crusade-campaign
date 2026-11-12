@@ -46,9 +46,9 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | (no nickname) | `731345` | HandTrigger | 0 | 0 | hand zone (seating) |
 | KEEP | (no nickname) | `9f95fd` | Custom_Assetbundle | 0 | 0 | table leg / side asset bundle positioned by Flex Table Control |
 | KEEP | (no nickname) | `a47132` | HandTrigger | 0 | 0 | hand zone (seating) |
-| KEEP | (no nickname) | `ae1f5b` | Die_6_Rounded | 0 | 0 | loose d6 on the dice mat |
+| KEEP | (no nickname) | `ae1f5b` | Die_6_Rounded | 0 | 0 | loose d6 on the dice mat; it only served the LCT roller bowl. **TC-024: removed from the save.** |
 | KEEP | (no nickname) | `afc863` | Custom_Assetbundle | 0 | 0 | table leg / side asset bundle positioned by Flex Table Control |
-| KEEP | (no nickname) | `c1aaa4` | Die_6_Rounded | 0 | 0 | loose d6 on the dice mat |
+| KEEP | (no nickname) | `c1aaa4` | Die_6_Rounded | 0 | 0 | loose d6 on the dice mat; it only served the LCT roller bowl. **TC-024: removed from the save.** |
 | KEEP | (no nickname) | `c8edca` | Custom_Assetbundle | 0 | 0 | table leg / side asset bundle positioned by Flex Table Control |
 | KEEP | (no nickname) | `f7cd38` | HandTrigger | 0 | 0 | hand zone (seating) |
 | KEEP | (no nickname) | `f7d85a` | HandTrigger | 0 | 0 | hand zone (seating) |
@@ -63,10 +63,10 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | KEEP | Advanced Features Panel | `ed17d0` | BlockSquare | 3,009 | 0 | terrain collider toggle panel (forwards to the Start Menu) |
 | KEEP | Banner (Blue) | `0dd965` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
 | KEEP | Banner (Red) | `0dd964` | Custom_Model_Infinite_Bag | 0 | 2 | infinite token bag (tokens engine) |
-| KEEP | Blue Custom Dice Table | `839fcc` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout. TC-023v: half the length only (scale (1.875, 1, 3.75), 28.6 x 11.15), widgets counter-scaled to their old world size, at the end of its player's row (see *Table layout*) |
-| KEEP | Blue dice cam | `96a319` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
-| KEEP | Blue dice camera | `c09349` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
-| KEEP | Blue Dice Roller | `927ca1` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing |
+| KEEP | Blue Custom Dice Table | `839fcc` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout. TC-023v: half the length only (scale (1.875, 1, 3.75), 28.6 x 11.15), widgets counter-scaled to their old world size, at the end of its player's row (see *Table layout*). **TC-024: rebuilt** - new script and face, uniform scale (5.575, 1, 5.575); see *Dice tray (TC-024)* |
+| KEEP | Blue dice cam | `96a319` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats; replaced by the opponent boards `e24b01` / `e24b02`. **TC-024: removed from the save.** |
+| KEEP | Blue dice camera | `c09349` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats; replaced by the opponent boards `e24b01` / `e24b02`. **TC-024: removed from the save.** |
+| KEEP | Blue Dice Roller | `927ca1` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing; the tray no longer rolls through a bowl. **TC-024: removed from the save.** |
 | KEEP | Blue LOS Marker | `1b3488` | Custom_Tile | 3,676 | 0 | line-of-sight marker |
 | KEEP | Blue LOS Marker | `b1625c` | Custom_Tile | 3,676 | 0 | line-of-sight marker |
 | KEEP | Blue Selection Highligher | `84c3a4` | Quarter | 4,513 | 0 | generic table furniture |
@@ -100,10 +100,10 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | STRIP-2 | Objective | `4d85d9` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Objective | `d1100e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-023s: 40k mission / secondary token bag (Action, Objective, Home Objective, Hidden, Marked Terrain/Unit); the TC Objective bags `70d18f` / `2d4b7e` cover objectives |
 | STRIP-2 | Quarter-circle | `51ee3f` | Custom_Model | 0 | 0 | TC-023s: quarter-circle template, read by nothing (`quarterCircle_GUID` had no reader); removed |
-| KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout. TC-023v: half the length only (scale (1.875, 1, 3.75), 28.6 x 11.15), widgets counter-scaled to their old world size, at the end of its player's row (see *Table layout*) |
-| KEEP | Red dice cam | `48dcae` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
-| KEEP | Red dice camera | `19b9bf` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats |
-| KEEP | Red Dice Roller | `17ca2b` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing |
+| KEEP | Red Custom Dice Table | `acae21` | Custom_Tile | 138,402 | 0 | dice tray. TC-023t: 40k roll features stripped (Lethal / Sustained Hits, select / delete by face, ordered and grouped rolls, copy opponent's dice, 5/10/25-dice buttons, extra colours, coherency, engagement range, 1"/2" gap arrange), at most 10 dice, two-highest / two-lowest readout. TC-023v: half the length only (scale (1.875, 1, 3.75), 28.6 x 11.15), widgets counter-scaled to their old world size, at the end of its player's row (see *Table layout*). **TC-024: rebuilt** - new script and face, uniform scale (5.575, 1, 5.575); see *Dice tray (TC-024)* |
+| KEEP | Red dice cam | `48dcae` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats; replaced by the opponent boards `e24b01` / `e24b02`. **TC-024: removed from the save.** |
+| KEEP | Red dice camera | `19b9bf` | Custom_Assetbundle | 0 | 0 | dice camera asset for the dice mats; replaced by the opponent boards `e24b01` / `e24b02`. **TC-024: removed from the save.** |
+| KEEP | Red Dice Roller | `17ca2b` | Custom_Model_Bag | 33,778 | 0 | dice roller with seeded RNG and result printing; the tray no longer rolls through a bowl. **TC-024: removed from the save.** |
 | KEEP | Red LOS Marker | `546598` | Custom_Tile | 3,676 | 0 | line-of-sight marker |
 | KEEP | Red LOS Marker | `ca16c5` | Custom_Tile | 3,676 | 0 | line-of-sight marker |
 | KEEP | Red Selection Highlighter | `27de4f` | Quarter | 4,513 | 0 | selection highlighter |
@@ -263,8 +263,8 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | ADDED | Red Brigade (warband supplement) | `0a5af1` | Custom_PDF | 0 | 0 | TC-014 rules shelf, from Scripted Table `485143` |
 | ADDED | The Great Hunger (playtest summary) | `74c1e6` | Custom_PDF | 0 | 0 | TC-014 rules shelf, from Scripted Table `e18cdb` |
 | ADDED | Rules shelf label | `c650dd` | 3DText | 0 | 0 | TC-014 "RULES SHELF" 3D text at the end of the shelf (shape copied from Scripted Table `3b98b9`) |
-| ADDED | Trench Crusade Dice Roller | `25b3ac` | Custom_Token | 10,760 | 0 | TC-014 Red +/-DICE Success Roll pad, from Scripted Table `e3a6d5` without its 26 art states |
-| ADDED | Trench Crusade Dice Roller | `ea3160` | Custom_Token | 10,760 | 0 | TC-014 Blue +/-DICE Success Roll pad, from Scripted Table `63dad0` without its 26 art states |
+| ADDED | Trench Crusade Dice Roller | `25b3ac` | Custom_Token | 10,760 | 0 | TC-014 Red +/-DICE Success Roll pad, from Scripted Table `e3a6d5` without its 26 art states. **TC-024: removed; folded into the dice tray.** |
+| ADDED | Trench Crusade Dice Roller | `ea3160` | Custom_Token | 10,760 | 0 | TC-014 Blue +/-DICE Success Roll pad, from Scripted Table `63dad0` without its 26 art states. **TC-024: removed; folded into the dice tray.** |
 | ADDED | Points | `c0530b` | Custom_Token | 3,653 | 0 | TC-014 Red Points counter, from Scripted Table `bf846e` (+ `getValue`/`setValue`) |
 | ADDED | Turn | `0e8265` | Custom_Token | 3,653 | 0 | TC-014 Red Turn counter, from Scripted Table `5114af`; the Turn Tracker sets it |
 | ADDED | Glory | `e58368` | Custom_Token | 3,653 | 0 | TC-014 Red Glory counter, from Scripted Table `cdcfd8` |
@@ -285,6 +285,10 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | ADDED | Objective | `2d4b7e` | Custom_Model_Infinite_Bag | 0 | 2 | TC-017 Blue bag; content `8f0c3a`, tag `tc-token:objective` |
 | ADDED | Turn Tracker | `4ac9e3` | Custom_Tile | 14,076 | 0 | TC-017 turn helpers: initiative roll-off, Start turn, Morale reminder, Next turn, Shaken flags, rules-shelf camera; see below |
 | ADDED | Battlefield | `47de64` | Custom_Tile | ~14,000 | 0 | TC-022a: scenario / board chooser that fetches a generated battlefield from the API and spawns it with its objective markers; see below |
+| ADDED | Blue Last Roll | `e24b01` | Custom_Tile | 8,077 | 0 | TC-024: read-only board in Red's strip showing Blue's last roll; see *Dice tray (TC-024)* |
+| ADDED | Red Last Roll | `e24b02` | Custom_Tile | 8,077 | 0 | TC-024: the same in Blue's strip for Red's rolls |
+| ADDED | Red Measure & Mark | `e24c01` | Custom_Tile | 26,510 | 0 | TC-024: the measuring bubbles, highlight paint, save / restore positions, HUD toggle and their hotkeys, moved off the dice tray |
+| ADDED | Blue Measure & Mark | `e24c02` | Custom_Tile | 26,510 | 0 | TC-024: Blue's copy |
 
 
 ## global.lua (128,527 bytes, 151 functions) by system
@@ -297,7 +301,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 | Secondary card slots (zones, labels, draw/sort/discard/recycle) | STRIP | `getSecondaryCardZones`, `getCardsInSecondarySlot` (+ local `add`), `getSecondaryCardZoneByIndex`, `getSecondarySlotCardPosition`, `getSecondaryDeckByColor`, `getSecondaryDiscardPosition`, `refreshSecondaryNamesForColor`, `isSecondaryCardZone`, `isBlueSecondaryCardZone`, `isRedSecondaryCardZone`, `getSecondaryCardName`, `getSecondaryCardNameForColor`, `setSecondaryName`, `setBlueSecondaryName`, `setRedSecondaryName`, `refreshSecondaryNames`, `refreshBlueSecondaryNames`, `refreshRedSecondaryNames`, `refreshBlueSecondaryNamesSoon`, `refreshRedSecondaryNamesSoon`, `getSecondaryZoneColorAndIndex`, `onObjectEnterScriptingZone`, `onObjectLeaveScriptingZone`, `isSecondaryCardObject`, `addUniqueSecondaryCard`, `assignSecondarySlotCard`, `clearSecondarySlotAssignment`, `getAssignedSecondarySlotCard`, `getCardsInSecondarySlotForColor`, `clearSecondarySlotAssignmentsForColor`, `drawSecondaryToFirstOpenSlot`, `drawBlueSecondaryToFirstOpenSlot`, `drawRedSecondaryToFirstOpenSlot`, `drawBlueSecondaryToFirstOpenSlotSingle`, `drawRedSecondaryToFirstOpenSlotSingle`, `sortSecondarySlots`, `discardSecondarySlot`, `recycleSecondarySlot` |
 | Missions / mission packs | STRIP | `hideMissionDeckUntilSelected`, `activateMissionDeck`, `setMissionPack`, `useEdition11SecondaryDecks`, `placeToGray` (seat-to-Grey variant that also selected the Pariah Nexus pack; unreferenced by the XML) |
 | Battlemaster caches (debug panel) | STRIP | `debugPopulateBattlemasterCache`, `debugPopulateBattlemasterBttfRuinsCache`, `debugPopulateBattlemasterBttfCache`, `debugPopulateBattlemasterArmageddonRuinsCache`, `debugPopulateBattlemasterAllCache`, `debugPopulateBattlemasterLctPack1Cache`, `debugCheckBattlemasterCache` |
-| Auras / bubbles (screen-space size input for the dice mats) | KEEP | `diceMatForColor`, `openBubbleInput`, `cacheBubbleInput`, `closeBubbleInput`, `closeBubbleOverlay`, `submitBubbleInput` |
+| Auras / bubbles (screen-space size input; TC-024: applied on the Measure & Mark panels) | KEEP | `measurePanelForColor`, `openBubbleInput`, `cacheBubbleInput`, `closeBubbleInput`, `closeBubbleOverlay`, `submitBubbleInput` |
 | Seating / players | KEEP | `autoSeatPerson`, `autoSeatGroup`, `autoSeatAll`, `recordPlayers`, `onPlayerChangeColor`, `onPlayerConnect`, `promotePlayers`, `demotePlayers`, `showHideRedBlueBtn`, `setViewForPlayer`, `placeToColor`, `placeToRed`, `placeToBlue`, `placeToSpectator`, `closeMenu` |
 | Theme / branding | KEEP (`announceVersion`, `updateSplashOverlay` retitled) / STRIP (`announceThemeVote`: LCT Discord theme-vote banner) | |
 | Team tagging (GM-notes team for LOS markers) | KEEP | `updateTeamModel`, `tagSelectedAsRed`, `tagSelectedAsBlue` |
@@ -312,7 +316,7 @@ Script bytes include the Lua of nested objects (which is why the matrix bags dom
 Data in global.lua: the GUID constant block (KEEP, minus mission/CP/zone constants),
 `missionPackData`, `missionMatchups`, the secondary zone/label GUID tables, `MAP_INDEX`
 (per-map creator metadata), the primary/deployment card GUID comment block (all STRIP),
-`teamModels`, `nonPlaying`, `allowMenu`/`allowAutoSeat`, `*DiceSpawnTime`, version /
+`teamModels`, `nonPlaying`, `allowMenu`/`allowAutoSeat`, version /
 changelog constants (KEEP). TC-023s removed `centerCircle_GUID`, `quarterCircle_GUID` and the
 seven `interactiveButton*` toggle-state globals with the objects they served.
 
@@ -343,11 +347,8 @@ seven `interactiveButton*` toggle-state globals with the objects they served.
 - **Map Creator Filter `369707`** - creator filter + Battlemaster mat randomizer (STRIP) and
   the Table Theme swatches (KEEP); rewritten to only the swatches.
 - **Custom Dice Table `acae21` / `839fcc`** (138 KB each in LCT, identical; 63 KB after
-  TC-023t) - now a small Trench Crusade dice tray: spawn 1-4 d6 or a d3 (10 dice at most),
-  roll all through the LCT dice roller, revert / last 5 rolls, colours and pips, face counts
-  with total and the two highest / two lowest. It still hosts the generic table tools: save /
-  restore positions, measuring bubbles and custom bubble, clear bubbles / lines, highlight
-  paint, hotkeys. The 40k features listed in its row above are gone (STRIP-LOG, *Third strip*).
+  TC-023t) - rewritten by TC-024 as the Trench Crusade dice tray (see *Dice tray (TC-024)*).
+  Its table tools moved to the Measure & Mark panels `e24c01` / `e24c02` unchanged.
 - **Game Rounds `ee92cf`**, **Red/Blue Turns `055302`/`7e4111`** - LCT turn counters; removed
   by TC-023t with the turn engine.
 - **Mission Manager `cff35b`/`471de1`**, **10e Score Sheet `06d627`**, **Command Points
@@ -470,153 +471,9 @@ were left behind, as was its `6927df` shelf card (a map-controls illustration).
 
 ### Dice rollers
 
-`25b3ac` (Red, -6.4/1/31.6) and `ea3160` (Blue, 6.4/1/-31.6) are ST `e3a6d5` / `63dad0`: the
-**Trench Crusade** roller. Place a die on the centre pad, set +N / -N with the side
-buttons, click the number: it rolls 2+N dice and prints the two highest (+DICE) or two
-lowest (-DICE), which is the rulebook p15 Success Roll. The 26 alternate-art `States`
-(10.7 KB of Lua each) were dropped and the description's "[Right Click > State]" line with
-them. ST's plain N-dice roller (`15d529`, "ALT. DICE ROLLER") was not ported: LCT's dice
-rollers `17ca2b` / `927ca1` and the dice mats already do bulk dice. Use the TC roller for
-Success and Injury Rolls, the LCT mats for everything else; neither touches the other.
-
-### Counters
-
-Six `Custom_Token` counters (ST script, left click +1 / right click -1, editable name) in a
-row in each player's strip: Red `c0530b` Points (-23.4/31), `0e8265` Turn (-19.2/31),
-`e58368` Glory (-15/31); Blue `520a95` Points (23.4/-31), `f14264` Turn (19.2/-31),
-`7a87e9` Glory (15/-31). Sources ST `bf846e`/`5114af`/`cdcfd8` and `58b28d`/`025fa8`/`9458e0`; the
-Turn counters keep ST's `MIN_VALUE = 1`. The only script change is an appended `getValue`
-/ `setValue` so the Turn Tracker can write them. They are **added alongside** LCT's Game
-Rounds / Red Turns / Blue Turns (`ee92cf`, `055302`, `7e4111`): those drive the HUD ROUND
-badge and the chess clock through the Start Menu's pass-turn and were left untouched;
-LCT's "round" (both players passed) does not map onto a Trench Crusade Turn (alternating
-single activations), so the TC counters carry the Trench Crusade numbers and the LCT ones
-stay engine plumbing.
-
-### Token bags (TC-017)
-
-Twelve `Custom_Model_Infinite_Bag`s on LCT's bag shell (`3f45f1`'s mesh, invisible, scale
-1.49, locked) with one tagged content object and one locked, untagged child icon. Since
-TC-023v each side's six stand in one row at z=+/-27, 2.4" apart: Red x -13 .. -25 Blood
-(`3b0f1d`, slot of `e51f0c`), Blessing (`6cecd8`, slot of `e87880`), Activated `fef40e`,
-Down `e75c71`, Tough `d51618`, Objective `70d18f`. Blue mirrors it
-(`061bfb`, `c30c00`, `0659ae`, `9eb271`, `359c8c`, `2d4b7e`). Contents and tags:
-
-| Role | Tag on the content | Source | Why |
-|---|---|---|---|
-| blood | `tc-token:blood` | ST `a4e6d3` Blood Marker (`Custom_Dice` d6) | p19: a red die counts the markers; no equivalent in GN |
-| blessing | `tc-token:blessing` | ST `719992` Blessing Marker (`Custom_Dice` d6) | p20; no equivalent in GN |
-| activated | `tc-token:activated` | GN `7c7f58` ACTIVATED | consistent art with DOWN/TOUGH; ST's per-faction `Active` tokens (`8435a8` ...) not ported |
-| down | `tc-token:down` | GN `4f22ce` DOWN (standing token) | consistent art; ST `c00e37` not ported |
-| tough | `tc-token:tough` | GN `03604e` TOUGH | consistent art; ST `956155` not ported |
-| objective | `tc-token:objective` | ST `ba7eaf` Objective (`Custom_Assetbundle`) | the generic green objective from ST's "Objectives + Tokens" bag |
-
-A spawned token is a clone of the content, so it carries the tag; `getObjectsWithTag` never
-returns bag contents or attached icons, which is why **Start turn** can delete every
-`tc-token:activated` object on the table without emptying a bag. No Shaken or Broken token:
-p21 defines Shaken as a warband state with no marker, so it is a flag on the Turn Tracker.
-Not ported from ST's "Objectives + Tokens": the scenario pieces (emplacements, mines,
-peasants, reliquaries, supply caches, hell ticks, explosives, shells) - Phase 2 scenario
-work; the `Supply Cache` mesh is a pastebin URL in the raw save anyway. Not ported either:
-ST's Fear and Infection markers, the six faction dice bags and the seven faction activation
-bags (not asked for; candidates for TC-018 friction tickets).
-
-### Turn Tracker `4ac9e3` (TC-017)
-
-A locked `Custom_Tile` at (-31.5, 1, 16.6) (TC-023v; was (-22, 1, 15)), above the Warband Importer (measured live: a
-10.67x8 face at scale 4, the same 4:3 board image, mesh from local y 0 to 0.2), with eight
-`createButton`s: a label (`Turn N - <Phase> Phase`), **Initiative roll-off**, **Start turn
-(clear Activated)**, **Morale reminder**, **Next turn**, **Red Shaken** / **Blue Shaken**
-toggles and **Rules shelf**, laid out by `trackerLayout` from `BUTTONS` (rows 0.27 apart,
-1150x170 font 70, the Shaken pair 560 wide at x +-0.72, font 60; live-tuned) on the face
-`geomFromBounds` measures at load, at y top + 0.1, with one geometry line printed to the
-host chat and a `relayout` call. Buttons are matched by id (`buttonIndex`), never by label.
-`mod/scripts/4ac9e3.lua` is split like the importer: above the `TTS glue` line is pure
-Lua that `mod/test/tracker_test.lua` runs under plain Lua:
-
-- `tokenTag` / `roleFromTag` - the `tc-token:<role>` names, six roles.
-- `newState` / `normaliseState` - `{ turn, phase, shaken = { Red, Blue } }` with garbage
-  tolerance for saves made by an older script.
-- `startTurn` - phase 2 (Activation), returns the announcement with the cleared count.
-- `nextTurn` - turn + 1, phase 1 (Initiative), returns the initiative reminder (fewest
-  models on the table, Down and Out of Action not counted, tie rolls off - p32).
-- `rollOff` / `describeRollOff` - two d6, higher wins, tie asks for a re-roll.
-- `successRoll` - the p15 table: 2-6 failure, 7-11 success, 12+ critical (reserved for
-  later helpers; the tracker only announces initiative and morale).
-- `toggleShaken` / `shakenLabel` / `describeShaken` - the p21 consequence text.
-- `moraleSummary` - the p21 rule, the number of Down tokens on the table and any Shaken
-  side. **Per-colour Down / Out of Action counts are not computed**: tokens carry no colour,
-  and Out of Action models have left the table, so the tracker cannot tell whose they were
-  without the importer's roster bookkeeping; the whole-table Down count is what is cheap.
-- `countTagged` - counts entries whose tag list carries a role.
-- `geomFromBounds` / `trackerLayout` / `widgetExtent` / `describeGeometry` - the widget
-  geometry; the test keeps every button on the measured face, apart, with letters 0.45-1.3
-  units tall at the committed scale.
-
-The glue: `onStartTurn` destroys every `tc-token:activated` object; `onNextTurn` calls
-`setValue(turn)` on both TC Turn counters; `onMorale` counts `tc-token:down`; the Shaken
-toggles broadcast in the side's colour; `onRulesShelf` is `Player[colour].lookAt` at the
-shelf. State persists through `onSave` / `onLoad`.
-
-### HUD phase strip (TC-014)
-
-The strip is data-driven (`phases` in the Start Menu) with five fixed glyph buttons per row
-in the XML, so both were edited: `phases` is now Initiative / Activation / Morale, the
-`_phaseIds` tables and handlers shrink to three (`hudPhaseIni*` / `hudPhaseAct*` /
-`hudPhaseMor*`), the `Ph4`/`Ph5` buttons are gone from both rows of all three panels
-(the spectator's are display-only, `onClick=""`, as in LCT), the remaining glyphs are a
-die / crossed swords / skull with tooltips, and the panel widths drop by the two removed
-buttons (1280 -> 1200, 1224 -> 1144 in the XML for Red, Blue and Grey, and in
-`HUD_FULL`).
-
-### Objective markers (TC-023u, reworked in TC-022a and TC-022b)
-
-The content of both Objective bags (`a18feb` in Red `70d18f`, `8f0c3a` in Blue `2d4b7e`, tag
-`tc-token:objective`) is a thin circular `Custom_Tile` (type 2, thickness 0.1, white tint)
-whose face is our objective symbol, `https://tc.rynfin.org/tts/objective-marker.png`, running
-`mod/scripts/a18feb.lua` (identical copy in `8f0c3a.lua`). TC-022b replaced the built-in
-`Chip_10` poker chip (thick, printed "AWESOME POKER" / "10"); TC-022a had replaced the
-Scripted Table asset bundle before it (LCT's 40k objective with a ~6" ring baked into the
-model). The bags' attached icons (`fc05bb` / `b7e51d`) are the same tile.
-
-The symbol (four wedges pointing in from a ring at a central lozenge; original, geometric)
-is drawn by `scripts/objective_symbol.py` (standard library only) into
-`apps/web/public/tts/`: `objective-symbol.png` on transparency for terrain decals and
-`objective-marker.png` on a dark disc with a green rim for the marker face. The web build
-copies `public/` into the static folder the API serves, so both ship with the image;
-`pnpm mod:test` fails if the committed PNGs differ from the script's output.
-
-- **No physics.** Once spawned the marker locks itself, turns gravity off and makes every
-  Box / Mesh / Sphere / Capsule collider in it a trigger (mesh colliders convex first): it
-  blocks nothing and nothing rests on it, but the cursor still hits it. The collider var
-  names come from LCT's working objective code, not the docs (which list
-  `Component.set(name, value)` only); whether a built-in chip accepts `isTrigger` is the
-  first live check.
-- **Rule size.** It levels itself and rescales x / z so `getBoundsNormalized()` is exactly
-  40mm (1.575") across, the rulebook's largest Marker (p146), whatever size the tile comes in
-  at.
-- **Virtual spot and range**, as object vector lines 0.02" above the disc's top face (the
-  tile's pivot is its bottom face, so the lift is measured from `getBounds()`):
-  a 40mm spot outline, and either a control ring 1" beyond it (1.787" radius; "on, in or
-  within 1"", p152 / p154 / p156 / p193) or, for an objective a terrain piece covers, the
-  band the spawner passes: the piece's turned footprint grown by 1" with rounded corners
-  (`grownOutline` in `packages/battlefield/src/tts.ts`; the whole piece is the Objective,
-  p152). Lines are local to the marker with the dice tray's measuring-bubble recipe
-  (rotation {270, 0, 0}); that local +y maps to world -z is inferred from Unity's rotation,
-  not measured: if a band reads mirrored across the piece, flip the sign of `y` in `line()`.
-- **Seating.** A downward ray onto the highest `tc-terrain` piece or the mat, never a model
-  or another marker. A ray that lands exactly on the seam between two ground tiles passes
-  through to the mat (measured live on Relic Hunt seed 32 at (-6, -12): 0.96 at x = -6, 3.45
-  at x = -5.7 / -6.3), so when the centre ray finds no terrain, four rays 0.3" off centre
-  decide.
-- **Move / delete**: right-click **Move objective** unlocks it for one drag and it reseats and
-  relocks on drop; **Delete objective** (or Delete) removes it. Ring radius and band are
-  saved; everything else is re-applied on load.
-- **Ready flag.** The script sets the global `ready` once it has settled (sized, seated,
-  rings drawn). A `setRingRadius` call made from `takeObject`'s callback runs before the
-  script's `onLoad` and is lost (seen live on Claim No Man's Land seed 25), so spawners wait
-  for `getVar("ready")` first.
-
+`25b3ac` / `ea3160` were the Scripted Table's Trench Crusade roller (ST `e3a6d5` / `63dad0`):
+a die on the centre pad, +N / -N, 2+N dice, the two highest or lowest. TC-024 folded it into
+the dice tray and removed it, with LCT's bowls `17ca2b` / `927ca1`.
 `objectiveMarkers(layout, palette, catalog, opts)` returns per objective its world x / z,
 `ringIn` and `band` (empty for an open objective). The Battlefield panel only takes a marker
 for an open objective; a covered one is marked on its terrain piece (see the panel below).
@@ -631,24 +488,12 @@ The middle of the table is kept clear for the battlefield: nothing stands within
   anchor `369707` (-40, 16.6) beside the tracker (its XML panel is 15.7 x 7 inches).
 - **Player strips**, Red at z 26.0 .. 37.8 and Blue its mirror through the centre (every
   Blue twin is the Red position negated). Seen from the Red seat (+z, facing the board):
-  the dice tray `acae21` at the left end (x -0.8 .. 27.8, centre (13.5, 31.6)), the
-  opponent's dice-camera screen `c09349` beyond it at x 33.7, and in the freed half to the
-  right: the TC roller `25b3ac` beside the tray (x -6.4, with the 4.4" ring it rolls on
-  kept clear), then three rows - the six token bags at z 27, Glory / Turn / Points and the
-  banner at z 31, the trash bin and its counter, d3 / d6 bags and the two LOS markers at
-  z 35.6.
-- **Dice tray** (both identical): scale (1.875, 1, 3.75), so half the LCT length and the
-  full depth. `place()` authors every widget in world inches and counter-scales its x by
-  3.75 / 1.875, so text stays square and at the size it had on the 3.75 tray. In the seated
-  player's frame (u right, v toward them): bubble / highlight tools and Clear mat / Roll
-  all / colours / pip on the far row, measure buttons / size / Go / +1d6 .. +4d6 / +1d3 /
-  Custom Dice on the next, the five-button tool column at the left, the readout beside it
-  (font 340 at v 1.0, TC-022c: at 400 / v 1.1 its High 2 / Low 2 line overhung the near
-  edge live; `layout_test` now spaces multi-line labels 1.6 line heights apart to match),
-  then the result rows (`RESULT_LAYOUT`: 10 per row, value rows 1.05 apart, from u 0.05,
-  v -2), the ten spawn slots (2 x 5, 0.94 apart) and the roller bowl on the tray's snap
-  point at the right. The roller asks the tray for `getResultLayout` and lays rows and
-  ejected dice out in the tray's frame instead of fixed world offsets.
+  the dice tray `acae21` at the left end (x -0.8 .. 27.8, centre (13.5, 31.6)), Blue's
+  last-roll board `e24b01` beyond it at x 33.7, and in the freed half to the right: Measure
+  & Mark `e24c01` beside the tray (x -6.4, 9.0 x 7.6), then three rows - the six token bags
+  at z 27, Glory / Turn / Points and the banner at z 31, the trash bin and its counter, d3 /
+  d6 bags and the two LOS markers at z 35.6.
+- **Dice tray**: see *Dice tray (TC-024)* below.
 - The LCT mat `4ee1f2` is parked under the felt; boards are generated for the felt's top
   (`DEFAULT_TTS_OPTIONS.matTopY` 0.9, tied to the save by `packages/battlefield/test/table.test.ts`)
   and objective markers off terrain seat on the felt.
@@ -699,3 +544,54 @@ seed N` or `Random board: seed N`), **Next board** / **Random board**, **Spawn b
   **Clear battlefield** removes the same two tags. Network and HTTP failures are written to
   the status line with the host and the server's message.
 - State saved: scenario index, board index, random seed, chosen archetype.
+
+## Dice tray (TC-024)
+
+Design: one mat per player, the opponent's last roll on a board in your strip, and the table
+tools on their own panel. Nothing here has run in TTS yet (`mod/TESTING.md` step 15).
+
+- **Tray `acae21` / `839fcc`** (identical scripts; the side comes from the tray's z): a
+  `Custom_Tile` at uniform x/z scale 5.575 (28.6 x 11.15, one unit thick so widgets sit
+  0.1" above the face), face `dice-tray-<side>.png` drawn by `scripts/dice_tray_art.py` and
+  served from `https://tc.rynfin.org/tts/`. Widgets are authored in inches in the seated
+  player's frame (u right, v toward them) and converted by `toButton` (local = inches / 5.575,
+  500 width units and ~650 height units per local unit, button x mirrored). Every text row
+  is a button with a real size (60-unit floor) and an opaque backing in the colour under it.
+- Controls strip: `−` / `±N DICE` / `+` (net DICE, -8..+8, greyed in Sum), the mode button
+  (Success -> Injury -> Bloodbath -> Sum; right click in Bloodbath toggles Deadly), `+1d6`
+  `+2` `+3` `+4` `+d3` (add dice, switch to Sum), ROLL, Last roll (right click: last five in
+  chat), Clear.
+- ROLL: Success / Injury / Bloodbath clear the tray and spawn base + |N| dice (base 2,
+  Bloodbath 3, Deadly 4, at most 12) at 1.2" on a loose 2 x 6 grid and `roll()` them; the
+  template is a die the player dropped on the tray (else any die on it, else a
+  `Die_6_Rounded` in the side colour), cloned with `spawnObjectData` with its script fields
+  emptied. Sum rolls the dice on the tray. Dice are found with a `Physics.cast` box over the
+  tray and tracked by GUID; there is no polling scan.
+- When every die rests (`Wait.condition`, `REST_TIMEOUT`), `resolve` sorts the faces
+  (descending, or ascending at -DICE) and keeps k = 2 / 2 / 3 / 4 / all. `slotU(i, n, k)`
+  places each die (`setPositionSmooth`, then `setRotationValue` to square it), its value
+  label, its gold plate (vector lines) and the KEPT bracket, so they cannot drift apart.
+  Kept dice get `highlightOn` gold. The verdict chip shows only in Success (2-6 Failure,
+  7-11 Success, 12+ Critical); Injury and Bloodbath say `before INJURY MODIFIERS`.
+- The result goes to the readout, to the other side's board (`call("showRoll")`) and to chat
+  in one line (`Red · Success +1 DICE: [6][5] 3 → 11 Success`). A tracked die re-rolled
+  by hand (`onObjectRandomize` / `onObjectDrop`) re-sorts and re-publishes once.
+- `onSave` keeps the mode, DICE, Deadly, the current result, the last five and the tracked
+  GUIDs; on load the readout and the board are redrawn.
+- Unmeasured numbers (DESIGN live checks): `STD_DIE_SCALE` (corrected from the die's bounds
+  at spawn), `REST_TIMEOUT`, `D3_FACE` (the d3's `getValue` -> printed face), the font
+  size per inch (`LINE_PER_FONT`, from the old tray's screenshot) and the vector-line
+  thickness.
+- **Opponent boards `e24b01` (Red's strip, shows Blue) / `e24b02`**: 10.6 x 11.15 tiles at
+  scale 5.575 in the old screen slots, read-only. Fixed widgets: side-coloured header with
+  the roll number, mode line, 12 chips from the same `slotU` (pitch 1.0", kept gap 0.3",
+  chip 0.8" shrinking to 0.7" at 12 dice), kept total, verdict, `n dice · all ∑`, face
+  counts.
+- **Measure & Mark `e24c01` (Red, x -6.4) / `e24c02`**: 9.0 x 7.6 tiles at scale 3.8 with
+  the bubble buttons, size box + Go, Clear bubbles, Highlight + swatch, Clear lines, Save
+  pos. / Restore, HUD, and the hotkeys; the code is the old tray's, moved. Global's bubble
+  overlay applies on the panel (`measurePanelForColor`, `redMeasurePanel_GUID`).
+- Removed with it: the LCT bowls `17ca2b` / `927ca1`, the dice cameras `19b9bf` / `96a319`
+  and screens `c09349` / `48dcae`, the TC rollers `25b3ac` / `ea3160`, the loose d6
+  `ae1f5b` / `c1aaa4`, Global's roller GUIDs, `*DiceSpawnTime` and the PERF scan / RNG Test
+  debug buttons. Kept: the d6 / d3 bags (the d3 template comes from the side's d3 bag).
