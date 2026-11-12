@@ -55,3 +55,17 @@ describe("gloryPool", () => {
     expect(gloryPool(na({ gameNumber: 3 }), data)).toBeUndefined();
   });
 });
+
+// TC-003j: the price buttons read the warband's own limits when it has them.
+describe("custom limits on the shelf", () => {
+  it("a 300-ducat limit blocks a buy the rules' 700 would allow; a glory limit opens a glory buy at game 1", async () => {
+    const { warbandThreshold } = await import("@tc/rules");
+    const shelf = (w: ReturnType<typeof createWarband>): Purse => ({ ducats: 290, glory: 0, threshold: warbandThreshold(w, data).value, ...(gloryPool(w, data) !== undefined ? { gloryPool: gloryPool(w, data)! } : {}) });
+    const plain = createWarband({ name: "t", factionId: "new-antioch" }, "w");
+    const capped = createWarband({ name: "t", factionId: "new-antioch", ducatLimit: 300, glory: 7 }, "w");
+    expect(purchase(shelf(plain), { cost: { ducats: 30, glory: 0 } }).state).toBe("buy");
+    expect(purchase(shelf(capped), { cost: { ducats: 30, glory: 0 } })).toMatchObject({ state: "over-threshold", reason: "Over threshold by 20" });
+    expect(purchase(shelf(plain), { cost: { ducats: 0, glory: 7 } }).state).toBe("over-glory");
+    expect(purchase(shelf(capped), { cost: { ducats: 0, glory: 7 } }).state).toBe("buy");
+  });
+});

@@ -140,3 +140,17 @@ describe("roster choices", () => {
     expect("choices" in w).toBe(false);
   });
 });
+
+// TC-003j: the warband's own ducat and glory limits.
+describe("purse limits", () => {
+  it("are set at creation, changed and cleared, as whole non-negative numbers", () => {
+    let w = createWarband({ name: "t", factionId: "new-antioch", ducatLimit: 1000.7, glory: 3 }, "w");
+    expect(w).toMatchObject({ ducatLimit: 1000, glory: 3 });
+    w = rosterReducer(w, { type: "set-ducat-limit", ducats: -5 });
+    expect(w.ducatLimit).toBe(0);
+    w = rosterReducer(w, { type: "set-ducat-limit", ducats: undefined });
+    w = rosterReducer(w, { type: "set-glory", glory: undefined });
+    expect("ducatLimit" in w || "glory" in w).toBe(false);
+    expect("ducatLimit" in createWarband({ name: "t", factionId: "new-antioch" }, "w")).toBe(false);
+  });
+});

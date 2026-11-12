@@ -1,4 +1,4 @@
-import { appliesUnder, findSubfaction, heldItemCost, resolveLimit, rosterVariants } from "@tc/rules/browser";
+import { appliesUnder, findSubfaction, heldItemCost, resolveLimit, rosterVariants, warbandGloryPool } from "@tc/rules/browser";
 import { useEffect, useMemo, useState } from "react";
 import { IconLink } from "../components/IconButton.js";
 import { MemberDetails } from "../components/MemberDetails.js";
@@ -6,6 +6,7 @@ import { MemberList } from "../components/MemberList.js";
 import { Price } from "../components/Price.js";
 import { PriceButton } from "../components/PriceButton.js";
 import { PreGamePanel } from "../components/PreGamePanel.js";
+import { PurseLimits } from "../components/PurseLimits.js";
 import { TtsCode } from "../components/TtsCode.js";
 import { ValidationPanel } from "../components/ValidationPanel.js";
 import { memberDetails, type Details } from "../roster/details.js";
@@ -23,7 +24,8 @@ export function WarbandScreen() {
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
-  const pool = warband.glory ?? (warband.gameNumber === 1 ? (variant?.startingGlory ?? 0) : undefined);
+  const glory = warbandGloryPool(warband, rules);
+  const pool = glory.value;
   const over = cost.ducats > threshold.value;
   const n = warband.members.length;
 
@@ -92,14 +94,26 @@ export function WarbandScreen() {
             <dt>Ducats</dt>
             <dd>
               <span className={over ? "error" : ""}>{cost.ducats}</span> of {threshold.value}
+              {threshold.custom && <span className="muted"> (custom limit; the rules give {threshold.ruled})</span>}
               {threshold.clamped && <span className="warning"> (table ends at game {threshold.row.game})</span>}
             </dd>
             <dt>Glory</dt>
             <dd>
               {cost.glory} spent{pool !== undefined ? ` of ${pool}` : ""}
+              {glory.custom && <span className="muted"> (custom limit; the rules give {glory.ruled ?? "none"})</span>}
             </dd>
           </dl>
-          <p className="quiet">Faction, subfaction, variant, patron, game and purse are fixed at creation; campaign play will move them later.</p>
+          <div>
+            <PurseLimits
+              ducatLimit={warband.ducatLimit}
+              glory={warband.glory}
+              ruledDucats={threshold.ruled}
+              ruledGlory={glory.ruled}
+              onDucats={(n) => dispatch({ type: "set-ducat-limit", ducats: n })}
+              onGlory={(n) => dispatch({ type: "set-glory", glory: n })}
+            />
+          </div>
+          <p className="quiet">Faction, subfaction, variant, patron and game are fixed at creation; campaign play will move them later. The ducat and glory limits stay editable: a campaign or house rule can change them between games.</p>
         </section>
         <section className="panel">
           <h2>TTS import</h2>

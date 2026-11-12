@@ -1,7 +1,8 @@
-import { findSubfaction, findUnit, importNewRecruit, rosterVariants, unzipRoster, upgradeFor, validateWarband, warbandCost, type ImportResult, type RulesData } from "@tc/rules/browser";
+import { findSubfaction, findUnit, importNewRecruit, rosterVariants, unzipRoster, upgradeFor, validateWarband, warbandCost, warbandGloryPool, warbandThreshold, type ImportResult, type RulesData } from "@tc/rules/browser";
 import { useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Price } from "../components/Price.js";
+import { PurseLimits } from "../components/PurseLimits.js";
 import { memberTitle } from "../roster/select.js";
 import { useRules } from "../rules.js";
 import { loadDraft, startDraft } from "../storage.js";
@@ -50,8 +51,11 @@ export function ImportPage() {
     e.target.value = "";
   };
 
-  function createDraft(result: ImportResult) {
-    startDraft(result.warband);
+  function createDraft(result: ImportResult, limits: { ducatLimit?: number; glory?: number }) {
+    const warband = { ...result.warband };
+    delete warband.ducatLimit;
+    delete warband.glory;
+    startDraft({ ...warband, ...limits });
     navigate(`/w/${DRAFT_CODE}`);
   }
 
@@ -85,13 +89,19 @@ export function ImportPage() {
           <strong>{state.fileName}</strong> could not be imported: {state.message}
         </div>
       )}
-      {state.kind === "ready" && <Preview rules={rules} fileName={state.fileName} result={state.result} hadDraft={hadDraft} onCreate={() => createDraft(state.result)} />}
+      {state.kind === "ready" && <Preview key={state.fileName} rules={rules} fileName={state.fileName} result={state.result} hadDraft={hadDraft} onCreate={(limits) => createDraft(state.result, limits)} />}
     </div>
   );
 }
 
-function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: RulesData; fileName: string; result: ImportResult; hadDraft: boolean; onCreate: () => void }) {
-  const { warband, unresolved, source } = result;
+function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: RulesData; fileName: string; result: ImportResult; hadDraft: boolean; onCreate: (limits: { ducatLimit?: number; glory?: number }) => void }) {
+  const { unresolved, source } = result;
+  // The roster's own glory figure arrives as the glory limit; either limit can be changed or cleared before the draft is made.
+  const [ducatLimit, setDucatLimit] = useState<number | undefined>(result.warband.ducatLimit);
+  const [gloryLimit, setGloryLimit] = useState<number | undefined>(result.warband.glory);
+  const warband = { ...result.warband, ducatLimit, glory: gloryLimit };
+  if (ducatLimit === undefined) delete warband.ducatLimit;
+  if (gloryLimit === undefined) delete warband.glory;
   const faction = rules.factionsById.get(warband.factionId);
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
@@ -126,7 +136,17 @@ function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: Rules
           <dt>Cost</dt>
           <dd>
             {cost.ducats} ducats{cost.glory ? `, ${cost.glory} glory` : ""}
-            {warband.glory !== undefined && <span className="muted"> (glory pool {warband.glory})</span>}
+          </dd>
+          <dt>Limits</dt>
+          <dd>
+            <PurseLimits
+              ducatLimit={ducatLimit}
+              glory={gloryLimit}
+              ruledDucats={warbandThreshold(warband, rules).ruled}
+              ruledGlory={warbandGloryPool(warband, rules).ruled}
+              onDucats={setDucatLimit}
+              onGlory={setGloryLimit}
+            />
           </dd>
           <dt>Rules check</dt>
           <dd className={validation.errors.length ? "error" : "ok"}>
@@ -185,7 +205,7 @@ function Preview({ rules, fileName, result, hadDraft, onCreate }: { rules: Rules
       <div className={styles.actions}>
         {hadDraft && <span className="warning">This replaces the unsaved draft in this browser.</span>}
         <Link to="/">Cancel</Link>
-        <button className="primary" onClick={onCreate}>
+        <button className="primary" onClick={() => onCreate({ ...(ducatLimit !== undefined ? { ducatLimit } : {}), ...(gloryLimit !== undefined ? { glory: gloryLimit } : {}) })}>
           Create draft from this roster
         </button>
       </div>

@@ -33,8 +33,13 @@ export const Warband = z.object({
   members: z.array(WarbandMember),
   /** Unspent ducats (Warbands of Trench Crusade p10). Informational; not part of the threshold check. */
   strongboxDucats: z.number().int().nonnegative().optional(),
-  /** Glory Points available to spend. When set, glory-priced models and items are checked against it. */
+  /** Glory Points the warband may spend, set for it (a campaign's or a house rule's), in place of the pool the rules give (the variant's starting glory at game 1). Glory-priced models and items are checked against it. */
   glory: z.number().int().nonnegative().optional(),
+  /**
+   * A ducat limit agreed for this warband (a campaign's or a house rule's), in
+   * place of the Threshold Value the rules compute. Absent: the rules' value.
+   */
+  ducatLimit: z.number().int().nonnegative().optional(),
   /** Choices made before each game, keyed as in unit-rules.json preGameChoices (brokenOnTheWheel: the victim's member id). */
   preGame: z.record(z.string(), z.string().nullable()).optional(),
   /**

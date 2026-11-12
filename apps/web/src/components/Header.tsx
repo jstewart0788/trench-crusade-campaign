@@ -1,4 +1,4 @@
-import { findSubfaction, rosterVariants, type RulesData, type ValidationResult, type Warband, type WarbandCost, type WarbandThreshold } from "@tc/rules/browser";
+import { findSubfaction, rosterVariants, warbandGloryPool, type RulesData, type ValidationResult, type Warband, type WarbandCost, type WarbandThreshold } from "@tc/rules/browser";
 import type { Dispatch } from "react";
 import type { RosterAction } from "../roster/reducer.js";
 import type { PendingDelta } from "../roster/staging.js";
@@ -32,7 +32,8 @@ export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, 
   const subfaction = findSubfaction(rules, warband);
   const variant = rosterVariants(rules, warband).find((v) => v.id === warband.variantId);
   const patron = rules.campaign.patrons.find((p) => p.id === warband.patronId);
-  const pool = warband.glory ?? (warband.gameNumber === 1 ? (variant?.startingGlory ?? 0) : undefined);
+  const glory = warbandGloryPool(warband, rules);
+  const pool = glory.value;
   const over = cost.ducats > threshold.value;
   const errors = validation.errors.length;
   const warnings = validation.warnings.length;
@@ -59,15 +60,23 @@ export function Header({ warband, rules, cost, delta, pendingCount, canConfirm, 
 
       <div className={styles.purse}>
         <div className={styles.coins}>
-          <span className={cx(styles.coin, over && styles.coinOver)} title={over ? `Over the threshold by ${cost.ducats - threshold.value}` : "Ducats spent of the threshold"}>
+          <span className={cx(styles.coin, over && styles.coinOver)} title={`${over ? `Over the ${threshold.custom ? "ducat limit" : "threshold"} by ${cost.ducats - threshold.value}` : `Ducats spent of the ${threshold.custom ? "ducat limit" : "threshold"}`}${threshold.custom ? ` (custom; the rules give ${threshold.ruled})` : ""}`}>
             <DucatGlyph className={styles.coinGlyph} />
             <span className={styles.coinValue}>{cost.ducats}</span>
-            <span className={styles.coinOf}>/ {threshold.value}</span>
+            <span className={styles.coinOf}>
+              / {threshold.value}
+              {threshold.custom ? " custom" : ""}
+            </span>
           </span>
-          <span className={cx(styles.coin, styles.coinGlory)} title="Glory spent of the pool">
+          <span className={cx(styles.coin, styles.coinGlory)} title={`Glory spent of the ${glory.custom ? `glory limit (custom; the rules give ${glory.ruled ?? "none"})` : "pool"}`}>
             <GloryGlyph className={styles.coinGlyph} />
             <span className={styles.coinValue}>{cost.glory}</span>
-            {pool !== undefined && <span className={styles.coinOf}>/ {pool}</span>}
+            {pool !== undefined && (
+              <span className={styles.coinOf}>
+                / {pool}
+                {glory.custom ? " custom" : ""}
+              </span>
+            )}
           </span>
           <span className={`${styles.badge} ${errors ? styles.bad : styles.good}`} title={errors || warnings ? "The full list is on the Warband screen" : "Rulebook-legal"}>
             {errors === 0 ? "Legal" : `${errors} ${errors === 1 ? "error" : "errors"}`}

@@ -1,4 +1,4 @@
-import { rosterVariants, type RulesData, type Warband } from "@tc/rules/browser";
+import { warbandGloryPool, type RulesData, type Warband } from "@tc/rules/browser";
 
 // The shop's arithmetic: what a price button shows and whether pressing it
 // buys. A price is the action; an option the roster may take but cannot pay
@@ -47,11 +47,9 @@ export interface Purchase {
   free: boolean;
 }
 
-/** Glory to spend: the recorded pool, or at game 1 the variant's starting glory (Warbands p10: none otherwise). */
+/** Glory to spend: the warband's own glory limit, or at game 1 the variant's starting glory (Warbands p10: none otherwise). */
 export function gloryPool(warband: Warband, data: RulesData): number | undefined {
-  if (warband.glory !== undefined) return warband.glory;
-  if (warband.gameNumber !== 1) return undefined;
-  return rosterVariants(data, warband).find((v) => v.id === warband.variantId)?.startingGlory ?? 0;
+  return warbandGloryPool(warband, data).value;
 }
 
 export function purchase(purse: Purse, offer: Offer): Purchase {

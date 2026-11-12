@@ -1,6 +1,7 @@
-import { patronsForFaction, rosterVariants } from "@tc/rules/browser";
+import { patronsForFaction, rosterVariants, warbandGloryPool, warbandThreshold } from "@tc/rules/browser";
 import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { PurseLimits } from "../components/PurseLimits.js";
 import { createWarband } from "../roster/reducer.js";
 import { useRules } from "../rules.js";
 import { loadDraft, startDraft } from "../storage.js";
@@ -15,6 +16,8 @@ export function NewPage() {
   const [variantId, setVariantId] = useState("");
   const [patronId, setPatronId] = useState("");
   const [gameNumber, setGameNumber] = useState(1);
+  const [ducatLimit, setDucatLimit] = useState<number | undefined>(undefined);
+  const [gloryLimit, setGloryLimit] = useState<number | undefined>(undefined);
   const hadDraft = useMemo(() => loadDraft() !== undefined, []);
 
   if (error) return <p className="error">Could not load the rules data: {error}</p>;
@@ -26,6 +29,10 @@ export function NewPage() {
   const subfactions = faction?.subfactions ?? [];
   const variants = faction ? rosterVariants(rules, { factionId: faction.id, subfactionId: subfactionId || undefined }) : [];
   const patrons = faction ? patronsForFaction(rules, faction.id) : [];
+  // What the rules give this warband, shown beside the limits so a custom one is a visible change.
+  const scope = { factionId: faction?.id ?? rules.factions[0]!.id, subfactionId: subfactionId || undefined, variantId: variantId || undefined, gameNumber };
+  const ruledDucats = warbandThreshold(scope, rules).ruled;
+  const ruledGlory = warbandGloryPool(scope, rules).ruled;
 
   function pickFaction(id: string) {
     setFactionId(id);
@@ -49,6 +56,8 @@ export function NewPage() {
       variantId: variantId || undefined,
       patronId: patronId || undefined,
       gameNumber,
+      ...(ducatLimit !== undefined ? { ducatLimit } : {}),
+      ...(gloryLimit !== undefined ? { glory: gloryLimit } : {}),
     });
     startDraft(warband);
     navigate("/w/draft/barracks");
@@ -111,6 +120,7 @@ export function NewPage() {
         Game number
         <input type="number" min={1} step={1} value={gameNumber} onChange={(e) => setGameNumber(Math.max(1, Number(e.target.value) || 1))} />
       </label>
+      <PurseLimits ducatLimit={ducatLimit} glory={gloryLimit} ruledDucats={ruledDucats} ruledGlory={ruledGlory} onDucats={setDucatLimit} onGlory={setGloryLimit} />
       <div className={styles.actions}>
         {hadDraft && <span className="warning">This replaces the unsaved draft in this browser.</span>}
         <Link to="/import">Import from NewRecruit instead</Link>

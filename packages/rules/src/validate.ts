@@ -204,16 +204,15 @@ export function validateWarband(input: Warband, data: RulesData, opts: ValidateO
   const threshold = t.value;
   if (t.clamped && opts.threshold === undefined) warn({ message: `Threshold table ends at game ${t.row.game}; using ${t.row.threshold} for game ${warband.gameNumber}` });
   if (cost.ducats > threshold) {
-    fail({ code: "over-threshold", message: `Warband costs ${cost.ducats} ducats; Threshold Value is ${threshold}` });
+    fail({ code: "over-threshold", message: `Warband costs ${cost.ducats} ducats; ${t.custom ? "its ducat limit" : "Threshold Value"} is ${threshold}` });
   }
 
-  // Warbands p10: a new warband has no Glory unless its variant grants some.
-  let glory = warband.glory;
-  if (glory === undefined && warband.gameNumber === 1) glory = variant?.startingGlory ?? 0;
+  // Warbands p10: a new warband has no Glory unless its variant grants some; the warband's own limit replaces that.
+  const glory = warbandGloryPool(warband, data).value;
   if (glory === undefined) {
     if (cost.glory > 0) warnings.push({ code: "glory-unknown", message: `This warband spends ${cost.glory} Glory, but the Glory it has isn't recorded yet, so it isn't checked` });
   } else if (cost.glory > glory) {
-    fail({ code: "over-glory", message: `Warband spends ${cost.glory} Glory Points but only ${glory} are available` });
+    fail({ code: "over-glory", message: `Warband spends ${cost.glory} Glory Points but only ${glory} are available${warband.glory !== undefined ? " (its glory limit)" : ""}` });
   }
 
   checkUnitCounts(warband, data, members, ctx, fail, warn);
@@ -320,6 +319,10 @@ export interface WarbandThreshold {
   /** The table row it came from, before any variant adjustment. */
   row: ThresholdRow;
   clamped: boolean;
+  /** The warband's own ducat limit is in force (Warband.ducatLimit). */
+  custom: boolean;
+  /** What the rules give, whether or not a limit of the warband's own replaces it. */
+  ruled: number;
 }
 
 /**
@@ -328,12 +331,29 @@ export interface WarbandThreshold {
  * with a smaller purse (Papal States: "Threshold Value is reduced by 200";
  * for a one-off game, "reduce the amount of ducats ... by 200", Warbands p35).
  */
-export function warbandThreshold(warband: Pick<Warband, "factionId" | "subfactionId" | "variantId" | "gameNumber">, data: RulesData, agreed?: number): WarbandThreshold {
+export function warbandThreshold(warband: Pick<Warband, "factionId" | "subfactionId" | "variantId" | "gameNumber" | "ducatLimit">, data: RulesData, agreed?: number): WarbandThreshold {
   const t = thresholdFor(data, warband.gameNumber);
-  let value = agreed ?? t.row.threshold;
+  let ruled = agreed ?? t.row.threshold;
   const variant = rosterVariants(data, warband).find((v) => v.id === warband.variantId);
-  if (variant?.startingDucats !== undefined) value -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
-  return { value, row: t.row, clamped: t.clamped };
+  if (variant?.startingDucats !== undefined) ruled -= thresholdFor(data, 1).row.threshold - variant.startingDucats;
+  // The warband's own limit replaces the rules' value outright; an agreed game size passed by the caller wins over both.
+  const custom = agreed === undefined && warband.ducatLimit !== undefined;
+  return { value: custom ? warband.ducatLimit! : ruled, row: t.row, clamped: t.clamped && !custom, custom, ruled };
+}
+
+export interface WarbandGloryPool {
+  /** Glory the warband may spend; undefined when nothing says (a later game with no pool recorded). */
+  value: number | undefined;
+  /** The warband's own glory limit is in force (Warband.glory). */
+  custom: boolean;
+  /** What the rules give: the variant's starting glory at game 1 (Warbands p10: none otherwise), unknown later. */
+  ruled: number | undefined;
+}
+
+/** The Glory the warband may spend: its own limit when set, else what the rules give. */
+export function warbandGloryPool(warband: Pick<Warband, "factionId" | "subfactionId" | "variantId" | "gameNumber" | "glory">, data: RulesData): WarbandGloryPool {
+  const ruled = warband.gameNumber === 1 ? (rosterVariants(data, warband).find((v) => v.id === warband.variantId)?.startingGlory ?? 0) : undefined;
+  return warband.glory !== undefined ? { value: warband.glory, custom: true, ruled } : { value: ruled, custom: false, ruled };
 }
 
 /** The counting context the validator uses for limit text and gates, for callers that show limits before validating. */

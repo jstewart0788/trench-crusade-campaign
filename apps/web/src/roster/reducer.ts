@@ -10,6 +10,8 @@ export type RosterAction =
   | { type: "rename"; name: string }
   | { type: "set-game-number"; gameNumber: number }
   | { type: "set-glory"; glory: number | undefined }
+  /** The warband's own ducat limit, in place of the rules' Threshold Value; undefined returns to the rules'. */
+  | { type: "set-ducat-limit"; ducats: number | undefined }
   | { type: "set-variant"; variantId: string | undefined }
   | { type: "set-patron"; patronId: string | undefined }
   /** A choice made when the warband is created (unit-rules.json rosterChoices: the Court's Sin). */
@@ -37,6 +39,9 @@ export interface NewWarbandInit {
   variantId?: string;
   patronId?: string;
   gameNumber?: number;
+  /** The warband's own limits, when the campaign or a house rule sets them. */
+  ducatLimit?: number;
+  glory?: number;
 }
 
 export function createWarband(init: NewWarbandInit, id: string = crypto.randomUUID()): Warband {
@@ -44,6 +49,8 @@ export function createWarband(init: NewWarbandInit, id: string = crypto.randomUU
   if (init.subfactionId) warband.subfactionId = init.subfactionId;
   if (init.variantId) warband.variantId = init.variantId;
   if (init.patronId) warband.patronId = init.patronId;
+  if (init.ducatLimit !== undefined) warband.ducatLimit = limit(init.ducatLimit);
+  if (init.glory !== undefined) warband.glory = limit(init.glory);
   return warband;
 }
 
@@ -56,6 +63,9 @@ export function nextMemberId(members: WarbandMember[]): string {
   }
   return `m${max + 1}`;
 }
+
+/** A whole, non-negative number of ducats or glory. */
+const limit = (n: number) => Math.max(0, Math.floor(n) || 0);
 
 function withOptional<T extends object, K extends keyof T>(obj: T, key: K, value: T[K] | undefined): T {
   const next = { ...obj };
@@ -87,7 +97,9 @@ export function rosterReducer(state: Warband, action: RosterAction): Warband {
     case "set-game-number":
       return { ...state, gameNumber: Math.max(1, Math.floor(action.gameNumber) || 1) };
     case "set-glory":
-      return withOptional(state, "glory", action.glory === undefined ? undefined : Math.max(0, Math.floor(action.glory) || 0));
+      return withOptional(state, "glory", action.glory === undefined ? undefined : limit(action.glory));
+    case "set-ducat-limit":
+      return withOptional(state, "ducatLimit", action.ducats === undefined ? undefined : limit(action.ducats));
     case "set-variant":
       return withOptional(state, "variantId", action.variantId);
     case "set-choice": {

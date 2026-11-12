@@ -127,6 +127,17 @@ describe("warbands", () => {
     expect(fetched.body).toMatchObject({ createdAt: "2026-11-04T12:00:00.000Z", updatedAt: "2026-11-05T09:30:00.000Z" });
   });
 
+  it("keeps a warband's own ducat and glory limits and validates against them (TC-003j)", async () => {
+    const { app } = makeApp();
+    const created = await request(app).post("/api/warbands").send(newAntioch({ ducatLimit: 300, glory: 2 }));
+    expect(created.status).toBe(201);
+    expect(created.body.warband).toMatchObject({ ducatLimit: 300, glory: 2 });
+    expect(created.body.validation.errors.map((e: { code: string }) => e.code)).toEqual(["over-threshold"]);
+    const cleared = await request(app).put(`/api/warbands/${created.body.code}`).send(newAntioch());
+    expect("ducatLimit" in cleared.body.warband).toBe(false);
+    expect(cleared.body.validation.ok).toBe(true);
+  });
+
   it("stores an illegal roster and reports the errors rather than refusing it", async () => {
     const { app } = makeApp();
     const twoLeaders = newAntioch({ members: [...newAntioch().members, { id: "m7", unitId: "new-antioch/lieutenant", equipmentItemIds: [] }] });
