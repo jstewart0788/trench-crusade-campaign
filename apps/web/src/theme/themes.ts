@@ -197,7 +197,6 @@ export const THEMES: Record<string, FactionTheme> = {
 export const ACCENTS: Record<string, Partial<Tokens>> = {
   "heretic-naval-raiders": { "--accent": "#4f9aa0" },
   "procession-of-the-sacred-affliction": { "--accent": "#b7a24a" },
-  "new-antioch/stosstruppen-of-the-free-state-of-prussia": { "--accent": "#7d9fcf" },
 };
 
 export interface ThemeScope {

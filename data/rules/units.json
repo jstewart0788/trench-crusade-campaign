@@ -84,11 +84,6 @@
           "covers": "heretic-legion subfaction heretic-naval-raiders",
           "edition": "1.0.2",
           "note": "overrides citing it carry source: Heretic-Naval-Raiders-Warband.pdf; their page numbers are that PDF's"
-        },
-        "Prussian-Stosstruppen-Warband.pdf": {
-          "covers": "new-antioch variant new-antioch/stosstruppen-of-the-free-state-of-prussia",
-          "edition": "1.0.2",
-          "note": "overrides citing it carry source: Prussian-Stosstruppen-Warband.pdf; their page numbers are that PDF's. The booklet restates the variant as a combined New Antioch list (p11)"
         }
       },
       "edition": "1.0.2",
@@ -37811,7 +37806,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -38603,7 +38598,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -39440,7 +39435,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -40519,7 +40514,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3,
           "onlyWith": [
@@ -41689,7 +41684,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -42726,7 +42721,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -43999,7 +43994,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -44962,7 +44957,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -45896,7 +45891,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },
@@ -47085,7 +47080,7 @@
           "group": "ranged-two-handed",
           "groupPath": "weapons/ranged-weapons/ranged-two-handed",
           "itemId": "sniper-rifle",
-          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max set 2 per warband when atLeast 1 Stoßtruppen of the Free State of Prussia (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
+          "limitsText": "max 3 per warband; max set 1 per warband when atLeast 1 Kingdom of Alba Assault Detachment (roster); max increment 1 per warband when repeat per Knowledge of the Sniper Rifle (roster); repeat per Entitled to Sniper Rifles (roster)",
           "max": null,
           "maxPerWarband": 3
         },

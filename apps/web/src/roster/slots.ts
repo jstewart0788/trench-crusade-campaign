@@ -6,7 +6,6 @@ import {
   groupCounts,
   hasKeyword,
   normaliseName,
-  presentedItem,
   profileKit,
   resolveLimit,
   strongChoice,
@@ -14,7 +13,6 @@ import {
   type ClassifiedItem,
   type EquipmentItem,
   type LimitContext,
-  type ListScope,
   type RosterAccess,
   type RosterUnit,
   type RulesData,
@@ -92,12 +90,11 @@ export interface KitEntry {
   card?: true;
 }
 
-/** The member's kit with pending changes marked, each item as the roster's list uses it; items the data does not know are left to the validator. */
-export function kitEntries(member: WarbandMember, unit: RosterUnit, data: RulesData, pm: PendingMember | undefined, scope?: ListScope): KitEntry[] {
+/** The member's kit with pending changes marked; items the data does not know are left to the validator. */
+export function kitEntries(member: WarbandMember, unit: RosterUnit, data: RulesData, pm: PendingMember | undefined): KitEntry[] {
   return stagedKit(member, pm).flatMap((e, index) => {
-    const known = data.equipmentById.get(e.id);
-    if (!known) return [];
-    const item = scope ? presentedItem(data, scope, known) : known;
+    const item = data.equipmentById.get(e.id);
+    if (!item) return [];
     const access = accessFor(unit, e.id);
     const entry: KitEntry = { index, itemId: e.id, item, access, classified: classifyItem(item, access, data.headgearItemIds) };
     if (e.pending) entry.pending = e.pending;

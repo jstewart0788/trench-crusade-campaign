@@ -11,7 +11,6 @@ import { ACCENTS, contrastPairs, THEMES, themeFor, type Tokens } from "./themes.
 const css = (file: string) => readFileSync(resolve(import.meta.dirname, "../styles", file), "utf8");
 const THEME_ONLY = ["--frame", "--frame-hi", "--frame-lo", "--accent", "--bg-glow"];
 const SUBFACTION_OF: Record<string, string> = { "heretic-naval-raiders": "heretic-legion", "procession-of-the-sacred-affliction": "trench-pilgrims" };
-const VARIANT_OF: Record<string, string> = { "new-antioch/stosstruppen-of-the-free-state-of-prussia": "new-antioch" };
 
 describe("contrast()", () => {
   it("matches the WCAG reference points", () => {
@@ -72,15 +71,10 @@ describe("faction themes", () => {
       expect(failing(theme.tokens), theme.id).toEqual([]);
     }
     for (const [sub, faction] of Object.entries(SUBFACTION_OF)) expect(failing(themeFor({ factionId: faction, subfactionId: sub })!.tokens), sub).toEqual([]);
-    for (const [variant, faction] of Object.entries(VARIANT_OF)) expect(failing(themeFor({ factionId: faction, variantId: variant })!.tokens), variant).toEqual([]);
   });
 
   it("let a subfaction or variant inherit its faction's theme and change only the accent", () => {
-    expect(Object.keys(ACCENTS).sort()).toEqual([...Object.keys(SUBFACTION_OF), ...Object.keys(VARIANT_OF)].sort());
-    const stoss = themeFor({ factionId: "new-antioch", variantId: "new-antioch/stosstruppen-of-the-free-state-of-prussia" })!;
-    expect(stoss.id).toBe("new-antioch");
-    expect({ ...stoss.tokens, "--accent": THEMES["new-antioch"]!.tokens["--accent"] }).toEqual(THEMES["new-antioch"]!.tokens);
-    expect(stoss.tokens["--accent"]).not.toBe(THEMES["new-antioch"]!.tokens["--accent"]);
+    expect(Object.keys(ACCENTS).sort()).toEqual(Object.keys(SUBFACTION_OF).sort());
     const raiders = themeFor({ factionId: "heretic-legion", subfactionId: "heretic-naval-raiders" })!;
     const legion = THEMES["heretic-legion"]!;
     expect(raiders.id).toBe("heretic-legion");

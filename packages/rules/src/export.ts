@@ -2,7 +2,7 @@ import { z } from "zod";
 import { memberCost, warbandCost } from "./cost.js";
 import { fireteamRules, isAnchor, teamOf } from "./fireteams.js";
 import { isEliteMember, memberKeywords } from "./grants.js";
-import { itemRange, unitDisplayName } from "./presentation.js";
+import { unitDisplayName } from "./presentation.js";
 import { normaliseName } from "./limits.js";
 import { modelFor, accessFor, findSubfaction, findUnit, rosterVariants, upgradeFor, type ModelCandidate, type ModelMap, type RosterAbility, type RulesData } from "./data.js";
 import { profileAbilities, profileKit } from "./profile.js";
@@ -262,7 +262,7 @@ function exportMemberCore(member: WarbandMember, warband: Warband, data: RulesDa
       name: item.name,
       category: item.category,
       hands: row?.hands ?? item.hands,
-      range: itemRange(data, warband, item),
+      range: item.range,
       keywords: item.keywords,
       rules: item.rules,
       cost: { ducats, glory },

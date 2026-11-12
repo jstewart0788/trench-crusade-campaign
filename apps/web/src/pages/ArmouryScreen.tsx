@@ -39,7 +39,7 @@ export function ArmouryScreen() {
   const unit = useMemo(() => (entry && member ? presentedUnit(rules, warband, entry, member) : undefined), [entry, member, rules, warband]);
   const pm = member ? pending.members[member.id] : undefined;
 
-  const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm, warband) : []), [member, confirmedMember, unit, rules, pm, warband]);
+  const kit = useMemo(() => (member && confirmedMember && unit ? kitEntries(confirmedMember, unit, rules, pm) : []), [member, confirmedMember, unit, rules, pm]);
   const card = useMemo(() => (unit ? cardKitEntries(unit, rules) : []), [unit, rules]);
   const figure = useMemo(() => (unit ? layoutFigure(kit, unit, card) : undefined), [kit, unit, card]);
   // Built-in kit is never swapped out, so it is never the item a pick replaces.
