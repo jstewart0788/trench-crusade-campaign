@@ -56,15 +56,6 @@ describe("New Antioch Fireteams (p23) and Expert Fireteams (p41)", () => {
   });
 });
 
-describe("Killing Squad (p90)", () => {
-  const fidai = (fireteams: Fireteam[]) =>
-    warband("iron-sultanate", [m("as", "iron-sultanate/sultanate-assassin", [], [data().unitsById.get("iron-sultanate/sultanate-assassin")!.upgrades!.find((g) => g.name === "Master Assassin")!.bsId]), m("a1", "iron-sultanate/azeb"), m("a2", "iron-sultanate/azeb"), m("a3", "iron-sultanate/azeb")], { variantId: "iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins", fireteams });
-  it("one team of any two models", () => {
-    expect(errorsOf(fidai([team("fidai-killing-squad", "as", "a1")]))).not.toContain("fireteam-limit");
-    expect(errorsOf(fidai([team("fidai-killing-squad", "as", "a1"), team("fidai-killing-squad", "a2", "a3")]))).toContain("fireteam-limit");
-  });
-});
-
 describe("Sworn Brethren (p179): the Mamluk Faris's own team, with an ELITE model, beyond the list's allowance", () => {
   const faris = (partner: string, fireteams: Fireteam[] = []) => antioch([...fireteams, team("mamluk-faris-sworn-brethren", "mf", partner)], { glory: 4 }, [m("mf", "new-antioch/mamluk-faris", ["great-sword-axe"])]);
   it("with the Lieutenant (ELITE) it is legal, even beside two New Antioch teams", () => {

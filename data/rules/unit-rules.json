@@ -225,6 +225,17 @@
       "text": "Janissary Officers: A Defenders of the Iron Wall Warband can have 0-2 Janissaries, which have the ELITE Keyword at no additional cost in ducats."
     },
     {
+      "id": "fidai-killing-squad",
+      "name": "Killing Squad",
+      "keyword": "FIRETEAM",
+      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
+      "upgrade": "Killing Squad",
+      "pools": [{ "max": 2 }],
+      "page": 90,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Killing Squad: A Fida'i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
+    },
+    {
       "id": "leviathan-only-the-strong-survive",
       "name": "Only the Strong Survive",
       "keyword": "ELITE",
@@ -949,15 +960,6 @@
       "page": 23,
       "source": "Warbands-of-Trench-Crusade.pdf",
       "text": "New Antioch Fireteams: A New Antioch Warband can include up to 2 Fireteams. Each Fireteam consists of any two models from the Warband. All of the models in the Fireteams are given the FIRETEAM Keyword at no additional cost in ducats. Fireteams in a New Antioch Warband have the Concentrated Attack ability. Expert Fireteams (p41): a Stosstruppen of the Free State of Prussia Warband can include up to 3 Fireteams instead of only 2."
-    },
-    {
-      "id": "fidai-killing-squad",
-      "name": "Killing Squad",
-      "under": ["iron-sultanate/fida-i-of-alamut-the-cabal-of-assassins"],
-      "max": 1,
-      "page": 90,
-      "source": "Warbands-of-Trench-Crusade.pdf",
-      "text": "Killing Squad: A Fida'i of Alamut Warband can include 1 Fireteam, consisting of any 2 models from the Warband. Both of the models in the Fireteam are given the FIRETEAM Keyword at no additional cost in ducats."
     },
     {
       "id": "mamluk-faris-sworn-brethren",
