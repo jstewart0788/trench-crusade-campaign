@@ -1,5 +1,6 @@
 import { upgradeFor, type RosterScope, type RosterUnit, type RulesData } from "./data.js";
 import type { Fireteam, WarbandMember } from "./roster.js";
+import type { EquipmentItem } from "./schema.js";
 import { appliesUnder, dataKeyword } from "./unit-rules.js";
 
 // unit-rules.json variantRenames and variantKeywords: how a unit is named and
@@ -48,6 +49,20 @@ export function listKeywords(data: RulesData, scope: ListScope, unit: RosterUnit
 /** The unit as this list presents it: its name there and its keywords there (for screens and for battlekit checks such as STRONG). */
 export function presentedUnit(data: RulesData, scope: ListScope, unit: RosterUnit, member?: WarbandMember): RosterUnit {
   return { ...unit, name: unitDisplayName(data, scope, unit, member), keywords: listKeywords(data, scope, unit, member) };
+}
+
+/** The Range a model of this list uses the item at: its own plus what the list adds to its category (Masters of the Grenade: +4" to Grenades, p41). */
+export function itemRange(data: RulesData, scope: ListScope, item: Pick<EquipmentItem, "category" | "range">): string | null {
+  let inches = 0;
+  for (const rule of data.unitRules.file.rangeBonuses) if (rule.category === item.category && appliesUnder(rule.under, scope)) inches += rule.inches;
+  if (!inches || !item.range) return item.range;
+  return item.range.replace(/^(\d+)(?=["”])/, (n) => String(Number(n) + inches));
+}
+
+/** The item as this list's models use it (its Range there). */
+export function presentedItem<T extends Pick<EquipmentItem, "category" | "range">>(data: RulesData, scope: ListScope, item: T): T {
+  const range = itemRange(data, scope, item);
+  return range === item.range ? item : { ...item, range };
 }
 
 /** Names a roster selection may use for a unit of this list: its own and every name a variant of the list gives it. */

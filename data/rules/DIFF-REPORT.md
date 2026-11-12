@@ -566,6 +566,20 @@ p179), Enslaved Mind (a Takwin Homunculus with the formula and one other model, 
 (a model and its Trench Dog for 1 glory, Digital Rulebook p142). The importer turns an upstream Fireteam
 wrapper holding two models into a team.
 
+### TC-003l: the Prussian Stosstruppen book
+
+`Prussian-Stosstruppen-Warband.pdf` (1.0.2) is the Stosstruppen of the Free State of Prussia variant
+of New Antioch (p7) restated as one combined list (p11), not a list of its own. Upstream carries the
+variant at the pinned commit and adds nothing for it since; its units are the New Antioch entries.
+Checked entry by entry against the booklet (pp11-31): costs, 0-X limits, Rapid Assault, Forward
+Positions, Holy Smoke, the armour restrictions and the Specialised Equipment limits already matched.
+Changes: the booklet's names (Hauptmann, Feldkaplan, Stosstruppen, p11) as `variantRenames`;
+Masters of the Grenade (+4" to Grenades, p41, booklet p12) as `rangeBonuses`, shown in the export
+and the Armoury; overrides for the booklet's Sniper Rifle Limit: 2 (p13; Warbands p24 gives New
+Antioch 3 and the variant's own rules leave it alone, so confidence medium), the Light Melee text
+upstream truncates ("hock Troopers", p41) and the Tank-Splitter Sword's Melt Armour wording (p42,
+booklet p18). The booklet's sample lists (p35-39) both price at 698.
+
 ### Missing from upstream
 
 | faction | name | kind | p. | detail |

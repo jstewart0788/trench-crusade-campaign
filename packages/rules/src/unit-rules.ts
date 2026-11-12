@@ -74,9 +74,9 @@ export type PreGameChoice = z.infer<typeof PreGameChoice>;
 
 // The variant and grant rules below name the lists they apply under: a variant
 // id, a subfaction id, or a faction id for that faction's core list. Each one
-// cites the book it comes from, since two books are in play.
+// cites the book it comes from, since several books are in play.
 const Under = Ids;
-const Book = z.enum(["Warbands-of-Trench-Crusade.pdf", "Heretic-Naval-Raiders-Warband.pdf"]);
+const Book = z.enum(["Warbands-of-Trench-Crusade.pdf", "Heretic-Naval-Raiders-Warband.pdf", "Prussian-Stosstruppen-Warband.pdf"]);
 const Price = z.object({ ducats: z.number().int().nonnegative(), glory: z.number().int().nonnegative() });
 
 /** A price that changes under a list: a unit's, an armoury item's (optionally on some units only) or an upgrade's, in either currency. */
@@ -355,10 +355,22 @@ export const FireteamRule = z.object({
   /** The partner (not the anchor) plays by another rule's team rule when the list has that rule (Sworn Brethren: the New Antioch model keeps Concentrated Attack, p179). */
   partnerTeamRuleFrom: z.string().optional(),
   page: Page,
-  source: z.enum(["Warbands-of-Trench-Crusade.pdf", "Heretic-Naval-Raiders-Warband.pdf", "Trench-Crusade-Digital-Rulebook.pdf"]),
+  source: z.enum(["Warbands-of-Trench-Crusade.pdf", "Heretic-Naval-Raiders-Warband.pdf", "Prussian-Stosstruppen-Warband.pdf", "Trench-Crusade-Digital-Rulebook.pdf"]),
   text: z.string(),
 });
 export type FireteamRule = z.infer<typeof FireteamRule>;
+
+/** Inches a list adds to the Range of a category of Battlekit its models use (Masters of the Grenade: +4" to Grenades, p41). */
+export const RangeBonus = z.object({
+  id: z.string(),
+  under: Under,
+  category: z.enum(["ranged", "grenade"]),
+  inches: z.number().int().positive(),
+  page: Page,
+  source: Book,
+  text: z.string(),
+});
+export type RangeBonus = z.infer<typeof RangeBonus>;
 
 export const UnitRulesFile = z.object({
   $schema: z.literal("tc-rules-unit-rules-v1"),
@@ -385,6 +397,7 @@ export const UnitRulesFile = z.object({
   rosterChoices: z.array(RosterChoice),
   notInTheBooks: z.array(NotInTheBooks),
   fireteamRules: z.array(FireteamRule),
+  rangeBonuses: z.array(RangeBonus),
 });
 export type UnitRules = z.infer<typeof UnitRulesFile>;
 
@@ -732,6 +745,7 @@ export function applyUnitRules(file: UnitRules, unitsById: Map<string, RosterUni
     if (rule.partnerTeamRuleFrom && !file.fireteamRules.some((r) => r.id === rule.partnerTeamRuleFrom)) problems.push(`${where}: no fireteam rule "${rule.partnerTeamRuleFrom}"`);
     if (rule.partner?.carriesItem && !units.some((u) => u.equipmentAccess.some((a) => a.itemId === rule.partner!.carriesItem))) problems.push(`${where}: no unit under ${rule.under.join(" / ")} offers "${rule.partner.carriesItem}"`);
   }
+  for (const rule of file.rangeBonuses) listUnits(`rangeBonuses.${rule.id}`, rule.under);
   for (const [i, n] of file.notInTheBooks.entries()) {
     if (!n.name === !n.pattern) problems.push(`notInTheBooks[${i}]: give exactly one of name or pattern`);
     if (n.pattern) {

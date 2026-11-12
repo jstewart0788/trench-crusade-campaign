@@ -301,3 +301,27 @@ describe("layoutFigure with a variant's keywords", () => {
     expect(layoutFigure(kitEntries(memberOf(trooper.id, kit), trooper, data, undefined), trooper).unplaced.map((e) => e.itemId)).toEqual(["sword-axe"]);
   });
 });
+
+describe("kit as the roster's list uses it", () => {
+  const STOSS = "new-antioch/stosstruppen-of-the-free-state-of-prussia";
+  it("Masters of the Grenade (Warbands p41): a Stosstruppen warband's Grenades read +4\" on the figure, the shelf and the picker; other lists' do not", () => {
+    const yeoman = "new-antioch/yeoman";
+    const range = (w: Warband) => kitEntries(w.members[0]!, unit(yeoman), data, undefined, w).map((e) => e.item.range);
+    const stoss = warbandWith("new-antioch", [[yeoman, ["frag-grenades", "pistol"]]], STOSS);
+    const plain = warbandWith("new-antioch", [[yeoman, ["frag-grenades", "pistol"]]]);
+    expect(range(stoss)).toEqual(['12"', '12"/Melee']);
+    expect(range(plain)).toEqual(['8"', '12"/Melee']);
+    const shelf = (w: Warband) => armouryGroups(w.members[0]!, unit(yeoman), w, data, limitContext(w, data)).groups.flatMap((g) => g.rows).find((r) => r.item.id === "satchel-charge")!.item.range;
+    expect(shelf(stoss)).toBe('10"');
+    expect(shelf(plain)).toBe('6"');
+    expect(picks("grenade", warbandWith("new-antioch", [[yeoman, []]], STOSS)).rows.find((r) => r.item.id === "incendiary-grenades")!.item.range).toBe('12"');
+  });
+
+  it("the booklet's Sniper Rifle Limit: 2 caps the shelf in a Stosstruppen warband (p13)", () => {
+    const yeoman = "new-antioch/yeoman";
+    const w = warbandWith("new-antioch", [[yeoman, ["sniper-rifle"]], [yeoman, ["sniper-rifle"]], [yeoman, []]], STOSS);
+    expect(picks("ranged", w, 2).rows.find((r) => r.item.id === "sniper-rifle")!.cap).toMatchObject({ count: 2, max: 2, scope: "warband" });
+    const plain = warbandWith("new-antioch", [[yeoman, ["sniper-rifle"]], [yeoman, ["sniper-rifle"]], [yeoman, []]]);
+    expect(picks("ranged", plain, 2).rows.find((r) => r.item.id === "sniper-rifle")!.cap).toBeUndefined();
+  });
+});

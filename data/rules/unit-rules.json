@@ -3,7 +3,7 @@
   "source": {
     "file": "Warbands-of-Trench-Crusade.pdf",
     "edition": "1.0.2",
-    "pages": "35, 37-41, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 137, 142, 147; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39",
+    "pages": "35, 37-41, 43, 59, 61, 63-64, 69, 90, 94-97, 99, 112, 118, 120, 128, 131, 137, 142, 147; Heretic-Naval-Raiders-Warband.pdf 12, 28, 37, 39; Prussian-Stosstruppen-Warband.pdf 11",
     "note": "Hand-authored. Mechanics the BattleScribe-derived data does not express, each with the page it comes from. Loaded and checked against units.json by @tc/rules (unit-rules.ts); edit by hand, not by the converter."
   },
   "replaceableBuiltIns": [
@@ -338,6 +338,33 @@
       "page": 37,
       "source": "Heretic-Naval-Raiders-Warband.pdf",
       "text": "A Song Within the Deep: 1 Drowned Chorister must take the Leviathal Chorus upgrade at a cost of 20 ducats. The Drowned Chorister with the Leviathal Chorus upgrade increases its base size to 40mm, has the LEADER and TOUGH Keywords."
+    },
+    {
+      "id": "stosstruppen-hauptmann",
+      "under": ["new-antioch/stosstruppen-of-the-free-state-of-prussia"],
+      "unitIds": ["new-antioch/lieutenant"],
+      "name": "Hauptmann",
+      "page": 11,
+      "source": "Prussian-Stosstruppen-Warband.pdf",
+      "text": "Designer's Notes: The names of certain units have also been changed to reflect their Prussian background. For clarity you should treat the following units exactly as they are named in the Rulebook. Hauptmann = Lieutenant."
+    },
+    {
+      "id": "stosstruppen-feldkaplan",
+      "under": ["new-antioch/stosstruppen-of-the-free-state-of-prussia"],
+      "unitIds": ["new-antioch/trench-cleric"],
+      "name": "Feldkaplan",
+      "page": 11,
+      "source": "Prussian-Stosstruppen-Warband.pdf",
+      "text": "Designer's Notes: The names of certain units have also been changed to reflect their Prussian background. For clarity you should treat the following units exactly as they are named in the Rulebook. Feldkaplan = Trench Cleric."
+    },
+    {
+      "id": "stosstruppen-stosstruppen",
+      "under": ["new-antioch/stosstruppen-of-the-free-state-of-prussia"],
+      "unitIds": ["new-antioch/shocktrooper"],
+      "name": "Stosstruppen",
+      "page": 11,
+      "source": "Prussian-Stosstruppen-Warband.pdf",
+      "text": "Designer's Notes: The names of certain units have also been changed to reflect their Prussian background. For clarity you should treat the following units exactly as they are named in the Rulebook. Stosstruppen = Shock Troopers."
     }
   ],
   "variantKeywords": [
@@ -989,6 +1016,17 @@
       "page": 142,
       "source": "Trench-Crusade-Digital-Rulebook.pdf",
       "text": "Loyal Hound: When you give a Trench Dog to a model, you can give the model and the Trench Dog the FIRETEAM Keyword at a Cost of +1 glory."
+    }
+  ],
+  "rangeBonuses": [
+    {
+      "id": "stosstruppen-masters-of-the-grenade",
+      "under": ["new-antioch/stosstruppen-of-the-free-state-of-prussia"],
+      "category": "grenade",
+      "inches": 4,
+      "page": 41,
+      "source": "Warbands-of-Trench-Crusade.pdf",
+      "text": "Masters of the Grenade: Add 4\" to the Range of all Grenades used by models from a Stosstruppen of the Free State of Prussia Warband. (Also Prussian Stosstruppen book p12.)"
     }
   ]
 }

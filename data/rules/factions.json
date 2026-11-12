@@ -909,7 +909,7 @@
             },
             {
               "name": "Light Melee",
-              "text": "hock Troopers in a Stosstruppen of the Free State of Prussia Warband do not have the Assault Drill ability. They still cost 45 ducats."
+              "text": "Shock Troopers in a Stosstruppen of the Free State of Prussia Warband do not have the Assault Drill ability. They still cost 45 ducats."
             },
             {
               "name": "Specialised Equipment",
@@ -936,7 +936,7 @@
               "text": "Trench Clerics in a Stosstruppen of the Free State of Prussia Warband can have 1 dose of Holy Smoke."
             }
           ],
-          "text": "Lightly-Armoured: Only the Lieutenant and Mechanized Heavy Infantry model in a Stosstruppen of the Free State of Prussia Warband can have Reinforced Armour or Machine Armour.\nExpert Fireteams: A Stosstruppen of the Free State of Prussia Warband can include up to 3 Fireteams instead of only 2.\nLight Melee: hock Troopers in a Stosstruppen of the Free State of Prussia Warband do not have the Assault Drill ability. They still cost 45 ducats.\nSpecialised Equipment: Submachine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 4, and Automatic Shotguns and Automatic Pistols do not have the ELITE only stipulation. However, Machine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 1, and models cannot have Grenade Launchers or Martyrdom Pills.\nMasters of the Grenade: Add 4\" to the Range of all Grenades used by models from a Stosstruppen of the Free State of Prussia Warband.\nRapid Assault: The Lieutenant and Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the Rapid Assault ability at a cost of +5 Ducats each.\n* Rapid Assault Ability: Add +1 DICE to the Risky Success Roll when a model with the Rapid Assault ability takes a Dash ACTION.\nForward Positions: Up to 2 Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the INFILTRATOR Keyword at a cost of +10 Ducats each.\nTroop Selections: A Stosstruppen of the Free State of Prussia Warband must include 2-8 Shock Troopers and cannot include Trench Moles. In addition, it cannot have more than 1 Sniper Priest or 1 Mechanized Heavy Infantry model.\nFeldkaplane: Trench Clerics in a Stosstruppen of the Free State of Prussia Warband can have 1 dose of Holy Smoke."
+          "text": "Lightly-Armoured: Only the Lieutenant and Mechanized Heavy Infantry model in a Stosstruppen of the Free State of Prussia Warband can have Reinforced Armour or Machine Armour.\nExpert Fireteams: A Stosstruppen of the Free State of Prussia Warband can include up to 3 Fireteams instead of only 2.\nLight Melee: Shock Troopers in a Stosstruppen of the Free State of Prussia Warband do not have the Assault Drill ability. They still cost 45 ducats.\nSpecialised Equipment: Submachine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 4, and Automatic Shotguns and Automatic Pistols do not have the ELITE only stipulation. However, Machine Guns in a Stosstruppen of the Free State of Prussia Warband have a Limit of 1, and models cannot have Grenade Launchers or Martyrdom Pills.\nMasters of the Grenade: Add 4\" to the Range of all Grenades used by models from a Stosstruppen of the Free State of Prussia Warband.\nRapid Assault: The Lieutenant and Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the Rapid Assault ability at a cost of +5 Ducats each.\n* Rapid Assault Ability: Add +1 DICE to the Risky Success Roll when a model with the Rapid Assault ability takes a Dash ACTION.\nForward Positions: Up to 2 Shock Troopers in a Stosstruppen of the Free State of Prussia Warband can have the INFILTRATOR Keyword at a cost of +10 Ducats each.\nTroop Selections: A Stosstruppen of the Free State of Prussia Warband must include 2-8 Shock Troopers and cannot include Trench Moles. In addition, it cannot have more than 1 Sniper Priest or 1 Mechanized Heavy Infantry model.\nFeldkaplane: Trench Clerics in a Stosstruppen of the Free State of Prussia Warband can have 1 dose of Holy Smoke."
         },
         {
           "bsId": "ea95-2310-99f0-6e97",
@@ -1301,6 +1301,11 @@
           "covers": "heretic-legion subfaction heretic-naval-raiders",
           "edition": "1.0.2",
           "note": "overrides citing it carry source: Heretic-Naval-Raiders-Warband.pdf; their page numbers are that PDF's"
+        },
+        "Prussian-Stosstruppen-Warband.pdf": {
+          "covers": "new-antioch variant new-antioch/stosstruppen-of-the-free-state-of-prussia",
+          "edition": "1.0.2",
+          "note": "overrides citing it carry source: Prussian-Stosstruppen-Warband.pdf; their page numbers are that PDF's. The booklet restates the variant as a combined New Antioch list (p11)"
         }
       },
       "edition": "1.0.2",

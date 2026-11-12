@@ -4,6 +4,7 @@ import {
   itemsRuledOut,
   upgradeAllowed,
   lentBy,
+  presentedItem,
   findUnit,
   grantRoom,
   grantStates,
@@ -175,8 +176,9 @@ export function armouryGroups(member: WarbandMember, unit: RosterUnit, warband: 
   const uncheckableRows: HiddenRow[] = [];
   const ruledOut = itemsRuledOut(data, member, unit);
   for (const access of unit.equipmentAccess) {
-    const item = data.equipmentById.get(access.itemId);
-    if (!item) continue;
+    const known = data.equipmentById.get(access.itemId);
+    if (!known) continue;
+    const item = presentedItem(data, warband, known);
     const status = gateStatus(evaluateGates(access.onlyWith, access.onlyWithout, warband, data, ctx, model));
     if (status === "uncheckable") uncheckableRows.push({ access, item });
     if (status !== "open") continue;

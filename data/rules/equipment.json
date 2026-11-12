@@ -4621,7 +4621,7 @@
       "modifiers": [],
       "name": "Tank-Splitter Sword",
       "range": "Melee",
-      "rules": "When you make an Injury Roll for an attack made with a Tank-Splitter Sword, determine if the target has an Armour Characteristic that is -1 or greater, or if it is wearing Armour or carrying a Shield. If it does, before rolling the dice for the Injury Roll, put one dice aside and turn it so that it shows a “6”. Roll the rest of the dice, then return the dice you put to one side; it counts as having rolled a 6. In addition, attacks made with a Tank-Splitter Sword are not affected by the Dragonslayer Patron Skill.",
+      "rules": "Melt Armour: When you make an Injury Roll for an attack made with a Tank-Splitter Sword, determine if the target has an Armour Characteristic that is -1 or greater, or if it is wearing Armour or carrying a Shield. If it does, before rolling the dice for the Success Roll, put one dice aside and turn it so that it shows a roll of ‘6’. Roll the rest of the dice, and then return the dice you put to one side; it counts as having rolled a 6. In addition, attacks made with a Tank-Splitter Sword are not affected by the Dragonslayer Patron Skill (see Patrons in the Trench Crusade Digital Rulebook).",
       "source": "New Antioch",
       "type": "2-handed"
     },
@@ -5352,6 +5352,11 @@
           "covers": "heretic-legion subfaction heretic-naval-raiders",
           "edition": "1.0.2",
           "note": "overrides citing it carry source: Heretic-Naval-Raiders-Warband.pdf; their page numbers are that PDF's"
+        },
+        "Prussian-Stosstruppen-Warband.pdf": {
+          "covers": "new-antioch variant new-antioch/stosstruppen-of-the-free-state-of-prussia",
+          "edition": "1.0.2",
+          "note": "overrides citing it carry source: Prussian-Stosstruppen-Warband.pdf; their page numbers are that PDF's. The booklet restates the variant as a combined New Antioch list (p11)"
         }
       },
       "edition": "1.0.2",

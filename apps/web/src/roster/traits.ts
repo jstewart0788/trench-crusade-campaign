@@ -94,7 +94,7 @@ export function memberTraits(member: WarbandMember, unit: RosterUnit, warband: W
   const variantName = rosterVariants(data, warband).find((v) => v.id === warband.variantId)?.name;
   const abilities = [...unit.abilities.filter((a) => abilityApplies(a, warband.variantId, variantName)), ...profileAbilities(unit)].map((a, i) => ({ key: `a${i}`, desc: describeAbility(a) }));
 
-  const builtIn: Trait[] = kitEntries(member, unit, data, pm)
+  const builtIn: Trait[] = kitEntries(member, unit, data, pm, warband)
     .filter(isBuiltIn)
     .map((e) => {
       const t: Trait = { key: `k${e.index}`, desc: describeItem(e.item, e.access), where: ZONE_PLACE[zoneOf(e.classified)], kit: e };
