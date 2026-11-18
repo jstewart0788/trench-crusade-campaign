@@ -136,6 +136,16 @@ function pushHistory(st, r)
   while #st.history > HISTORY do table.remove(st.history, 1) end
 end
 
+-- Last roll steps back one result and keeps the one it replaces at the far end, so
+-- repeated clicks cycle through every stored result instead of using them up.
+function stepBack(st)
+  local r = table.remove(st.history)
+  if not r then return nil end
+  if st.current then table.insert(st.history, 1, st.current) end
+  st.current = r
+  return r
+end
+
 ---------------------------------------------------------------- text --
 
 function modeTitle(mode, deadly)
@@ -881,7 +891,7 @@ function onLastRoll(_, color, alt)
     return
   end
   if busy then printToColor("The tray is still rolling.", color, MUTED) return end
-  local r = table.remove(state.history)
+  local r = stepBack(state)
   if not r then printToColor("No earlier roll to restore.", color, MUTED) return end
   settleGen = settleGen + 1
   for _, d in ipairs(diceOnTray()) do d.destruct() end
@@ -898,7 +908,6 @@ function onLastRoll(_, color, alt)
       if r.mode ~= "sum" and i <= r.k then d.highlightOn(GOLD) end
       Wait.frames(function() if not d.isDestroyed() then d.setRotationValue(raw) end end, 2)
     end
-    state.current = r
     render(r)
     sendToBoard(r)
     say(SIDE .. " restored #" .. tostring(r.no or "?") .. ": " .. chatLine(SIDE, r))

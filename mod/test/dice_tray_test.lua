@@ -138,6 +138,26 @@ do
   eq(#s.dice, 1, "only GUID strings survive a load")
 end
 
+do
+  local st = T.newState()
+  for no = 1, 3 do
+    local r = T.resolve({ no, no }, "success", 0, false)
+    r.no = no
+    T.pushHistory(st, st.current)
+    st.current = r
+  end
+  local seen = {}
+  for _ = 1, 3 do
+    local r = T.stepBack(st)
+    check(r ~= nil, "Last roll always has a result to show while any are stored")
+    seen[#seen + 1] = r and r.no
+  end
+  eq(table.concat(seen, ","), "2,1,3", "Last roll steps back one at a time and comes round to the newest again")
+  eq(#st.history, 2, "stepping back keeps every stored result")
+  eq(st.current.no, 3, "the shown result is the one stepped to")
+  eq(T.stepBack(T.newState()), nil, "nothing to step back to on a fresh tray")
+end
+
 ---------------------------------------------------------------- geometry --
 
 local function rect(cu, cv, w, h) return { u0 = cu - w / 2, u1 = cu + w / 2, v0 = cv - h / 2, v1 = cv + h / 2 } end
