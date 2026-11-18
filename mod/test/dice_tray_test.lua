@@ -158,6 +158,16 @@ do
   eq(T.stepBack(T.newState()), nil, "nothing to step back to on a fresh tray")
 end
 
+do
+  local airborne = { resting = false }
+  local down = { resting = true }
+  check(not T.diceStill({ airborne }, {}), "a thrown die still in the air above the tray holds the read")
+  check(not T.diceStill({ { resting = true, held_by_color = "Red" } }, {}), "a held die holds the read")
+  check(not T.diceStill({ down }, { airborne }), "a die moving on the tray holds the read")
+  check(T.diceStill({ down }, { down }), "all dice down: read")
+  check(T.diceStill({}, {}), "nothing thrown and nothing on the tray: read")
+end
+
 ---------------------------------------------------------------- geometry --
 
 local function rect(cu, cv, w, h) return { u0 = cu - w / 2, u1 = cu + w / 2, v0 = cv - h / 2, v1 = cv + h / 2 } end

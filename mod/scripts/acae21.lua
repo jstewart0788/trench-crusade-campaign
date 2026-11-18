@@ -779,6 +779,18 @@ end
 REST_DELAY = 0.5
 REST_TIMEOUT = 10
 
+-- The tray's own dice are waited on by reference, not found by the cast: a thrown die can
+-- be in the air above the cast box, and reading the faces then records nothing.
+function diceStill(thrown, onTray)
+  for _, d in ipairs(thrown) do
+    if d.held_by_color ~= nil or not d.resting then return false end
+  end
+  for _, d in ipairs(onTray) do
+    if not d.resting then return false end
+  end
+  return true
+end
+
 function awaitSettle(color)
   settleGen = settleGen + 1
   local gen = settleGen
@@ -786,14 +798,12 @@ function awaitSettle(color)
     Wait.condition(function()
       if gen == settleGen then settle(color, false) end
     end, function()
+      local thrown = {}
       for g in pairs(tracked) do
         local o = getObjectFromGUID(g)
-        if o and o.held_by_color ~= nil then return false end
+        if o and not o.isDestroyed() then thrown[#thrown + 1] = o end
       end
-      for _, d in ipairs(diceOnTray()) do
-        if not d.resting then return false end
-      end
-      return true
+      return diceStill(thrown, diceOnTray())
     end, REST_TIMEOUT, function()
       if gen == settleGen then settle(color, true) end
     end)
@@ -803,7 +813,11 @@ end
 function settle(color, timedOut)
   local dice = diceOnTray()
   untrackMissing(dice)
-  if #dice == 0 then busy = false return end
+  if #dice == 0 then
+    busy = false
+    say(SIDE .. ": no dice came to rest on the tray.", MUTED)
+    return
+  end
   if timedOut then say(SIDE .. ": dice still moving; reading the faces as they are.", MUTED) end
   local entries = {}
   for i, d in ipairs(dice) do
