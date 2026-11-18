@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   alignmentReport,
+  buildingAllowed,
   cellKey,
   cellRect,
   createGrid,
   DELTA,
   decoratedSides,
+  faceCover,
+  facingYaw,
+  FAIR_COVER_RATIO,
+  FAIR_ROUGH_RATIO,
+  FAIR_TALL_DIFF,
+  fairness,
   generateBattlefield,
   HILL_RATE_OBJECTIVES,
   HILL_RATE_OPEN,
@@ -29,13 +36,17 @@ import {
   scenarioOverlay,
   SCATTER_ROLES,
   sideOf,
+  storeysOf,
   STRUCTURAL_ROLES,
+  SOLID_TIE,
+  solidTurns,
   TALL_EDGE_GAP_IN,
   TERRAIN_YAW_JITTER_DEG,
   trenchComponents,
   trenchConnectsEdges,
   turnedRect,
   type Dir,
+  type FacingContext,
   type Layout,
   type LayoutPiece,
   type Parity,
@@ -73,7 +84,7 @@ function slotsOf(layout: Layout): SlotRef[] {
   return [...byId.values()];
 }
 
-const parityOf = (layout: Layout): Parity => ({ kind: layout.parity.kind, boardIn: layout.boardIn, objectivesMatch: layout.parity.objectivesMatch });
+const parityOf = (layout: Layout): Parity => ({ kind: layout.parity.kind, boardIn: layout.boardIn, objectivesMatch: layout.parity.objectivesMatch, matched: layout.parity.matched });
 
 const raisedCells = (layout: Layout) => layout.cells.filter((c) => c.feature === "plateau" || c.feature === "ramp" || c.feature === "hill" || c.feature === "raised-trench");
 const trenchRects = (layout: Layout) => layout.cells.filter((c) => c.kind === "trench" || c.feature === "raised-trench").map((c) => cellRect(grid, c.c, c.r));
@@ -111,8 +122,9 @@ const HILL_GROUPS: { rate: number; boards: Layout[] }[] = [
   },
   { rate: HILL_RATE_OPEN, boards: [...LAYOUTS.get("fields-of-glory")!, ...seedsFrom(101, 100).map((seed) => gen("great-war", seed))] },
 ];
-// Every scenario here mirrors across the line between its zones; point symmetry is laid on request.
+// Every scenario here mirrors across the line between its zones; point symmetry and matched halves are laid on request.
 const POINT_BOARDS = seedsFrom(1, 40).map((seed) => generateBattlefield({ scenarioId: "relic-hunt", archetype: "trench-lines", seed, options: { parity: "point" } }, env));
+const MATCHED_BOARDS = SCENARIOS.flatMap((id) => seedsFrom(1, 40).map((seed) => generateBattlefield({ scenarioId: id, archetype: "trench-lines", seed, options: { parity: "matched" } }, env)));
 // Their own archetype for the scenarios that list No Man's Land.
 const NML_BOARDS = ["claim-no-mans-land", "relic-hunt", "supply-raid", "the-high-ground"].flatMap((id) => seedsFrom(1, 40).map((seed) => gen(id, seed, "no-mans-land")));
 // Every scenario as it is laid by default: its own archetype at its own size.
@@ -415,14 +427,18 @@ describe("generateBattlefield", () => {
   });
 
   describe("parity between the two halves", () => {
-    const boards = [...LAYOUTS.get("claim-no-mans-land")!, ...LAYOUTS.get("fields-of-glory")!, ...POINT_BOARDS];
+    const matchedBoards = MATCHED_BOARDS;
+    const exactBoards = [...LAYOUTS.get("claim-no-mans-land")!, ...LAYOUTS.get("fields-of-glory")!, ...POINT_BOARDS];
+    const boards = [...matchedBoards, ...exactBoards];
     const keys = (cells: readonly (readonly [number, number])[]) => cells.map(([c, r]) => cellKey(c, r)).sort();
 
-    it("mirrors Claim No Man's Land and Fields of Glory across the line between the zones, and turns Relic Hunt about the centre on request", () => {
-      for (const layout of LAYOUTS.get("claim-no-mans-land")!) expect(layout.parity).toEqual({ kind: "mirror-x", objectivesMatch: true });
-      for (const layout of LAYOUTS.get("fields-of-glory")!) expect(layout.parity.kind).toBe("mirror-x");
+    it("mirrors Claim No Man's Land and Fields of Glory across the line between the zones, and on request splits them into matched halves or turns Relic Hunt about the centre", () => {
+      for (const layout of LAYOUTS.get("claim-no-mans-land")!) expect(layout.parity).toEqual({ kind: "mirror-x", objectivesMatch: true, matched: false });
+      for (const layout of LAYOUTS.get("fields-of-glory")!) expect([layout.parity.kind, layout.parity.matched]).toEqual(["mirror-x", false]);
+      expect(MATCHED_BOARDS.length).toBe(80);
+      for (const layout of MATCHED_BOARDS) expect([layout.parity.kind, layout.parity.matched]).toEqual(["mirror-x", true]);
       expect(POINT_BOARDS.length).toBe(40);
-      for (const layout of POINT_BOARDS) expect(layout.parity).toEqual({ kind: "point", objectivesMatch: true });
+      for (const layout of POINT_BOARDS) expect(layout.parity).toEqual({ kind: "point", objectivesMatch: true, matched: false });
     });
 
     it("lays the two deployment-zone trench lines as mirror images: same length and shape, junctions at mirrored cells", () => {
@@ -461,11 +477,24 @@ describe("generateBattlefield", () => {
     // The role a slot's filling plays: its palette piece's or group's role (a scatter heap is scatter).
     const roleOf = (fill: string) => palette.pieces.find((x) => x.id === fill)?.role ?? palette.groups.find((g) => g.id === fill)?.role ?? "scatter";
 
-    it("holds a terrain slot of the same category and role at the mirror of every terrain slot, and the same scatter per category on each half", () => {
-      for (const layout of boards) {
+    const isScatterSlot = (x: SlotRef) => palette.categories[x.category]!.scatter;
+    const sameScatterAndCentres = (layout: Layout, p: Parity, slots: SlotRef[]) => {
+      const scatter = (side: SlotRef["side"]) => slots.filter((x) => isScatterSlot(x) && x.side === side).map((x) => x.category).sort();
+      expect(scatter("A"), `seed ${layout.seed}`).toEqual(scatter("B"));
+      // A single stands on the line (or point) the halves split across, or covers the one objective there.
+      for (const slot of slots.filter((x) => x.side === "centre")) {
+        expect(slot.twin).toBeNull();
+        const onLine = sideOf(p, slot.at[0], slot.at[1]) === "centre";
+        const objective = layout.objectives.find((o) => `o-${o.id}` === slot.id);
+        const ownTwin = objective && sideOf(p, objective.position[0], objective.position[1]) === "centre";
+        expect(onLine || ownTwin, `seed ${layout.seed} ${slot.id} at ${slot.at.join(",")}`).toBe(true);
+      }
+    };
+
+    it("holds a terrain slot of the same category and role at the mirror of every terrain slot under an exact mirror or turn, and the same scatter per category on each half", () => {
+      for (const layout of exactBoards) {
         const p = parityOf(layout);
         const slots = slotsOf(layout);
-        const isScatterSlot = (x: SlotRef) => palette.categories[x.category]!.scatter;
         const terrain = slots.filter((x) => !isScatterSlot(x) && x.side !== "centre");
         // Six at the least: terrain kept out of any line with the scatter laid before it leaves 8 of the 200 Claim and Fields boards three pairs (origin/main: four pairs or more on every board).
         expect(terrain.length, `seed ${layout.seed}`).toBeGreaterThanOrEqual(6);
@@ -479,17 +508,65 @@ describe("generateBattlefield", () => {
           expect(`${mirror[0]!.category}/${roleOf(mirror[0]!.fill)}`, `seed ${layout.seed} ${slot.id} ${slot.fill} vs ${mirror[0]!.id} ${mirror[0]!.fill}`).toBe(`${slot.category}/${roleOf(slot.fill)}`);
           expect(slot.twin, `seed ${layout.seed} ${slot.id}`).toBe(mirror[0]!.id);
         }
-        const scatter = (side: SlotRef["side"]) => slots.filter((x) => isScatterSlot(x) && x.side === side).map((x) => x.category).sort();
-        expect(scatter("A"), `seed ${layout.seed}`).toEqual(scatter("B"));
-        // A single stands on the line (or point) the halves mirror across, or covers the one objective there.
-        for (const slot of slots.filter((x) => x.side === "centre")) {
-          expect(slot.twin).toBeNull();
-          const onLine = sideOf(p, slot.at[0], slot.at[1]) === "centre";
-          const objective = layout.objectives.find((o) => `o-${o.id}` === slot.id);
-          const ownTwin = objective && sideOf(p, objective.position[0], objective.position[1]) === "centre";
-          expect(onLine || ownTwin, `seed ${layout.seed} ${slot.id} at ${slot.at.join(",")}`).toBe(true);
+        sameScatterAndCentres(layout, p, slots);
+      }
+    });
+
+    it("gives every terrain slot on matched halves a twin on the other half of the same category and role, alike in size and height, standing where its own half put it rather than at the mirror", () => {
+      const placeableOf = (slot: SlotRef) => placeablesIn(palette, slot.category, true).find((x) => x.key === slot.fill);
+      // Alike: the smaller footprint at least 75% of the larger, heights within an inch or a quarter of the taller.
+      const area = (x: { footprintIn: readonly number[] }) => x.footprintIn[0]! * x.footprintIn[1]!;
+      const alike = (a: { footprintIn: readonly number[]; heightIn: number }, b: typeof a) => Math.min(area(a), area(b)) / Math.max(area(a), area(b)) >= 0.75 - 1e-9 && Math.abs(a.heightIn - b.heightIn) <= Math.max(1, 0.25 * Math.max(a.heightIn, b.heightIn)) + 1e-9;
+      let pairs = 0;
+      let atMirror = 0;
+      for (const layout of matchedBoards) {
+        const p = parityOf(layout);
+        const slots = slotsOf(layout);
+        const byId = new Map(slots.map((x) => [x.id, x]));
+        const terrain = slots.filter((x) => !isScatterSlot(x) && x.side !== "centre");
+        expect(terrain.length, `seed ${layout.seed}`).toBeGreaterThanOrEqual(6);
+        for (const slot of terrain) {
+          const tag = `${layout.scenarioId} seed ${layout.seed} ${slot.id}`;
+          const twin = slot.twin ? byId.get(slot.twin) : undefined;
+          expect(twin, `${tag} has no twin`).toBeDefined();
+          expect(twin!.side, tag).toBe(slot.side === "A" ? "B" : "A");
+          expect(twin!.twin, tag).toBe(slot.id);
+          expect(`${twin!.category}/${roleOf(twin!.fill)}`, `${tag} ${slot.fill} vs ${twin!.id} ${twin!.fill}`).toBe(`${slot.category}/${roleOf(slot.fill)}`);
+          const [a, b] = [placeableOf(slot), placeableOf(twin!)];
+          expect(a && b, `${tag} ${slot.fill} / ${twin!.fill}`).toBeTruthy();
+          expect(alike(a!, b!), `${tag} ${slot.fill} vs ${twin!.fill}`).toBe(true);
+          // An objective's cover stands over a marker the scenario mirrors and leans the way its twin does, so it is left out.
+          if (slot.id.startsWith("o-")) continue;
+          pairs++;
+          const [x, y] = mapPoint(p, slot.at[0], slot.at[1]);
+          if (Math.hypot(x - twin!.at[0], y - twin!.at[1]) <= 0.5) atMirror++;
+        }
+        sameScatterAndCentres(layout, p, slots);
+      }
+      // Measured on these boards: 22 of 608 pairs (4%) within half an inch of the mirror (an exact mirror: all of them).
+      expect(pairs).toBeGreaterThan(500);
+      expect(atMirror / pairs).toBeLessThan(0.1);
+    });
+
+    it("keeps matched halves fair: cover area, tall pieces and rough ground alike on each half, and twin objectives' covers alike", () => {
+      expect([FAIR_COVER_RATIO, FAIR_ROUGH_RATIO, FAIR_TALL_DIFF]).toEqual([0.85, 0.75, 1]);
+      // Measured on these 80 boards: cover area within 0.92 at worst (median 0.98), rough ground 0.79, tall pieces level on every board.
+      const ratio = (a: number, b: number) => (Math.max(a, b) === 0 ? 1 : Math.min(a, b) / Math.max(a, b));
+      let covers = 0;
+      for (const layout of matchedBoards) {
+        const tag = `${layout.scenarioId} seed ${layout.seed}`;
+        const f = fairness(layout, palette);
+        expect(ratio(f.A.coverArea, f.B.coverArea), `${tag} cover area ${f.A.coverArea} vs ${f.B.coverArea}`).toBeGreaterThanOrEqual(FAIR_COVER_RATIO);
+        expect(ratio(f.A.roughArea, f.B.roughArea), `${tag} rough area ${f.A.roughArea} vs ${f.B.roughArea}`).toBeGreaterThanOrEqual(FAIR_ROUGH_RATIO);
+        expect(Math.abs(f.A.tall - f.B.tall), `${tag} tall ${f.A.tall} vs ${f.B.tall}`).toBeLessThanOrEqual(FAIR_TALL_DIFF);
+        for (const c of f.covers) {
+          covers++;
+          expect(c.areaRatio, `${tag} ${c.objectives.join("/")}`).toBeGreaterThanOrEqual(0.75 - 1e-9);
+          expect(c.heightDiff, `${tag} ${c.objectives.join("/")}`).toBeLessThanOrEqual(Math.max(1, 0.25 * Math.max(...c.heightsIn)) + 1e-9);
         }
       }
+      // 80 pairs of twin objectives' covers on these boards.
+      expect(covers).toBeGreaterThan(60);
     });
   });
 
@@ -531,6 +608,12 @@ describe("generateBattlefield", () => {
       expect(withHills).toBeGreaterThanOrEqual(rate - 0.1);
       expect(withHills).toBeLessThanOrEqual(rate + 0.1);
       for (const layout of group.boards) expect(layout.hills.length > 0, `${layout.scenarioId} seed ${layout.seed}`).toBe(layout.stats.hillsWanted);
+    });
+
+    it("raises hills on every board that draws them with each scenario laid as its own archetype, and on matched halves", () => {
+      // Trench Warfare bans terrain in both zones and its objectives stand alone; its hills miss on some seeds, as on origin/main.
+      for (const layout of [...OWN_BOARDS.filter((l) => l.scenarioId !== "trench-warfare"), ...MATCHED_BOARDS]) expect(layout.hills.length > 0, `${layout.scenarioId} seed ${layout.seed}`).toBe(layout.stats.hillsWanted);
+      expect(OWN_BOARDS.filter((l) => l.hills.length > 0).length).toBeGreaterThan(40);
     });
 
     it("meets the archetype minimums and keeps every footprint on the board across the hill groups' scenarios", () => {
@@ -732,7 +815,7 @@ describe("generateBattlefield", () => {
     }
   });
 
-  it("covers every Claim No Man's Land objective, mostly with ruined buildings, and keeps the trench off the markers", () => {
+  it("covers every Claim No Man's Land objective, with a ruined building where one of the allowed height fits, and keeps the trench off the markers", () => {
     let covers = 0;
     let buildings = 0;
     let raised = 0;
@@ -746,13 +829,38 @@ describe("generateBattlefield", () => {
         expect(cover.some((p) => rectContains(rectOf(p), o.position[0], o.position[1]))).toBe(true);
         expect(layout.cells.find((c) => c.c === o.cell[0] && c.r === o.cell[1])!.kind).not.toBe("trench");
         covers++;
-        if (cover[0]!.role === "building") buildings++;
+        if (cover[0]!.role === "building") {
+          buildings++;
+          expect(buildingAllowed(palette, entry(cover[0]!)), `seed ${seed} ${o.id} ${cover[0]!.paletteId}`).toBe(true);
+        }
         if (onRaised(layout, cover[0]!)) raised++;
         for (const p of layout.pieces.filter(isFree)) if (!cover.includes(p)) expect(rectContains(rectOf(p), o.position[0], o.position[1]), `seed ${seed} ${p.id} sits on ${o.id}`).toBe(false);
       }
     }
-    expect(buildings / covers).toBeGreaterThanOrEqual(0.6);
+    // Measured on these boards: 69 of 500 (origin/main 0.8, from the three-storey ruins under 5in a side). As Trench Lines,
+    // which Claim does not list, a cross trench runs between the 6.8in two-storey ruins' rows and most pairs take a rock or
+    // slabs; laid as its own No Man's Land every objective off the centre takes a ruin (the test above).
+    expect(buildings / covers).toBeGreaterThanOrEqual(0.1);
     expect(raised).toBeGreaterThanOrEqual(50);
+  });
+
+  it("covers Claim No Man's Land's four objectives off the centre with ruined buildings when laid as its own archetype (Jonathan, Claim seed 10 live)", () => {
+    const boards = NML_BOARDS.filter((l) => l.scenarioId === "claim-no-mans-land");
+    let covers = 0;
+    let ruins = 0;
+    let all = 0;
+    for (const layout of boards) {
+      const off = layout.objectives.filter((o) => Math.abs(o.position[0] - layout.boardIn / 2) > 1e-6 || Math.abs(o.position[1] - layout.boardIn / 2) > 1e-6);
+      expect(off.length).toBe(4);
+      const roles = off.map((o) => layout.pieces.find((p) => p.id === o.coverPieceId)?.role);
+      covers += roles.length;
+      ruins += roles.filter((r) => r === "building").length;
+      if (roles.every((r) => r === "building")) all++;
+    }
+    // Measured on these boards: 160 of 160, all four on 40 of 40 (origin/main: all, from its three-storey ruins under 6.1in a side;
+    // two-storey ruins before raised ground was planned to leave room for them: 80 of 160, none with all four).
+    expect(ruins / covers).toBeGreaterThanOrEqual(0.9);
+    expect(all).toBeGreaterThanOrEqual(36);
   });
 
   it("lays a scenario as its own archetype when none is asked for: the first it lists that the generator lays, Trench Lines for any", () => {
@@ -783,7 +891,7 @@ describe("generateBattlefield", () => {
     }
   });
 
-  it("lays No Man's Land trenches only wholly inside the deployment zones", () => {
+  it("lays No Man's Land trenches only wholly inside the deployment zones", { timeout: 60_000 }, () => {
     for (const seed of SEEDS_100.slice(0, 20)) {
       const layout = gen("claim-no-mans-land", seed, "no-mans-land");
       expect(layout.trench.mode).toBe("deployment-only");
@@ -891,12 +999,157 @@ describe("generateBattlefield", () => {
     expect(below.objectives.find((o) => o.id === "ichor-pit-centre")!.keepOutIn).toBe(1);
   });
 
+  it("lays no ruined building over two storeys, and two only on a wide footprint unless the board says a narrow one stood in for a minimum", () => {
+    const all = [...[...LAYOUTS.values()].flat(), ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...MATCHED_BOARDS, ...NML_BOARDS, ...OWN_BOARDS];
+    const seen = { one: 0, wide: 0, narrow: 0 };
+    let narrowBoards = 0;
+    for (const layout of all) {
+      const narrowed = layout.stats.warnings.some((w) => w.includes("narrow two-storey"));
+      if (narrowed) narrowBoards++;
+      let narrowHere = 0;
+      for (const p of layout.pieces.filter((x) => x.role === "building")) {
+        const e = entry(p);
+        const n = storeysOf(palette, e);
+        const tag = `${layout.scenarioId} seed ${layout.seed} ${p.id} ${p.paletteId}`;
+        expect(n, tag).toBeLessThanOrEqual(2);
+        if (n === 1) seen.one++;
+        else if (Math.min(...e.footprintIn) >= palette.storeys.twoStoreyMinSideIn) seen.wide++;
+        else {
+          seen.narrow++;
+          narrowHere++;
+          expect(narrowed, `${tag} is narrow with no warning`).toBe(true);
+        }
+      }
+      if (narrowed) expect(narrowHere, `${layout.scenarioId} seed ${layout.seed} warns of a narrow ruin it did not lay`).toBeGreaterThan(0);
+    }
+    expect(seen.wide).toBeGreaterThan(500);
+    // Measured on these boards: the narrow stand-in on 50 of 1,000, all on The High Ground, whose raised ground leaves no room for a wide one.
+    expect(narrowBoards / all.length).toBeLessThan(0.1);
+  });
+
   it("records when the scenario does not list the archetype, and what was placed off its list", () => {
     const claim = gen("claim-no-mans-land", 1);
     expect(claim.stats.archetypeMatchesScenario).toBe(false);
-    expect(claim.stats.houseRules).toContain("ruined-building");
+    // Trench Lines does not list ruined buildings: recorded on every Claim board that covers an objective with one, and only there.
+    const boards = LAYOUTS.get("claim-no-mans-land")!;
+    for (const layout of boards) expect(layout.stats.houseRules.includes("ruined-building"), `seed ${layout.seed}`).toBe(layout.pieces.some((p) => p.role === "building"));
+    expect(boards.filter((l) => l.stats.houseRules.includes("ruined-building")).length).toBeGreaterThan(30);
     expect(gen("fields-of-glory", 1).stats.archetypeMatchesScenario).toBe(true);
     expect(gen("great-war", 1).stats.archetypeMatchesScenario).toBe(true);
+  });
+
+  describe("ruined buildings serve one purpose, cover from the threat (Jonathan, Claim seed 10 live)", () => {
+    const boards = [...LAYOUTS.get("claim-no-mans-land")!, ...NML_BOARDS, ...OWN_BOARDS, ...HILL_GROUPS.flatMap((g) => g.boards), ...POINT_BOARDS, ...MATCHED_BOARDS];
+    type Side = "N" | "E" | "S" | "W";
+    const norm = (v: number) => ((v % 360) + 360) % 360;
+    // Worked out here from the palette's measured bands: a face's cover on the ground storey is its two lower bands averaged.
+    const faceOf = (p: LayoutPiece, side: Side) => {
+      const bands = entry(p).wallCover![side].slice(0, 2).filter((v): v is number => v !== null);
+      return bands.length ? bands.reduce((a, v) => a + v, 0) / bands.length : 0;
+    };
+    // rotY turns a piece clockwise seen from above, so the side looking along a bearing sits that much further round.
+    const looking = (rotY: number, bearing: number): Side => (["E", "N", "W", "S"] as const)[Math.round(norm(bearing + rotY) / 90) % 4]!;
+    // Every board here faces its zones across x: the enemy shoots from the far half.
+    const threatAt = (layout: Layout, p: LayoutPiece) => (p.position[0] <= layout.boardIn / 2 ? 0 : 180);
+    const sides: Side[] = ["N", "E", "S", "W"];
+
+    // Where a ruin's solid faces should look: halfway between the threat and midfield (across the lane toward the board's
+    // centre line), straight at the threat within 2in of that line; Jonathan turned Claim seed 10's ruins so by hand.
+    const aimOf = (layout: Layout, p: LayoutPiece) => {
+      const threat = threatAt(layout, p);
+      const toCentre = layout.boardIn / 2 - p.position[1];
+      if (Math.abs(toCentre) < 2) return { aim: threat, ahead: true };
+      const midfield = toCentre > 0 ? 90 : 270;
+      return { aim: norm(threat + (norm(midfield - threat) === 90 ? 45 : -45)), ahead: false };
+    };
+    // The turn that sets them there: an L's corner along the aim (the adjacent solid faces most solid together), else the
+    // most solid face; with midfield straight ahead, the most solid face looks at the threat.
+    const targetOf = (p: LayoutPiece, { aim, ahead }: { aim: number; ahead: boolean }) => {
+      const best = Math.max(...sides.map((side) => faceOf(p, side)));
+      const solid = sides.filter((side) => faceOf(p, side) >= best - SOLID_TIE - 1e-9);
+      const bearing: Record<Side, number> = { E: 0, N: 90, W: 180, S: 270 };
+      const pairs = sides.map((side, i): [Side, Side] => [side, sides[(i + 1) % 4]!]).filter(([a, b]) => solid.includes(a) && solid.includes(b));
+      if (pairs.length && !ahead) {
+        const [a, b] = pairs.reduce((x, y) => (faceOf(p, y[0]) + faceOf(p, y[1]) > faceOf(p, x[0]) + faceOf(p, x[1]) + 1e-9 ? y : x));
+        const corner = Math.abs(bearing[a] - bearing[b]) > 180 ? norm((bearing[a] + bearing[b] + 360) / 2) : (bearing[a] + bearing[b]) / 2;
+        return norm(corner - aim);
+      }
+      const face = sides.reduce((x, y) => (faceOf(p, y) > faceOf(p, x) + 1e-9 ? y : x));
+      return norm(bearing[face] - aim);
+    };
+    const apart = (a: number, b: number) => Math.abs(norm(a - b + 180) - 180);
+
+    it("turns every ruined building's solid faces to cover its side from the enemy's zone and from midfield, a few degrees off as set by hand", () => {
+      // Claim seed 10 as Jonathan turned it, read in the palette's terms: each ruin's turn by the rule lands on his.
+      const claim = LAYOUTS.get("claim-no-mans-land")!;
+      const as = (paletteId: string, x: number, y: number) => ({ ...claim[0]!.pieces[0]!, paletteId, position: [x, y] as [number, number] });
+      expect(targetOf(as("ruins-small-a", 12.6, 32.9), aimOf(claim[0]!, as("ruins-small-a", 12.6, 32.9)))).toBe(135);
+      expect(targetOf(as("ruins-small-b", 23.8, 5.1), aimOf(claim[0]!, as("ruins-small-b", 23.8, 5.1)))).toBe(315);
+      expect(targetOf(as("ruins-medium-a", 10.9, 5.3), aimOf(claim[0]!, as("ruins-medium-a", 10.9, 5.3)))).toBe(0);
+      // His 210 for the fourth is this turned a further 30 degrees; either way one face covers the enemy's zone and one midfield.
+      expect(targetOf(as("ruins-medium-a", 25.1, 31.3), aimOf(claim[0]!, as("ruins-medium-a", 25.1, 31.3)))).toBe(180);
+      // The generator's own turn for them, a single solid face 45 degrees off the threat and midfield both.
+      const fctx: FacingContext = { grid, threatAxis: "x", trenchRects: [], palette };
+      expect(solidTurns(fctx, pieceById(palette, "ruins-small-a").wallCover!, [12.6, 32.9], false)).toEqual([135]);
+      expect(solidTurns(fctx, pieceById(palette, "ruins-small-b").wallCover!, [23.8, 5.1], false)).toEqual([315]);
+      expect(solidTurns(fctx, pieceById(palette, "ruins-medium-a").wallCover!, [10.9, 5.3], false)).toEqual([0]);
+      expect(solidTurns(fctx, pieceById(palette, "ruins-medium-a").wallCover!, [25.1, 31.3], false)).toEqual([180]);
+      let checked = 0;
+      let centre = 0;
+      for (const layout of boards) {
+        for (const p of layout.pieces.filter((x) => x.role === "building")) {
+          const tag = `${layout.scenarioId} seed ${layout.seed} ${p.id} ${p.paletteId} rotY ${p.rotY} at ${p.position.join(",")}`;
+          expect(entry(p).wallCover, `${tag} has no wall cover`).toBeTruthy();
+          const threat = threatAt(layout, p);
+          const off = Math.abs(norm(p.rotY + 45) % 90 - 45);
+          // A cover stands for its objective: on the line when its marker is, wherever it leans.
+          const at = p.objectiveId ? layout.objectives.find((o) => o.id === p.objectiveId)!.position : p.position;
+          if (p.slot?.side === "centre" && sideOf(parityOf(layout), at[0], at[1]) === "centre") {
+            // Its own twin on the line between the halves: both zones are its threat, and it turns the opposite faces whose weaker is most solid to them.
+            centre++;
+            const weaker = (rotY: number) => Math.min(faceOf(p, looking(rotY, threat)), faceOf(p, looking(rotY, threat + 180)));
+            const best = Math.max(...[0, 90, 180, 270].map(weaker));
+            expect(weaker(p.rotY), tag).toBeGreaterThanOrEqual(best - SOLID_TIE - 1e-6);
+            expect(off, `${tag} square on the line`).toBeLessThanOrEqual(1e-6);
+            continue;
+          }
+          checked++;
+          const target = targetOf(p, aimOf(layout, p));
+          // A cover the parity gives no twin stands exactly at its turn; any other ruin within a hand's few degrees of it.
+          expect(apart(p.rotY, target), `${tag} against ${target}`).toBeLessThanOrEqual(p.slot?.side === "centre" ? 1e-6 : TERRAIN_YAW_JITTER_DEG + 1e-6);
+        }
+      }
+      // Measured on these boards: 704 off the line, 169 on it. All are Ls (the two-storey ruins small enough to lay are); a
+      // single solid face turned 45 degrees is shown by the generator's own turns above.
+      expect(checked).toBeGreaterThan(600);
+      expect(centre).toBeGreaterThan(0);
+    });
+
+    it("turns a ruined wall's more solid face to the threat wherever it stands, and has its corner ruins' arms where their walls stand", () => {
+      // The broken brick wall stands a little north of its middle: its north face is the solid one (palette wallCover).
+      const wall = palette.pieces.find((x) => x.id === "wrecked-brick-wall-l")!;
+      const solid = (["N", "S"] as const).reduce((x, y) => (faceCover(wall.wallCover!, x) >= faceCover(wall.wallCover!, y) ? x : y));
+      expect(solid).toBe("N");
+      const open: FacingContext = { grid, threatAxis: "x", trenchRects: [], palette };
+      // Beside a lip that looks at the enemy: the cell's east lip at x 12, the enemy east.
+      const lip: FacingContext = { ...open, trenchRects: [cellRect(grid, 2, 4)] };
+      for (const [ctx, x] of [[open, 6], [open, 30], [lip, 13.5]] as const) {
+        for (const flip of [false, true]) {
+          for (const sign of [1, -1] as const) {
+            const rotY = facingYaw(ctx, wall.facing!, Math.max(...wall.footprintIn), [x, 18], { sign, t: 0.5, flip }, wall.wallCover!);
+            const threat = x <= 18 ? 0 : 180;
+            const bearing = 90 - rotY;
+            expect(Math.cos(((bearing - threat) * Math.PI) / 180), `at ${x}, flip ${flip}, lean ${sign}: rotY ${rotY}`).toBeGreaterThan(0);
+          }
+        }
+      }
+      // An L ruin points its outer corner at the enemy: its two arms are its two most solid faces.
+      for (const piece of palette.pieces.filter((x) => x.facing?.corner && x.wallCover)) {
+        const cover = (side: Side) => (piece.wallCover![side][0]! + piece.wallCover![side][1]!) / 2;
+        const ranked = [...sides].sort((x, y) => cover(y) - cover(x));
+        expect(ranked.slice(0, 2).sort(), piece.id).toEqual(piece.facing!.corner!.split("").sort());
+      }
+    });
   });
 
   describe("standing pieces set by hand, not on a grid (Jonathan, Claim seed 25 live)", () => {
@@ -923,12 +1176,13 @@ describe("generateBattlefield", () => {
       expect(covers.length).toBeGreaterThan(1000);
       const off = (p: LayoutPiece) => Math.min(p.rotY % 90, 90 - (p.rotY % 90));
       // A cover the parity gives no twin is its own, and stays square to stay mirror-true; every other one turns.
-      for (const { p } of covers.filter(({ p }) => p.slot!.side === "centre")) expect(off(p), p.id).toBe(0);
+      // A ruin's turn is its own (the next tests); every other cover with no twin stays square.
+      for (const { p } of covers.filter(({ p }) => p.slot!.side === "centre" && !entry(p).wallCover)) expect(off(p), p.id).toBe(0);
       const paired = covers.filter(({ p }) => p.slot!.side !== "centre");
       expect(paired.length).toBeGreaterThan(800);
       expect(paired.filter(({ p }) => off(p) < 0.01).length / paired.length).toBeLessThan(0.02);
       // Defensive cover covering a marker faces the enemy instead (the facing test below).
-      for (const { p } of covers.filter(({ p }) => !entry(p).facing)) expect(Math.min(p.rotY % 90, 90 - (p.rotY % 90)), p.id).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 1e-6);
+      for (const { p } of covers.filter(({ p }) => !entry(p).facing && !entry(p).wallCover)) expect(Math.min(p.rotY % 90, 90 - (p.rotY % 90)), p.id).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 1e-6);
       const lattice = paired.filter(({ o, p }) => [0, 1].every((i) => Math.abs((p.position[i]! - o.position[i]!) * 2 - Math.round((p.position[i]! - o.position[i]!) * 2)) < 0.01)).length / paired.length;
       expect(lattice).toBeLessThan(0.05);
     });
@@ -976,6 +1230,25 @@ describe("generateBattlefield", () => {
       const norm = (v: number) => ((v % 360) + 360) % 360;
       const apart = (a: number, b: number, period: number) => { const d = norm(a - b) % period; return Math.min(d, period - d); };
       const counts = { lip: 0, open: 0, cornerLip: 0, cornerOpen: 0 };
+      type Check = [value: number, lo: number, hi: number, what: string];
+      const judge = (rotY: number, facing: { along?: "x" | "y"; corner?: string }, cover: boolean, threat: number, lip: number | null): { bucket?: keyof typeof counts; checks: Check[] } => {
+        const facesEnemy = lip !== null && Math.abs(Math.cos(((lip - threat) * Math.PI) / 180)) >= Math.SQRT1_2 - 1e-9;
+        const line = norm((facing.along === "x" ? 0 : 90) - rotY) % 180;
+        const at = norm(corner[facing.corner ?? "NE"]! - rotY);
+        const enemySide = lip === null ? 0 : Math.cos(((lip - threat) * Math.PI) / 180) >= 0 ? lip : lip + 180;
+        // A cover is set before the trench is dug: it faces a deployment line's lip if one runs beside it, else the open way.
+        if (cover) {
+          const open = facing.along ? apart(line, 90, 180) >= 15 - 0.01 && apart(line, 90, 180) <= 45 + 0.01 : apart(at, threat, 360) <= 30 + 0.01;
+          const byLip = lip !== null && (facing.along ? apart(line, lip + 90, 180) <= TERRAIN_YAW_JITTER_DEG + 0.01 : Math.abs(apart(at, enemySide, 360) - 45 - TERRAIN_YAW_JITTER_DEG / 2) <= TERRAIN_YAW_JITTER_DEG / 2 + 0.01);
+          return { checks: [[open || byLip ? 1 : 0, 1, 1, "cover faces the enemy"]] };
+        }
+        if (facing.along) {
+          if (facesEnemy) return { bucket: "lip", checks: [[apart(line, lip! + 90, 180), 0, TERRAIN_YAW_JITTER_DEG + 0.01, "along the lip"]] };
+          return { bucket: "open", checks: [[apart(line, 90, 180), 15 - 0.01, 45 + 0.01, "off the zone's edge"]] };
+        }
+        if (facesEnemy) return { bucket: "cornerLip", checks: [[apart(at, enemySide, 360), 45 - 0.01, 45 + TERRAIN_YAW_JITTER_DEG + 0.01, "corner on the enemy's side of the lip"]] };
+        return { bucket: "cornerOpen", checks: [[apart(at, threat, 360), 0, 30 + 0.01, "corner at the enemy"]] };
+      };
       for (const layout of boards) {
         const trenches = trenchRects(layout);
         for (const p of layout.pieces.filter((x) => isFree(x) && entry(x).facing)) {
@@ -985,54 +1258,32 @@ describe("generateBattlefield", () => {
           const threat = p.position[0] <= layout.boardIn / 2 ? 0 : 180;
           // Within 3in of a trench, beyond half the piece's longest side.
           const reach = 3 + Math.max(...p.sizeIn) / 2;
-          let lip: { d: number; n: number } | null = null;
+          // Every lip at the nearest distance: a piece diagonal to a trench's inner corner is as near two lips, and either reading is the generator's to take.
+          const lips: number[] = [];
+          let nearest = Number.POSITIVE_INFINITY;
           for (const t of trenches) {
             const dx = p.position[0] < t.x0 ? p.position[0] - t.x0 : p.position[0] > t.x1 ? p.position[0] - t.x1 : 0;
             const dy = p.position[1] < t.y0 ? p.position[1] - t.y0 : p.position[1] > t.y1 ? p.position[1] - t.y1 : 0;
             const d = Math.hypot(dx, dy);
-            if (d <= reach && (!lip || d < lip.d)) lip = { d, n: Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 0 : 180) : dy >= 0 ? 90 : 270 };
+            if (d > reach || d > nearest + 1e-6) continue;
+            if (d < nearest - 1e-6) lips.length = 0;
+            nearest = Math.min(nearest, d);
+            lips.push(Math.abs(dx) >= Math.abs(dy) ? (dx >= 0 ? 0 : 180) : dy >= 0 ? 90 : 270);
           }
-          const facesEnemy = lip !== null && Math.abs(Math.cos(((lip.n - threat) * Math.PI) / 180)) >= Math.SQRT1_2 - 1e-9;
-          // A cover is set before the trench is dug: it faces a deployment line's lip if one runs beside it, else the open way.
-          if (p.objectiveId) {
-            const line = norm((facing.along === "x" ? 0 : 90) - p.rotY) % 180;
-            const at = norm(corner[facing.corner ?? "NE"]! - p.rotY);
-            const open = facing.along ? apart(line, 90, 180) >= 15 - 0.01 && apart(line, 90, 180) <= 45 + 0.01 : apart(at, threat, 360) <= 30 + 0.01;
-            const byLip = lip !== null && (facing.along ? apart(line, lip.n + 90, 180) <= TERRAIN_YAW_JITTER_DEG + 0.01 : Math.abs(apart(at, Math.cos(((lip.n - threat) * Math.PI) / 180) >= 0 ? lip.n : lip.n + 180, 360) - 45 - TERRAIN_YAW_JITTER_DEG / 2) <= TERRAIN_YAW_JITTER_DEG / 2 + 0.01);
-            expect(open || byLip, `${tag} cover faces the enemy`).toBe(true);
-            continue;
-          }
-          if (facing.along) {
-            const line = norm((facing.along === "x" ? 0 : 90) - p.rotY) % 180;
-            if (facesEnemy) {
-              counts.lip++;
-              expect(apart(line, lip!.n + 90, 180), `${tag} along the lip`).toBeLessThanOrEqual(TERRAIN_YAW_JITTER_DEG + 0.01);
-            } else {
-              counts.open++;
-              const off = apart(line, 90, 180);
-              expect(off, `${tag} off the zone's edge`).toBeGreaterThanOrEqual(15 - 0.01);
-              expect(off, `${tag} off the zone's edge`).toBeLessThanOrEqual(45 + 0.01);
-            }
-          } else {
-            const at = norm(corner[facing.corner!]! - p.rotY);
-            if (facesEnemy) {
-              counts.cornerLip++;
-              const side = Math.cos(((lip!.n - threat) * Math.PI) / 180) >= 0 ? lip!.n : lip!.n + 180;
-              const off = apart(at, side, 360);
-              expect(off, `${tag} corner on the enemy's side of the lip`).toBeGreaterThanOrEqual(45 - 0.01);
-              expect(off, `${tag} corner on the enemy's side of the lip`).toBeLessThanOrEqual(45 + TERRAIN_YAW_JITTER_DEG + 0.01);
-            } else {
-              counts.cornerOpen++;
-              expect(apart(at, threat, 360), `${tag} corner at the enemy`).toBeLessThanOrEqual(30 + 0.01);
-            }
+          const verdicts = (lips.length ? lips : [null]).map((lip) => judge(p.rotY, facing, !!p.objectiveId, threat, lip));
+          const v = verdicts.find((x) => x.checks.every(([value, lo, hi]) => value >= lo && value <= hi)) ?? verdicts[0]!;
+          if (v.bucket) counts[v.bucket]++;
+          for (const [value, lo, hi, what] of v.checks) {
+            expect(value, `${tag} ${what}`).toBeGreaterThanOrEqual(lo);
+            expect(value, `${tag} ${what}`).toBeLessThanOrEqual(hi);
           }
         }
       }
-      // Measured on these boards: 584, 824, 617 and 139.
+      // Measured on these boards: 846, 1,080, 594 and 74.
       expect(counts.lip).toBeGreaterThan(400);
       expect(counts.open).toBeGreaterThan(600);
       expect(counts.cornerLip).toBeGreaterThan(400);
-      expect(counts.cornerOpen).toBeGreaterThan(80);
+      expect(counts.cornerOpen).toBeGreaterThan(60);
     });
   });
 

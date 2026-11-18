@@ -94,7 +94,8 @@ export const Layout = z.object({
   archetype: z.enum(["trench-lines", "no-mans-land"]),
   boardIn: z.number().positive(),
   cellIn: z.number().positive(),
-  parity: z.object({ kind: z.enum(["point", "mirror-x", "mirror-y", "none"]), objectivesMatch: z.boolean() }),
+  /** kind is the transform the halves are divided by; matched twins are placed independently rather than reflected. */
+  parity: z.object({ kind: z.enum(["point", "mirror-x", "mirror-y", "none"]), objectivesMatch: z.boolean(), matched: z.boolean() }),
   aesthetic: z.object({ primary: z.string(), secondary: z.string().nullable() }),
   grid: z.object({ cols: z.number().int().positive(), rows: z.number().int().positive() }),
   cells: z.array(LayoutCell),

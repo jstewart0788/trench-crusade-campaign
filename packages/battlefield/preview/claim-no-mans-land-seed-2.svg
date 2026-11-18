@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1134" height="970" viewBox="0 0 1134 970" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1134" height="912" viewBox="0 0 1134 912" font-family="Helvetica, Arial, sans-serif">
 <title>Trench Lines — claim-no-mans-land — seed 2</title>
 <defs><pattern id="raised" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#b9ab84"/><line x1="0" y1="0" x2="0" y2="8" stroke="#9c8d63" stroke-width="3"/></pattern></defs>
-<rect width="1134" height="970" fill="#f6f3ea"/>
+<rect width="1134" height="912" fill="#f6f3ea"/>
 <text x="28" y="46" font-size="18" font-weight="bold" fill="#2b2620">Trench Lines — claim-no-mans-land — seed 2</text>
 <rect x="28" y="62" width="720" height="720" fill="#e8e1cf" stroke="#2b2620" stroke-width="2"/>
 <polygon points="28,782 148,782 148,62 28,62" fill="rgba(200,40,40,0.16)" stroke="#55504a" stroke-width="1"><title>Deployment Zone (west strip) (A)</title></polygon>
 <text x="32" y="776" font-size="11" fill="#55504a">A</text>
 <polygon points="628,782 748,782 748,62 628,62" fill="rgba(40,80,200,0.16)" stroke="#55504a" stroke-width="1"><title>Deployment Zone (east strip) (B)</title></polygon>
 <text x="632" y="776" font-size="11" fill="#55504a">B</text>
+<rect x="348" y="462" width="80" height="80" fill="url(#raised)" stroke="#4f7a3c" stroke-width="2.5"><title>hill, top 5in</title></rect>
+<text x="352" y="474" font-size="10" fill="#3f3425">hill +5</text>
 <rect x="268" y="382" width="80" height="80" fill="url(#raised)" stroke="#4f7a3c" stroke-width="2.5"><title>hill, top 5in</title></rect>
 <text x="272" y="394" font-size="10" fill="#3f3425">hill +5</text>
 <rect x="348" y="382" width="80" height="80" fill="url(#raised)" stroke="#4f7a3c" stroke-width="2.5"><title>hill, top 5in</title></rect>
 <text x="352" y="394" font-size="10" fill="#3f3425">hill +5</text>
 <rect x="428" y="382" width="80" height="80" fill="url(#raised)" stroke="#4f7a3c" stroke-width="2.5"><title>hill, top 5in</title></rect>
 <text x="432" y="394" font-size="10" fill="#3f3425">hill +5</text>
-<rect x="268" y="302" width="80" height="80" fill="#d8c9a0" stroke="#6d5c34" stroke-width="1.5"><title>ramp, climbs S</title></rect>
-<line x1="308" y1="313.20" x2="308" y2="370.80" stroke="#3f3425" stroke-width="2.5"/>
-<polygon points="308,376.80 314,370.80 302,370.80" fill="#3f3425"/>
-<rect x="428" y="302" width="80" height="80" fill="#d8c9a0" stroke="#6d5c34" stroke-width="1.5"><title>ramp, climbs S</title></rect>
-<line x1="468" y1="313.20" x2="468" y2="370.80" stroke="#3f3425" stroke-width="2.5"/>
-<polygon points="468,376.80 474,370.80 462,370.80" fill="#3f3425"/>
+<rect x="268" y="302" width="80" height="80" fill="#d8c9a0" stroke="#6d5c34" stroke-width="1.5"><title>ramp, climbs E</title></rect>
+<line x1="279.20" y1="342" x2="336.80" y2="342" stroke="#3f3425" stroke-width="2.5"/>
+<polygon points="342.80,342 336.80,336 336.80,348" fill="#3f3425"/>
+<rect x="348" y="302" width="80" height="80" fill="url(#raised)" stroke="#4f7a3c" stroke-width="2.5"><title>hill, top 5in</title></rect>
+<text x="352" y="314" font-size="10" fill="#3f3425">hill +5</text>
+<rect x="428" y="302" width="80" height="80" fill="#d8c9a0" stroke="#6d5c34" stroke-width="1.5"><title>ramp, climbs W</title></rect>
+<line x1="496.80" y1="342" x2="439.20" y2="342" stroke="#3f3425" stroke-width="2.5"/>
+<polygon points="433.20,342 439.20,348 439.20,336" fill="#3f3425"/>
 <line x1="28" y1="782" x2="28" y2="62" stroke="#8d8572" stroke-width="1.2"/>
 <line x1="28" y1="782" x2="748" y2="782" stroke="#8d8572" stroke-width="1.2"/>
 <line x1="108" y1="782" x2="108" y2="62" stroke="#b9b09a" stroke-width="0.6"/>
@@ -65,120 +69,120 @@
 <circle cx="708" cy="662" r="16" fill="#2a241b"/>
 <rect x="677.60" y="630" width="12.80" height="64" fill="#d8b878"><title>W wall: fire-step ledge</title></rect>
 <rect x="728.40" y="627.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
-<rect x="28" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-2 trench-corner rotY 0 open ES</title></rect>
-<line x1="68" y1="582" x2="108" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<rect x="28" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-2 trench-straight-ledge rotY 180 open NS</title></rect>
+<line x1="68" y1="582" x2="68" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="68" y1="582" x2="68" y2="622" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="68" cy="582" r="16" fill="#2a241b"/>
-<rect x="33.60" y="554.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
+<rect x="85.60" y="550" width="12.80" height="64" fill="#d8b878"><title>E wall: fire-step ledge</title></rect>
 <rect x="40.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
-<rect x="108" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-1-2 trench-corner rotY 180 open NW</title></rect>
-<line x1="148" y1="582" x2="148" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="148" y1="582" x2="108" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<circle cx="148" cy="582" r="16" fill="#2a241b"/>
-<rect x="168.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
-<rect x="113.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="268" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-3-2 trench-corner rotY 270 open NE</title></rect>
-<line x1="308" y1="582" x2="308" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<rect x="188" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-2-2 trench-corner rotY 270 open NE</title></rect>
+<line x1="228" y1="582" x2="228" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="228" y1="582" x2="268" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="228" cy="582" r="16" fill="#2a241b"/>
+<rect x="193.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
+<rect x="200.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
+<rect x="268" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-3-2 trench-straight-plain rotY 90 open EW</title></rect>
 <line x1="308" y1="582" x2="348" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="308" y1="582" x2="268" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="308" cy="582" r="16" fill="#2a241b"/>
+<rect x="273.60" y="554.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
 <rect x="273.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="280.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
 <rect x="348" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-4-2 trench-straight-plain rotY 90 open EW</title></rect>
 <line x1="388" y1="582" x2="428" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="388" y1="582" x2="348" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="388" cy="582" r="16" fill="#2a241b"/>
 <rect x="353.60" y="554.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
 <rect x="353.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="428" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-5-2 trench-corner rotY 180 open NW</title></rect>
-<line x1="468" y1="582" x2="468" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<rect x="428" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-5-2 trench-straight-plain rotY 90 open EW</title></rect>
+<line x1="468" y1="582" x2="508" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="468" y1="582" x2="428" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="468" cy="582" r="16" fill="#2a241b"/>
-<rect x="488.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="433.60" y="554.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
 <rect x="433.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="588" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-2 trench-corner rotY 270 open NE</title></rect>
-<line x1="628" y1="582" x2="628" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="628" y1="582" x2="668" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<circle cx="628" cy="582" r="16" fill="#2a241b"/>
-<rect x="593.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="600.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
-<rect x="668" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-8-2 trench-corner rotY 90 open SW</title></rect>
+<rect x="508" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-6-2 trench-corner rotY 180 open NW</title></rect>
+<line x1="548" y1="582" x2="548" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="548" y1="582" x2="508" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="548" cy="582" r="16" fill="#2a241b"/>
+<rect x="568.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="513.60" y="602.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
+<rect x="668" y="542" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-8-2 trench-straight-ledge rotY 0 open NS</title></rect>
+<line x1="708" y1="582" x2="708" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="708" y1="582" x2="708" y2="622" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="708" y1="582" x2="668" y2="582" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="708" cy="582" r="16" fill="#2a241b"/>
-<rect x="673.60" y="554.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
+<rect x="677.60" y="550" width="12.80" height="64" fill="#d8b878"><title>W wall: fire-step ledge</title></rect>
 <rect x="728.40" y="547.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
-<rect x="108" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-1-3 trench-t rotY 180 open NES</title></rect>
+<rect x="28" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-3 trench-corner rotY 0 open ES</title></rect>
+<line x1="68" y1="502" x2="108" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="68" y1="502" x2="68" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="68" cy="502" r="16" fill="#2a241b"/>
+<rect x="33.60" y="474.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
+<rect x="40.40" y="467.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
+<rect x="108" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-1-3 trench-t rotY 90 open NEW</title></rect>
 <line x1="148" y1="502" x2="148" y2="462" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="148" y1="502" x2="188" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="148" y1="502" x2="148" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="148" y1="502" x2="108" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="148" cy="502" r="16" fill="#2a241b"/>
-<rect x="120.40" y="470" width="7.20" height="64" fill="#7a4f2a"><title>W wall: built-in logs</title></rect>
-<rect x="188" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-2-3 trench-straight-plain rotY 270 open EW</title></rect>
-<line x1="228" y1="502" x2="268" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<rect x="116" y="522.40" width="64" height="7.20" fill="#7a4f2a"><title>S wall: built-in logs</title></rect>
+<rect x="188" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-2-3 trench-corner rotY 90 open SW</title></rect>
+<line x1="228" y1="502" x2="228" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="228" y1="502" x2="188" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="228" cy="502" r="16" fill="#2a241b"/>
 <rect x="193.60" y="474.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
-<rect x="193.60" y="522.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="268" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-3-3 trench-corner rotY 90 open SW</title></rect>
-<line x1="308" y1="502" x2="308" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="308" y1="502" x2="268" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<circle cx="308" cy="502" r="16" fill="#2a241b"/>
-<rect x="273.60" y="474.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
-<rect x="328.40" y="467.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
-<rect x="428" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-5-3 trench-corner rotY 0 open ES</title></rect>
-<line x1="468" y1="502" x2="508" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="468" y1="502" x2="468" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<circle cx="468" cy="502" r="16" fill="#2a241b"/>
-<rect x="433.60" y="474.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
-<rect x="440.40" y="467.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
-<rect x="508" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-6-3 trench-straight-plain rotY 90 open EW</title></rect>
+<rect x="248.40" y="467.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="508" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-6-3 trench-corner rotY 0 open ES</title></rect>
 <line x1="548" y1="502" x2="588" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="548" y1="502" x2="508" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="548" y1="502" x2="548" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="548" cy="502" r="16" fill="#2a241b"/>
 <rect x="513.60" y="474.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
-<rect x="513.60" y="522.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="588" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-3 trench-t rotY 0 open NSW</title></rect>
+<rect x="520.40" y="467.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
+<rect x="588" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-3 trench-t rotY 90 open NEW</title></rect>
 <line x1="628" y1="502" x2="628" y2="462" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="628" y1="502" x2="628" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="502" x2="668" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="628" y1="502" x2="588" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="628" cy="502" r="16" fill="#2a241b"/>
-<rect x="648.40" y="470" width="7.20" height="64" fill="#7a4f2a"><title>E wall: built-in logs</title></rect>
-<rect x="28" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-4 trench-corner rotY 270 open NE</title></rect>
-<line x1="68" y1="422" x2="68" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="68" y1="422" x2="108" y2="422" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<circle cx="68" cy="422" r="16" fill="#2a241b"/>
-<rect x="33.60" y="442.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="40.40" y="387.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
-<rect x="108" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-1-4 trench-corner rotY 90 open SW</title></rect>
+<rect x="596" y="522.40" width="64" height="7.20" fill="#7a4f2a"><title>S wall: built-in logs</title></rect>
+<rect x="668" y="462" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-8-3 trench-corner rotY 90 open SW</title></rect>
+<line x1="708" y1="502" x2="708" y2="542" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="708" y1="502" x2="668" y2="502" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="708" cy="502" r="16" fill="#2a241b"/>
+<rect x="673.60" y="474.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
+<rect x="728.40" y="467.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="108" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-1-4 trench-straight-ledge rotY 180 open NS</title></rect>
+<line x1="148" y1="422" x2="148" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="148" y1="422" x2="148" y2="462" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="148" y1="422" x2="108" y2="422" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="148" cy="422" r="16" fill="#2a241b"/>
-<rect x="113.60" y="394.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
-<rect x="168.40" y="387.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
-<rect x="588" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-4 trench-corner rotY 0 open ES</title></rect>
-<line x1="628" y1="422" x2="668" y2="422" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<rect x="165.60" y="390" width="12.80" height="64" fill="#d8b878"><title>E wall: fire-step ledge</title></rect>
+<rect x="120.40" y="387.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
+<rect x="588" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-4 trench-straight-ledge rotY 0 open NS</title></rect>
+<line x1="628" y1="422" x2="628" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="628" y1="422" x2="628" y2="462" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="628" cy="422" r="16" fill="#2a241b"/>
-<rect x="593.60" y="394.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
-<rect x="600.40" y="387.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
-<rect x="668" y="382" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-8-4 trench-corner rotY 180 open NW</title></rect>
-<line x1="708" y1="422" x2="708" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="708" y1="422" x2="668" y2="422" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<circle cx="708" cy="422" r="16" fill="#2a241b"/>
-<rect x="728.40" y="387.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
-<rect x="673.60" y="442.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
-<rect x="28" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-5 trench-straight-ledge rotY 180 open NS</title></rect>
+<rect x="597.60" y="390" width="12.80" height="64" fill="#d8b878"><title>W wall: fire-step ledge</title></rect>
+<rect x="648.40" y="387.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="28" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-5 trench-corner rotY 270 open NE</title></rect>
 <line x1="68" y1="342" x2="68" y2="302" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="68" y1="342" x2="68" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="68" y1="342" x2="108" y2="342" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="68" cy="342" r="16" fill="#2a241b"/>
-<rect x="85.60" y="310" width="12.80" height="64" fill="#d8b878"><title>E wall: fire-step ledge</title></rect>
+<rect x="33.60" y="362.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
 <rect x="40.40" y="307.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
-<rect x="668" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-8-5 trench-straight-ledge rotY 0 open NS</title></rect>
+<rect x="108" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-1-5 trench-corner rotY 90 open SW</title></rect>
+<line x1="148" y1="342" x2="148" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="148" y1="342" x2="108" y2="342" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="148" cy="342" r="16" fill="#2a241b"/>
+<rect x="113.60" y="314.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
+<rect x="168.40" y="307.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="588" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-7-5 trench-corner rotY 0 open ES</title></rect>
+<line x1="628" y1="342" x2="668" y2="342" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="628" y1="342" x2="628" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<circle cx="628" cy="342" r="16" fill="#2a241b"/>
+<rect x="593.60" y="314.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>N wall: log fence</title></rect>
+<rect x="600.40" y="307.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>W wall: log fence</title></rect>
+<rect x="668" y="302" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-8-5 trench-corner rotY 180 open NW</title></rect>
 <line x1="708" y1="342" x2="708" y2="302" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
-<line x1="708" y1="342" x2="708" y2="382" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
+<line x1="708" y1="342" x2="668" y2="342" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <circle cx="708" cy="342" r="16" fill="#2a241b"/>
-<rect x="677.60" y="310" width="12.80" height="64" fill="#d8b878"><title>W wall: fire-step ledge</title></rect>
 <rect x="728.40" y="307.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="673.60" y="362.40" width="68.80" height="7.20" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>S wall: log fence</title></rect>
 <rect x="28" y="222" width="80" height="80" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"><title>t-0-6 trench-straight-ledge rotY 180 open NS</title></rect>
 <line x1="68" y1="262" x2="68" y2="222" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
 <line x1="68" y1="262" x2="68" y2="302" stroke="#2a241b" stroke-width="32" stroke-linecap="butt"/>
@@ -215,74 +219,74 @@
 <circle cx="708" cy="102" r="16" fill="#2a241b"/>
 <rect x="677.60" y="70" width="12.80" height="64" fill="#d8b878"><title>W wall: fire-step ledge</title></rect>
 <rect x="728.40" y="67.60" width="7.20" height="68.80" fill="#7a4f2a" stroke="#f0d9a8" stroke-width="0.8" stroke-dasharray="3 2"><title>E wall: log fence</title></rect>
+<rect x="57.08" y="707.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-0 duckboard</title></rect>
+<rect x="709.08" y="707.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-0 duckboard</title></rect>
 <rect x="57.08" y="627.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-1 duckboard</title></rect>
 <rect x="709.08" y="627.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-1 duckboard</title></rect>
-<rect x="57.08" y="147.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-7 duckboard</title></rect>
-<rect x="709.08" y="147.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-7 duckboard</title></rect>
-<rect x="57.08" y="67.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-8 duckboard</title></rect>
-<rect x="709.08" y="67.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-8 duckboard</title></rect>
-<rect x="130.18" y="672.10" width="63.03" height="79.91" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-10</title></rect>
-<rect x="588.15" y="678.44" width="57.67" height="61.57" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-11</title></rect>
-<rect x="131.27" y="73.28" width="63.65" height="83.66" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-12</title></rect>
-<rect x="581.08" y="73.28" width="63.65" height="83.66" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-13</title></rect>
-<rect x="190" y="206.11" width="36.68" height="47.52" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-14</title></rect>
-<rect x="549.16" y="203.08" width="35.60" height="47.88" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-15</title></rect>
-<rect x="366.80" y="399.32" width="42.40" height="42.40" fill="#5f5fa8" fill-opacity="0.85" stroke="#2a2a6a" stroke-width="2.5"><title>Water tower · 8.5&quot; · Cover · Climb: o-obj-3 water-tower rotY 180, rests at 5in covers obj-3</title></rect>
-<text x="388" y="424.52" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">T</text>
-<rect x="244.42" y="112.58" width="103.20" height="103.20" transform="rotate(264.42 296.02 164.18)" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>Ruined building · 10&quot; · Cover · Climb: o-obj-1 ruins-medium-a rotY 264.417, rests at 2.58in covers obj-1</title></rect>
-<text x="296.02" y="168.18" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
-<rect x="428.38" y="112.58" width="103.20" height="103.20" transform="rotate(95.58 479.98 164.18)" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>Ruined building · 10&quot; · Cover · Climb: o-obj-2 ruins-medium-a rotY 95.583, rests at 2.58in covers obj-2</title></rect>
-<text x="479.98" y="168.18" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
-<rect x="226.36" y="644.70" width="121" height="78.40" transform="rotate(181.72 286.86 683.90)" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>Ruined building · 9.5&quot; · Cover · Climb: o-obj-4 ruins-small-a rotY 181.722, rests at 2.5in covers obj-4</title></rect>
-<text x="286.86" y="687.90" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
-<rect x="414.24" y="646.30" width="149.80" height="75.20" transform="rotate(178.28 489.14 683.90)" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>Ruined building · 7&quot; · Cover · Climb: o-obj-5 ruins-small-b rotY 178.278, rests at 2.58in covers obj-5</title></rect>
-<text x="489.14" y="687.90" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
-<rect x="142.20" y="282.86" width="63.80" height="63.60" transform="rotate(358.50 174.10 314.66)" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>Corner ruin · 4.5&quot; · Cover · Climb: d-0 ruins-corner rotY 358.504, rests at 2.5in</title></rect>
-<text x="174.10" y="318.66" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
-<rect x="570" y="282.86" width="63.80" height="63.60" transform="rotate(271.50 601.90 314.66)" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>Corner ruin · 4.5&quot; · Cover · Climb: d-1 ruins-corner rotY 271.496, rests at 2.5in</title></rect>
-<text x="601.90" y="318.66" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
-<rect x="134.60" y="184" width="41.20" height="37.60" transform="rotate(0.65 155.20 202.80)" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>Rocks · Difficult · Cover: d-2 rock rotY 0.652, rests at 2.5in</title></rect>
-<text x="155.20" y="206.80" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
-<rect x="600.20" y="184" width="41.20" height="37.60" transform="rotate(359.35 620.80 202.80)" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>Rocks · Difficult · Cover: d-3 rock rotY 359.348, rests at 2.5in</title></rect>
-<text x="620.80" y="206.80" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
-<rect x="38.20" y="501.94" width="45.60" height="19.60" transform="rotate(179.36 61 511.74)" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>Barbed wire · Difficult · Dangerous: d-4 difficult-dangerous rotY 179.363, rests at 2.5in</title></rect>
-<text x="61" y="515.74" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
-<rect x="692.20" y="501.94" width="45.60" height="19.60" transform="rotate(180.64 715 511.74)" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>Barbed wire · Difficult · Dangerous: d-5 difficult-dangerous rotY 180.637, rests at 2.5in</title></rect>
-<text x="715" y="515.74" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
-<rect x="223.54" y="560.70" width="15.40" height="26.60" transform="rotate(274.42 231.24 574)" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>Pillar · Impassable · Cover: d-6 pillar rotY 274.42, rests at 2.5in</title></rect>
-<text x="231.24" y="578" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
-<rect x="534.56" y="569.90" width="20.40" height="8.20" transform="rotate(175.58 544.76 574)" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>Cross · Impassable · Cover: d-7 cross rotY 175.58, rests at 2.5in</title></rect>
-<text x="544.76" y="578" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
-<rect x="226.54" y="399.28" width="47.40" height="31.80" transform="rotate(87.89 250.24 415.18)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Stones · 1&quot; · Cover: x-8 stone-pile rotY 87.892, rests at 2.5in, raised</title></rect>
-<rect x="509.42" y="398.18" width="23.60" height="23.60" transform="rotate(2.11 521.22 409.98)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-9 ruins-brick rotY 2.108, rests at 2.5in, raised</title></rect>
-<rect x="132.22" y="695.82" width="30.80" height="17.20" transform="rotate(238.09 147.62 704.42)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-10.0 crates-small rotY 238.086, rests at 2.5in, trench</title></rect>
-<rect x="146.52" y="678.14" width="31.20" height="30.40" transform="rotate(17.81 162.12 693.34)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-10.1 crates-group rotY 17.808, rests at 2.5in, trench</title></rect>
-<rect x="146.78" y="709.72" width="54.20" height="22.60" transform="rotate(283.55 173.88 721.02)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1&quot; · Cover: x-10.2 crates-long rotY 283.547, rests at 2.5in, trench</title></rect>
-<rect x="612.98" y="695.82" width="30.80" height="17.20" transform="rotate(121.91 628.38 704.42)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-11.0 crates-small rotY 121.914, rests at 2.5in, trench</title></rect>
-<rect x="598.48" y="684.74" width="30.80" height="17.20" transform="rotate(342.19 613.88 693.34)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-11.1 crates-small rotY 342.192, rests at 2.5in, trench</title></rect>
-<rect x="586.72" y="712.42" width="30.80" height="17.20" transform="rotate(76.45 602.12 721.02)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-11.2 crates-small rotY 76.453, rests at 2.5in, trench</title></rect>
-<rect x="141.10" y="83.54" width="47.40" height="31.80" transform="rotate(203.97 164.80 99.44)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Stones · 1&quot; · Cover: x-12.0 stone-pile rotY 203.972, rests at 2.5in, open</title></rect>
-<rect x="147.02" y="107.36" width="23.60" height="23.60" transform="rotate(130.98 158.82 119.16)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-12.1 ruins-brick rotY 130.98, rests at 2.5in, open</title></rect>
-<rect x="135.36" y="125.10" width="54.20" height="22.60" transform="rotate(163.49 162.46 136.40)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1&quot; · Cover: x-12.2 crates-long rotY 163.491, rests at 2.5in, open</title></rect>
-<rect x="587.50" y="83.54" width="47.40" height="31.80" transform="rotate(156.03 611.20 99.44)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Stones · 1&quot; · Cover: x-13.0 stone-pile rotY 156.028, rests at 2.58in, open</title></rect>
-<rect x="605.38" y="107.36" width="23.60" height="23.60" transform="rotate(229.02 617.18 119.16)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-13.1 ruins-brick rotY 229.02, rests at 2.5in, open</title></rect>
-<rect x="586.44" y="125.10" width="54.20" height="22.60" transform="rotate(196.51 613.54 136.40)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1&quot; · Cover: x-13.2 crates-long rotY 196.509, rests at 2.58in, open</title></rect>
-<rect x="196.24" y="223.04" width="24.20" height="24.40" transform="rotate(207.26 208.34 235.24)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-14.0 tire-pile rotY 207.264, rests at 2.5in, open</title></rect>
-<rect x="198.74" y="209.86" width="24.60" height="18.20" transform="rotate(188.66 211.04 218.96)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Barrels · 1&quot; · Cover: x-14.1 barrels-group rotY 188.655, rests at 2.5in, open</title></rect>
-<rect x="555.36" y="226.14" width="24.60" height="18.20" transform="rotate(152.74 567.66 235.24)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Barrels · 1&quot; · Cover: x-15.0 barrels-group rotY 152.736, rests at 2.58in, open</title></rect>
-<rect x="552.86" y="206.76" width="24.20" height="24.40" transform="rotate(171.34 564.96 218.96)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-15.1 tire-pile rotY 171.345, rests at 2.58in, open</title></rect>
-<rect x="327.34" y="745.76" width="24.20" height="24.40" transform="rotate(95.67 339.44 757.96)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-16 tire-pile rotY 95.675, rests at 2.5in, open</title></rect>
-<rect x="424.26" y="748.86" width="24.60" height="18.20" transform="rotate(264.32 436.56 757.96)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Barrels · 1&quot; · Cover: x-17 barrels-group rotY 264.325, rests at 2.58in, open</title></rect>
-<polygon points="388,385.32 382,395.32 394,395.32" fill="#2a2a6a"/>
-<text x="397" y="394.32" font-size="10" font-weight="bold" fill="#2a2a6a">13.40in</text>
-<polygon points="296.02,93.80 290.02,103.80 302.02,103.80" fill="#2a2a6a"/>
-<text x="305.02" y="102.80" font-size="10" font-weight="bold" fill="#2a2a6a">12.50in</text>
-<polygon points="479.98,93.80 473.98,103.80 485.98,103.80" fill="#2a2a6a"/>
-<text x="488.98" y="102.80" font-size="10" font-weight="bold" fill="#2a2a6a">12.50in</text>
-<polygon points="286.86,628.90 280.86,638.90 292.86,638.90" fill="#2a2a6a"/>
-<text x="295.86" y="637.90" font-size="10" font-weight="bold" fill="#2a2a6a">12.20in</text>
-<polygon points="489.14,630.07 483.14,640.07 495.14,640.07" fill="#2a2a6a"/>
-<text x="498.14" y="639.07" font-size="10" font-weight="bold" fill="#2a2a6a">9.40in</text>
+<rect x="57.08" y="547.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-0-2 duckboard</title></rect>
+<rect x="709.08" y="547.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-8-2 duckboard</title></rect>
+<rect x="137.08" y="387.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-1-4 duckboard</title></rect>
+<rect x="629.08" y="387.78" width="9.84" height="68.45" fill="#c9a46a" fill-opacity="0.75"><title>k-7-4 duckboard</title></rect>
+<rect x="126.71" y="236.69" width="48.44" height="42.70" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-7</title></rect>
+<rect x="602.98" y="238.65" width="46.31" height="40.74" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-8</title></rect>
+<rect x="283.30" y="705.54" width="42.77" height="57.37" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-9</title></rect>
+<rect x="449.93" y="705.54" width="42.77" height="57.37" fill="none" stroke="#55504a" stroke-width="0.8" stroke-dasharray="2 2"><title>group x-10</title></rect>
+<rect x="347.90" y="382.40" width="80.20" height="79.20" fill="#5f5fa8" fill-opacity="0.85" stroke="#2a2a6a" stroke-width="2.5"><title>Tower · 9.5&quot; · Cover · Climb: o-obj-3 outpost-tower rotY 90, rests at 5in covers obj-3</title></rect>
+<text x="388" y="426" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">T</text>
+<rect x="181.84" y="97.30" width="138.40" height="138.40" transform="rotate(93.05 251.04 166.50)" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>Ruined building · 6.8&quot; · Cover · Climb: o-obj-1 ruins-medium-c rotY 93.048, rests at 2.5in covers obj-1</title></rect>
+<text x="251.04" y="170.50" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
+<rect x="457.06" y="98.60" width="135.80" height="135.80" transform="rotate(187 524.96 166.50)" fill="#8e6a4a" fill-opacity="0.85" stroke="#4a2f17" stroke-width="2.5"><title>Ruined building · 6.8&quot; · Cover · Climb: o-obj-2 ruins-medium-b rotY 187, rests at 2.5in covers obj-2</title></rect>
+<text x="524.96" y="170.50" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">B</text>
+<rect x="257.68" y="649.42" width="41.20" height="37.60" transform="rotate(358.00 278.28 668.22)" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>Rocks · Difficult · Cover: o-obj-4 rock rotY 358.004, rests at 2.5in covers obj-4</title></rect>
+<text x="278.28" y="672.22" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
+<rect x="477.12" y="649.42" width="41.20" height="37.60" transform="rotate(2.00 497.72 668.22)" fill="#c4c08f" fill-opacity="0.85" stroke="#7d7a4a" stroke-width="1.5"><title>Rocks · Difficult · Cover: o-obj-5 rock rotY 1.996, rests at 2.5in covers obj-5</title></rect>
+<text x="497.72" y="672.22" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">D</text>
+<rect x="131.92" y="671.28" width="63.80" height="63.60" transform="rotate(90.97 163.82 703.08)" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>Corner ruin · 4.7&quot; · Cover · Climb: d-0 ruins-corner rotY 90.968, rests at 2.5in</title></rect>
+<text x="163.82" y="707.08" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="580.28" y="671.28" width="63.80" height="63.60" transform="rotate(179.03 612.18 703.08)" fill="#a97c50" fill-opacity="0.85" stroke="#5e3f1f" stroke-width="1.5"><title>Corner ruin · 4.7&quot; · Cover · Climb: d-1 ruins-corner rotY 179.032, rests at 2.5in</title></rect>
+<text x="612.18" y="707.08" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">R</text>
+<rect x="127.70" y="577.38" width="45.60" height="19.60" transform="rotate(273.52 150.50 587.18)" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>Barbed wire · Difficult · Dangerous: d-2 difficult-dangerous rotY 273.52, rests at 2.5in</title></rect>
+<text x="150.50" y="591.18" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
+<rect x="602.70" y="577.38" width="45.60" height="19.60" transform="rotate(86.48 625.50 587.18)" fill="#e5a04a" fill-opacity="0.85" stroke="#9a5f14" stroke-width="1.5"><title>Barbed wire · Difficult · Dangerous: d-3 difficult-dangerous rotY 86.48, rests at 2.5in</title></rect>
+<text x="625.50" y="591.18" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">X</text>
+<rect x="377.80" y="687.60" width="20.40" height="8.20" fill="#6f6fb8" fill-opacity="0.85" stroke="#33337a" stroke-width="1.5"><title>Cross · Impassable · Cover: d-4 cross rotY 180, rests at 2.5in</title></rect>
+<text x="388" y="695.70" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">L</text>
+<rect x="331" y="743.40" width="30.80" height="17.20" transform="rotate(110.79 346.40 752)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-5 crates-small rotY 110.787, rests at 2.5in, lane</title></rect>
+<rect x="414.20" y="743.40" width="30.80" height="17.20" transform="rotate(249.21 429.60 752)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-6 crates-small rotY 249.213, rests at 2.5in, lane</title></rect>
+<rect x="129.44" y="253.48" width="24.60" height="18.20" transform="rotate(248.08 141.74 262.58)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Barrels · 1&quot; · Cover: x-7.0 barrels-group rotY 248.077, rests at 2.5in, open</title></rect>
+<rect x="143.88" y="243.66" width="24.20" height="24.40" transform="rotate(47.18 155.98 255.86)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-7.1 tire-pile rotY 47.181, rests at 2.5in, open</title></rect>
+<rect x="621.96" y="253.48" width="24.60" height="18.20" transform="rotate(111.92 634.26 262.58)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Barrels · 1&quot; · Cover: x-8.0 barrels-group rotY 111.923, rests at 2.5in, open</title></rect>
+<rect x="607.72" y="246.76" width="24.60" height="18.20" transform="rotate(312.82 620.02 255.86)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Barrels · 1&quot; · Cover: x-8.1 barrels-group rotY 312.819, rests at 2.5in, open</title></rect>
+<rect x="294.84" y="712.46" width="24.20" height="24.40" transform="rotate(49.57 306.94 724.66)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-9.0 tire-pile rotY 49.569, rests at 2.5in, open</title></rect>
+<rect x="289.46" y="732.50" width="24.20" height="24.40" transform="rotate(115.85 301.56 744.70)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-9.1 tire-pile rotY 115.853, rests at 2.5in, open</title></rect>
+<rect x="456.96" y="712.46" width="24.20" height="24.40" transform="rotate(310.43 469.06 724.66)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-10.0 tire-pile rotY 310.431, rests at 2.5in, open</title></rect>
+<rect x="462.34" y="732.50" width="24.20" height="24.40" transform="rotate(244.15 474.44 744.70)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Tyres · 1.5&quot; · Cover · Climb: x-10.1 tire-pile rotY 244.147, rests at 2.5in, open</title></rect>
+<rect x="209.02" y="735.80" width="30.80" height="17.20" transform="rotate(102.06 224.42 744.40)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-11 crates-small rotY 102.06, rests at 2.5in, open</title></rect>
+<rect x="536.18" y="735.80" width="30.80" height="17.20" transform="rotate(257.94 551.58 744.40)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-12 crates-small rotY 257.94, rests at 2.5in, open</title></rect>
+<rect x="325.78" y="242.70" width="54.20" height="22.60" transform="rotate(316.92 352.88 254.00)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1&quot; · Cover: x-13 crates-long rotY 316.922, rests at 2.5in, open</title></rect>
+<rect x="407.52" y="238.80" width="31.20" height="30.40" transform="rotate(43.08 423.12 254.00)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Crates · 1.5&quot; · Cover · Climb: x-14 crates-group rotY 43.078, rests at 2.5in, open</title></rect>
+<rect x="204.28" y="264.10" width="23.60" height="23.60" transform="rotate(4.53 216.08 275.90)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-15 ruins-brick rotY 4.528, rests at 2.5in, open</title></rect>
+<rect x="548.12" y="264.10" width="23.60" height="23.60" transform="rotate(355.47 559.92 275.90)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-16 ruins-brick rotY 355.472, rests at 2.5in, open</title></rect>
+<rect x="347.00" y="120.78" width="23.60" height="23.60" transform="rotate(206.87 358.80 132.58)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-17 ruins-brick rotY 206.872, rests at 2.5in, open</title></rect>
+<rect x="405.40" y="120.78" width="23.60" height="23.60" transform="rotate(153.13 417.20 132.58)" fill="#b7a98c" fill-opacity="0.85" stroke="#6a5f4b" stroke-width="1.5"><title>Bricks · 1&quot; · Cover: x-18 ruins-brick rotY 153.128, rests at 2.5in, open</title></rect>
+<polygon points="331.17,255.64 323.16,233.27 309.77,245.30" fill="#a3241c"/>
+<line x1="316.46" y1="239.28" x2="323.82" y2="101.08" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>o-obj-1 N face, cover 0.79</title></line>
+<line x1="178.26" y1="231.92" x2="316.46" y2="239.28" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>o-obj-1 E face, cover 0.78</title></line>
+<polygon points="431.95,239.16 454.83,232.71 443.75,218.53" fill="#a3241c"/>
+<line x1="465.84" y1="90.83" x2="449.29" y2="225.62" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>o-obj-2 E face, cover 0.79</title></line>
+<line x1="449.29" y1="225.62" x2="584.08" y2="242.17" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>o-obj-2 N face, cover 0.72</title></line>
+<polygon points="210.42,751.28 201.60,729.21 188.66,741.72" fill="#a3241c"/>
+<line x1="131.49" y1="734.44" x2="195.08" y2="735.51" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>d-0 E face, cover 0.93</title></line>
+<line x1="195.08" y1="735.51" x2="196.15" y2="671.72" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>d-0 N face, cover 0.70</title></line>
+<polygon points="565.58,751.28 587.34,741.72 574.40,729.21" fill="#a3241c"/>
+<line x1="579.75" y1="671.82" x2="580.82" y2="735.41" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>d-1 E face, cover 0.93</title></line>
+<line x1="580.82" y1="735.41" x2="644.61" y2="734.34" stroke="#a3241c" stroke-width="4" stroke-linecap="round"><title>d-1 N face, cover 0.70</title></line>
+<polygon points="388,368.40 382,378.40 394,378.40" fill="#2a2a6a"/>
+<text x="397" y="377.40" font-size="10" font-weight="bold" fill="#2a2a6a">9.40in on +2.50in</text>
+<polygon points="251.04,79.72 245.04,89.72 257.04,89.72" fill="#2a2a6a"/>
+<text x="260.04" y="88.72" font-size="10" font-weight="bold" fill="#2a2a6a">6.80in</text>
+<polygon points="524.96,76.83 518.96,86.83 530.96,86.83" fill="#2a2a6a"/>
+<text x="533.96" y="85.83" font-size="10" font-weight="bold" fill="#2a2a6a">6.80in</text>
 <circle cx="268" cy="182" r="12" fill="#ffffff" fill-opacity="0.9" stroke="#1f1a14" stroke-width="1.5"><title>obj-1: Objective (NW) (covered by o-obj-1)</title></circle>
 <line x1="256" y1="182" x2="280" y2="182" stroke="#1f1a14" stroke-width="1"/>
 <line x1="268" y1="170" x2="268" y2="194" stroke="#1f1a14" stroke-width="1"/>
@@ -309,13 +313,13 @@
 <circle cx="708" cy="62" r="4" fill="#ffffff" stroke="#2a241b" stroke-width="1.5"><title>exit N at 8,8</title></circle>
 <text x="776" y="82" font-size="14" font-weight="bold" fill="#2b2620">Legend</text>
 <rect x="776" y="88" width="14" height="14" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"/>
-<text x="796" y="100" font-size="12" fill="#2b2620">Trench · 3&quot; deep · Fire step · Cover · Climb: 12</text>
+<text x="796" y="100" font-size="12" fill="#2b2620">Trench · 3&quot; deep · Fire step · Cover · Climb: 14</text>
 <rect x="776" y="106" width="14" height="14" fill="#6b5a3e" stroke="#3f3425" stroke-width="1"/>
-<text x="796" y="118" font-size="12" fill="#2b2620">Trench · 3&quot; deep · Cover · Climb: 17</text>
+<text x="796" y="118" font-size="12" fill="#2b2620">Trench · 3&quot; deep · Cover · Climb: 15</text>
 <rect x="776" y="124" width="14" height="14" fill="#7a4f2a" stroke="#3f2812" stroke-width="1"/>
-<text x="796" y="136" font-size="12" fill="#2b2620">Trench wall · 3&quot; · Climb: 42</text>
+<text x="796" y="136" font-size="12" fill="#2b2620">Trench wall · 3&quot; · Climb: 40</text>
 <rect x="776" y="142" width="14" height="14" fill="#c9a46a" stroke="#7a5a2a" stroke-width="1"/>
-<text x="796" y="154" font-size="12" fill="#2b2620">Duckboard · Open: 6</text>
+<text x="796" y="154" font-size="12" fill="#2b2620">Duckboard · Open: 8</text>
 <rect x="776" y="160" width="14" height="14" fill="#b8a67a" stroke="#6d5c34" stroke-width="1"/>
 <text x="796" y="172" font-size="12" fill="#2b2620">Ramp · Open: 2</text>
 <rect x="776" y="178" width="14" height="14" fill="#c4c08f" stroke="#7d7a4a" stroke-width="1"/>
@@ -323,65 +327,58 @@
 <rect x="776" y="196" width="14" height="14" fill="#e5a04a" stroke="#9a5f14" stroke-width="1"/>
 <text x="796" y="208" font-size="12" fill="#2b2620">Barbed wire · Difficult · Dangerous (X): 2</text>
 <rect x="776" y="214" width="14" height="14" fill="#a97c50" stroke="#5e3f1f" stroke-width="1"/>
-<text x="796" y="226" font-size="12" fill="#2b2620">Corner ruin · 4.5&quot; · Cover · Climb (R): 2</text>
+<text x="796" y="226" font-size="12" fill="#2b2620">Corner ruin · 4.7&quot; · Cover · Climb (R): 2</text>
 <rect x="776" y="232" width="14" height="14" fill="#8e6a4a" stroke="#4a2f17" stroke-width="1"/>
-<text x="796" y="244" font-size="12" fill="#2b2620">Ruined building · 10&quot; · Cover · Climb (B): 2</text>
-<rect x="776" y="250" width="14" height="14" fill="#8e6a4a" stroke="#4a2f17" stroke-width="1"/>
-<text x="796" y="262" font-size="12" fill="#2b2620">Ruined building · 9.5&quot; · Cover · Climb (B): 1</text>
-<rect x="776" y="268" width="14" height="14" fill="#8e6a4a" stroke="#4a2f17" stroke-width="1"/>
-<text x="796" y="280" font-size="12" fill="#2b2620">Ruined building · 7&quot; · Cover · Climb (B): 1</text>
-<rect x="776" y="286" width="14" height="14" fill="#5f5fa8" stroke="#2a2a6a" stroke-width="1"/>
-<text x="796" y="298" font-size="12" fill="#2b2620">Water tower · 8.5&quot; · Cover · Climb (T): 1</text>
-<rect x="776" y="304" width="14" height="14" fill="#6f6fb8" stroke="#33337a" stroke-width="1"/>
-<text x="796" y="316" font-size="12" fill="#2b2620">Pillar · Impassable · Cover (L): 1</text>
-<rect x="776" y="322" width="14" height="14" fill="#6f6fb8" stroke="#33337a" stroke-width="1"/>
-<text x="796" y="334" font-size="12" fill="#2b2620">Cross · Impassable · Cover (L): 1</text>
+<text x="796" y="244" font-size="12" fill="#2b2620">Ruined building · 6.8&quot; · Cover · Climb (B): 2</text>
+<rect x="776" y="250" width="14" height="14" fill="#5f5fa8" stroke="#2a2a6a" stroke-width="1"/>
+<text x="796" y="262" font-size="12" fill="#2b2620">Tower · 9.5&quot; · Cover · Climb (T): 1</text>
+<rect x="776" y="268" width="14" height="14" fill="#6f6fb8" stroke="#33337a" stroke-width="1"/>
+<text x="796" y="280" font-size="12" fill="#2b2620">Cross · Impassable · Cover (L): 1</text>
+<rect x="776" y="286" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
+<text x="796" y="298" font-size="12" fill="#2b2620">Crates · 1.5&quot; · Cover · Climb: 5</text>
+<rect x="776" y="304" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
+<text x="796" y="316" font-size="12" fill="#2b2620">Barrels · 1&quot; · Cover: 3</text>
+<rect x="776" y="322" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
+<text x="796" y="334" font-size="12" fill="#2b2620">Tyres · 1.5&quot; · Cover · Climb: 5</text>
 <rect x="776" y="340" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
-<text x="796" y="352" font-size="12" fill="#2b2620">Stones · 1&quot; · Cover: 3</text>
+<text x="796" y="352" font-size="12" fill="#2b2620">Crates · 1&quot; · Cover: 1</text>
 <rect x="776" y="358" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
-<text x="796" y="370" font-size="12" fill="#2b2620">Bricks · 1&quot; · Cover: 3</text>
-<rect x="776" y="376" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
-<text x="796" y="388" font-size="12" fill="#2b2620">Crates · 1.5&quot; · Cover · Climb: 5</text>
-<rect x="776" y="394" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
-<text x="796" y="406" font-size="12" fill="#2b2620">Crates · 1&quot; · Cover: 3</text>
-<rect x="776" y="412" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
-<text x="796" y="424" font-size="12" fill="#2b2620">Tyres · 1.5&quot; · Cover · Climb: 3</text>
-<rect x="776" y="430" width="14" height="14" fill="#b7a98c" stroke="#6a5f4b" stroke-width="1"/>
-<text x="796" y="442" font-size="12" fill="#2b2620">Barrels · 1&quot; · Cover: 3</text>
-<rect x="776" y="448" width="14" height="14" fill="#e8e1cf" stroke="#cfc6ad" stroke-width="1"/>
-<text x="796" y="460" font-size="12" fill="#2b2620">Ground · Open: 35</text>
-<rect x="776" y="466" width="14" height="14" fill="#e8e1cf" stroke="#cfc6ad" stroke-width="1"/>
-<text x="796" y="478" font-size="12" fill="#2b2620">Hill · 3&quot; · Elevated · Climb: 2</text>
-<rect x="776" y="484" width="14" height="14" fill="url(#raised)" stroke="#6d5c34" stroke-width="1"/>
-<text x="796" y="496" font-size="12" fill="#2b2620">Plateau (stacked tiles): none</text>
-<rect x="776" y="502" width="14" height="14" fill="#d8b878" stroke="#7a5a2a" stroke-width="1"/>
-<text x="796" y="514" font-size="12" fill="#2b2620">Wall: fire-step ledge</text>
-<rect x="776" y="520" width="14" height="14" fill="#7a4f2a" stroke="#3f2812" stroke-width="1"/>
-<text x="796" y="532" font-size="12" fill="#2b2620">Wall: logs (built-in or fence, dashed)</text>
-<text x="776" y="556" font-size="14" font-weight="bold" fill="#2b2620">Trench</text>
-<text x="776" y="570" font-size="12"  fill="#2b2620">29 cells; spine 7 (south-north), 0 branches</text>
-<text x="776" y="584" font-size="12"  fill="#2b2620">A line: 11 cells (full), comm 7</text>
-<text x="776" y="598" font-size="12"  fill="#2b2620">B line: 11 cells (full), comm 0</text>
-<text x="776" y="612" font-size="12"  fill="#2b2620">straight 15 · corner 12 · T 2 · fences 42</text>
-<text x="776" y="626" font-size="12"  fill="#2b2620">search: 2 attempt(s), 0 cover shrink(s)</text>
-<text x="776" y="650" font-size="14" font-weight="bold" fill="#2b2620">Height</text>
-<text x="776" y="664" font-size="12"  fill="#2b2620">hill-c 3 cells of stacked tiles, 2 ramp(s)</text>
-<text x="776" y="678" font-size="12"  fill="#2b2620">5 tall piece(s) (▲ = top height)</text>
-<text x="776" y="702" font-size="14" font-weight="bold" fill="#2b2620">Board</text>
-<text x="776" y="716" font-size="12"  fill="#2b2620">36in square, 4in cells (9x9); north is up</text>
-<text x="776" y="730" font-size="12"  fill="#2b2620">parity: mirror-x; look: industrial + urban-ruin</text>
-<text x="776" y="744" font-size="12"  fill="#2b2620">dressing share 22%; 20 scatter</text>
-<text x="776" y="758" font-size="12"  fill="#2b2620">35 ground + 2 stacked tiles, 13 terrain pieces</text>
-<text x="776" y="772" font-size="12"  fill="#2b2620">149 objects to spawn</text>
-<text x="776" y="786" font-size="12"  fill="#2b2620">objectives: 5 (cover required)</text>
-<text x="776" y="800" font-size="12"  fill="#2b2620">circle on edge = trench runs off the board</text>
-<text x="776" y="812" font-size="10"  fill="#55504a">off the archetype list: hill, ruined-building</text>
-<text x="776" y="836" font-size="14" font-weight="bold" fill="#8a2420">Shortfalls</text>
-<text x="776" y="850" font-size="12"  fill="#7a5a14">corner-ruin: 2 placed, min 2, target 4</text>
-<text x="776" y="864" font-size="12"  fill="#7a5a14">difficult-terrain: 2 placed, min 2, target 4</text>
-<text x="776" y="878" font-size="12"  fill="#7a5a14">dangerous-terrain: 2 placed, min 2, target 4</text>
-<text x="776" y="892" font-size="12"  fill="#7a5a14">landmark: 3 placed, min 2, target 4</text>
-<text x="776" y="906" font-size="12"  fill="#7a5a14">cover: 0 placed, min 0, target 4</text>
-<text x="776" y="930" font-size="14" font-weight="bold" fill="#8a2420">Warnings</text>
-<text x="776" y="942" font-size="10"  fill="#8a2420">scenario claim-no-mans-land lists no-mans-land, not trench-lines</text>
+<text x="796" y="370" font-size="12" fill="#2b2620">Bricks · 1&quot; · Cover: 4</text>
+<rect x="776" y="376" width="14" height="14" fill="#e8e1cf" stroke="#cfc6ad" stroke-width="1"/>
+<text x="796" y="388" font-size="12" fill="#2b2620">Ground · Open: 36</text>
+<rect x="776" y="394" width="14" height="14" fill="#e8e1cf" stroke="#cfc6ad" stroke-width="1"/>
+<text x="796" y="406" font-size="12" fill="#2b2620">Hill · 3&quot; · Elevated · Climb: 4</text>
+<rect x="776" y="412" width="14" height="14" fill="url(#raised)" stroke="#6d5c34" stroke-width="1"/>
+<text x="796" y="424" font-size="12" fill="#2b2620">Plateau (stacked tiles): none</text>
+<rect x="776" y="430" width="14" height="14" fill="#d8b878" stroke="#7a5a2a" stroke-width="1"/>
+<text x="796" y="442" font-size="12" fill="#2b2620">Wall: fire-step ledge</text>
+<rect x="776" y="448" width="14" height="14" fill="#7a4f2a" stroke="#3f2812" stroke-width="1"/>
+<text x="796" y="460" font-size="12" fill="#2b2620">Wall: logs (built-in or fence, dashed)</text>
+<text x="776" y="484" font-size="14" font-weight="bold" fill="#2b2620">Trench</text>
+<text x="776" y="498" font-size="12"  fill="#2b2620">29 cells; spine 7 (south-north), 0 branches</text>
+<text x="776" y="512" font-size="12"  fill="#2b2620">A line: 11 cells (full), comm 7</text>
+<text x="776" y="526" font-size="12"  fill="#2b2620">B line: 11 cells (full), comm 0</text>
+<text x="776" y="540" font-size="12"  fill="#2b2620">straight 17 · corner 10 · T 2 · fences 40</text>
+<text x="776" y="554" font-size="12"  fill="#2b2620">search: 14 attempt(s), 2 cover shrink(s)</text>
+<text x="776" y="578" font-size="14" font-weight="bold" fill="#2b2620">Height</text>
+<text x="776" y="592" font-size="12"  fill="#2b2620">hill-c 5 cells of stacked tiles, 2 ramp(s)</text>
+<text x="776" y="606" font-size="12"  fill="#2b2620">3 tall piece(s) (▲ = its own height)</text>
+<text x="776" y="620" font-size="12"  fill="#a3241c">red edge and arrow = a ruin&apos;s most solid face</text>
+<text x="776" y="644" font-size="14" font-weight="bold" fill="#2b2620">Board</text>
+<text x="776" y="658" font-size="12"  fill="#2b2620">36in square, 4in cells (9x9); north is up</text>
+<text x="776" y="672" font-size="12"  fill="#2b2620">parity: mirror-x; look: industrial + urban-ruin</text>
+<text x="776" y="686" font-size="12"  fill="#2b2620">dressing share 19%; 18 scatter</text>
+<text x="776" y="700" font-size="12"  fill="#2b2620">36 ground + 4 stacked tiles, 10 terrain pieces</text>
+<text x="776" y="714" font-size="12"  fill="#2b2620">147 objects to spawn</text>
+<text x="776" y="728" font-size="12"  fill="#2b2620">objectives: 5 (cover required)</text>
+<text x="776" y="742" font-size="12"  fill="#2b2620">circle on edge = trench runs off the board</text>
+<text x="776" y="754" font-size="10"  fill="#55504a">off the archetype list: hill, ruined-building</text>
+<text x="776" y="778" font-size="14" font-weight="bold" fill="#8a2420">Shortfalls</text>
+<text x="776" y="792" font-size="12"  fill="#7a5a14">corner-ruin: 2 placed, min 2, target 4</text>
+<text x="776" y="806" font-size="12"  fill="#7a5a14">difficult-terrain: 2 placed, min 2, target 4</text>
+<text x="776" y="820" font-size="12"  fill="#7a5a14">dangerous-terrain: 2 placed, min 2, target 4</text>
+<text x="776" y="834" font-size="12"  fill="#7a5a14">landmark: 2 placed, min 2, target 4</text>
+<text x="776" y="848" font-size="12"  fill="#7a5a14">cover: 0 placed, min 0, target 4</text>
+<text x="776" y="872" font-size="14" font-weight="bold" fill="#8a2420">Warnings</text>
+<text x="776" y="884" font-size="10"  fill="#8a2420">scenario claim-no-mans-land lists no-mans-land, not trench-lines</text>
 </svg>

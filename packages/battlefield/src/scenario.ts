@@ -42,6 +42,8 @@ export interface ObjectiveSpec {
   requiresCover: boolean;
   /** Roles to try for the covering piece, best first. */
   preferredRoles: Role[];
+  /** The scenario asks for a ruined building on it where one is available (Claim No Man's Land). */
+  wantsRuin: boolean;
   /** The scenario wants a trench section here, so the network may run through the cell. */
   allowsTrench: boolean;
   /** No terrain within this many inches of the point (From Below's ichor pits). */
@@ -76,6 +78,7 @@ export function scenarioOverlay(scenario: ScenarioGeometry): ScenarioOverlay {
       position: [o.position[0], o.position[1]],
       requiresCover: /covered by/i.test(rule),
       preferredRoles: /tall/i.test(rule) ? TALL_ROLES : /ruined building/i.test(rule) ? RUINED_BUILDING_ROLES : DEFAULT_COVER_ROLES,
+      wantsRuin: !/tall/i.test(rule) && /ruined building/i.test(rule),
       allowsTrench: /trench section/i.test(rule),
       keepOutIn: keepOut ? Number(keepOut[1]) : 0,
     });

@@ -27,7 +27,7 @@ export interface SeedQuality {
 export function seedQuality(layout: Layout, palette: Palette): SeedQuality {
   const s = layout.stats;
   const units = layoutUnits(layout, palette);
-  const parity = { kind: layout.parity.kind, boardIn: layout.boardIn, objectivesMatch: layout.parity.objectivesMatch };
+  const parity = { kind: layout.parity.kind, boardIn: layout.boardIn, objectivesMatch: layout.parity.objectivesMatch, matched: layout.parity.matched };
   // Scattered terrain only: a barrel in a crate stack is part of a cover piece.
   const decor = layout.pieces.filter((p) => p.slot && palette.categories[p.slot.category]?.scatter && isDecor(pieceById(palette, p.paletteId))).length;
   const singles = layout.pieces.filter((p) => !p.groupId && p.slot && palette.categories[p.slot.category]?.scatter).map((p) => p.position);

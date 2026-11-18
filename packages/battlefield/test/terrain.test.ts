@@ -27,7 +27,7 @@ describe("terrain rules in the palette", () => {
     for (const rule of Object.values(palette.terrainRules)) for (const page of rule!.pages) expect(TERRAIN_PAGES.has(page)).toBe(true);
   });
 
-  it("gives every piece with a top or walls a measured height to the nearest half inch, and climbs only what stands over 1in", () => {
+  it("gives every piece with a top or walls a measured height, a ruin's to the tenth of an inch and the rest to the nearest half, and climbs only what stands over 1in", () => {
     const profile = JSON.parse(readFileSync(resolve(ROOT, "data/tts/palette-measured-v2.json"), "utf8")).profiles.pieces;
     const plain = Object.values(profile as Record<string, { name: string; heightAboveBottomAtZ0: { top: number[] } }>).find((x) => x.name === "Trench Straight (plain)")!;
     const tops = plain.heightAboveBottomAtZ0.top.filter((v) => v >= 0);
@@ -35,6 +35,14 @@ describe("terrain rules in the palette", () => {
     for (const { p, t } of all) {
       if (STRUCTURES.has(t.kind) || t.cover) expect(t.heightIn, p.id).not.toBeNull();
       if (t.heightIn === null) continue;
+      if (p.wallCover) {
+        // A ruin is labelled with the height it stands, measured from its mesh (Jonathan, Claim seed 10 live: a 6.8in ruin said 7in, a 9.7in one 9.5in).
+        expect(t.heightIn * 10, p.id).toBe(Math.round(t.heightIn * 10));
+        expect(Math.abs(t.heightIn - (p.heightIn + p.restHeightIn)), p.id).toBeLessThanOrEqual(0.25);
+        if (p.role === "building") expect(t.heightIn, p.id).toBe(Math.round(p.heightIn * 10) / 10);
+        expect(terrainName(t), p.id).toContain(`${t.heightIn}"`);
+        continue;
+      }
       expect(t.heightIn * 2, p.id).toBe(Math.round(t.heightIn * 2));
       if (t.kind === "trench") expect(t.heightIn, p.id).toBe(depth);
       else if (t.kind === "hill") expect(t.heightIn, p.id).toBe(half(p.topIn ?? p.heightIn));
@@ -62,7 +70,9 @@ describe("terrain rules in the palette", () => {
 describe("terrain names", () => {
   it("names a piece by what it is, its height and how it plays", () => {
     expect(terrainName(piece("brick-wall").terrain)).toBe('Wall · 3" · Cover · Climb');
-    expect(terrainName(piece("ruins-corner").terrain)).toBe('Corner ruin · 4.5" · Cover · Climb');
+    expect(terrainName(piece("ruins-corner").terrain)).toBe('Corner ruin · 4.7" · Cover · Climb');
+    expect(terrainName(piece("ruins-medium-b").terrain)).toBe('Ruined building · 6.8" · Cover · Climb');
+    expect(terrainName(piece("ruins-small-a").terrain)).toBe('Ruined building · 9.7" · Cover · Climb');
     expect(terrainName(piece("barbed-wire").terrain)).toBe("Barbed wire · Dangerous");
     expect(terrainName(piece("crater").terrain)).toBe("Crater · Difficult · Cover");
     expect(terrainName(piece("crater-2x2").terrain)).toBe("Crater · Difficult");

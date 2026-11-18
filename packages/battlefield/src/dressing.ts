@@ -1,7 +1,7 @@
 import { COINCIDE_IN, makesLine, type LinePt } from "./alignment.js";
 import { cellKey, cellRect, cellsInRect, DELTA, DIRS, inGrid, Mask, OPPOSITE, outline, rectContains, rectDistance, rectFromCentre, rectInside, rectPointDistance, rectsOverlap, rectsWithin, type Cell, type Dir, type Grid, type Rect } from "./grid.js";
 import { mapCell, mapDir, mapPoint, mapRotY, sideOf, type Parity } from "./parity.js";
-import { isDecor, pieceById, rotatedFootprint, rotateVector, STRUCTURAL_ROLES, turnedRect, type Corner, type Facing, type Palette, type PalettePiece, type Role } from "./palette.js";
+import { buildingAllowed, faceCover, isDecor, pieceById, rotatedFootprint, rotateVector, SIDE_BEARING, sideFacing, STRUCTURAL_ROLES, turnedRect, type Corner, type Facing, type Palette, type PalettePiece, type Role, type Side, type WallCover } from "./palette.js";
 import type { Rng } from "./rng.js";
 import type { ObjectiveSpec, ZoneSpec } from "./scenario.js";
 import type { Axis } from "./trench.js";
@@ -96,15 +96,15 @@ export function placeableOf(palette: Palette, piece: PalettePiece): Placeable {
 const cache = new WeakMap<Palette, Map<string, Placeable[]>>();
 
 /** Every enabled placeable in a category: single pieces, cell-aligned ground pieces and groups. */
-export function placeablesIn(palette: Palette, category: string): Placeable[] {
+export function placeablesIn(palette: Palette, category: string, narrowTwoStorey = false): Placeable[] {
   let byCategory = cache.get(palette);
   if (!byCategory) {
     byCategory = new Map();
     cache.set(palette, byCategory);
   }
-  const hit = byCategory.get(category);
+  const hit = byCategory.get(`${category}${narrowTwoStorey ? "|narrow" : ""}`);
   if (hit) return hit;
-  const singles = palette.pieces.filter((p) => p.enabled && p.category === category && !STRUCTURAL_ROLES.includes(p.role)).map((p) => placeableOf(palette, p));
+  const singles = palette.pieces.filter((p) => p.enabled && p.category === category && !STRUCTURAL_ROLES.includes(p.role) && buildingAllowed(palette, p, narrowTwoStorey)).map((p) => placeableOf(palette, p));
   const groups = palette.groups
     .filter((g) => g.category === category && g.enabled !== false)
     .map((g): Placeable => {
@@ -131,7 +131,7 @@ export function placeablesIn(palette: Palette, category: string): Placeable[] {
       };
     });
   const all = [...singles, ...groups];
-  byCategory.set(category, all);
+  byCategory.set(`${category}${narrowTwoStorey ? "|narrow" : ""}`, all);
   return all;
 }
 
@@ -224,6 +224,8 @@ export interface PlacementContext {
   threatAxis: Axis | null;
   /** Decorative scattered terrain is laid too (GenerateOptions.decor). */
   decor: boolean;
+  /** A minimum that cannot be met otherwise may take a narrow two-storey ruin (palette.storeys). */
+  narrowTwoStorey?: boolean;
   nextId: number;
 }
 
@@ -351,7 +353,7 @@ export const looksOf = (a: Aesthetic): Set<string> => new Set(["any", a.primary,
  * `avoid` (the twin's pick) are skipped while there is a choice.
  */
 export function pickPlaceable(ctx: PlacementContext, category: string, avoid: readonly string[] = [], filter: (p: Placeable) => boolean = () => true): Placeable | null {
-  const all = placeablesIn(ctx.palette, category).filter(filter);
+  const all = placeablesIn(ctx.palette, category, ctx.narrowTwoStorey).filter(filter);
   if (!all.length) return null;
   const used = (p: Placeable) => ctx.usage.get(p.key) ?? 0;
   const looks = looksOf(ctx.aesthetic);
@@ -361,7 +363,7 @@ export function pickPlaceable(ctx: PlacementContext, category: string, avoid: re
   if (!pool.length) pool = under(all);
   if (!pool.length) {
     // Past the cap only once every variant of the category has reached it.
-    if (placeablesIn(ctx.palette, category).some((p) => used(p) < ctx.repeatCap)) return null;
+    if (placeablesIn(ctx.palette, category, ctx.narrowTwoStorey).some((p) => used(p) < ctx.repeatCap)) return null;
     const least = Math.min(...all.map(used));
     pool = all.filter((p) => used(p) === least);
   }
@@ -378,18 +380,28 @@ export function pickPlaceable(ctx: PlacementContext, category: string, avoid: re
  * first's, so both halves keep the same room around it; the first piece again
  * when there is no other.
  */
-const categorySaturated = (ctx: PlacementContext, category: string, except: Placeable): boolean => placeablesIn(ctx.palette, category).every((p) => p.key === except.key || (ctx.usage.get(p.key) ?? 0) >= ctx.repeatCap);
+const categorySaturated = (ctx: PlacementContext, category: string, except: Placeable): boolean => placeablesIn(ctx.palette, category, ctx.narrowTwoStorey).every((p) => p.key === except.key || (ctx.usage.get(p.key) ?? 0) >= ctx.repeatCap);
 
 /** A piece that can open a twin pair: a role-mate under the cap can mirror it, or it has room under the cap to stand twice. */
 function twinnable(ctx: PlacementContext, category: string, filter: (p: Placeable) => boolean): (p: Placeable) => boolean {
   return (p) =>
     (ctx.usage.get(p.key) ?? 0) + 2 <= ctx.repeatCap ||
-    placeablesIn(ctx.palette, category).some((q) => q.key !== p.key && q.role === p.role && filter(q) && (ctx.usage.get(q.key) ?? 0) < ctx.repeatCap) ||
+    placeablesIn(ctx.palette, category, ctx.narrowTwoStorey).some((q) => q.key !== p.key && q.role === p.role && filter(q) && (ctx.usage.get(q.key) ?? 0) < ctx.repeatCap) ||
     categorySaturated(ctx, category, p);
 }
 
+/**
+ * Whether a twin is worth what the first piece is to the player it stands for:
+ * footprint area within TWIN_AREA_RATIO of it, height within
+ * TWIN_HEIGHT_IN (or a quarter of the taller, if more).
+ */
+export const comparable = (a: Placeable, b: Placeable): boolean =>
+  Math.min(area(a), area(b)) / Math.max(area(a), area(b)) >= TWIN_AREA_RATIO && Math.abs(a.heightIn - b.heightIn) <= Math.max(TWIN_HEIGHT_IN, 0.25 * Math.max(a.heightIn, b.heightIn));
+export const TWIN_AREA_RATIO = 0.75;
+export const TWIN_HEIGHT_IN = 1;
+
 export function pickTwin(ctx: PlacementContext, category: string, first: Placeable, filter: (p: Placeable) => boolean = () => true): Placeable | null {
-  const all = placeablesIn(ctx.palette, category).filter((p) => p.key !== first.key && p.role === first.role && filter(p));
+  const all = placeablesIn(ctx.palette, category, ctx.narrowTwoStorey).filter((p) => p.key !== first.key && p.role === first.role && filter(p) && comparable(first, p));
   const used = (p: Placeable) => ctx.usage.get(p.key) ?? 0;
   const looks = looksOf(ctx.aesthetic);
   const under = all.filter((p) => used(p) < ctx.repeatCap);
@@ -498,10 +510,16 @@ function yawFor(palette: Palette, facing: Facing, target: number, flip: boolean)
  * degrees off true as a hand would set it. Elsewhere, beside a trench running
  * toward the enemy included (it faces across the approach), a wall stands
  * OPEN_WALL_DEG off the line of the deployment zone's edge and an L points its
- * corner at the threat give or take OPEN_CORNER_DEG.
+ * corner at the threat give or take OPEN_CORNER_DEG. A ruined wall whose two
+ * faces are not alike (its wall cover) turns its more solid face to the threat.
  */
-export function facingYaw(ctx: FacingContext, facing: Facing, longestIn: number, at: readonly [number, number], d: FacingDraw): number {
+export function facingYaw(ctx: FacingContext, facing: Facing, longestIn: number, at: readonly [number, number], d: FacingDraw, cover: WallCover | null = null): number {
   const threat = threatBearing(ctx, at);
+  if (cover && facing.along) {
+    const turned = (flip: boolean) => facingYaw(ctx, facing, longestIn, at, { ...d, flip });
+    const [a, b] = [turned(d.flip), turned(!d.flip)];
+    return faceCover(cover, sideFacing(ctx.palette, b, threat)) > faceCover(cover, sideFacing(ctx.palette, a, threat)) + 1e-9 ? b : a;
+  }
   const lip = nearLip(ctx, at, NEAR_TRENCH_IN + longestIn / 2);
   const toward = lip === null ? 0 : Math.cos(((lip - threat) * Math.PI) / 180);
   if (lip !== null && Math.abs(toward) >= Math.SQRT1_2) {
@@ -511,6 +529,80 @@ export function facingYaw(ctx: FacingContext, facing: Facing, longestIn: number,
   }
   if (facing.along) return yawFor(ctx.palette, facing, threat + 90 + d.sign * (OPEN_WALL_DEG[0] + d.t * (OPEN_WALL_DEG[1] - OPEN_WALL_DEG[0])), d.flip);
   return yawFor(ctx.palette, facing, threat + d.sign * d.t * OPEN_CORNER_DEG, d.flip);
+}
+
+/** The widest a ruin's footprint stands across either axis at any turn its solid faces give it on the board, a hand's lean included. */
+function ruinReach(ctx: FacingContext, p: Placeable, cover: WallCover): number {
+  const q = ctx.grid.boardIn / 4;
+  const spots: [number, number][] = [[q, q], [q, 2 * q], [q, 3 * q], [3 * q, q], [3 * q, 2 * q], [3 * q, 3 * q], [2 * q, q], [2 * q, 3 * q]];
+  const turns = spots.flatMap((at) => solidTurns(ctx, cover, at, false)).flatMap((t) => [t - TERRAIN_YAW_JITTER_DEG, t, t + TERRAIN_YAW_JITTER_DEG]);
+  return Math.max(...turns.flatMap((t) => rotatedFootprint(p, t)));
+}
+
+/** A ruin's measured wall cover, when it is a single palette piece that has one. */
+export const wallCoverOf = (palette: Palette, p: Placeable): WallCover | null => (p.members.length === 1 ? (pieceById(palette, p.members[0]!.pieceId).wallCover ?? null) : null);
+
+/** Faces whose cover is within this of the most solid face's are as solid as it: the measure's own grain. */
+export const SOLID_TIE = 0.1;
+/** A ruin this close to the centre line along the threat's axis has midfield straight ahead with the threat. */
+export const LANE_CENTRE_IN = 2;
+
+/** The local bearing of the corner between two adjacent sides. */
+const cornerBetween = (a: Side, b: Side): number => {
+  const [x, y] = [SIDE_BEARING[a], SIDE_BEARING[b]];
+  return deg(Math.abs(x - y) > 180 ? (x + y + 360) / 2 : (x + y) / 2);
+};
+
+/**
+ * The turns that serve a ruined building's one purpose: cover for the side it stands on
+ * from the enemy's deployment zone and from midfield. Its aim is the bearing
+ * halfway between the threat where it stands (straight across from the far
+ * zone) and midfield (across the lane toward the board's centre line). Faces
+ * within SOLID_TIE of the most solid are solid. Two adjacent solid faces, the
+ * most solid such pair, make an L: its corner looks along the aim, one face
+ * square to the threat and one to midfield. Otherwise the most solid face looks
+ * along the aim, 45 degrees off both (a wall's two opposite faces count as
+ * one). Within LANE_CENTRE_IN of that centre line midfield lies straight ahead
+ * with the threat: the most solid face looks at it, an L's square on. A ruin standing on the line
+ * between the halves is its own twin and both zones are its threat: it turns
+ * the pair of opposite faces whose weaker face is the most solid (within
+ * SOLID_TIE) toward them, square.
+ */
+export function solidTurns(ctx: FacingContext, cover: WallCover, at: readonly [number, number], centre: boolean): number[] {
+  const threat = threatBearing(ctx, at);
+  const yawTo = (local: number, bearing: number) => deg(ctx.palette.rotation.rotYSense === "cw" ? local - bearing : bearing - local);
+  const sides: Side[] = ["N", "E", "S", "W"];
+  if (centre) {
+    const face = (q: number, bearing: number) => faceCover(cover, sideFacing(ctx.palette, q, bearing));
+    const score = (q: number): [number, number] => [Math.min(face(q, threat), face(q, threat + 180)), face(q, threat) + face(q, threat + 180)];
+    const ranked = [...ROTATIONS].map((q) => ({ q, sc: score(q) })).sort((a, b) => b.sc[0] - a.sc[0] || b.sc[1] - a.sc[1]);
+    return ranked.filter((r) => r.sc[0] >= ranked[0]!.sc[0] - SOLID_TIE - 1e-9).map((r) => r.q);
+  }
+  const mid = ctx.grid.boardIn / 2;
+  const across = (bearing: number) => Math.cos((bearing * Math.PI) / 180) * (mid - at[0]) + Math.sin((bearing * Math.PI) / 180) * (mid - at[1]);
+  const inward = across(threat + 90) >= across(threat - 90) ? deg(threat + 90) : deg(threat - 90);
+  const ahead = across(inward) < LANE_CENTRE_IN;
+  const aim = ahead ? threat : deg(threat + (deg(inward - threat) === 90 ? 45 : -45));
+  const best = Math.max(...sides.map((side) => faceCover(cover, side)));
+  const solid = sides.filter((side) => faceCover(cover, side) >= best - SOLID_TIE - 1e-9);
+  const pairs = sides.map((side, i): [Side, Side] => [side, sides[(i + 1) % 4]!]).filter(([a, b]) => solid.includes(a) && solid.includes(b));
+  if (pairs.length && !ahead) {
+    const [a, b] = pairs.reduce((x, y) => (faceCover(cover, y[0]) + faceCover(cover, y[1]) > faceCover(cover, x[0]) + faceCover(cover, x[1]) + 1e-9 ? y : x));
+    return [yawTo(cornerBetween(a, b), aim)];
+  }
+  const face = sides.reduce((x, y) => (faceCover(cover, y) > faceCover(cover, x) + 1e-9 ? y : x));
+  return [yawTo(SIDE_BEARING[face], aim)];
+}
+
+/**
+ * A ruined building's rotY standing at `at`: its turn there nearest the one it
+ * was sampled at, keeping as much of the sampled hand's lean off it as
+ * TERRAIN_YAW_JITTER_DEG allows; square on the line between the halves.
+ */
+export function solidYaw(ctx: FacingContext, cover: WallCover, at: readonly [number, number], sampled: number, centre = false): number {
+  const lean = (t: number) => deg(sampled - t + 180) - 180;
+  const turn = solidTurns(ctx, cover, at, centre).reduce((x, y) => (Math.abs(lean(y)) < Math.abs(lean(x)) - 1e-9 ? y : x));
+  return centre ? turn : deg(turn + Math.max(-TERRAIN_YAW_JITTER_DEG, Math.min(TERRAIN_YAW_JITTER_DEG, lean(turn))));
 }
 
 /** The bearing (mod 180) a wall piece's line runs on at rotY: its facing's axis, else its footprint's long side. */
@@ -756,20 +848,21 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
     const margin = edgeGapFor(ctx, pa.role, scatter);
     const span = ctx.grid.boardIn - 2 * margin;
     const [faceA, faceB] = [facingOf(ctx.palette, pa), pb ? facingOf(ctx.palette, pb) : null];
+    const [coverA, coverB] = [wallCoverOf(ctx.palette, pa), pb ? wallCoverOf(ctx.palette, pb) : null];
     const [pieceA, pieceB] = [single(pa), pb ? single(pb) : null];
-    // Defensive cover takes its facing from where it stands; anything else keeps the turn it was sampled at.
+    // Defensive cover and ruined buildings take their facing from where they stand; anything else keeps the turn it was sampled at.
     const consider = (sampled: number, cx: number, cy: number) => {
       if (twinned && sideOf(ctx.parity, cx, cy) !== "A") return;
       const draw = faceA || faceB ? drawFacing(ctx.rng) : null;
-      const rotY = faceA ? facingYaw(ctx, faceA, Math.max(...pa.footprintIn), [cx, cy], draw!) : sampled;
+      const rotY = faceA ? facingYaw(ctx, faceA, Math.max(...pa.footprintIn), [cx, cy], draw!, coverA) : coverA ? solidYaw(ctx, coverA, [cx, cy], sampled) : sampled;
       const rect = turnedRect(cx, cy, pa, rotY, sense);
       if (opts.where && !opts.where(rect)) return;
       if (!rectAllowed(ctx, rect, pa.role, allow)) return;
       if (pieceA && !wallClear(ctx, pieceA, rect, rotY)) return;
       let twin: { placeable: Placeable; rect: Rect; rotY: number } | null = null;
-      if (pb) {
+      if (pb && !ctx.parity.matched) {
         const [tx, ty] = mapPoint(ctx.parity, cx, cy);
-        const trot = faceB ? facingYaw(ctx, faceB, Math.max(...pb.footprintIn), [tx, ty], twinDraw(ctx.parity, draw!)) : twinFacing(ctx.parity, pa, rotY, pb);
+        const trot = faceB ? facingYaw(ctx, faceB, Math.max(...pb.footprintIn), [tx, ty], twinDraw(ctx.parity, draw!), coverB) : coverB ? solidYaw(ctx, coverB, [tx, ty], mapRotY(ctx.parity, rotY)) : twinFacing(ctx.parity, pa, rotY, pb);
         const trect = turnedRect(tx, ty, pb, trot, sense);
         const gap = scatter ? ctx.scatterGapIn : ctx.spacingIn;
         if (rectDistance(rect, trect) < gap) return;
@@ -786,7 +879,16 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
     if (Math.max(...pa.footprintIn) > span) continue;
     const rotations = rotationOrder(ctx, pa);
     const samples = opts.samples ?? (scatter ? 40 : 120);
+    // A ruin takes its turn from where it stands, so its spot is drawn first, room left for any turn it takes on the board.
+    const reach = coverA ? ruinReach(ctx, pa, coverA) : 0;
+    const ruinTurn = (at: readonly [number, number]) => deg(solidTurns(ctx, coverA!, at, false)[0]! + (ctx.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG);
     for (let i = 0; i < samples && candidates.length < keep; i++) {
+      if (coverA) {
+        if (reach > span) break;
+        const at: [number, number] = [margin + reach / 2 + ctx.rng.next() * (span - reach), margin + reach / 2 + ctx.rng.next() * (span - reach)];
+        consider(ruinTurn(at), ...at);
+        continue;
+      }
       const rotY = jitteredYaw(ctx, pa, rotations[i % rotations.length]!);
       const [w, d] = faceA ? [Math.max(...pa.footprintIn), Math.max(...pa.footprintIn)] : rotatedFootprint(pa, rotY);
       if (w > span || d > span) continue;
@@ -794,7 +896,13 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
     }
     if (candidates.length < keep && !scatter) {
       // Snug against what is already down: the spots a random search misses.
-      for (const quarter of rotations.filter((r, i) => rotations.findIndex((o) => o % 180 === r % 180) === i)) {
+      if (coverA) {
+        for (const spot of ctx.rng.shuffle(openSpots(ctx, reach, reach, scatter, margin))) {
+          if (candidates.length >= keep) break;
+          if (!twinned || sideOf(ctx.parity, ...spot) === "A") consider(ruinTurn(spot), ...spot);
+        }
+      }
+      for (const quarter of coverA ? [] : rotations.filter((r, i) => rotations.findIndex((o) => o % 180 === r % 180) === i)) {
         const rotY = jitteredYaw(ctx, pa, quarter);
         const [w, d] = rotatedFootprint(pa, rotY);
         for (const spot of ctx.rng.shuffle(openSpots(ctx, w, d, scatter, margin))) {
@@ -804,10 +912,96 @@ export function placePair(ctx: PlacementContext, category: string, opts: PairOpt
       }
     }
     if (!candidates.length) continue;
+    if (twinned && ctx.parity.matched && pb) {
+      // Matched parity: the twin is placed on its own in the other half, searched for the same way, best first by the same score.
+      for (const cand of candidates.sort((x, y) => y.score - x.score)) {
+        const twin = matchedTwin(ctx, cand.a, pb, category, opts, scatter);
+        if (twin) return commitPair(ctx, opts.kind, cand.a, twin);
+      }
+      continue;
+    }
     const best = candidates.reduce((x, y) => (y.score > x.score ? y : x));
     return commitPair(ctx, opts.kind, best.a, best.b);
   }
   return [];
+}
+
+interface Spot3 {
+  placeable: Placeable;
+  rect: Rect;
+  rotY: number;
+}
+
+/**
+ * A matched twin for a piece placed on side A: the twin placeable searched for
+ * in side B as side A's piece was (random spots, then snug ones), with its own
+ * facing, keeping every rule with side A's piece standing; the best by the
+ * same score, or null.
+ */
+function matchedTwin(ctx: PlacementContext, first: Spot3, pb: Placeable, category: string, opts: PairOptions, scatter: boolean): Spot3 | null {
+  const sense = ctx.palette.rotation.rotYSense;
+  const allow = { scatter };
+  const margin = edgeGapFor(ctx, pb.role, scatter);
+  const span = ctx.grid.boardIn - 2 * margin;
+  if (Math.max(...pb.footprintIn) > span) return null;
+  const faceB = facingOf(ctx.palette, pb);
+  const coverB = wallCoverOf(ctx.palette, pb);
+  const pieceB = pb.members.length === 1 ? pieceById(ctx.palette, pb.members[0]!.pieceId) : null;
+  const keep = opts.keep ?? (scatter ? 1 : 8);
+  const found: (Spot3 & { score: number })[] = [];
+  // Side A's piece stands while the twin is sought, so every rule (spacing, walls, lines) sees it.
+  ctx.placed.push(makePlaced(ctx, "pending", first.placeable, first.rect, first.rotY, "terrain"));
+  try {
+    const consider = (sampled: number, cx: number, cy: number) => {
+      if (sideOf(ctx.parity, cx, cy) !== "B") return;
+      const rotY = faceB ? facingYaw(ctx, faceB, Math.max(...pb.footprintIn), [cx, cy], drawFacing(ctx.rng), coverB) : coverB ? solidYaw(ctx, coverB, [cx, cy], sampled) : sampled;
+      const rect = turnedRect(cx, cy, pb, rotY, sense);
+      if (opts.where && !opts.where(rect)) return;
+      if (!rectAllowed(ctx, rect, pb.role, allow)) return;
+      if (pieceB && !wallClear(ctx, pieceB, rect, rotY)) return;
+      const at: [number, number] = [cx, cy];
+      if (linesUp(ctx, [{ at, scatter }])) return;
+      const lined = !scatter && coincides(ctx, at);
+      found.push({ placeable: pb, rect, rotY, score: (scatter ? 0 : score(ctx, rect, category)) - (lined ? 10 : 0) });
+    };
+    const rotations = rotationOrder(ctx, pb);
+    const samples = opts.samples ?? (scatter ? 40 : 120);
+    const reach = coverB ? ruinReach(ctx, pb, coverB) : 0;
+    const ruinTurn = (at: readonly [number, number]) => deg(solidTurns(ctx, coverB!, at, false)[0]! + (ctx.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG);
+    for (let i = 0; i < samples && found.length < keep; i++) {
+      if (coverB) {
+        if (reach > span) break;
+        const at: [number, number] = [margin + reach / 2 + ctx.rng.next() * (span - reach), margin + reach / 2 + ctx.rng.next() * (span - reach)];
+        consider(ruinTurn(at), ...at);
+        continue;
+      }
+      const rotY = jitteredYaw(ctx, pb, rotations[i % rotations.length]!);
+      const [w, d] = faceB ? [Math.max(...pb.footprintIn), Math.max(...pb.footprintIn)] : rotatedFootprint(pb, rotY);
+      if (w > span || d > span) continue;
+      consider(rotY, margin + w / 2 + ctx.rng.next() * (span - w), margin + d / 2 + ctx.rng.next() * (span - d));
+    }
+    if (found.length < keep && !scatter) {
+      if (coverB) {
+        for (const spot of ctx.rng.shuffle(openSpots(ctx, reach, reach, scatter, margin))) {
+          if (found.length >= keep) break;
+          consider(ruinTurn(spot), ...spot);
+        }
+      }
+      for (const quarter of coverB ? [] : rotations.filter((r, i) => rotations.findIndex((o) => o % 180 === r % 180) === i)) {
+        const rotY = jitteredYaw(ctx, pb, quarter);
+        const [w, d] = rotatedFootprint(pb, rotY);
+        for (const spot of ctx.rng.shuffle(openSpots(ctx, w, d, scatter, margin))) {
+          if (found.length >= keep) break;
+          consider(rotY, ...spot);
+        }
+      }
+    }
+  } finally {
+    ctx.placed.pop();
+  }
+  if (!found.length) return null;
+  const best = found.reduce((x, y) => (y.score > x.score ? y : x));
+  return { placeable: best.placeable, rect: best.rect, rotY: best.rotY };
 }
 
 /**
@@ -821,7 +1015,8 @@ export function placeOnMirrorLine(ctx: PlacementContext, placeable: Placeable, c
   const mid = ctx.grid.boardIn / 2;
   const margin = edgeGapFor(ctx, placeable.role);
   const best: { rect: Rect; rotY: number; score: number }[] = [];
-  for (const rotY of rotationOrder(ctx, placeable)) {
+  const cover = wallCoverOf(ctx.palette, placeable);
+  for (const rotY of cover ? solidTurns(ctx, cover, [mid, mid], true) : rotationOrder(ctx, placeable)) {
     const [w, d] = rotatedFootprint(placeable, rotY);
     const centres: [number, number][] = [];
     // Anywhere along the line, not on a half-inch step.
@@ -870,7 +1065,15 @@ export function placeGroundBlockPair(ctx: PlacementContext, placeable: Placeable
       if (twinned && sideOf(ctx.parity, (rectA.x0 + rectA.x1) / 2, (rectA.y0 + rectA.y1) / 2) !== "A") continue;
       if (!free(cellsA) || !rectAllowed(ctx, rectA, placeable.role)) continue;
       let cellsB: Cell[] | null = null;
-      if (twinned) {
+      if (twinned && ctx.parity.matched) {
+        // A block of its own in the other half.
+        const fits = (cells: Cell[]) => {
+          const rect = rectOf(cells);
+          return sideOf(ctx.parity, (rect.x0 + rect.x1) / 2, (rect.y0 + rect.y1) / 2) === "B" && free(cells) && rectDistance(rectA, rect) >= ctx.spacingIn && rectAllowed(ctx, rect, placeable.role);
+        };
+        cellsB = ctx.rng.shuffle(anchors).map(blockOf).find(fits) ?? null;
+        if (!cellsB) continue;
+      } else if (twinned) {
         cellsB = cellsA.map((cell) => mapCell(ctx.parity, ctx.grid, cell));
         const rectB = rectOf(cellsB);
         if (!free(cellsB) || rectDistance(rectA, rectB) < ctx.spacingIn || !rectAllowed(ctx, rectB, placeable.role)) continue;
@@ -948,7 +1151,9 @@ export function chooseObjectiveCovers(palette: Palette, rng: Rng, objectives: re
     const fresh = pool.filter((p) => uses(p) < rules.repeatCap);
     return fresh.length ? fresh : pool;
   };
-  for (const o of objectives) {
+  // Twin objectives take their covers first: a pair needs room twice over, and a single on the line between the halves can lean either way along it.
+  const ownTwin = (o: ObjectiveSpec) => twinObjective(rules.parity, objectives, o)?.id === o.id || !twinObjective(rules.parity, objectives, o);
+  for (const o of [...objectives].sort((a, b) => Number(ownTwin(a)) - Number(ownTwin(b)))) {
     if (!o.requiresCover || done.has(o.id)) continue;
     const twin = twinObjective(rules.parity, objectives, o);
     const pairWith = twin && twin.id !== o.id && twin.requiresCover && !done.has(twin.id) ? twin : null;
@@ -1011,9 +1216,49 @@ function coverFlaw(rules: CoverRules, chosen: readonly CoverChoice[], added: rea
   const mine = added.map(at);
   if (makesLine(down.map((at) => ({ at, terrain: true })), mine.map((at) => ({ at, terrain: true })), LINE_SLACK_IN)) return 2;
   const cell = rules.grid.cellIn;
-  const kept = rules.parity.kind === "mirror-x" ? 1 : rules.parity.kind === "mirror-y" ? 0 : -1;
+  const kept = rules.parity.matched ? -1 : rules.parity.kind === "mirror-x" ? 1 : rules.parity.kind === "mirror-y" ? 0 : -1;
   const onGrid = (v: number) => Math.abs(v / cell - Math.round(v / cell)) * cell <= COINCIDE_IN;
   return mine.some(([x, y], i) => [x, y].some((v, axis) => onGrid(v) || down.some((o) => Math.abs(o[axis]! - v) <= COINCIDE_IN) || (axis !== kept && mine.some((m, j) => j !== i && Math.abs(m[axis]! - v) <= COINCIDE_IN)))) ? 1 : 0;
+}
+
+/** Whether a cover's outline may stand: on the board, holding its marker, clear of the trench, ramp feet, raised ground, other covers and other markers. */
+const coverSpotOk =
+  (rules: CoverRules, board: Rect, objectives: readonly ObjectiveSpec[]) =>
+  (rect: Rect, point: readonly [number, number], self: string[], others: readonly CoverChoice[]): boolean =>
+    rectInside(rect, board) &&
+    holdsMarker(rect, point) &&
+    !rules.avoid.some((a) => rectDistance(rect, a) < rules.trenchClearanceIn) &&
+    !rules.clear.some((a) => rectsOverlap(rect, a)) &&
+    !rules.pieces.some((a) => rectDistance(rect, a) < rules.spacingIn) &&
+    !others.some((c) => rectDistance(rect, c.rect) < rules.spacingIn) &&
+    !objectives.some((other) => !self.includes(other.id) && rectContains(rect, other.position[0], other.position[1]));
+
+/**
+ * Whether a ruined building of the allowed height could cover an objective
+ * under these cover rules: holding its marker anywhere it may, turned by its
+ * solid faces, and clear of what coverSpotOk keeps it from. Raised ground is
+ * planned before the covers, so a plan that leaves no such room is known early.
+ */
+export function ruinRoom(palette: Palette, rules: CoverRules, objectives: readonly ObjectiveSpec[], o: ObjectiveSpec): boolean {
+  const board = boardRect(rules.grid, Math.max(rules.edgeMarginIn, TALL_EDGE_GAP_IN));
+  const ok = coverSpotOk(rules, board, objectives);
+  const fctx: FacingContext = { grid: rules.grid, threatAxis: rules.threatAxis, trenchRects: rules.avoid, palette };
+  const twin = twinObjective(rules.parity, objectives, o);
+  const onLine = !twin && rules.parity.kind !== "none" && sideOf(rules.parity, o.position[0], o.position[1]) === "centre";
+  for (const piece of coverPool(palette, "building", rules)) {
+    const cover = wallCoverOf(palette, piece);
+    if (!cover) continue;
+    const turn = solidTurns(fctx, cover, o.position, onLine)[0]!;
+    const [w, d] = rotatedFootprint(piece, turn);
+    const [sx, sy] = [Math.max(0, w / 2 - 0.5), Math.max(0, d / 2 - 0.5)];
+    for (let i = 0; i <= 8; i++) {
+      for (let j = 0; j <= 8; j++) {
+        const at: [number, number] = [o.position[0] + (i / 4 - 1) * sx, o.position[1] + (j / 4 - 1) * sy];
+        if (ok(turnedRect(at[0], at[1], piece, solidYaw(fctx, cover, at, turn, onLine), palette.rotation.rotYSense), o.position, [o.id], [])) return true;
+      }
+    }
+  }
+  return false;
 }
 
 const COVER_OFFSET_SAMPLES = 40;
@@ -1024,14 +1269,7 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
   const sense = palette.rotation.rotYSense;
   // Covers go down before the trench; the deployment lines' tracks are the only lips they can face.
   const fctx: FacingContext = { grid: rules.grid, threatAxis: rules.threatAxis, trenchRects: rules.avoid, palette };
-  const ok = (rect: Rect, point: readonly [number, number], self: string[], others: readonly CoverChoice[]) =>
-    rectInside(rect, board) &&
-    holdsMarker(rect, point) &&
-    !rules.avoid.some((a) => rectDistance(rect, a) < rules.trenchClearanceIn) &&
-    !rules.clear.some((a) => rectsOverlap(rect, a)) &&
-    !rules.pieces.some((a) => rectDistance(rect, a) < rules.spacingIn) &&
-    !others.some((c) => rectDistance(rect, c.rect) < rules.spacingIn) &&
-    !objectives.some((other) => !self.includes(other.id) && rectContains(rect, other.position[0], other.position[1]));
+  const ok = coverSpotOk(rules, board, objectives);
   // Thin across the line between the deployment zones, so the band each row of objectives leaves open stays deep.
   const across = (p: Placeable, rotY: number) => rotatedFootprint(p, rotY)[rules.sightAxis === "y" ? 0 : 1];
   // An objective that is its own twin keeps its cover square, as a piece on the mirror line stays.
@@ -1048,10 +1286,38 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
     if (!fallback || flaw < fallback.flaw) fallback = { choice, flaw };
     return ++tried >= COVER_LEAN_TRIES && soft ? soft : null;
   };
-  for (const placeable of candidates) {
+  const matchedCover = (t: ObjectiveSpec, piece: Placeable, quarterA: number | null, others: readonly CoverChoice[]): CoverChoice | null => {
+    const facing = facingOf(palette, piece);
+    const cover = wallCoverOf(palette, piece);
+    const quarter = cover ? solidTurns(fctx, cover, t.position, false)[0]! : quarterA === null ? null : mapRotY(rules.parity, quarterA);
+    const [w, d] = quarter === null ? [Math.min(...piece.footprintIn), Math.min(...piece.footprintIn)] : rotatedFootprint(piece, quarter);
+    const [sx, sy] = [Math.max(0, w / 2 - 0.5), Math.max(0, d / 2 - 0.5)];
+    const offs: [number, number][] = [[-sx, -sy], [sx, -sy], [-sx, sy], [sx, sy]];
+    for (let k = 0; k < COVER_OFFSET_SAMPLES; k++) offs.push([(rng.next() * 2 - 1) * sx, (rng.next() * 2 - 1) * sy]);
+    const mid = rules.grid.boardIn / 2;
+    const away: [number, number] = [Math.sign(t.position[0] - mid), Math.sign(t.position[1] - mid)];
+    const lean: [number, number] = rules.sightAxis === "x" ? [-1, 1] : rules.sightAxis === "y" ? [1, -1] : [1, 1];
+    const keyed = offs.map((off) => ({ off, key: off[0] * away[0] * lean[0] + off[1] * away[1] * lean[1] + (rng.next() - 0.5) * 0.3 * (sx + sy) }));
+    for (const { off: [ox, oy] } of keyed.sort((a, b) => b.key - a.key)) {
+      const at: [number, number] = [t.position[0] + ox, t.position[1] + oy];
+      const yaw = quarter === null ? 0 : (quarter + (rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
+      const rotY = facing ? facingYaw(fctx, facing, Math.max(...piece.footprintIn), at, drawFacing(rng), cover) : cover ? solidYaw(fctx, cover, at, yaw) : yaw;
+      const rect = turnedRect(at[0], at[1], piece, rotY, sense);
+      if (ok(rect, t.position, [t.id], others)) return { objectiveId: t.id, placeable: piece, rotY, rect, base: "ground" };
+    }
+    return null;
+  };
+  // An objective on the line between the halves takes, of its ruins, the one whose weaker opposite face is the most solid: its cover serves both zones.
+  const onLine = ownTwin && sideOf(rules.parity, px, py) === "centre";
+  const bothWays = (p: Placeable) => {
+    const cover = wallCoverOf(palette, p);
+    return cover ? Math.max(Math.min(faceCover(cover, "N"), faceCover(cover, "S")), Math.min(faceCover(cover, "E"), faceCover(cover, "W"))) : -1;
+  };
+  for (const placeable of onLine ? [...candidates].sort((a, b) => bothWays(b) - bothWays(a)) : candidates) {
     const facing = ownTwin ? null : facingOf(palette, placeable);
     // Defensive cover turns to face the threat from wherever it stands; anything else from a quarter turn, a few degrees off.
-    const turns: (number | null)[] = facing ? [null] : rng.shuffle(ROTATIONS).sort((a, b) => (rules.sightAxis ? across(placeable, a) - across(placeable, b) : 0));
+    const cover = wallCoverOf(palette, placeable);
+    const turns: (number | null)[] = facing ? [null] : cover ? solidTurns(fctx, cover, o.position, onLine) : rng.shuffle(ROTATIONS).sort((a, b) => (rules.sightAxis ? across(placeable, a) - across(placeable, b) : 0));
     for (const quarter of turns) {
       [soft, tried] = [null, 0];
       const yaw0 = quarter === null ? 0 : ownTwin ? quarter : (quarter + (rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
@@ -1061,7 +1327,7 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
         const [tw, td] = rotatedFootprint(p, quarter ?? 0);
         return Math.abs(tw - w) + Math.abs(td - d);
       };
-      const others = rng.shuffle(twinPool.filter((p) => p.key !== placeable.key && p.category === placeable.category && p.role === placeable.role && room(p) > 0)).sort((a, b) => misfit(a) - misfit(b));
+      const others = rng.shuffle(twinPool.filter((p) => p.key !== placeable.key && p.category === placeable.category && p.role === placeable.role && room(p) > 0 && comparable(placeable, p))).sort((a, b) => misfit(a) - misfit(b));
       // The same piece twice only while that keeps it under the repeat cap.
       const twinOrder = twin ? [...others, ...(room(placeable) >= 2 ? [placeable] : [])] : [];
       const slackX = Math.max(0, w / 2 - 0.5);
@@ -1079,7 +1345,8 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
       const keyed = offsets.map((off) => ({ off, key: off[0] * away[0] * lean[0] + off[1] * away[1] * lean[1] + (rng.next() - 0.5) * 0.3 * (slackX + slackY) }));
       for (const { off: [ox, oy] } of keyed.sort((a, b) => b.key - a.key)) {
         const draw = drawFacing(rng);
-        const rotY = facing ? facingYaw(fctx, facing, Math.max(...placeable.footprintIn), [px + ox, py + oy], draw) : yaw0;
+        // A ruin turns by where it stands, which a cover leaning off its marker may put across the line between the halves.
+        const rotY = facing ? facingYaw(fctx, facing, Math.max(...placeable.footprintIn), [px + ox, py + oy], draw, cover) : cover ? (ownTwin ? solidTurns(fctx, cover, [px + ox, py + oy], onLine)[0]! : solidYaw(fctx, cover, [px + ox, py + oy], yaw0)) : yaw0;
         const rect = turnedRect(px + ox, py + oy, placeable, rotY, sense);
         if (!ok(rect, o.position, [o.id], chosenSoFar)) continue;
         const first: CoverChoice = { objectiveId: o.id, placeable, rotY, rect, base: "ground" };
@@ -1088,10 +1355,21 @@ function placeCover(o: ObjectiveSpec, twin: ObjectiveSpec | null, candidates: Pl
           if (got) return got;
           continue;
         }
+        if (rules.parity.matched) {
+          // Matched parity: the twin cover lies the same way to the zones, but sits on its own marker at its own offset and turn.
+          for (const other of twinOrder) {
+            const choice = matchedCover(twin, other, quarter, [...chosenSoFar, first]);
+            if (!choice) continue;
+            const got = consider([first, choice]);
+            if (got) return got;
+            break;
+          }
+          continue;
+        }
         const [tx, ty] = mapPoint(rules.parity, px + ox, py + oy);
         for (const other of twinOrder) {
-          const otherFacing = facingOf(palette, other);
-          const trot = otherFacing ? facingYaw(fctx, otherFacing, Math.max(...other.footprintIn), [tx, ty], twinDraw(rules.parity, draw)) : mapRotY(rules.parity, rotY);
+          const [otherFacing, otherCover] = [facingOf(palette, other), wallCoverOf(palette, other)];
+          const trot = otherFacing ? facingYaw(fctx, otherFacing, Math.max(...other.footprintIn), [tx, ty], twinDraw(rules.parity, draw), otherCover) : otherCover ? solidYaw(fctx, otherCover, [tx, ty], mapRotY(rules.parity, rotY)) : mapRotY(rules.parity, rotY);
           const trect = turnedRect(tx, ty, other, trot, sense);
           if (!ok(trect, twin.position, [twin.id], [...chosenSoFar, first])) continue;
           const got = consider([first, { objectiveId: twin.id, placeable: other, rotY: trot, rect: trect, base: "ground" }]);
@@ -1183,7 +1461,12 @@ interface PlanInputs {
   noTerrain: Mask;
   edgeMarginIn: number;
   trenchClearanceIn: number;
+  /** The axis enemy fire crosses the board on (PlacementContext.threatAxis). */
+  threatAxis: Axis | null;
 }
+
+/** What a ruined building planned onto raised ground turns its solid face by: the threat, before any trench is dug. */
+const planFacing = (p: PlanInputs): FacingContext => ({ grid: p.grid, threatAxis: p.threatAxis, trenchRects: [], palette: p.palette });
 
 const rampFoot = (r: Ramp): Cell => ({ c: r.cell.c - DELTA[r.up][0], r: r.cell.r - DELTA[r.up][1] });
 
@@ -1216,9 +1499,11 @@ function coverOnTop(p: PlanInputs, o: ObjectiveSpec, union: (rect: Rect) => bool
   const near = offsets.map((off) => ({ off, key: Math.hypot(...off) + p.rng.next() * 1.5 })).sort((a, b) => a.key - b.key).map((x) => x.off);
   const sense = p.palette.rotation.rotYSense;
   for (const placeable of p.rng.shuffle(pool).sort((a, b) => rank(a) - rank(b))) {
-    for (const quarter of p.rng.shuffle(ROTATIONS)) {
+    const cover = wallCoverOf(p.palette, placeable);
+    for (const quarter of cover ? solidTurns(planFacing(p), cover, o.position, ownTwin && sideOf(p.parity, o.position[0], o.position[1]) === "centre") : p.rng.shuffle(ROTATIONS)) {
       for (const [ox, oy] of near) {
-        const rotY = ownTwin ? quarter : (quarter + (p.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
+        const yaw = ownTwin ? quarter : (quarter + (p.rng.next() * 2 - 1) * TERRAIN_YAW_JITTER_DEG + 360) % 360;
+        const rotY = cover ? solidYaw(planFacing(p), cover, [o.position[0] + ox, o.position[1] + oy], yaw, ownTwin && sideOf(p.parity, o.position[0], o.position[1]) === "centre") : yaw;
         const rect = turnedRect(o.position[0] + ox, o.position[1] + oy, placeable, rotY, sense);
         if (!union(rect) || !holdsMarker(rect, o.position) || !rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN))) || !clear(rect)) continue;
         return { objectiveId: o.id, placeable, rotY, rect, base: "plateau" };
@@ -1455,11 +1740,22 @@ export function planObjectiveHills(p: PlanInputs, avoid: Mask, sightAxis: Axis |
 
 function twinCoverOnTop(p: PlanInputs, t: ObjectiveSpec, a: CoverChoice, cells: Cell[], pool: Placeable[]): CoverChoice | null {
   const fits = insideCells(p.grid, cells);
+  if (p.parity.matched) {
+    // A matched cover of the same category and role, at its own offset and turn on the twin hill.
+    const mates = [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category && x.role === a.placeable.role && comparable(a.placeable, x))), a.placeable];
+    for (const mate of mates) {
+      const c = coverOnTop(p, t, fits, [mate]);
+      if (c) return { ...c, base: "hill" };
+    }
+    return null;
+  }
   const [cx, cy] = mapPoint(p.parity, (a.rect.x0 + a.rect.x1) / 2, (a.rect.y0 + a.rect.y1) / 2);
   const rotY = mapRotY(p.parity, a.rotY);
-  for (const placeable of [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category && x.role === a.placeable.role)), a.placeable]) {
-    const rect = turnedRect(cx, cy, placeable, rotY, p.palette.rotation.rotYSense);
-    if (fits(rect) && holdsMarker(rect, t.position) && rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN)))) return { objectiveId: t.id, placeable, rotY, rect, base: "hill" };
+  for (const placeable of [...p.rng.shuffle(pool.filter((x) => x.key !== a.placeable.key && x.category === a.placeable.category && x.role === a.placeable.role && comparable(a.placeable, x))), a.placeable]) {
+    const cover = wallCoverOf(p.palette, placeable);
+    const yaw = cover ? solidYaw(planFacing(p), cover, [cx, cy], rotY) : rotY;
+    const rect = turnedRect(cx, cy, placeable, yaw, p.palette.rotation.rotYSense);
+    if (fits(rect) && holdsMarker(rect, t.position) && rectInside(rect, boardRect(p.grid, Math.max(p.edgeMarginIn, TALL_EDGE_GAP_IN)))) return { objectiveId: t.id, placeable, rotY: yaw, rect, base: "hill" };
   }
   return null;
 }
@@ -1513,6 +1809,7 @@ export function registerPlateau(ctx: PlacementContext, plateau: Plateau): void {
 export function placeTwinPlateaus(ctx: PlacementContext, size: number, raisedTrenchChance: number): Plateau[] {
   const g = ctx.grid;
   const twinned = ctx.parity.kind !== "none";
+  if (twinned && ctx.parity.matched) return matchedPlateaus(ctx, size, raisedTrenchChance);
   const ok = (cell: Cell) => raisableCell(ctx, cell.c, cell.r) && (!twinned || sideOf(ctx.parity, ...cellCentre(g, cell)) === "A");
   const all: Cell[] = [];
   for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) all.push({ c, r });
@@ -1574,6 +1871,68 @@ export function placeTwinPlateaus(ctx: PlacementContext, size: number, raisedTre
 const cellCentre = (g: Grid, cell: Cell): [number, number] => [cell.c * g.cellIn + g.cellIn / 2, cell.r * g.cellIn + g.cellIn / 2];
 
 /**
+ * Matched parity: a plateau grown on each half on its own, the same number of
+ * cells, ramps and (when the first has one) a trench dug into it, the second
+ * clear of the first; none when either half has no room.
+ */
+function matchedPlateaus(ctx: PlacementContext, size: number, raisedTrenchChance: number): Plateau[] {
+  const g = ctx.grid;
+  const all: Cell[] = [];
+  for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) all.push({ c, r });
+  const has = (list: readonly Cell[], c: number, r: number) => list.some((x) => x.c === c && x.r === r);
+  const grow = (side: "A" | "B", wanted: number, exact: boolean, away: readonly Cell[], trench: boolean | null): Omit<Plateau, "id"> | null => {
+    const clear = (cell: Cell) => away.every((a) => Math.abs(a.c - cell.c) > 1 || Math.abs(a.r - cell.r) > 1);
+    const ok = (cell: Cell) => raisableCell(ctx, cell.c, cell.r) && sideOf(ctx.parity, ...cellCentre(g, cell)) === side && clear(cell);
+    for (const seed of ctx.rng.shuffle(all.filter(ok)).slice(0, 24)) {
+      const cells: Cell[] = [seed];
+      while (cells.length < wanted) {
+        const frontier = cells.flatMap((cell) => DIRS.map((d) => ({ c: cell.c + DELTA[d][0], r: cell.r + DELTA[d][1] }))).filter((n) => !has(cells, n.c, n.r) && ok(n));
+        if (!frontier.length) break;
+        cells.push(ctx.rng.pick(frontier));
+      }
+      if (cells.length < 2 || (exact && cells.length !== wanted)) continue;
+      const options: Ramp[] = [];
+      for (const cell of cells) {
+        for (const dir of DIRS) {
+          const rc = { c: cell.c - DELTA[dir][0], r: cell.r - DELTA[dir][1] };
+          const ramp = { cell: rc, up: dir };
+          const foot = rampFoot(ramp);
+          if (has(cells, rc.c, rc.r) || !ok(rc) || !inGrid(g, foot.c, foot.r) || has(cells, foot.c, foot.r) || ctx.trenchMask.get(foot.c, foot.r) || !clear(foot)) continue;
+          options.push(ramp);
+        }
+      }
+      if (!options.length) continue;
+      const order = ctx.rng.shuffle(options);
+      const ramps: Ramp[] = [order[0]!];
+      const second = order.find((r) => r.up !== ramps[0]!.up && !(r.cell.c === ramps[0]!.cell.c && r.cell.r === ramps[0]!.cell.r));
+      if (second) ramps.push(second);
+      let raisedTrench: Plateau["raisedTrench"] = null;
+      if (trench ?? ctx.rng.chance(raisedTrenchChance)) {
+        for (const cell of ctx.rng.shuffle(cells)) {
+          const axis = (["N", "E"] as const).find((d) => has(cells, cell.c + DELTA[d][0], cell.r + DELTA[d][1]) && has(cells, cell.c - DELTA[d][0], cell.r - DELTA[d][1]));
+          if (!axis || ramps.some((rp) => rp.cell.c + DELTA[rp.up][0] === cell.c && rp.cell.r + DELTA[rp.up][1] === cell.r)) continue;
+          raisedTrench = { cell, openings: [axis, axis === "N" ? "S" : "W"].sort((x, y) => DIRS.indexOf(x as Dir) - DIRS.indexOf(y as Dir)) as Dir[] };
+          break;
+        }
+        if (trench && !raisedTrench) continue;
+      }
+      return { cells, ramps, raisedTrench };
+    }
+    return null;
+  };
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const a = grow("A", size, false, [], null);
+    if (!a) return [];
+    const b = grow("B", a.cells.length, true, [...a.cells, ...a.ramps.flatMap((r) => [r.cell, rampFoot(r)])], a.raisedTrench !== null);
+    if (!b) continue;
+    const plateaus: Plateau[] = [{ id: "plateau-a", ...a }, { id: "plateau-b", ...b }];
+    for (const p of plateaus) registerPlateau(ctx, p);
+    return plateaus;
+  }
+  return [];
+}
+
+/**
  * Twin hills of stacked Landscape tiles, near the objectives where there are
  * any: one to three cells, three as an L so the outline steps, with a ramp up
  * where there is room.
@@ -1581,6 +1940,7 @@ const cellCentre = (g: Grid, cell: Cell): [number, number] => [cell.c * g.cellIn
 export function placeTwinHills(ctx: PlacementContext, cellsWanted: number): Hill[] {
   const g = ctx.grid;
   const twinned = ctx.parity.kind !== "none";
+  if (twinned && ctx.parity.matched) return matchedHills(ctx, cellsWanted);
   const all: Cell[] = [];
   for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) all.push({ c, r });
   const near = (cell: Cell) => (ctx.objectives.length ? Math.min(...ctx.objectives.map((o) => Math.hypot(cellCentre(g, cell)[0] - o.position[0], cellCentre(g, cell)[1] - o.position[1]))) : Math.abs(cellCentre(g, cell)[0] - g.boardIn / 2));
@@ -1609,6 +1969,52 @@ export function placeTwinHills(ctx: PlacementContext, cellsWanted: number): Hill
     const b: Hill = { id: "hill-b", cells: twinCells, ramps: ramps.b };
     registerRaised(ctx, b.id, b.cells, b.ramps);
     return [a, b];
+  }
+  return [];
+}
+
+const sameCell = (a: Cell, b: Cell): boolean => a.c === b.c && a.r === b.r;
+
+/**
+ * Matched parity: a hill grown on each half on its own, the same number of
+ * cells, the second kept a terrain piece's spacing from the first, each with
+ * its own ramp; none when either half has no room.
+ */
+function matchedHills(ctx: PlacementContext, cellsWanted: number): Hill[] {
+  const g = ctx.grid;
+  const all: Cell[] = [];
+  for (let r = 0; r < g.rows; r++) for (let c = 0; c < g.cols; c++) all.push({ c, r });
+  const near = (cell: Cell) => (ctx.objectives.length ? Math.min(...ctx.objectives.map((o) => Math.hypot(cellCentre(g, cell)[0] - o.position[0], cellCentre(g, cell)[1] - o.position[1]))) : Math.abs(cellCentre(g, cell)[0] - g.boardIn / 2));
+  const grow = (side: "A" | "B", wanted: number, away: readonly Cell[]): { cells: Cell[]; ramps: Ramp[] } | null => {
+    const clear = (cell: Cell) => away.every((a) => rectDistance(cellRect(g, a.c, a.r), cellRect(g, cell.c, cell.r)) >= ctx.spacingIn);
+    const ok = (cell: Cell) => raisableCell(ctx, cell.c, cell.r) && sideOf(ctx.parity, ...cellCentre(g, cell)) === side && clear(cell);
+    const seeds = ctx.rng.weightedOrder(all.filter(ok).map((cell) => ({ item: cell, weight: 1 / (1 + near(cell)) })));
+    for (const seed of seeds.slice(0, 30)) {
+      const cells = [seed];
+      for (let k = 1; k < wanted; k++) {
+        const from = cells[cells.length - 1]!;
+        const straight = cells.length === 2 ? [cells[1]!.c - cells[0]!.c, cells[1]!.r - cells[0]!.r] : null;
+        const next = ctx.rng
+          .shuffle(DIRS)
+          .filter((d) => !straight || DELTA[d][0] !== straight[0] || DELTA[d][1] !== straight[1])
+          .map((d) => ({ c: from.c + DELTA[d][0], r: from.r + DELTA[d][1] }))
+          .find((cell) => ok(cell) && !cells.some((x) => sameCell(x, cell)));
+        if (next) cells.push(next);
+      }
+      if (cells.length !== wanted) continue;
+      const ramps = twinRamps(ctx, cells, null).a.filter((r) => clear(r.cell) && clear(rampFoot(r)));
+      return { cells, ramps };
+    }
+    return null;
+  };
+  for (let wanted = cellsWanted; wanted >= 1; wanted--) {
+    const a = grow("A", wanted, []);
+    if (!a) continue;
+    const b = grow("B", a.cells.length, [...a.cells, ...a.ramps.flatMap((r) => [r.cell, rampFoot(r)])]);
+    if (!b) continue;
+    const hills: Hill[] = [{ id: "hill-a", cells: a.cells, ramps: a.ramps }, { id: "hill-b", cells: b.cells, ramps: b.ramps }];
+    for (const h of hills) registerRaised(ctx, h.id, h.cells, h.ramps);
+    return hills;
   }
   return [];
 }
@@ -1695,22 +2101,32 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
   // No barricade against a raised face (palette.adjacency): sandbags, crates and rubble only.
   const fits = (p: Placeable) => Math.max(...p.footprintIn) <= g.cellIn && Math.min(...p.footprintIn) <= 1.7 && p.members.length === 1 && !pieceById(ctx.palette, p.members[0]!.pieceId).wall && (ctx.decor || !isDecor(pieceById(ctx.palette, p.members[0]!.pieceId)));
   const NORMAL: Record<Dir, number> = { E: 0, N: 90, W: 180, S: 270 };
+  // Sandbags lie along the face, so they go only on a face that looks toward the enemy; the others take crates or rubble.
+  const looksOutOf = (f: { cell: Cell; dir: Dir }) => {
+    const [fx, fy] = cellCentre(g, f.cell);
+    return Math.cos(((NORMAL[f.dir] - threatBearing(ctx, [fx + DELTA[f.dir][0] * g.cellIn, fy + DELTA[f.dir][1] * g.cellIn])) * Math.PI) / 180) >= Math.SQRT1_2;
+  };
+  const sideOfFace = (f: { cell: Cell }) => sideOf(ctx.parity, ...cellCentre(g, f.cell));
+  const matched = twinned && ctx.parity.matched === true;
   for (const face of faces) {
     if (done.has(key(face))) continue;
-    const twin = twinned ? faces.find((f) => f.cell.c === mapCell(ctx.parity, g, face.cell).c && f.cell.r === mapCell(ctx.parity, g, face.cell).r && f.dir === mapDir(ctx.parity, face.dir)) : undefined;
+    // Matched parity: a face on side B is dressed only as the twin of one on side A, any of the same kind; a face on the centre line keeps its mirrored twin.
+    if (matched && sideOfFace(face) === "B") continue;
+    const mirroredTwin = () => faces.find((f) => f.cell.c === mapCell(ctx.parity, g, face.cell).c && f.cell.r === mapCell(ctx.parity, g, face.cell).r && f.dir === mapDir(ctx.parity, face.dir));
+    const free = matched && sideOfFace(face) === "A" ? ctx.rng.shuffle(faces.filter((f) => !done.has(key(f)) && sideOfFace(f) === "B")) : [];
+    const twin = !twinned ? undefined : matched && sideOfFace(face) === "A" ? (free.find((f) => looksOutOf(f) === looksOutOf(face)) ?? free[0]) : mirroredTwin();
     done.add(key(face));
     if (twin) done.add(key(twin));
+    if (matched && sideOfFace(face) === "A" && !twin) continue;
     if (!ctx.rng.chance(chance)) continue;
-    // Sandbags lie along the face, so they go only on a face that looks toward the enemy; the others take crates or rubble.
-    const [fx, fy] = cellCentre(g, face.cell);
-    const looksOut = Math.cos(((NORMAL[face.dir] - threatBearing(ctx, [fx + DELTA[face.dir][0] * g.cellIn, fy + DELTA[face.dir][1] * g.cellIn])) * Math.PI) / 180) >= Math.SQRT1_2;
+    const looksOut = looksOutOf(face) && (!matched || !twin || twin === face || looksOutOf(twin));
     const category = ctx.rng.pick(looksOut ? FACE_CATEGORIES : FACE_CATEGORIES.filter((c) => c !== "scatter-sandbag"));
     const a = pickPlaceable(ctx, category, [], fits);
     if (!a) continue;
-    const b = twin && twin !== face ? (pickPlaceable(ctx, category, [a.key], fits) ?? a) : null;
+    const b = twin && twin !== face ? (pickPlaceable(ctx, category, [a.key], (p) => fits(p) && comparable(a, p)) ?? a) : null;
     // Laid along the face at a slight angle and anywhere along it, as dressing dropped against a wall lies.
-    const lean = (ctx.rng.next() * 2 - 1) * 18;
-    const slide = ctx.rng.next() * 2 - 1;
+    let lean = (ctx.rng.next() * 2 - 1) * 18;
+    let slide = ctx.rng.next() * 2 - 1;
     const place = (f: { plateau: Plateau; cell: Cell; dir: Dir }, piece: Placeable, mirrored: boolean) => {
       const alongX = f.dir === "N" || f.dir === "S";
       const quarter = (alongX ? piece.footprintIn[0] >= piece.footprintIn[1] : piece.footprintIn[1] >= piece.footprintIn[0]) ? 0 : 90;
@@ -1729,7 +2145,12 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
     if (!rectAllowed(ctx, pa.rect, a.role, { scatter: true, faceOf: face.plateau.id })) continue;
     let pb: ReturnType<typeof place> | null = null;
     if (b && twin) {
-      pb = place(twin, b, true);
+      if (matched && twin !== mirroredTwin()) {
+        // Its own lean and slide along its own face.
+        lean = (ctx.rng.next() * 2 - 1) * 18;
+        slide = ctx.rng.next() * 2 - 1;
+      }
+      pb = place(twin, b, !(matched && twin !== mirroredTwin()));
       if (!rectAllowed(ctx, pb.rect, b.role, { scatter: true, faceOf: twin.plateau.id }) || rectDistance(pa.rect, pb.rect) < ctx.scatterGapIn) continue;
     }
     // Dressing down the length of a face would stand in single file.
@@ -1756,6 +2177,8 @@ export function dressFaces(ctx: PlacementContext, plateaus: readonly Plateau[], 
 // ---- terrain slots and scatter -------------------------------------------------
 
 export interface SlotResult {
+  /** A narrow two-storey ruin stood in for a ruined building the minimum could not place otherwise. */
+  narrowTwoStorey?: boolean;
   placed: Placed[];
   shortfalls: { typeId: string; min: number; target: number; placed: number }[];
 }
@@ -1779,18 +2202,22 @@ export function placeTerrainSlots(ctx: PlacementContext, targets: readonly Compo
   let best: SlotResult | null = null;
   let bestState: { placed: Placed[]; usage: Map<string, number>; nextId: number } | null = null;
   const missing = (r: SlotResult) => r.shortfalls.reduce((n, sf) => n + Math.max(0, sf.min - sf.placed), 0);
-  for (const sizeCap of [Number.POSITIVE_INFINITY, 0.5, 0]) {
+  // Last, a narrow two-storey ruin may stand in for a ruined building no wide one has room for (palette.storeys).
+  const passes: [number, boolean][] = [[Number.POSITIVE_INFINITY, false], [0.5, false], [0, false], [Number.POSITIVE_INFINITY, true], [0, true]];
+  for (const [sizeCap, narrow] of passes) {
     ctx.placed.length = snapshot.placed;
     ctx.usage = new Map(snapshot.usage);
     ctx.nextId = snapshot.nextId;
-    if (bestState) ctx.placed.length = snapshot.placed;
-    const result = fillSlots(ctx, targets, phase, sizeCap);
+    ctx.narrowTwoStorey = narrow;
+    const filled = fillSlots(ctx, targets, phase, sizeCap);
+    const result = { ...filled, narrowTwoStorey: narrow && ctx.placed.slice(snapshot.placed).some((p) => p.placeable && !buildingAllowed(ctx.palette, p.placeable)) };
     if (!best || missing(result) < missing(best)) {
       best = result;
       bestState = { placed: [...ctx.placed], usage: new Map(ctx.usage), nextId: ctx.nextId };
     }
     if (!missing(best)) break;
   }
+  ctx.narrowTwoStorey = false;
   ctx.placed.length = 0;
   ctx.placed.push(...bestState!.placed);
   ctx.usage = bestState!.usage;
@@ -1806,7 +2233,7 @@ export function placeTerrainSlots(ctx: PlacementContext, targets: readonly Compo
 function fillSlots(ctx: PlacementContext, targets: readonly CompositionTarget[], phase: "minimum" | "fill", sizeCap: number): SlotResult {
   const placed: Placed[] = [];
   // The type whose smallest piece is largest goes first, while the open bands are still whole.
-  const smallest = (t: CompositionTarget) => Math.min(...t.categories.flatMap((c) => placeablesIn(ctx.palette, c).filter((p) => !p.cells && Math.max(...p.footprintIn) <= minimumSideIn(ctx.palette, c)).map(area)), Number.POSITIVE_INFINITY);
+  const smallest = (t: CompositionTarget) => Math.min(...t.categories.flatMap((c) => placeablesIn(ctx.palette, c, ctx.narrowTwoStorey).filter((p) => !p.cells && Math.max(...p.footprintIn) <= minimumSideIn(ctx.palette, c, ctx.narrowTwoStorey)).map(area)), Number.POSITIVE_INFINITY);
   const order = [...targets].sort((a, b) => Number(a.house) - Number(b.house) || (Number.isFinite(smallest(b)) ? smallest(b) : 0) - (Number.isFinite(smallest(a)) ? smallest(a) : 0));
   const goal = (t: CompositionTarget) => (phase === "minimum" ? t.min : t.target);
   const stuck = new Set<string>();
@@ -1822,13 +2249,13 @@ function fillSlots(ctx: PlacementContext, targets: readonly CompositionTarget[],
       let done: Placed[] = [];
       for (const category of categories) {
         if (category === "tall-tower") continue;
-        const pool = placeablesIn(ctx.palette, category);
+        const pool = placeablesIn(ctx.palette, category, ctx.narrowTwoStorey);
         if (!pool.length) continue;
         const blocks = pool.filter((p) => p.cells);
         if (blocks.length && phase === "fill" && ctx.rng.chance(0.4)) done = placeGroundBlockPair(ctx, ctx.rng.pick(blocks));
         if (!done.length) {
           // A failed pick steps down to pieces smaller than it, so a crowded board still finds its minimum.
-          const fits = (p: Placeable) => !p.cells && (phase === "fill" || Math.max(...p.footprintIn) <= minimumSideIn(ctx.palette, category));
+          const fits = (p: Placeable) => !p.cells && (phase === "fill" || Math.max(...p.footprintIn) <= minimumSideIn(ctx.palette, category, ctx.narrowTwoStorey));
           const all = [...new Set(pool.filter(fits).map(area))].sort((x, y) => y - x);
           const areas = sizeCap === 0 ? [...all].reverse() : Number.isFinite(sizeCap) ? all.slice(Math.floor(all.length * (1 - sizeCap))) : all;
           const steps = phase === "minimum" ? areas : areas.slice(0, 1);
@@ -1862,11 +2289,11 @@ function fillSlots(ctx: PlacementContext, targets: readonly CompositionTarget[],
 /**
  * The longest side a minimum's piece may have: 5in, so every listed type finds
  * room on a 36in board. A category with nothing that short (the ruined
- * buildings, 5.2 to 9.9in) takes its pieces up to 2in longer than its shortest,
+ * buildings of an allowed height, 6.8 to 12in) takes its pieces up to 2in longer than its shortest,
  * or the type could never meet its minimum.
  */
-function minimumSideIn(palette: Palette, category: string): number {
-  const shortest = Math.min(...placeablesIn(palette, category).filter((p) => !p.cells).map((p) => Math.max(...p.footprintIn)), Number.POSITIVE_INFINITY);
+function minimumSideIn(palette: Palette, category: string, narrowTwoStorey = false): number {
+  const shortest = Math.min(...placeablesIn(palette, category, narrowTwoStorey).filter((p) => !p.cells).map((p) => Math.max(...p.footprintIn)), Number.POSITIVE_INFINITY);
   return shortest > MINIMUM_SIDE_IN ? shortest + 2 : MINIMUM_SIDE_IN;
 }
 const MINIMUM_SIDE_IN = 5;

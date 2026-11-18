@@ -61,6 +61,24 @@ describe("renderPlanSvg", () => {
     expect(svg).toContain(escapeXml('Trench · 3" deep · Cover · Climb'));
   });
 
+  it("marks each ruin's most solid face and labels tall pieces with their own measured height", () => {
+    const heights = Object.fromEntries(env.palette.pieces.map((p) => [p.id, p.heightIn]));
+    const layout = generateBattlefield({ scenarioId: "claim-no-mans-land", seed: 10 }, env);
+    const svg = renderPlanSvg(layout, { heights, palette: env.palette, rotYSense: env.palette.rotation.rotYSense });
+    expect(() => assertWellFormedXml(svg)).not.toThrow();
+    const ruins = layout.pieces.filter((p) => p.layer === "surface" && pieceById(env.palette, p.paletteId).wallCover);
+    expect(ruins.length).toBeGreaterThan(0);
+    for (const p of ruins) expect(svg, p.id).toMatch(new RegExp(`<title>${p.id} [NESW] face, cover `));
+    for (const p of layout.pieces.filter((x) => x.role === "building")) {
+      const own = Math.round(pieceById(env.palette, p.paletteId).heightIn * 10) / 10;
+      const num = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(2));
+      expect(svg, p.id).toMatch(new RegExp(`>${num(own)}in(?: on \\+[\\d.]+in)?<`));
+      // Not its top above the table, ground tiles and all.
+      expect(svg, p.id).not.toContain(`>${num(Math.round((p.baseIn + own) * 10) / 10)}in`);
+    }
+    expect(svg).toContain("most solid face");
+  });
+
   it("escapes text it interpolates", () => {
     const layout = generateBattlefield({ scenarioId: "fields-of-glory", archetype: "trench-lines", seed: 3 }, env);
     const svg = renderPlanSvg(layout, { title: `Fish & chips <"'>` });

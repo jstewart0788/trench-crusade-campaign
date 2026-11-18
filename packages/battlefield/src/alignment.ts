@@ -172,8 +172,8 @@ export function alignmentReport(units: readonly AlignUnit[], parity: Parity, cel
 }
 
 export function coincidentShare(units: readonly AlignUnit[], parity: Parity, cellIn: number, coincide = COINCIDE_IN): number {
-  // The axis a mirror keeps: y under mirror-x, x under mirror-y.
-  const kept = parity.kind === "mirror-x" ? 1 : parity.kind === "mirror-y" ? 0 : -1;
+  // The axis a mirror keeps: y under mirror-x, x under mirror-y. Matched twins keep none.
+  const kept = parity.matched ? -1 : parity.kind === "mirror-x" ? 1 : parity.kind === "mirror-y" ? 0 : -1;
   const onMirror = (u: AlignUnit, axis: number) => u.centre && (parity.kind === "point" || (sideOf(parity, ...u.at) === "centre" && axis === 1 - kept));
   let coincident = 0;
   for (const u of units) {

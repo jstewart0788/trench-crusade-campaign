@@ -86,11 +86,39 @@ export const Facing = z
   .refine((f) => (f.along === undefined) !== (f.corner === undefined), "a facing is a wall's axis or an L's corner, not both");
 export type Facing = z.infer<typeof Facing>;
 
+/** A share of a face that solid wall covers in one height band; null where the piece is not that tall. */
+const BandCover = z.number().min(0).max(1).nullable();
+const FaceCover = z.tuple([BandCover, BandCover, BandCover]);
+
+/**
+ * How solid each side of a ruin is at rotY 0 (N toward +y): the share of the
+ * side's face that the walls in the half of the piece nearest it cover, in the
+ * height bands palette.wallCover gives, measured from the mesh.
+ */
+export const WallCover = z.object({ N: FaceCover, E: FaceCover, S: FaceCover, W: FaceCover }).strict();
+export type WallCover = z.infer<typeof WallCover>;
+
+/** The height bands wall cover is measured in: below the first bound, up to the second, and above it to the top. */
+export const WallCoverBands = z.object({ bandsIn: z.tuple([z.number().positive(), z.number().positive()]), source: z.string().min(1) }).strict();
+
 /** What a wall keeps clear of: ruin, building and tower faces and raised ground by `clearIn`, and other walls lying within `parallelDeg` of its own line. */
 export const Adjacency = z
   .object({ clearIn: z.number().positive(), keepFrom: z.array(z.string()).min(1), parallelDeg: z.number().positive(), pages: z.array(z.number().int().positive()), call: z.string().min(1) })
   .strict();
 export type Adjacency = z.infer<typeof Adjacency>;
+
+/**
+ * How tall a ruined building may stand. A storey is the floor pitch the ruins
+ * are built on; a building counts the storeys its walls reach, with up to
+ * `wallAboveIn` of broken wall above its last storey allowed. Buildings stand
+ * `max` storeys at most, and more than one only when both sides of their
+ * footprint are at least `twoStoreyMinSideIn` (Jonathan: 1 storey on average,
+ * 2 only for large wide buildings).
+ */
+export const Storeys = z
+  .object({ heightIn: z.number().positive(), wallAboveIn: z.number().nonnegative(), max: z.number().int().positive(), twoStoreyMinSideIn: z.number().positive(), source: z.string().min(1) })
+  .strict();
+export type Storeys = z.infer<typeof Storeys>;
 
 export const PalettePiece = z
   .object({
@@ -129,6 +157,8 @@ export const PalettePiece = z
     stackedTerrain: TerrainRules.optional(),
     /** Defensive cover: how it shows its face to the enemy at rotY 0, a wall along an axis or an L's outer corner. */
     facing: Facing.optional(),
+    /** Ruins: how solid each side is (palette.wallCover). */
+    wallCover: WallCover.optional(),
     /** A linear wall, fence or barricade: kept off ruin and raised faces and other walls (palette.adjacency). */
     wall: z.boolean().optional(),
   })
@@ -208,6 +238,8 @@ export const Palette = z
     pieces: z.array(PalettePiece).min(1),
     groups: z.array(PaletteGroup).default([]),
     adjacency: Adjacency,
+    storeys: Storeys,
+    wallCover: WallCoverBands,
   })
   .strict()
   .superRefine((p, ctx) => {
@@ -299,6 +331,36 @@ export function resolvePalette(palette: Palette, catalog: Catalog): ResolvedPale
  * and are open ground. Low cover, rubble, wire and the rest bear rules.
  */
 export const isDecor = (piece: PalettePiece): boolean => piece.terrain.kind === "scattered" && !piece.terrain.cover && !piece.terrain.climb && piece.terrain.types.every((t) => t === "open");
+
+/** The storeys a building's walls reach (palette.storeys). */
+export const storeysOf = (palette: Palette, piece: { heightIn: number }): number => Math.max(1, Math.ceil((piece.heightIn - palette.storeys.wallAboveIn) / palette.storeys.heightIn - 1e-9));
+
+/**
+ * Whether a ruined building stands within the storey rule: one storey, or two
+ * on a large wide footprint; nothing taller. `narrow` lets a narrow two-storey
+ * ruin stand in where a minimum cannot be met otherwise.
+ */
+export function buildingAllowed(palette: Palette, piece: { role: Role; heightIn: number; footprintIn: readonly [number, number] }, narrow = false): boolean {
+  if (piece.role !== "building") return true;
+  const n = storeysOf(palette, piece);
+  return n <= 1 || (n <= palette.storeys.max && (narrow || Math.min(...piece.footprintIn) >= palette.storeys.twoStoreyMinSideIn));
+}
+
+export type Side = "N" | "E" | "S" | "W";
+/** Each side's bearing at rotY 0, in degrees anticlockwise from east. */
+export const SIDE_BEARING: Record<Side, number> = { E: 0, N: 90, W: 180, S: 270 };
+
+/** The cover a face gives a model on the ground storey: its two lower bands averaged. */
+export function faceCover(cover: WallCover, side: Side): number {
+  const bands = cover[side].slice(0, 2).filter((b): b is number => b !== null);
+  return bands.length ? bands.reduce((a, b) => a + b, 0) / bands.length : 0;
+}
+
+/** The side of a piece standing at rotY that looks along a bearing, to the nearest quarter turn. */
+export function sideFacing(palette: Palette, rotY: number, bearing: number): Side {
+  const local = palette.rotation.rotYSense === "cw" ? bearing + rotY : bearing - rotY;
+  return (["E", "N", "W", "S"] as const)[Math.round((((local % 360) + 360) % 360) / 90) % 4]!;
+}
 
 export function pieceById(palette: Palette, id: string): PalettePiece {
   const piece = palette.pieces.find((p) => p.id === id);

@@ -176,7 +176,7 @@ function heapAllowed(ctx: PlacementContext, rects: readonly Rect[]): boolean {
  * the board is twinned) and its twin at the mirrored spot. The heap's size is
  * drawn by the caller. Returns the placed heaps, or [] when they do not fit.
  */
-function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1): Placed[] {
+function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1, twinSpots: readonly Spot[] = []): Placed[] {
   const { ctx } = pc;
   // A heap that does not fit is drawn again, then shrinks a piece at a time.
   for (let count = spot.count; count >= fewest; count--) {
@@ -196,6 +196,12 @@ function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1
         if (members !== heap.members && !membersFit(members)) continue;
         const rects = shifted(members, centre);
         if (!heapAllowed(ctx, rects)) continue;
+        if (pc.twinned && ctx.parity.matched) {
+          if (heap.members.length === 1 && extendsRow(ctx, centreOf(rects))) continue;
+          const twinOf = matchedHeap(pc, role, heap.members, members, rects, twinSpots);
+          if (!twinOf) continue;
+          return commitHeaps(ctx, role, { members, rects, category: heap.category }, { members: twinOf.members, rects: twinOf.rects, category: heap.category });
+        }
         let twin: Rect[] | null = null;
         const tcentre = mapPoint(ctx.parity, centre[0], centre[1]);
         const twinFaced = pc.twinned ? faced(ctx, twinMembers, tcentre, true) : [];
@@ -214,6 +220,39 @@ function placeHeapAt(pc: PlaceContext, role: ScatterRole, spot: Spot, fewest = 1
     }
   }
   return [];
+}
+
+/**
+ * Matched parity: the twin of a heap laid on side A, its pieces swapped for
+ * others of their kind as a mirrored twin's are, set at one of side B's spots
+ * for the same role and settled there under every rule, with side A's heap
+ * standing beside it; null when none of the first few spots takes it.
+ */
+function matchedHeap(pc: PlaceContext, role: ScatterRole, drawn: readonly Member[], first: readonly Member[], firstRects: readonly Rect[], spots: readonly Spot[]): { members: readonly Member[]; rects: Rect[] } | null {
+  const { ctx } = pc;
+  const twin = twinHeap(ctx, drawn, pc.fits).map((m) => (m.draw ? { ...m, draw: drawFacing(ctx.rng) } : m));
+  const firstAt = centreOf(firstRects);
+  let tries = 0;
+  for (const spot of spots) {
+    if (tries >= 12) break;
+    if (!open(ctx, spot.at)) continue;
+    tries++;
+    for (let k = 0; k < 4; k++) {
+      const shift: [number, number] = spot.away ? [spot.away[0] * 0.35 * k, spot.away[1] * 0.35 * k] : k === 0 ? [0, 0] : [(ctx.rng.next() - 0.5) * 0.6 * k, (ctx.rng.next() - 0.5) * 0.6 * k];
+      const centre: [number, number] = [spot.at[0] + shift[0], spot.at[1] + shift[1]];
+      if (sideOf(ctx.parity, ...centre) !== "B") continue;
+      const members = faced(ctx, twin, centre, false);
+      if (members !== twin && !membersFit(members)) continue;
+      const rects = shifted(members, centre);
+      if (!heapAllowed(ctx, rects)) continue;
+      if (rects.some((a) => firstRects.some((b) => rectDistance(a, b) < ctx.scatterGapIn))) continue;
+      if (members.length === 1 && extendsRow(ctx, centreOf(rects), firstAt)) continue;
+      if (linesUp(ctx, [{ at: firstAt, scatter: true }, { at: centreOf(rects), scatter: true }])) continue;
+      if (!wallsClear(ctx, first, firstRects, members, rects)) continue;
+      return { members, rects };
+    }
+  }
+  return null;
 }
 
 /** A heap's defensive cover turned to face the threat from where each piece stands, the twin's with the mirrored lean; the same members when none faces. */
@@ -288,6 +327,9 @@ interface Spot {
 }
 
 const onSideA = (ctx: PlacementContext, x: number, y: number): boolean => ctx.parity.kind === "none" || sideOf(ctx.parity, x, y) === "A";
+/** Spots for a heap on one half: side A's, or under matched parity side B's for its twins. */
+type Half = "A" | "B";
+const onSide = (ctx: PlacementContext, side: Half, x: number, y: number): boolean => (side === "A" ? onSideA(ctx, x, y) : sideOf(ctx.parity, x, y) === "B");
 const centreOfCell = (ctx: PlacementContext, cell: Cell): [number, number] => cellCentre(ctx.grid, cell.c, cell.r);
 
 /**
@@ -295,7 +337,7 @@ const centreOfCell = (ctx: PlacementContext, cell: Cell): [number, number] => ce
  * pieces: where a model crouches to shoot. Side A looks along the sight axis
  * toward B; without parity each piece looks toward the far half.
  */
-function coverSpots(ctx: PlacementContext): Spot[] {
+function coverSpots(ctx: PlacementContext, side: Half = "A"): Spot[] {
   const alongX = ctx.sightAxis !== "y";
   const mid = ctx.grid.boardIn / 2;
   const out: Spot[] = [];
@@ -304,7 +346,7 @@ function coverSpots(ctx: PlacementContext): Spot[] {
     if (!["building", "ruin", "cover", "tower", "landmark"].includes(p.role)) continue;
     const r = bounds(p.rects);
     const own = alongX ? p.centre[0] : p.centre[1];
-    const ahead = ctx.parity.kind !== "none" || own < mid ? 1 : -1;
+    const ahead = ctx.parity.kind !== "none" ? (side === "A" ? 1 : -1) : own < mid ? 1 : -1;
     for (let k = 0; k < 3; k++) {
       const depth = 1.4 + ctx.rng.next() * 0.9;
       // Along the face, the corners a little more often than the middle.
@@ -312,14 +354,14 @@ function coverSpots(ctx: PlacementContext): Spot[] {
       const at: [number, number] = alongX
         ? [ahead > 0 ? r.x1 + 1 + depth : r.x0 - 1 - depth, r.y0 + t * (r.y1 - r.y0)]
         : [r.x0 + t * (r.x1 - r.x0), ahead > 0 ? r.y1 + 1 + depth : r.y0 - 1 - depth];
-      if (onSideA(ctx, ...at)) out.push({ at, count: ctx.rng.intBetween(2, 5), away: alongX ? [ahead, 0] : [0, ahead] });
+      if (onSide(ctx, side, ...at)) out.push({ at, count: ctx.rng.intBetween(2, 5), away: alongX ? [ahead, 0] : [0, ahead] });
     }
   }
   return ctx.rng.shuffle(out);
 }
 
 /** Spots along trench lips facing open ground, junctions and bends more often. */
-function trenchSpots(ctx: PlacementContext): Spot[] {
+function trenchSpots(ctx: PlacementContext, side: Half = "A"): Spot[] {
   const g = ctx.grid;
   const cells = ctx.trenchRects.map((r): Cell => ({ c: Math.round((r.x0 + r.x1) / 2 / g.cellIn - 0.5), r: Math.round((r.y0 + r.y1) / 2 / g.cellIn - 0.5) }));
   const isTrench = (c: number, r: number) => ctx.trenchMask.get(c, r);
@@ -334,14 +376,14 @@ function trenchSpots(ctx: PlacementContext): Spot[] {
       const out1 = g.cellIn / 2 + 1.6 + ctx.rng.next() * 0.8;
       const lateral = (ctx.rng.next() - 0.5) * (g.cellIn - 1);
       const at: [number, number] = DELTA[dir][0] ? [cx + DELTA[dir][0] * out1, cy + lateral] : [cx + lateral, cy + DELTA[dir][1] * out1];
-      if (onSideA(ctx, ...at)) out.push({ item: { at, count: ctx.rng.intBetween(2, 4), away: [DELTA[dir][0], DELTA[dir][1]] }, weight: bend ? 3 : 1 });
+      if (onSide(ctx, side, ...at)) out.push({ item: { at, count: ctx.rng.intBetween(2, 4), away: [DELTA[dir][0], DELTA[dir][1]] }, weight: bend ? 3 : 1 });
     }
   }
   return ctx.rng.weightedOrder(out);
 }
 
 /** A broken ring of low cover around each objective marker. */
-function objectiveSpots(ctx: PlacementContext): Spot[] {
+function objectiveSpots(ctx: PlacementContext, side: Half = "A"): Spot[] {
   const out: Spot[] = [];
   for (const o of ctx.objectives) {
     const cover = ctx.placed.find((p) => p.objectiveId === o.id);
@@ -354,14 +396,14 @@ function objectiveSpots(ctx: PlacementContext): Spot[] {
       const angle = start + (i * Math.PI * 2) / n + (ctx.rng.next() - 0.5) * 0.5;
       const r = reach + 1.8 + ctx.rng.next() * 1.2;
       const at: [number, number] = [o.position[0] + Math.cos(angle) * r, o.position[1] + Math.sin(angle) * r];
-      if (onSideA(ctx, ...at)) out.push({ at, count: ctx.rng.intBetween(2, 3), away: [Math.cos(angle), Math.sin(angle)] });
+      if (onSide(ctx, side, ...at)) out.push({ at, count: ctx.rng.intBetween(2, 3), away: [Math.cos(angle), Math.sin(angle)] });
     }
   }
   return ctx.rng.shuffle(out);
 }
 
 /** At the foot of raised ground and beside the feet of its ramps. */
-function raisedSpots(ctx: PlacementContext, raised: readonly (Plateau | Hill)[]): Spot[] {
+function raisedSpots(ctx: PlacementContext, raised: readonly (Plateau | Hill)[], side: Half = "A"): Spot[] {
   const g = ctx.grid;
   const out: Spot[] = [];
   for (const group of raised) {
@@ -374,18 +416,18 @@ function raisedSpots(ctx: PlacementContext, raised: readonly (Plateau | Hill)[])
         const off = g.cellIn / 2 + 1.5 + ctx.rng.next() * 0.8;
         const lateral = (ctx.rng.next() - 0.5) * (g.cellIn - 1);
         const at: [number, number] = DELTA[dir][0] ? [cx + DELTA[dir][0] * off, cy + lateral] : [cx + lateral, cy + DELTA[dir][1] * off];
-        if (onSideA(ctx, ...at)) out.push({ at, count: ctx.rng.intBetween(2, 4), away: [DELTA[dir][0], DELTA[dir][1]] });
+        if (onSide(ctx, side, ...at)) out.push({ at, count: ctx.rng.intBetween(2, 4), away: [DELTA[dir][0], DELTA[dir][1]] });
       }
     }
     for (const ramp of group.ramps) {
       const foot = { c: ramp.cell.c - DELTA[ramp.up][0], r: ramp.cell.r - DELTA[ramp.up][1] };
       const [fx, fy] = centreOfCell(ctx, foot);
-      for (const side of [-1, 1]) {
+      for (const flank of [-1, 1]) {
         // Off the cell's centre line, so the flanks of ramps side by side do not line up along an edge.
         const off = g.cellIn / 2 + 1.2 + ctx.rng.next() * 0.8;
         const along = (ctx.rng.next() - 0.5) * 2;
-        const at: [number, number] = DELTA[ramp.up][0] ? [fx + along, fy + side * off] : [fx + side * off, fy + along];
-        if (onSideA(ctx, ...at)) out.push({ at, count: ctx.rng.intBetween(1, 3), away: DELTA[ramp.up][0] ? [0, side] : [side, 0] });
+        const at: [number, number] = DELTA[ramp.up][0] ? [fx + along, fy + flank * off] : [fx + flank * off, fy + along];
+        if (onSide(ctx, side, ...at)) out.push({ at, count: ctx.rng.intBetween(1, 3), away: DELTA[ramp.up][0] ? [0, flank] : [flank, 0] });
       }
     }
   }
@@ -397,13 +439,13 @@ function raisedSpots(ctx: PlacementContext, raised: readonly (Plateau | Hill)[])
  * seeded order, so the filler finds every gap without lining anything up (the
  * jitter is continuous and each heap settles about its point).
  */
-function openSpots(ctx: PlacementContext): Spot[] {
+function openSpots(ctx: PlacementContext, side: Half = "A"): Spot[] {
   const out: Spot[] = [];
   const b = ctx.grid.boardIn;
   for (let x = ctx.edgeMarginIn + 0.25; x < b - ctx.edgeMarginIn; x += 0.5) {
     for (let y = ctx.edgeMarginIn + 0.25; y < b - ctx.edgeMarginIn; y += 0.5) {
       const at: [number, number] = [x + (ctx.rng.next() - 0.5) * 0.5, y + (ctx.rng.next() - 0.5) * 0.5];
-      if (onSideA(ctx, ...at) && open(ctx, at)) out.push({ at, count: ctx.rng.intBetween(2, 5) });
+      if (onSide(ctx, side, ...at) && open(ctx, at)) out.push({ at, count: ctx.rng.intBetween(2, 5) });
     }
   }
   return ctx.rng.shuffle(out);
@@ -468,6 +510,8 @@ function breakLanes(pc: PlaceContext, budget: number): Placed[] {
   const { ctx } = pc;
   const placed: Placed[] = [];
   const skipped = new Set<string>();
+  // Side B's open ground, worked out once: a twin heap checks a spot is still open before it takes it.
+  let openB: Spot[] | null = null;
   for (let round = 0; round < 16 && placed.reduce((n, p) => n + p.placeable!.members.length, 0) < budget; round++) {
     const lanes = clearLanes(ctx, sightBlockers(ctx)).filter((l) => !skipped.has(l.from.map((v) => v.toFixed(1)).join(",") + l.to.map((v) => v.toFixed(1)).join(",")));
     const lane = lanes[0];
@@ -475,9 +519,14 @@ function breakLanes(pc: PlaceContext, budget: number): Placed[] {
     let done: Placed[] = [];
     for (let attempt = 0; attempt < 6 && !done.length; attempt++) {
       const t = 0.3 + ctx.rng.next() * 0.4;
-      let at: [number, number] = [lane.from[0] + (lane.to[0] - lane.from[0]) * t, lane.from[1] + (lane.to[1] - lane.from[1]) * t];
-      if (!onSideA(ctx, ...at)) at = mapPoint(ctx.parity, ...at);
-      done = placeHeapAt(pc, "lane", { at, count: ctx.rng.intBetween(2, 4) });
+      const along = (u: number): [number, number] => [lane.from[0] + (lane.to[0] - lane.from[0]) * u, lane.from[1] + (lane.to[1] - lane.from[1]) * u];
+      // Under matched parity the twin breaks the same lane as far from its other end.
+      const [near, far] = [along(t), along(1 - t)];
+      const at = onSideA(ctx, ...near) ? near : ctx.parity.matched ? far : mapPoint(ctx.parity, ...near);
+      const twinAt = at === near ? far : near;
+      const count = ctx.rng.intBetween(2, 4);
+      if (ctx.parity.matched) openB ??= openSpots(ctx, "B");
+      done = placeHeapAt(pc, "lane", { at, count }, 1, ctx.parity.matched ? [{ at: twinAt, count: 1 }, ...openB!] : []);
     }
     if (!done.length) skipped.add(lane.from.map((v) => v.toFixed(1)).join(",") + lane.to.map((v) => v.toFixed(1)).join(","));
     placed.push(...done);
@@ -502,28 +551,32 @@ export function placeScatter(ctx: PlacementContext, pieces: number, raised: read
   };
   const pc: PlaceContext = { ctx, fits, twinned: ctx.parity.kind !== "none", out: [] };
   const objects = () => pc.out.reduce((n, p) => n + p.placeable!.members.length, 0);
-  const fill = (role: Exclude<ScatterRole, "open" | "lane">, spots: Spot[], share: number) => {
+  const matched = pc.twinned && ctx.parity.matched === true;
+  const fill = (role: Exclude<ScatterRole, "open" | "lane">, spots: (side: Half) => Spot[], share: number) => {
     const cap = Math.min(pieces, objects() + Math.round(pieces * share));
-    for (const spot of spots) {
+    // Under matched parity each heap's twin goes to one of side B's own spots for the role.
+    const twins = matched ? spots("B") : [];
+    for (const spot of spots("A")) {
       if (objects() >= cap) break;
-      pc.out.push(...placeHeapAt(pc, role, spot));
+      pc.out.push(...placeHeapAt(pc, role, spot, 1, twins));
     }
   };
-  fill("cover", coverSpots(ctx), ROLE_BUDGET.cover);
-  fill("objective", objectiveSpots(ctx), ROLE_BUDGET.objective);
-  fill("trench", trenchSpots(ctx), ROLE_BUDGET.trench);
-  fill("raised", raisedSpots(ctx, raised), ROLE_BUDGET.raised);
+  fill("cover", (side) => coverSpots(ctx, side), ROLE_BUDGET.cover);
+  fill("objective", (side) => objectiveSpots(ctx, side), ROLE_BUDGET.objective);
+  fill("trench", (side) => trenchSpots(ctx, side), ROLE_BUDGET.trench);
+  fill("raised", (side) => raisedSpots(ctx, raised, side), ROLE_BUDGET.raised);
   pc.out.push(...breakLanes(pc, Math.round(pieces * ROLE_BUDGET.lane)));
   // Heaps take the open ground first; single pieces then go into the gaps they leave. No heap runs past the budget.
   const spots = openSpots(ctx);
+  const twinSpots = matched ? openSpots(ctx, "B") : [];
   const room = () => Math.floor((pieces - objects()) / (pc.twinned ? 2 : 1));
   for (const spot of spots) {
     if (room() < 2) break;
-    if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", { ...spot, count: Math.min(spot.count, room()) }, 2));
+    if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", { ...spot, count: Math.min(spot.count, room()) }, 2, twinSpots));
   }
   for (const spot of spots) {
     if (room() < 1) break;
-    if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", { ...spot, count: 1 }));
+    if (open(ctx, spot.at)) pc.out.push(...placeHeapAt(pc, "open", { ...spot, count: 1 }, 1, twinSpots));
   }
   return pc.out;
 }

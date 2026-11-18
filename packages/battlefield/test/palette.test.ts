@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decoratedSides, loadPalette, parsePalette, placeablesIn, piecesByRole, STRUCTURAL_ROLES, resolvePalette, rotateOffset, rotateOpenings, rotYForOpenings, rotYTurning, type Palette } from "../src/index.js";
+import { buildingAllowed, decoratedSides, faceCover, loadPalette, parsePalette, placeablesIn, piecesByRole, sideFacing, STRUCTURAL_ROLES, resolvePalette, rotateOffset, rotateOpenings, rotYForOpenings, rotYTurning, storeysOf, type Palette } from "../src/index.js";
 import { fixtureCatalog, ROOT } from "./fixtures.js";
 
 const palette = loadPalette(ROOT);
@@ -23,6 +23,66 @@ describe("palette", () => {
     expect(piece("hill-ramp").restHeightIn).toBe(1.28);
     expect(piece("trench-straight-plain").channelFloorIn).toBe(0.5);
     expect(piece("ruins-corner").heightIn).toBeGreaterThan(4);
+  });
+
+  it("counts a ruin's storeys from its floors, 3in apart with the walls up to an inch above the top one, and lays two only on a wide footprint, never three", () => {
+    expect(palette.storeys).toMatchObject({ heightIn: 3, wallAboveIn: 1, max: 2, twoStoreyMinSideIn: 6.75 });
+    const buildings = palette.pieces.filter((p) => p.role === "building");
+    expect(Object.fromEntries(buildings.map((p) => [p.id, storeysOf(palette, p)]))).toEqual({
+      "ruins-small-a": 3,
+      "ruins-small-b": 2,
+      "ruins-medium-a": 3,
+      "ruins-medium-b": 2,
+      "ruins-medium-c": 2,
+      "ruins-medium-d": 3,
+      "ruins-medium-e": 3,
+      "ruins-medium-f": 2,
+      "ruins-large-a": 3,
+      // Its floors sit a quarter inch up and its parapet stands 1.5in over the top one; three storeys or four, it is never laid.
+      "ruins-large-b": 4,
+      "town-ruins": 1,
+    });
+    expect(storeysOf(palette, { heightIn: 4 })).toBe(1);
+    expect(storeysOf(palette, { heightIn: 4.01 })).toBe(2);
+    expect(storeysOf(palette, { heightIn: 7 })).toBe(2);
+    expect(storeysOf(palette, { heightIn: 7.01 })).toBe(3);
+    const allowed = (narrow: boolean) => buildings.filter((p) => buildingAllowed(palette, p, narrow)).map((p) => p.id).sort();
+    expect(allowed(false)).toEqual(["ruins-medium-b", "ruins-medium-c", "ruins-medium-f", "town-ruins"]);
+    // A narrow two-storey ruin only where a minimum has no room for anything else.
+    expect(allowed(true)).toEqual(["ruins-medium-b", "ruins-medium-c", "ruins-medium-f", "ruins-small-b", "town-ruins"]);
+    expect(placeablesIn(palette, "large-block-ruin").map((p) => p.key).sort()).toEqual(allowed(false));
+    expect(placeablesIn(palette, "large-block-ruin", true).map((p) => p.key).sort()).toEqual(allowed(true));
+    // Towers are towers: the rule is for buildings.
+    for (const id of ["water-tower", "outpost-tower", "tower-small"]) expect(buildingAllowed(palette, piece(id)), id).toBe(true);
+    expect(piece("town-ruins")).toMatchObject({ role: "building", footprintIn: [10.17, 12], heightIn: 2.18, verified: false });
+  });
+
+  it("measures how solid each side of every ruin is, from its mesh, in three height bands", () => {
+    expect(palette.wallCover.bandsIn).toEqual([1.5, 3]);
+    const ruins = palette.pieces.filter((p) => p.role === "building" || p.role === "ruin");
+    expect(ruins.length).toBe(15);
+    for (const p of ruins) {
+      expect(p.wallCover, p.id).toBeDefined();
+      for (const side of ["N", "E", "S", "W"] as const) {
+        const [low, mid, high] = p.wallCover![side];
+        expect(low, `${p.id} ${side}`).not.toBeNull();
+        // A band stands empty only where the piece is not that tall.
+        expect(mid === null, `${p.id} ${side}`).toBe(p.heightIn < 1.75);
+        expect(high === null, `${p.id} ${side}`).toBe(p.heightIn < 3.25);
+      }
+    }
+    // The corner ruin's walls stand along its north and east sides, as its top-down occupancy found (its facing).
+    expect(faceCover(piece("ruins-corner").wallCover!, "E")).toBeGreaterThan(0.85);
+    expect(faceCover(piece("ruins-corner").wallCover!, "N")).toBeGreaterThan(0.65);
+    expect(faceCover(piece("ruins-corner").wallCover!, "S")).toBeLessThan(0.15);
+    expect(faceCover(piece("ruins-corner").wallCover!, "W")).toBeLessThan(0.15);
+    // A two-storey L: walls on two adjacent sides, the other two open.
+    expect(faceCover(piece("ruins-medium-b").wallCover!, "E")).toBeGreaterThan(0.75);
+    expect(faceCover(piece("ruins-medium-b").wallCover!, "W")).toBeLessThan(0.15);
+    // rotY turns clockwise from above: at 90 the north face looks east.
+    expect(sideFacing(palette, 90, 0)).toBe("N");
+    expect(sideFacing(palette, 0, 90)).toBe("N");
+    expect(sideFacing(palette, 270, 0)).toBe("S");
   });
 
   it("has an enabled straight, corner and T, and no Entrance while its opening side is unconfirmed", () => {

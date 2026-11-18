@@ -7,6 +7,12 @@ import type { ScenarioOverlay } from "./scenario.js";
 // exactly (a 180-degree turn, so pieces stay real pieces); a mirror across the
 // centre line reflects positions and facings. The transform is chosen per
 // scenario so its objectives and deployment zones land on themselves.
+//
+// Matched parity, on request only (Jonathan keeps exact mirror boards):
+// the halves and the transform stay but not the reflection: each slot's twin
+// is a matched piece placed on its own in the other half, under the same
+// rules. The trench network, the centre and raised ground planned round the
+// objectives stay mirror images, as structure both sides share.
 
 export type ParityKind = "point" | "mirror-x" | "mirror-y" | "none";
 
@@ -15,6 +21,8 @@ export interface Parity {
   boardIn: number;
   /** True when every positioned objective lands on an objective. */
   objectivesMatch: boolean;
+  /** Twins are matched pieces placed independently in their own half, not reflections. */
+  matched?: boolean;
 }
 
 const EPS = 1e-6;
@@ -111,7 +119,12 @@ function polygonsSwap(p: Parity, a: readonly (readonly [number, number])[], b: r
  * room of. Otherwise point symmetry, otherwise whichever transform maps the
  * zones (the objectives then stand alone).
  */
-export function chooseParity(overlay: ScenarioOverlay, boardIn: number, prefer: ParityKind | "auto" = "auto"): Parity {
+export function chooseParity(overlay: ScenarioOverlay, boardIn: number, prefer: ParityKind | "auto" | "matched" = "auto"): Parity {
+  if (prefer === "matched") {
+    // The halves the scenario's own transform divides the board into, twins matched rather than reflected.
+    const p = chooseParity(overlay, boardIn, "auto");
+    return p.kind === "none" ? p : { ...p, matched: true };
+  }
   const zones = overlay.zones.filter((z) => z.isDeployment);
   const points = overlay.objectives.map((o) => o.position);
   const kinds: ParityKind[] = prefer === "auto" ? ["mirror-x", "mirror-y", "point"] : [prefer];

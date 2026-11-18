@@ -1,6 +1,7 @@
+import { SOLID_TIE } from "./dressing.js";
 import { DELTA, type Dir } from "./grid.js";
 import type { Layout, LayoutCell, LayoutPiece } from "./layout.js";
-import { pieceById, type Palette, type Role } from "./palette.js";
+import { faceCover, pieceById, SIDE_BEARING, type Palette, type Role, type Side } from "./palette.js";
 import { terrainName, terrainOf } from "./terrain.js";
 
 // Top-down plan of a layout as a standalone SVG: the grid, deployment zones,
@@ -12,7 +13,7 @@ import { terrainName, terrainOf } from "./terrain.js";
 export interface PreviewOptions {
   pxPerIn: number;
   title?: string;
-  /** Piece heights by palette id, so tall pieces are labelled with their real top height. */
+  /** Piece heights by palette id, so tall pieces are labelled with their own measured height. */
   heights?: Readonly<Record<string, number>>;
   /** The palette's yaw sense, so turned pieces are drawn the way they stand on the table. */
   rotYSense?: "cw" | "ccw";
@@ -45,6 +46,10 @@ const ROLE_STYLE: Record<Role, { fill: string; stroke: string; label: string; na
 const ZONE_FILL = ["rgba(200,40,40,0.16)", "rgba(40,80,200,0.16)", "rgba(200,170,40,0.14)", "rgba(40,160,120,0.14)"];
 const WALL_STYLE = { ledge: "#d8b878", logs: "#7a4f2a", revetment: "#7a4f2a" } as const;
 const TALL_IN = 6;
+/** The colour a ruin's most solid face is marked in. */
+const SOLID_MARK = "#a3241c";
+/** An L ruin's outer corner, as a bearing at rotY 0. */
+const CORNER_BEARING: Record<string, number> = { NE: 45, NW: 135, SW: 225, SE: 315 };
 
 export function escapeXml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
@@ -191,15 +196,53 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
     out.push(`<rect x="${fmt(cx - (w * s) / 2)}" y="${fmt(cy - (d * s) / 2)}" width="${fmt(w * s)}" height="${fmt(d * s)}"${transform} fill="${style.fill}" fill-opacity="0.85" stroke="${style.stroke}" stroke-width="${entryTall ? 2.5 : 1.5}"><title>${escapeXml(`${nameOf(p) ? `${nameOf(p)}: ` : ""}${p.id} ${p.paletteId} rotY ${p.rotY}, rests at ${p.baseIn}in${p.objectiveId ? ` covers ${p.objectiveId}` : ""}${p.slot?.placement ? `, ${p.slot.placement}` : ""}`)}</title></rect>`);
     if (style.label) out.push(`<text x="${fmt(cx)}" y="${fmt(cy + 4)}" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f1a14">${style.label}</text>`);
   }
+  // A ruin's most solid face (palette wallCover): a thick edge on every face as solid as the best, an arrow out of the best;
+  // an L (two adjacent faces that solid, or a corner ruin's arms), the arrow out of its corner, which is what it aims.
+  for (const p of options.palette ? free : []) {
+    const entry = pieceById(options.palette!, p.paletteId);
+    const cover = entry.wallCover;
+    if (!cover) continue;
+    const sides: Side[] = ["N", "E", "S", "W"];
+    const best = Math.max(...sides.map((side) => faceCover(cover, side)));
+    const at = (bearing: number, dist: number): [number, number] => [p.position[0] + Math.cos((bearing * Math.PI) / 180) * dist, p.position[1] + Math.sin((bearing * Math.PI) / 180) * dist];
+    const solid = sides.filter((side) => faceCover(cover, side) >= best - SOLID_TIE - 1e-9);
+    const pair = (["NE", "SE", "SW", "NW"] as const).filter((c) => solid.includes(c[0] as Side) && solid.includes(c[1] as Side)).sort((a, b) => faceCover(cover, b[0] as Side) + faceCover(cover, b[1] as Side) - faceCover(cover, a[0] as Side) - faceCover(cover, a[1] as Side))[0];
+    const corner = entry.facing?.corner ?? pair ?? null;
+    const arms = corner ? (corner.split("") as Side[]) : null;
+    if (arms) {
+      const bearing = CORNER_BEARING[corner!]! - turn * p.rotY;
+      const reach = Math.hypot(p.sizeIn[0], p.sizeIn[1]) / 2;
+      const [cx0, cy0] = at(bearing, reach);
+      const [tx, ty] = at(bearing, reach + 1.1);
+      const [lx, ly] = at(bearing + 90, 0.45);
+      out.push(`<polygon points="${fmt(X(tx))},${fmt(Y(ty))} ${fmt(X(cx0 + lx - p.position[0]))},${fmt(Y(cy0 + ly - p.position[1]))} ${fmt(X(cx0 - lx + p.position[0]))},${fmt(Y(cy0 - ly + p.position[1]))}" fill="${SOLID_MARK}"/>`);
+    }
+    for (const side of [...sides].sort((a, b) => faceCover(cover, b) - faceCover(cover, a))) {
+      if (arms ? !arms.includes(side) : faceCover(cover, side) < best - SOLID_TIE) continue;
+      const bearing = SIDE_BEARING[side] - turn * p.rotY;
+      const [half, along] = side === "N" || side === "S" ? [p.sizeIn[1] / 2, p.sizeIn[0] / 2] : [p.sizeIn[0] / 2, p.sizeIn[1] / 2];
+      const [ex, ey] = at(bearing, half);
+      const ux = Math.cos(((bearing + 90) * Math.PI) / 180) * along;
+      const uy = Math.sin(((bearing + 90) * Math.PI) / 180) * along;
+      out.push(`<line x1="${fmt(X(ex - ux))}" y1="${fmt(Y(ey - uy))}" x2="${fmt(X(ex + ux))}" y2="${fmt(Y(ey + uy))}" stroke="${SOLID_MARK}" stroke-width="4" stroke-linecap="round"><title>${escapeXml(`${p.id} ${side} face, cover ${faceCover(cover, side).toFixed(2)}`)}</title></line>`);
+      if (arms || faceCover(cover, side) < best) continue;
+      const [tx, ty] = at(bearing, half + 1.1);
+      const [lx, ly] = at(bearing + 90, 0.45);
+      const [bx, by] = [ex + (lx - p.position[0]), ey + (ly - p.position[1])];
+      const [cx2, cy2] = [ex - (lx - p.position[0]), ey - (ly - p.position[1])];
+      out.push(`<polygon points="${fmt(X(tx))},${fmt(Y(ty))} ${fmt(X(bx))},${fmt(Y(by))} ${fmt(X(cx2))},${fmt(Y(cy2))}" fill="${SOLID_MARK}"/>`);
+    }
+  }
   for (const p of free.filter((p) => p.role === "tower" || p.role === "building")) {
     const r = rectOf(p);
     const own = options.heights?.[p.paletteId];
     if (own === undefined || own < TALL_IN) continue;
-    const tallIn = p.baseIn + own;
+    // Its own measured height; on raised ground, how far up it stands besides.
+    const raised = p.baseIn - (options.palette?.groundTopIn ?? 0);
     const tx = r.x + r.w / 2;
     const ty = r.y - 4;
     out.push(`<polygon points="${fmt(tx)},${fmt(ty - 10)} ${fmt(tx - 6)},${fmt(ty)} ${fmt(tx + 6)},${fmt(ty)}" fill="#2a2a6a"/>`);
-    out.push(`<text x="${fmt(tx + 9)}" y="${fmt(ty - 1)}" font-size="10" font-weight="bold" fill="#2a2a6a">${fmt(Math.round(tallIn * 10) / 10)}in</text>`);
+    out.push(`<text x="${fmt(tx + 9)}" y="${fmt(ty - 1)}" font-size="10" font-weight="bold" fill="#2a2a6a">${fmt(Math.round(own * 10) / 10)}in${options.palette && raised > 0.5 ? ` on +${fmt(Math.round(raised * 10) / 10)}in` : ""}</text>`);
   }
 
   for (const o of layout.objectives) {
@@ -267,11 +310,12 @@ export function renderPlanSvg(layout: Layout, options: Partial<PreviewOptions> =
   line("Height", { bold: true, size: 16 });
   for (const p of layout.plateaus) line(`${p.id === "plateau" ? "centre plateau" : p.id} ${p.cells.length} cells, ${p.ramps.length} ramp(s)${p.raisedTrench ? ", trench dug in" : ""}${p.tallPieceId ? ", tall piece on top" : ""}`);
   for (const h of layout.hills) line(`${h.id} ${h.cells.length} cells of stacked tiles, ${h.ramps.length} ramp(s)`);
-  line(`${layout.stats.tallPieces} tall piece(s) (▲ = top height)`);
+  line(`${layout.stats.tallPieces} tall piece(s) (▲ = its own height)`);
+  if (options.palette && layout.pieces.some((p) => pieceById(options.palette!, p.paletteId).wallCover)) line("red edge and arrow = a ruin's most solid face", { color: SOLID_MARK });
   ly += 8;
   line("Board", { bold: true, size: 16 });
   line(`${layout.boardIn}in square, ${layout.cellIn}in cells (${layout.grid.cols}x${layout.grid.rows}); north is up`);
-  line(`parity: ${layout.parity.kind}; look: ${layout.aesthetic.primary}${layout.aesthetic.secondary ? ` + ${layout.aesthetic.secondary}` : ""}`);
+  line(`parity: ${layout.parity.matched ? `matched halves (${layout.parity.kind} split)` : layout.parity.kind}; look: ${layout.aesthetic.primary}${layout.aesthetic.secondary ? ` + ${layout.aesthetic.secondary}` : ""}`);
   line(`dressing share ${Math.round(layout.stats.dressingShare * 100)}%; ${layout.stats.scatterPieces} scatter`);
   line(`${layout.stats.groundTiles} ground + ${layout.stats.stackedTiles} stacked tiles, ${layout.stats.dressingPieces} terrain pieces`);
   line(`${layout.stats.totalPieces} objects to spawn`);
