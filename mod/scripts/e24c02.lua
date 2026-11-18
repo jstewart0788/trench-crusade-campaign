@@ -137,6 +137,7 @@ function onLoad()
   end)
 end
 
+local MM_TO_INCH = 0.0393701
 local MEASURING_RING_Y_OFFSET = 0.17
 local VALID_BASE_SIZES_IN_MM = {
     {x = 25, z = 25},

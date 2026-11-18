@@ -32,6 +32,7 @@ end
 
 local T = load(root .. "/mod/scripts/acae21.lua")
 local B = load(root .. "/mod/scripts/e24b01.lua")
+local M = load(root .. "/mod/scripts/e24c01.lua")
 
 ---------------------------------------------------------------- keep rule --
 
@@ -166,6 +167,23 @@ do
   check(not T.diceStill({ down }, { airborne }), "a die moving on the tray holds the read")
   check(T.diceStill({ down }, { down }), "all dice down: read")
   check(T.diceStill({}, {}), "nothing thrown and nothing on the tray: read")
+end
+
+do
+  local function model(edge)
+    local t = {}
+    return {
+      getTable = function(_, k) return t[k] end,
+      setTable = function(_, k, v) t[k] = v end,
+      getBoundsNormalized = function() return { size = { x = edge, y = 1, z = edge } } end,
+    }
+  end
+  local function fix(m) return setmetatable({}, { __index = function(_, k) return function(_, ...) return m[k](m, ...) end end }) end
+  for _, c in ipairs({ { 0.98, 25 }, { 1.26, 32 }, { 1.6, 40 } }) do
+    local ok, base = pcall(M.determineBaseInInches, fix(model(c[1])))
+    check(ok, "the bubble finds a base for a " .. c[2] .. "mm model: " .. tostring(base))
+    if ok then check(math.abs(base.x - c[2] * 0.0393701 / 2) < 0.01, "a " .. c[2] .. "mm model gets its base radius, got " .. tostring(base.x)) end
+  end
 end
 
 ---------------------------------------------------------------- geometry --
