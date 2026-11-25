@@ -1,0 +1,648 @@
+{
+ "types": {
+  "centerpiece": "A massive piece the mission and battlefield are built around; one per board. A dense-city board may use these as ordinary buildings.",
+  "ruin-large-2": "Large 2-storey ruined building. Reference 0f9003 (Ruins Medium).",
+  "ruin-large-1": "Large 1-storey ruined building. Reference de291f (Town Ruins).",
+  "ruin-small-1": "Small 1-storey ruined building. None chosen yet.",
+  "corner": "Corner ruin (rulebook p63): an L of ruined wall.",
+  "wall": "Linear wall: house field cover on No Man's Land and Trench Lines, a ruin fragment on Decimated Ruins.",
+  "landmark": "Rulebook landmark (p60): a single solid piece of Impassable terrain - statue, shrine, altar, or a wreck where the archetype lists one. Gives Cover; only FLYING models may cross it and they cannot end on it. May stand in for a scenario Marker.",
+  "rubble": "Rubble patch: Difficult ground."
+ },
+ "statuses": {
+  "chosen": "Jonathan picked it for this type",
+  "proposed": "my classification, awaiting his confirmation",
+  "candidate": "shortlisted, not yet reviewed",
+  "undecided": "reviewed, no call yet",
+  "cut": "rejected"
+ },
+ "assets": [
+  {
+   "id": "8c93983ef984",
+   "name": "Church",
+   "type": "centerpiece",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "ecclesiastic",
+    "church",
+    "spire"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    8.32,
+    13.24,
+    15.16
+   ],
+   "note": ""
+  },
+  {
+   "id": "4757609fc9ec",
+   "name": "Burned Building",
+   "type": "centerpiece",
+   "status": "chosen",
+   "tags": [
+    "timber",
+    "burned",
+    "vernacular",
+    "1-storey"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    11.16,
+    0.67,
+    10.55
+   ],
+   "note": ""
+  },
+  {
+   "id": "b8157fe58f88",
+   "name": "Ruins Large",
+   "type": "centerpiece",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "gothic",
+    "3-storey",
+    "L-shape"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    10.25,
+    10.5,
+    10.25
+   ],
+   "note": ""
+  },
+  {
+   "id": "6a10e5672b47",
+   "name": "Ruins Large",
+   "type": "centerpiece",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "gothic",
+    "3-storey",
+    "L-shape"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    9.35,
+    9.81,
+    9.35
+   ],
+   "note": ""
+  },
+  {
+   "id": "3bf65f8ba45d",
+   "name": "Ruins Medium",
+   "type": "centerpiece",
+   "status": "proposed",
+   "tags": [
+    "stone",
+    "gothic",
+    "3-storey"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    8.18,
+    9.87,
+    7.26
+   ],
+   "note": "too big for large 2-storey; confirm"
+  },
+  {
+   "id": "b4e3d7f81bb7",
+   "name": "Ruins Medium",
+   "type": "centerpiece",
+   "status": "proposed",
+   "tags": [
+    "stone",
+    "gothic",
+    "bell-tower"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    6,
+    0.1,
+    6
+   ],
+   "note": "too big for large 2-storey; confirm"
+  },
+  {
+   "id": "0f9003d125d0",
+   "name": "Ruins Medium",
+   "type": "ruin-large-2",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "gothic",
+    "2-storey",
+    "L-shape"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    9.92,
+    6.81,
+    6.92
+   ],
+   "note": "reference for the type"
+  },
+  {
+   "id": "b96fb2c4c431",
+   "name": "Ruins Medium",
+   "type": "ruin-large-2",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "gothic",
+    "2-storey"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    6,
+    6.1,
+    6
+   ],
+   "note": ""
+  },
+  {
+   "id": "c6781ed0494f",
+   "name": "Ruins Medium",
+   "type": "ruin-large-2",
+   "status": "proposed",
+   "tags": [
+    "stone",
+    "gothic",
+    "2-storey",
+    "narrow"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    4,
+    6.1,
+    4
+   ],
+   "note": "4x4 footprint; confirm"
+  },
+  {
+   "id": "feebe78ae6ed",
+   "name": "Ruins Medium",
+   "type": "ruin-large-2",
+   "status": "proposed",
+   "tags": [
+    "brick",
+    "gothic",
+    "ecclesiastic",
+    "2-storey"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    3.4,
+    3.1,
+    6.8
+   ],
+   "note": "confirm"
+  },
+  {
+   "id": "de291f3dc364",
+   "name": "Town Ruins",
+   "type": "ruin-large-1",
+   "status": "chosen",
+   "tags": [
+    "timber",
+    "stone",
+    "vernacular",
+    "1-storey",
+    "floor"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    10.18,
+    0.2,
+    10.02
+   ],
+   "note": "reference for the type"
+  },
+  {
+   "id": "c3cc6423c66b",
+   "name": "?",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "gothic",
+    "ruined"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    6.1,
+    4.68,
+    1.88
+   ],
+   "note": "'okay wall'"
+  },
+  {
+   "id": "218044d6dbc3",
+   "name": "Ruins Tower",
+   "type": "landmark",
+   "status": "proposed",
+   "tags": [
+    "stone",
+    "gothic",
+    "round-tower",
+    "ecclesiastic"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    6.82,
+    8.8,
+    6.83
+   ],
+   "note": "landmark: Jonathan \"probably\"; impassable per p60"
+  },
+  {
+   "id": "1da0b564cf53",
+   "name": "Wrecked Brick Wall",
+   "type": "corner",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "ruined",
+    "L-shape",
+    "rubble"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    6.19,
+    2.29,
+    4.78
+   ],
+   "note": ""
+  },
+  {
+   "id": "5d6746bc93a5",
+   "name": "Wrecked Brick Wall",
+   "type": "corner",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "ruined",
+    "rubble",
+    "small"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    3.26,
+    2.3,
+    0.32
+   ],
+   "note": ""
+  },
+  {
+   "id": "e82fb928ece5",
+   "name": "Wrecked Brick Wall",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "ruined"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    6.43,
+    2.36,
+    0.47
+   ],
+   "note": ""
+  },
+  {
+   "id": "2f1be9f52091",
+   "name": "Ruins Corner",
+   "type": "corner",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "gothic",
+    "ruined",
+    "tall"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    2.4,
+    0.1,
+    2.4
+   ],
+   "note": ""
+  },
+  {
+   "id": "b6ac3e16ec60",
+   "name": "tw2_5_addon_10_12",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "ruined"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    5.42,
+    4.26,
+    0.6
+   ],
+   "note": ""
+  },
+  {
+   "id": "9dc52433c0fb",
+   "name": "tw2_5_addon_10_13",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "ruined"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    6.82,
+    4.3,
+    0.59
+   ],
+   "note": ""
+  },
+  {
+   "id": "0f21fb87e1ed",
+   "name": "tw2_5_addon_05_5",
+   "type": "landmark",
+   "status": "proposed",
+   "tags": [
+    "stone",
+    "archway"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    8.47,
+    7.24,
+    1.03
+   ],
+   "note": "archway: landmark or wall? models can walk through it, landmarks are impassable"
+  },
+  {
+   "id": "8733f75c63b4",
+   "name": "tw2_5_addon_03_7",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "low"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    8.89,
+    2.88,
+    0.6
+   ],
+   "note": ""
+  },
+  {
+   "id": "615f2af1b3fb",
+   "name": "Brick Wall",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "intact",
+    "low"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    0.8,
+    3.17,
+    4.81
+   ],
+   "note": ""
+  },
+  {
+   "id": "b650fbe2ca15",
+   "name": "Brick Wall Gate",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "gate"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    5.7,
+    3.17,
+    0.78
+   ],
+   "note": ""
+  },
+  {
+   "id": "1240cadeffc2",
+   "name": "Brick Wall Door",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "brick",
+    "pillars"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    0.79,
+    3.17,
+    3.68
+   ],
+   "note": ""
+  },
+  {
+   "id": "48f04147c8e3",
+   "name": "acv_sax_pro_stone_wall_4m_0degree_01a",
+   "type": "wall",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "mossy"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins",
+    "trench-lines"
+   ],
+   "measuredIn": [
+    0.95,
+    3.66,
+    3.95
+   ],
+   "note": ""
+  },
+  {
+   "id": "0e69e6cdec98",
+   "name": "Escombros",
+   "type": "rubble",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "rubble",
+    "difficult"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    6.55,
+    0.94,
+    6.26
+   ],
+   "note": ""
+  },
+  {
+   "id": "84a2a2b1e80d",
+   "name": "Escombros",
+   "type": "rubble",
+   "status": "chosen",
+   "tags": [
+    "stone",
+    "rubble",
+    "difficult",
+    "small"
+   ],
+   "archetypes": [
+    "no-mans-land",
+    "decimated-ruins"
+   ],
+   "measuredIn": [
+    3.48,
+    1.79,
+    2.97
+   ],
+   "note": ""
+  },
+  {
+   "id": "9aea00129341",
+   "name": "Medium House",
+   "type": null,
+   "status": "cut",
+   "tags": [],
+   "archetypes": [],
+   "measuredIn": [
+    7.99,
+    4.69,
+    9.27
+   ],
+   "note": ""
+  },
+  {
+   "id": "556a105de9ef",
+   "name": "Ruins Small",
+   "type": null,
+   "status": "cut",
+   "tags": [],
+   "archetypes": [],
+   "measuredIn": [
+    6.6,
+    3.1,
+    3.32
+   ],
+   "note": ""
+  },
+  {
+   "id": "67e376e90648",
+   "name": "Ruins Small",
+   "type": null,
+   "status": "cut",
+   "tags": [],
+   "archetypes": [],
+   "measuredIn": [
+    5.6,
+    3.1,
+    3.4
+   ],
+   "note": ""
+  }
+ ]
+}
