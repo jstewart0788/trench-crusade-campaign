@@ -16,4 +16,3 @@ export function fixtureCatalog() {
   return catalog;
 }
 
-export const SEEDS_100 = Array.from({ length: 100 }, (_, i) => i + 1);

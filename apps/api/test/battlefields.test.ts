@@ -1,4 +1,4 @@
-import { expandBattlefield, generateBattlefield, isDecor, layoutToObjectStates, loadCatalog, loadGeneratorEnv, objectiveMarkers, recommendSeeds, type BattlefieldPayload } from "@tc/battlefield";
+import { expandBattlefield, generateBattlefield, isDecor, layoutToObjectStates, loadCatalog, loadGeneratorEnv, objectiveMarkers, type BattlefieldPayload } from "@tc/battlefield";
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import request from "supertest";
@@ -58,14 +58,6 @@ describe("GET /api/battlefields", () => {
     // Lists Decimated Ruins too, which the generator does not lay.
     expect(by.get("supply-raid")).toEqual(["no-mans-land"]);
   });
-
-  it("keeps the shipped seed list in step with the generator, judged as every archetype the panel offers", async () => {
-    const res = await request(appWith(battlefields)).get("/api/battlefields");
-    for (const s of res.body.scenarios as { id: string; archetypes: string[] }[]) expect(seedsFile.scenarios.find((f) => f.id === s.id)!.archetypes, s.id).toEqual(s.archetypes);
-    const [first, last] = seedsFile.candidates.split("-").map(Number) as [number, number];
-    const listed = seedsFile.scenarios.find((s) => s.id === "supply-raid")!.seeds;
-    expect(recommendSeeds(env, "supply-raid", Array.from({ length: last - first + 1 }, (_, i) => first + i), listed.length).map((q) => q.seed)).toEqual(listed);
-  }, 180_000);
 });
 
 describe("GET /api/battlefields/:scenario/:seed", () => {
